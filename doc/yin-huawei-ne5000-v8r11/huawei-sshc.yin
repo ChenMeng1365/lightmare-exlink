@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-sshc"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sshc="urn:huawei:yang:huawei-sshc"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:sm2="urn:huawei:yang:huawei-sm2"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:rsa="urn:huawei:yang:huawei-rsa"
+        xmlns:dsa="urn:huawei:yang:huawei-dsa"
+        xmlns:ecc="urn:huawei:yang:huawei-ecc">
+  <namespace uri="urn:huawei:yang:huawei-sshc"/>
+  <prefix value="sshc"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-sm2">
+    <prefix value="sm2"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-rsa">
+    <prefix value="rsa"/>
+  </import>
+  <import module="huawei-dsa">
+    <prefix value="dsa"/>
+  </import>
+  <import module="huawei-ecc">
+    <prefix value="ecc"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>SSH client.</text>
+  </description>
+  <revision date="2020-07-02">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="sshc-enable-flag">
+    <type name="enumeration">
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Accept connection request from unknown or unauthentic clients.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="2"/>
+        <description>
+          <text>Do not accept connection request from unknown or unauthentic clients.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SSH client bool switch.</text>
+    </description>
+  </typedef>
+  <typedef name="sshc-bool-type">
+    <type name="enumeration">
+      <enum name="false">
+        <value value="0"/>
+        <description>
+          <text>Disabled state.</text>
+        </description>
+      </enum>
+      <enum name="true">
+        <value value="1"/>
+        <description>
+          <text>Enabled state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SSH client.</text>
+    </description>
+  </typedef>
+  <typedef name="sshc-pubkey-type">
+    <type name="enumeration">
+      <enum name="RSA">
+        <value value="1"/>
+        <description>
+          <text>RSA client public key.</text>
+        </description>
+      </enum>
+      <enum name="DSA">
+        <value value="2"/>
+        <description>
+          <text>DSA client public key.</text>
+        </description>
+      </enum>
+      <enum name="ECC">
+        <value value="3"/>
+        <description>
+          <text>ECC client public key.</text>
+        </description>
+      </enum>
+      <enum name="SM2">
+        <value value="5"/>
+        <description>
+          <text>SM2 client public key.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SSH client public key encryption type list.</text>
+    </description>
+  </typedef>
+  <typedef name="trans-cmd-type">
+    <type name="enumeration">
+      <enum name="get">
+        <value value="2"/>
+        <description>
+          <text>File get operation.</text>
+        </description>
+      </enum>
+      <enum name="put">
+        <value value="3"/>
+        <description>
+          <text>File put operation.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SSH client transmission command type.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="ssh-client"/>
+  <container name="sshc">
+    <description>
+      <text>SSH client.</text>
+    </description>
+    <container name="client">
+      <description>
+        <text>Configure SSH client.</text>
+      </description>
+      <leaf name="keep-alive-time">
+        <type name="int32">
+          <range value="0..3600"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>If client does not receive any data from server for keepalive interval time, it sends first keepalive message to server. Further keepalive messages are sent after every expiry of keepalive interval only for max number of times configured. If client does not get any response from server still, client disconnects the current connection. 0 seconds means do not send keepalive message to server.</text>
+        </description>
+      </leaf>
+      <leaf name="keep-alive-count">
+        <type name="int32">
+          <range value="1..30"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>If client does not receive any data from server for keepalive interval time, it sends first keepalive message to server. Further keepalive messages are sent after every expiry of keepalive interval only for max number of times configured. If client does not get any response from server still, client disconnects the current connection.</text>
+        </description>
+      </leaf>
+      <leaf name="first-time-enable">
+        <type name="sshc-enable-flag"/>
+        <default value="disable"/>
+        <description>
+          <text>If enabled, then RSA public key check for SSH server will be skipped for any new incoming connection.</text>
+        </description>
+      </leaf>
+      <leaf name="src-interface">
+        <type name="pub-type:if-name"/>
+        <description>
+          <text>The specified source interface must exist and an IP address must be configured on the interface.</text>
+        </description>
+      </leaf>
+      <leaf name="src-ipv4-addr">
+        <when condition="not(../src-interface)"/>
+        <type name="inet:ipv4-address-no-zone"/>
+        <description>
+          <text>SFTP IPv4 source ip address.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-instance-name">
+        <when condition="../src-ipv4-addr"/>
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>The specified VPN instance must exist and IPv4-family must be enabled in the VPN instance.</text>
+        </description>
+      </leaf>
+      <leaf name="scp-src-interface">
+        <type name="pub-type:if-name"/>
+        <description>
+          <text>The specified source interface must exist and an IP address must be configured on the interface.</text>
+        </description>
+      </leaf>
+      <leaf name="scp-src-ipv4-addr">
+        <when condition="not(../scp-src-interface)"/>
+        <type name="inet:ipv4-address-no-zone"/>
+        <description>
+          <text>SCP IPv4 source ip address.</text>
+        </description>
+      </leaf>
+      <leaf name="scp-vpn-instance-name">
+        <when condition="../scp-src-ipv4-addr"/>
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>The specified VPN instance must exist and IPv4-family must be enabled in the VPN instance.</text>
+        </description>
+      </leaf>
+      <leaf name="sftp-src-ipv6-addr">
+        <type name="inet:ipv6-address-no-zone"/>
+        <description>
+          <text>Specify the SFTP source IPv6 address.</text>
+        </description>
+      </leaf>
+      <leaf name="sftp-ipv6-vpn-instance-name">
+        <when condition="../sftp-src-ipv6-addr"/>
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>The specified VPN instance must exist and IPv6-family must be enabled in the VPN instance.</text>
+        </description>
+      </leaf>
+      <leaf name="packet-dscp">
+        <type name="uint32">
+          <range value="0..63"/>
+        </type>
+        <default value="48"/>
+        <description>
+          <text>Config DSCP value.</text>
+        </description>
+      </leaf>
+      <leaf name="sm2-host-key">
+        <type name="leafref">
+          <path value="/sm2:sm2/sm2:sm2-key-pairs/sm2:sm2-key-pair/sm2:key-pair-label"/>
+        </type>
+        <description>
+          <text>User can assign the sm2 host key for sm2 connection.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="server-authentications">
+      <description>
+        <text>List of SSH host name and key name configuration.</text>
+      </description>
+      <list name="server-authentication">
+        <key value="server-name pubkey-type key-name"/>
+        <max-elements value="20"/>
+        <description>
+          <text>Configure SSH host name and key name policy.</text>
+        </description>
+        <leaf name="server-name">
+          <type name="string">
+            <length value="1..255"/>
+          </type>
+          <description>
+            <text>Set SSH host name.</text>
+          </description>
+        </leaf>
+        <leaf name="pubkey-type">
+          <type name="sshc-pubkey-type"/>
+          <description>
+            <text>SSH server public key type.</text>
+          </description>
+        </leaf>
+        <leaf name="key-name">
+          <type name="string">
+            <length value="1..40"/>
+          </type>
+          <must condition="(../pubkey-type = 'RSA' and ../key-name = /rsa:rsa/rsa:peer-keys/rsa:peer-key[rsa:key-name=current()]/rsa:key-name) or ../pubkey-type != 'RSA'"/>
+          <must condition="(../pubkey-type = 'DSA' and ../key-name = /dsa:dsa/dsa:peer-keys/dsa:peer-key[dsa:key-name=current()]/dsa:key-name) or ../pubkey-type != 'DSA'"/>
+          <must condition="(../pubkey-type = 'ECC' and ../key-name = /ecc:ecc/ecc:peer-keys/ecc:peer-key[ecc:key-name=current()]/ecc:key-name) or ../pubkey-type != 'ECC'"/>
+          <must condition="(../pubkey-type = 'SM2' and ../key-name = /sm2:sm2/sm2:sm2-peer-keys/sm2:sm2-peer-key[sm2:key-name=current()]/sm2:key-name) or ../pubkey-type != 'SM2'"/>
+          <description>
+            <text>Key name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="cipher-alg">
+      <must condition="../cipher-alg/descbc = 'true' or ../cipher-alg/des3cbc = 'true' or ../cipher-alg/aes128cbc = 'true' or ../cipher-alg/aes192cbc = 'true' or ../cipher-alg/aes256cbc = 'true' or ../cipher-alg/aes128ctr = 'true' or ../cipher-alg/aes192ctr = 'true' or ../cipher-alg/aes256ctr = 'true' or ../cipher-alg/arcfour128 = 'true' or ../cipher-alg/arcfour256 = 'true' or ../cipher-alg/aes128gcm = 'true' or ../cipher-alg/aes256gcm = 'true'"/>
+      <description>
+        <text>Configure Encryption algorithms supported for SSHS.</text>
+      </description>
+      <leaf name="descbc">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>DES CBC encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="des3cbc">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>3DES CBC encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes128cbc">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>AES128 CBC encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes192cbc">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>AES192 CBC encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes256cbc">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>AES256 CBC encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes128ctr">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>AES128 CTR encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes192ctr">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>AES192 CTR encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes256ctr">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>AES256 CTR encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="arcfour128">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>ARCFOUR128 encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="arcfour256">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>ARCFOUR256 encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes128gcm">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>AES128 GCM encryption algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="aes256gcm">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>AES256 GCM encryption algorithm.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="hmac-alg">
+      <must condition="../hmac-alg/md5 = 'true' or ../hmac-alg/md596 = 'true' or ../hmac-alg/sha1 = 'true' or ../hmac-alg/sha196 = 'true' or ../hmac-alg/sha2256 = 'true' or ../hmac-alg/sha225696 = 'true' or ../hmac-alg/sha2512 = 'true'"/>
+      <description>
+        <text>Configure HMAC algorithms supported for SSHS.</text>
+      </description>
+      <leaf name="md5">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>MD5 hmac algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="md596">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>MD5_96 hmac algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sha1">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>SHA1 hmac algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sha196">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>SHA1_96 hmac algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sha2256">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>SHA2_256 Hmac Algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sha225696">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>SHA2_256_96 hmac algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sha2512">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>SHA2_512 hmac algorithm.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="kex-alg">
+      <must condition="../kex-alg/dh-group-exchange-sha-256 = 'true' or ../kex-alg/dh-group-exchange-sha1 = 'true' or ../kex-alg/dh-group1-sha1 = 'true' or ../kex-alg/ecdh-sha2-nistp-256 = 'true' or ../kex-alg/ecdh-sha2-nistp-384 = 'true' or ../kex-alg/ecdh-sha2-nistp-521 = 'true' or ../kex-alg/sm2-kep = 'true' or ../kex-alg/dh-group14-sha1 = 'true'"/>
+      <description>
+        <text>Configure Key Exchange Algorithm.</text>
+      </description>
+      <leaf name="dh-group14-sha1">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Diffie hellman group14 sha1 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="dh-group1-sha1">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Diffie hellman group1 sha1 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="ecdh-sha2-nistp-521">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Ecdh sha2 nistp521 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="ecdh-sha2-nistp-384">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Ecdh sha2 nistp384 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="ecdh-sha2-nistp-256">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Ecdh sha2 nistp256 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="dh-group-exchange-sha-256">
+        <type name="sshc-bool-type"/>
+        <default value="true"/>
+        <description>
+          <text>Diffie hellman group exchange sha256 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="dh-group-exchange-sha1">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Diffie hellman group exchange sha1 algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sm2-kep">
+        <type name="sshc-bool-type"/>
+        <default value="false"/>
+        <description>
+          <text>Sm2kep sha2 nistp256 algorithm.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="pubkey-alg">
+      <must condition="../pubkey-alg/dsa = 'true' or ../pubkey-alg/ecc = 'true' or ../pubkey-alg/rsa = 'true' or ../pubkey-alg/sm2 = 'true' or ../pubkey-alg/rsa-sha2-256 = 'true' or ../pubkey-alg/rsa-sha2-512 = 'true'"/>
+      <description>
+        <text>Configure public key algorithm.</text>
+      </description>
+      <leaf name="dsa">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DSA public key algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="ecc">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable ECC public key algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="rsa">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable RSA public key algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="sm2">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable SM2 public key algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="rsa-sha2-256">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable RSA SHA2-256 public key algorithm.</text>
+        </description>
+      </leaf>
+      <leaf name="rsa-sha2-512">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable RSA SHA2-512 public key algorithm.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="rekey">
+      <description>
+        <text>Configure reKey.</text>
+      </description>
+      <leaf name="max-packet">
+        <type name="uint32">
+          <range value="268435456..2147483648"/>
+        </type>
+        <default value="2147483648"/>
+        <description>
+          <text>Rekey maximum packet number.</text>
+        </description>
+      </leaf>
+      <leaf name="time">
+        <type name="int32">
+          <range value="30..1440"/>
+        </type>
+        <units name="min"/>
+        <default value="60"/>
+        <description>
+          <text>Rekey time.</text>
+        </description>
+      </leaf>
+      <leaf name="max-data">
+        <type name="int32">
+          <range value="100..10000"/>
+        </type>
+        <units name="MB"/>
+        <default value="1000"/>
+        <description>
+          <text>Rekey maximum data.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <rpc name="ssh-transfer-file">
+    <description>
+      <text>SFTP file transfer.</text>
+    </description>
+    <input>
+      <leaf name="source-ipv4-address">
+        <type name="inet:ipv4-address-no-zone"/>
+        <must condition="../host-addr-ipv4"/>
+        <description>
+          <text>Specify the source IPv4 address.</text>
+        </description>
+      </leaf>
+      <leaf name="source-ipv6-address">
+        <type name="inet:ipv6-address-no-zone"/>
+        <must condition="../host-addr-ipv6"/>
+        <description>
+          <text>Specify the source IPv6 address.</text>
+        </description>
+      </leaf>
+      <leaf name="server-port">
+        <type name="uint32">
+          <range value="1..65535"/>
+        </type>
+        <default value="22"/>
+        <description>
+          <text>Specify the port number.</text>
+        </description>
+      </leaf>
+      <leaf name="host-addr-ipv4">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <must condition="not(../host-addr-ipv6)"/>
+        <description>
+          <text>Specify the IPv4 address of remote system (SFTP server).</text>
+        </description>
+      </leaf>
+      <leaf name="host-addr-ipv6">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <description>
+          <text>Specify the IPv6 address of remote system (SFTP server).</text>
+        </description>
+      </leaf>
+      <leaf name="command-type">
+        <type name="trans-cmd-type"/>
+        <description>
+          <text>Specify the type of operation need to be performed (GET/PUT).</text>
+        </description>
+      </leaf>
+      <leaf name="user-name">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Specify the user name to authenticate the connection before file transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="password">
+        <type name="pub-type:password"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Specify the password to authenticate the connection before file transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="local-file-name">
+        <type name="string">
+          <length value="1..256"/>
+        </type>
+        <description>
+          <text>Specify the local file name.</text>
+        </description>
+      </leaf>
+      <leaf name="remote-file-name">
+        <type name="string">
+          <length value="1..256"/>
+        </type>
+        <description>
+          <text>Specify the remote file name.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <must condition="(../host-addr-ipv4) and not(../public-net) and not(../source-interface-name)"/>
+        <description>
+          <text>Specify the VPN instance name of an MPLS VPN.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv6-vpn-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <must condition="(../host-addr-ipv6) and not(../public-net) and not(../source-interface-name)"/>
+        <description>
+          <text>Specify the IPv6 VPN instance name of an MPLS VPN.</text>
+        </description>
+      </leaf>
+      <leaf name="public-net">
+        <type name="boolean"/>
+        <description>
+          <text>Using public net or not.</text>
+        </description>
+      </leaf>
+      <leaf name="source-interface-name">
+        <type name="pub-type:if-name"/>
+        <must condition="not(../public-net)"/>
+        <description>
+          <text>Specify the source interface name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

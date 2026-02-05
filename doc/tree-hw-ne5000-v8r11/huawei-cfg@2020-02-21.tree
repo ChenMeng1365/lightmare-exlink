@@ -1,0 +1,140 @@
+module: huawei-cfg
+  +--rw cfg
+     +--rw autosave!
+     |  +--rw interval-time?   uint32
+     |  +--rw delay-time?      uint32
+     |  +--rw cpu-limit?       uint32
+     +--rw lock-by-users
+     |  +--rw lock-by-user* [lock-username]
+     |     +--rw lock-username      string
+     |     +--ro lock-time?         yang:date-and-time
+     |     +--ro identifier?        uint32
+     |     +--ro unlock-username?   string
+     |     +--ro unlock-time?       yang:date-and-time
+     +--ro checkpoints
+     |  +--ro checkpoint* [commit-id]
+     |     +--ro commit-id                string
+     |     +--ro user-label?              string
+     |     +--ro username?                string
+     |     +--ro line?                    string
+     |     +--ro client?                  config-checkpoint-client
+     |     +--ro timestamp?               yang:date-and-time
+     |     +--ro description?             string
+     |     +--ro current-point-changes
+     |     |  +--ro current-point-change* [index]
+     |     |     +--ro index            uint32
+     |     |     +--ro config-change?   string
+     |     +--ro since-point-changes
+     |        +--ro since-point-change* [index]
+     |           +--ro index            uint32
+     |           +--ro config-change?   string
+     +--rw global-switch
+     |  +--rw configuration-slave-detect-switch?   boolean
+     |  +--rw appdata-detect-switch?               boolean
+     |  +--rw checkpoint-switch?                   boolean
+     +--ro backup-and-recovery-states
+     |  +--ro backup-and-recovery-state* [index]
+     |     +--ro index               uint32
+     |     +--ro operation-type?     cfg-hwcm-operation-type
+     |     +--ro state?              cfg-operation-state
+     |     +--ro operate-progress?   uint32
+     |     +--ro start-time?         yang:date-and-time
+     |     +--ro last-time?          pub-type:time-tick
+     |     +--ro filename?           string
+     |     +--ro service-type?       cfg-service-type
+     +--rw autosave-checkpoint
+     |  +--rw start-time?   pub-type:time-hhmm
+     +--rw configuration-operation-cpu-limit
+     |  +--rw snmp-cpu-limit?      uint32
+     |  +--rw snmp-switch?         boolean
+     |  +--rw netconf-cpu-limit?   uint32
+     |  +--rw netconf-switch?      boolean
+     +--rw backup-servers
+     |  +--rw backup-server* [server-ip vpn-instance]
+     |     +--rw server-ip         inet:ip-address-no-zone
+     |     +--rw vpn-instance      string
+     |     +--rw transport-type    cfg-server-type
+     |     +--rw username          string
+     |     +--rw password          pub-type:password-extend
+     |     +--rw path?             string
+     |     +--rw port?             uint16
+     +--ro startup-infos
+     |  +--ro startup-info* [position]
+     |     +--ro position                    string
+     |     +--ro configed-system-software?   string
+     |     +--ro current-system-software?    string
+     |     +--ro next-system-software?       string
+     |     +--ro current-cfg-file?           string
+     |     +--ro next-cfg-file?              string
+     |     +--ro current-patch-file?         string
+     |     +--ro next-patch-file?            string
+     +--ro cfg-files
+     |  +--ro cfg-file* [filename]
+     |     +--ro filename                string
+     |     +--ro size?                   uint32
+     |     +--ro create-time?            yang:date-and-time
+     |     +--ro file-current-changes
+     |        +--ro file-current-change* [index]
+     |           +--ro index            uint32
+     |           +--ro config-change?   string
+     +--ro config-rollback-result
+     |  +--ro result?   <anydata>
+     +--ro config-recover-results
+        +--ro config-recover-result* [index]
+           +--ro index      uint32
+           +--ro command?   string
+           +--ro view?      string
+           +--ro line?      uint32
+           +--ro reason?    command-result
+           +--ro time?      yang:date-and-time
+
+  rpcs:
+    +---x save
+    |  +---w input
+    |     +---w filename    string
+    +---x cfg-file-backup-and-recovery
+    |  +---w input
+    |     +---w index                  uint32
+    |     +---w operation-type         cfg-operation-type
+    |     +---w filename?              string
+    |     +---w transport-type         cfg-server-type
+    |     +---w server-ip              inet:ip-address-no-zone
+    |     +---w username?              string
+    |     +---w password?              pub-type:password
+    |     +---w vpn-instance?          string
+    |     +---w use-net-manager-vpn?   boolean
+    +---x clear-startup
+    +---x clear-interface-config
+    |  +---w input
+    |     +---w interface-name    -> /ifm:ifm/interfaces/interface/name
+    +---x delete-checkpoint-by-oldest-num
+    |  +---w input
+    |     +---w checkpoint-num?   uint8
+    +---x rollback-by-commit-id
+    |  +---w input
+    |     +---w commit-id?   -> /cfg/checkpoints/checkpoint/commit-id
+    +---x rollback-by-user-label
+    |  +---w input
+    |     +---w commit-id?    -> /cfg/checkpoints/checkpoint/commit-id
+    |     +---w user-label?   -> /cfg/checkpoints/checkpoint/user-label
+    +---x rollback-by-last-num
+    |  +---w input
+    |     +---w checkpoint-num?   uint8
+    +---x rollback-by-file
+    |  +---w input
+    |     +---w filename    -> /cfg/cfg-files/cfg-file/filename
+    +---x save-all-virtual-systems
+    +---x set-startup
+    |  +---w input
+    |     +---w filename    -> /cfg/cfg-files/cfg-file/filename
+    +---x set-user-label-by-commit-id
+    |  +---w input
+    |     +---w commit-id     -> /cfg/checkpoints/checkpoint/commit-id
+    |     +---w user-label    string
+    +---x create-user-label-checkpoint
+    |  +---w input
+    |     +---w user-label     string
+    |     +---w description?   string
+    +---x delete-user-label-checkpoint
+       +---w input
+          +---w commit-id?   -> /cfg/checkpoints/checkpoint/commit-id

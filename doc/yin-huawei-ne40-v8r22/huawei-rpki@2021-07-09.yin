@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-rpki"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rpki="urn:huawei:yang:huawei-rpki"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ssl="urn:huawei:yang:huawei-ssl">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-rpki"/>
+  <prefix value="rpki"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-ssl">
+    <prefix value="ssl"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Resource Public Key Infrastructure.</text>
+  </description>
+  <revision date="2021-07-09">
+    <description>
+      <text>Add region-validation nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-12-09">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="as-number-validate">
+    <type name="string">
+      <length value="1..11"/>
+      <pattern value="((([1-9]\d{0,8})|([1-3]\d{9})|(4[0-1]\d{8})|(42[0-8]\d{7})|(429[0-3]\d{6})|(4294[0-8]\d{5})|(42949[0-5]\d{4})|(429496[0-6]\d{3})|(4294967[0-1]\d{2})|(42949672[0-8]\d{1})|(429496729[0-5]))|((([1-9]\d{0,3})|([1-5]\d{4})|(6[0-4]\d{3})|(65[0-4]\d{2})|(655[0-2]\d)|(6553[0-5]))[\.](([0-9]\d{0,3})|([1-5]\d{4})|(6[0-4]\d{3})|(65[0-4]\d{2})|(655[0-2]\d)|(6553[0-5]))))"/>
+    </type>
+    <description>
+      <text>AS number is not include.</text>
+    </description>
+  </typedef>
+  <container name="rpki">
+    <description>
+      <text>Configure RPKI.</text>
+    </description>
+    <container name="rpki">
+      <presence value="Enable RPKI."/>
+      <description>
+        <text>Enable/disable RPKI globally.</text>
+      </description>
+      <container name="region-validation">
+        <presence value="Enable region validation."/>
+        <description>
+          <text>Configure region validation.</text>
+        </description>
+        <container name="regions">
+          <description>
+            <text>List of RPKI regions.</text>
+          </description>
+          <list name="region">
+            <key value="id"/>
+            <description>
+              <text>Configure region information.</text>
+            </description>
+            <leaf name="id">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Region ID.</text>
+              </description>
+            </leaf>
+            <leaf name="description">
+              <type name="string">
+                <length value="1..255"/>
+                <pattern value="([^?]*)"/>
+              </type>
+              <description>
+                <text>Description of a region, which is a string of letters and digits, spaces supported. By default, no description is configured for a peer.</text>
+              </description>
+            </leaf>
+            <leaf-list name="as">
+              <type name="as-number-validate"/>
+              <must condition="count(../../region/as[. = current()]) &lt;= 1"/>
+              <max-elements value="100"/>
+              <description>
+                <text>Configure AS lists contained in the region.</text>
+              </description>
+            </leaf-list>
+          </list>
+        </container>
+        <container name="confederations">
+          <description>
+            <text>List of RPKI region confederations.</text>
+          </description>
+          <list name="confederation">
+            <key value="id"/>
+            <description>
+              <text>Configure confederation information.</text>
+            </description>
+            <leaf name="id">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Region confederation ID.</text>
+              </description>
+            </leaf>
+            <leaf name="description">
+              <type name="string">
+                <length value="1..255"/>
+                <pattern value="([^?]*)"/>
+              </type>
+              <description>
+                <text>Description of a confederation, which is a string of letters and digits, spaces supported. By default, no description is configured for a peer.</text>
+              </description>
+            </leaf>
+            <leaf-list name="region-id">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <must condition="count(../../confederation/region-id[. = current()]) &lt;= 1"/>
+              <must condition="count(../../confederation/region-id[. = current()/../../../regions/region/id]) = count(.)"/>
+              <max-elements value="100"/>
+              <description>
+                <text>Configure region lists contained in the region confederation.</text>
+              </description>
+            </leaf-list>
+          </list>
+        </container>
+      </container>
+    </container>
+  </container>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Rpki session configuration.</text>
+    </description>
+    <container name="rpki">
+      <when condition="/rpki:rpki/rpki:rpki"/>
+      <description>
+        <text>Configure RPKI.</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>List of rpki session.</text>
+        </description>
+        <list name="session">
+          <must condition="aging-time&gt;=2*(refresh-time)"/>
+          <must condition="(contains(remote-address, ':') and (../../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])) or (not (contains(remote-address, ':') and not (../../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])))"/>
+          <key value="remote-address"/>
+          <max-elements value="2"/>
+          <description>
+            <text>Configure rpki session.</text>
+          </description>
+          <leaf name="remote-address">
+            <type name="inet:ip-address-no-zone"/>
+            <description>
+              <text>Specifies the address of a Resource Public Key Infrastructure (RPKI) server to establish a TCP connection between the router and the RPKI server.</text>
+            </description>
+          </leaf>
+          <leaf name="local-if-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specifies an interface name to set up a RPKI session.</text>
+            </description>
+          </leaf>
+          <leaf name="local-if-address">
+            <type name="inet:ip-address-no-zone"/>
+            <description>
+              <text>Specifies a source address to set up a RPKI session.</text>
+            </description>
+          </leaf>
+          <leaf name="tcp-port">
+            <type name="uint16">
+              <range value="1..65535"/>
+            </type>
+            <description>
+              <text>TCP connection port.</text>
+            </description>
+          </leaf>
+          <choice name="tcp-authentication-type">
+            <when condition="tcp-port"/>
+            <description>
+              <text>Set password or keychain name.</text>
+            </description>
+            <case name="password">
+              <description>
+                <text>Set password.</text>
+              </description>
+              <leaf name="password-text">
+                <type name="pub-type:password-extend"/>
+                <description>
+                  <text>The TCP connection password is a string of characters, spaces not supported. If only a space is input, the password is cleared. The password is a string ranging from 1 to 255 characters for a plaintext password and 20 to 432 characters for a ciphertext password. The two ends must have the same password; otherwise, TCP connection cannot be established between the two ends.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="key-chain">
+              <description>
+                <text>Set keychain name.</text>
+              </description>
+              <leaf name="key-chain-name">
+                <type name="string">
+                  <length value="1..47"/>
+                  <pattern value="[^A-Z]+"/>
+                </type>
+                <description>
+                  <text>Specifies the name of the keychain authentication.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="aging-time">
+            <type name="uint32">
+              <range value="60..604800"/>
+            </type>
+            <units name="s"/>
+            <default value="3600"/>
+            <description>
+              <text>Aging time.</text>
+            </description>
+          </leaf>
+          <leaf name="refresh-time">
+            <type name="uint32">
+              <range value="10..3600"/>
+            </type>
+            <units name="s"/>
+            <default value="1800"/>
+            <description>
+              <text>Refresh time.</text>
+            </description>
+          </leaf>
+          <leaf name="ssl-policy">
+            <type name="leafref">
+              <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+            </type>
+            <description>
+              <text>SSL policy name.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="rpki"/>
+</module>

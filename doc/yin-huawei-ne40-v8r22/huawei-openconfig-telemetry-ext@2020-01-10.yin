@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-openconfig-telemetry-ext"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:hw-telemetry-ext="urn:huawei:yang:huawei-openconfig-telemetry-ext"
+        xmlns:ot="http://openconfig.net/yang/telemetry"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-telemetry-types="http://openconfig.net/yang/telemetry-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type">
+  <namespace uri="urn:huawei:yang:huawei-openconfig-telemetry-ext"/>
+  <prefix value="hw-telemetry-ext"/>
+  <import module="openconfig-telemetry">
+    <prefix value="ot"/>
+  </import>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-telemetry-types">
+    <prefix value="oc-telemetry-types"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com
+</text>
+  </contact>
+  <description>
+    <text>Data model which creates the condition for the telemetry.</text>
+  </description>
+  <revision date="2020-01-10">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="hw-telemetry-ext"/>
+  <identity name="STREAM_UDP">
+    <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+    <description>
+      <text>Telemetry stream is carried over a UDP connection.</text>
+    </description>
+  </identity>
+  <grouping name="telemetry-global-attribute-config">
+    <description>
+      <text>The global attribute of telemetry.</text>
+    </description>
+    <leaf name="json-only-content">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable its operation when telemetry-stream-encoding-config.encoding is specified to literal ENC_JSON_IETF within any subscription. If it is set to true, json format will only act on real data content while telemetry message layer will keep on gpb format.</text>
+      </description>
+    </leaf>
+    <leaf name="cpu-max-usage">
+      <type name="uint8">
+        <range value="1..50"/>
+      </type>
+      <units name="%"/>
+      <default value="5"/>
+      <description>
+        <text>Maximum usage of the main control board's CPU used when telemetry collects data.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-sensor-path-condition-op-config">
+    <description>
+      <text>Parameters for a filter criterion.</text>
+    </description>
+    <leaf name="op-field">
+      <type name="string">
+        <length value="1..63"/>
+      </type>
+      <description>
+        <text>Reference field in the filter criterion. Different paths support different reference fields.</text>
+      </description>
+    </leaf>
+    <leaf name="op-type">
+      <type name="enumeration">
+        <enum name="eq">
+          <value value="0"/>
+          <description>
+            <text>Equal.</text>
+          </description>
+        </enum>
+        <enum name="gt">
+          <value value="1"/>
+          <description>
+            <text>Greater than.</text>
+          </description>
+        </enum>
+        <enum name="ge">
+          <value value="2"/>
+          <description>
+            <text>Greater than or equal.</text>
+          </description>
+        </enum>
+        <enum name="lt">
+          <value value="3"/>
+          <description>
+            <text>Less than.</text>
+          </description>
+        </enum>
+        <enum name="le">
+          <value value="4"/>
+          <description>
+            <text>Less than or equal.</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Reference to the op-type of the filter criterion.</text>
+      </description>
+    </leaf>
+    <leaf name="op-value">
+      <type name="string">
+        <length value="1..20"/>
+      </type>
+      <description>
+        <text>Comparison value of the filter criterion. Op-value must be an integer and the maximum value range is [0, 9223372036854775807]. For the actual value range, see the definition of op-field in the YANG model.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-sensor-path-filter-condition-config">
+    <description>
+      <text>Parameters for filter criteria.</text>
+    </description>
+    <container name="conditions">
+      <description>
+        <text>List of filter criteria, including the filter information such as op-field, op-type, and op-value.</text>
+      </description>
+      <list name="condition">
+        <key value="op-field op-type op-value"/>
+        <max-elements value="2"/>
+        <description>
+          <text>Configure the filter criteria.</text>
+        </description>
+        <leaf name="op-field">
+          <type name="leafref">
+            <path value="../config/op-field"/>
+          </type>
+          <description>
+            <text>Reference to the op-field of the filter criterion.</text>
+          </description>
+        </leaf>
+        <leaf name="op-type">
+          <type name="leafref">
+            <path value="../config/op-type"/>
+          </type>
+          <description>
+            <text>Reference to the op-type of the filter criterion.</text>
+          </description>
+        </leaf>
+        <leaf name="op-value">
+          <type name="leafref">
+            <path value="../config/op-value"/>
+          </type>
+          <description>
+            <text>Comparison value of the filter criterion. Op-value must be an integer and the maximum value range is [0, 9223372036854775807]. For the actual value range, see the definition of op-field in the YANG model.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configure the parameters for a filter criterion.</text>
+          </description>
+          <uses name="telemetry-sensor-path-condition-op-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state of a filter criterion.</text>
+          </description>
+          <uses name="telemetry-sensor-path-condition-op-config"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="telemetry-sensor-path-filter-attribute-config">
+    <description>
+      <text>Configuration parameters relating to the configured name of the telemetry sensor path filter.</text>
+    </description>
+    <leaf name="name">
+      <type name="string">
+        <length value="1..8"/>
+        <pattern value="[A-Za-z0-9]+"/>
+      </type>
+      <description>
+        <text>Filter name for the telemetry sensor path filter.</text>
+      </description>
+    </leaf>
+    <leaf name="condition-relation">
+      <type name="enumeration">
+        <enum name="and">
+          <value value="1"/>
+          <description>
+            <text>The relationship between filter criteria in a filter of a sampling path is and.</text>
+          </description>
+        </enum>
+        <enum name="or">
+          <value value="2"/>
+          <description>
+            <text>The relationship between filter criteria in a filter of a sampling path is or.</text>
+          </description>
+        </enum>
+      </type>
+      <default value="and"/>
+      <description>
+        <text>Relationship between filter criteria in a filter of a sampling path.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-sensor-path-filter-config">
+    <description>
+      <text>Condition-based filtering's parameter of the sampling path. If the conditions are met, the data is reported.</text>
+    </description>
+    <container name="filters">
+      <description>
+        <text>List of the top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.</text>
+      </description>
+      <list name="filter">
+        <key value="name"/>
+        <max-elements value="1"/>
+        <description>
+          <text>Configure the sampling path.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Filter name of a sampling path.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configure the parameters for a filter in a sampling path.</text>
+          </description>
+          <uses name="telemetry-sensor-path-filter-attribute-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state of a filter in a sampling path.</text>
+          </description>
+          <uses name="telemetry-sensor-path-filter-attribute-config"/>
+        </container>
+        <uses name="telemetry-sensor-path-filter-condition-config"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="telemetry-sensor-path-self-define-event-config">
+    <description>
+      <text>Parameters for a customized event.</text>
+    </description>
+    <leaf name="description">
+      <type name="string">
+        <length value="1..55"/>
+      </type>
+      <description>
+        <text>Description of a customized event.</text>
+      </description>
+    </leaf>
+    <leaf name="level">
+      <type name="uint32">
+        <range value="0..255"/>
+      </type>
+      <default value="0"/>
+      <description>
+        <text>Level of a customized event.</text>
+      </description>
+    </leaf>
+    <leaf name="suppress-period">
+      <type name="uint32">
+        <range value="0..3600"/>
+      </type>
+      <units name="s"/>
+      <default value="10"/>
+      <description>
+        <text>Suppression period for customized event reporting.</text>
+      </description>
+    </leaf>
+    <leaf name="depth">
+      <type name="uint8">
+        <range value="1..3"/>
+      </type>
+      <default value="1"/>
+      <description>
+        <text>Sampling depth.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-sensor-path-config-self-define-event">
+    <description>
+      <text>Configuration parameters relating to the grouping of data model paths comprising a sensor grouping.</text>
+    </description>
+    <leaf name="path">
+      <type name="string">
+        <length value="1..511"/>
+      </type>
+      <description>
+        <text>Path to a section of operational state of interest (the sensor).</text>
+      </description>
+    </leaf>
+    <uses name="telemetry-sensor-path-self-define-event-config"/>
+  </grouping>
+  <grouping name="telemetry-stream-destination-with-vpn-config">
+    <description>
+      <text>Configuration parameters for the stream destinations.</text>
+    </description>
+    <leaf name="destination-address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>IP address of the telemetry stream destination.
+When the destination-address is an IPv4 address, it can only be configured as an class A/B/C address.
+When the destination-address is an IPv6 address, it cannot be configured as an unspecified address, multicast address, link-local address, loopback address, IPv4-compatible IPv6 address, or IPv4-mapped IPv6 address.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-port">
+      <type name="uint16">
+        <range value="1..65535"/>
+      </type>
+      <description>
+        <text>Protocol (UDP or TCP) port number for the telemetry stream destination.</text>
+      </description>
+    </leaf>
+    <leaf name="vpn-instance">
+      <type name="leafref">
+        <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+      </type>
+      <description>
+        <text>Name of a VPN instance for the telemetry stream destination.</text>
+      </description>
+    </leaf>
+    <leaf name="protocol">
+      <type name="identityref">
+        <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+      </type>
+      <description>
+        <text>Selection of the transport protocol for the telemetry stream.</text>
+      </description>
+    </leaf>
+    <leaf name="tls">
+      <when condition="../protocol='oc-telemetry-types:STREAM_GRPC'"/>
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <augment target-node="/ot:telemetry-system">
+    <description>
+      <text>Top level configuration and state for the device's telemetry system.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure the global attribute of telemetry.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configure the parameters relating to the telemetry global attribute.</text>
+        </description>
+        <uses name="telemetry-global-attribute-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state of information relating to the telemetry global attribute.</text>
+        </description>
+        <uses name="telemetry-global-attribute-config"/>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:destination-groups/ot:destination-group/ot:destinations/ot:destination/ot:config">
+    <description>
+      <text>Configuration parameters relating to telemetry destinations.</text>
+    </description>
+    <leaf name="protocol">
+      <type name="identityref">
+        <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+      </type>
+      <description>
+        <text>Selection of the transport protocol for the telemetry stream.</text>
+      </description>
+    </leaf>
+    <leaf name="tls">
+      <when condition="../protocol='oc-telemetry-types:STREAM_GRPC'"/>
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:destination-groups/ot:destination-group/ot:destinations/ot:destination/ot:state">
+    <description>
+      <text>State information associated with telemetry destinations.</text>
+    </description>
+    <leaf name="protocol">
+      <type name="identityref">
+        <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+      </type>
+      <description>
+        <text>Selection of the transport protocol for the telemetry stream.</text>
+      </description>
+    </leaf>
+    <leaf name="tls">
+      <when condition="../protocol='oc-telemetry-types:STREAM_GRPC'"/>
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:sensor-groups/ot:sensor-group/ot:sensor-paths/ot:sensor-path">
+    <description>
+      <text>List of paths in the model which together comprise a sensor grouping. Filters for each path to exclude items are also provided.</text>
+    </description>
+    <uses name="telemetry-sensor-path-filter-config"/>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:sensor-groups/ot:sensor-group/ot:sensor-paths/ot:sensor-path/ot:config">
+    <description>
+      <text>Configuration parameters to configure a set of data model paths as a sensor grouping.</text>
+    </description>
+    <leaf name="reset-when-start">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/qosPortQueueStatInfos/qosPortQueueStatInfo allows reset-when-start to be set to true.</text>
+      </description>
+    </leaf>
+    <leaf name="depth">
+      <type name="uint8">
+        <range value="1..3"/>
+      </type>
+      <default value="1"/>
+      <description>
+        <text>Sampling depth.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:sensor-groups/ot:sensor-group/ot:sensor-paths/ot:sensor-path/ot:state">
+    <description>
+      <text>Configuration parameters to configure a set of data model paths as a sensor grouping.</text>
+    </description>
+    <leaf name="reset-when-start">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/global-query/default-queue-statisticss/default-queue-statistics allows reset-when-start to be set to true.</text>
+      </description>
+    </leaf>
+    <leaf name="depth">
+      <type name="uint8">
+        <range value="1..3"/>
+      </type>
+      <default value="1"/>
+      <description>
+        <text>Sampling depth.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:subscriptions/ot:persistent/ot:subscription/ot:config">
+    <description>
+      <text>Config parameters relating to the telemetry subscriptions on the local device.</text>
+    </description>
+    <leaf name="local-source-port">
+      <when condition="../ot:local-source-address or ../hw-telemetry-ext:local-source-interface"/>
+      <type name="uint16">
+        <range value="1..65535"/>
+      </type>
+      <description>
+        <text>The source port of UDP packets from the device to a telemetry collector destination. The port range is 1025..65535 when used by IPv6.</text>
+      </description>
+    </leaf>
+    <leaf name="tls">
+      <when condition="../ot:protocol='oc-telemetry-types:STREAM_GRPC'"/>
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted.</text>
+      </description>
+    </leaf>
+    <leaf name="local-source-interface">
+      <type name="pub-type:if-name"/>
+      <must condition="not(../ot:local-source-address)"/>
+      <description>
+        <text>The interface which will be the source of packets from the device to a telemetry collector destination.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:subscriptions/ot:persistent/ot:subscription/ot:state">
+    <description>
+      <text>State parameters relating to the telemetry subscriptions on the local device.</text>
+    </description>
+    <leaf name="local-source-port">
+      <when condition="../ot:local-source-address or ../hw-telemetry-ext:local-source-interface"/>
+      <type name="uint16">
+        <range value="1..65535"/>
+      </type>
+      <description>
+        <text>The source port of UDP packets from the device to a telemetry collector destination.</text>
+      </description>
+    </leaf>
+    <leaf name="tls">
+      <when condition="../ot:protocol='oc-telemetry-types:STREAM_GRPC'"/>
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted.</text>
+      </description>
+    </leaf>
+    <leaf name="local-source-interface">
+      <type name="pub-type:if-name"/>
+      <must condition="not(../ot:local-source-address)"/>
+      <description>
+        <text>The interface which will be the source of packets from the device to a telemetry collector destination.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:sensor-groups/ot:sensor-group">
+    <description>
+      <text>List of telemetry sensory groups on the local system, where a sensor grouping represents a resuable grouping of multiple paths and exclude filters.</text>
+    </description>
+    <container name="sensor-paths-self-define-event">
+      <description>
+        <text>Configure the top level container to hold a set of customized events' sensor paths grouped together. Customized events and heartbeat interval or redundancy suppression cannot be configured at the same time. A customized event can take effect only after at least one filter criterion is configured for the event.</text>
+      </description>
+      <list name="sensor-path">
+        <key value="path"/>
+        <description>
+          <text>Configure the customized events.</text>
+        </description>
+        <leaf name="path">
+          <type name="leafref">
+            <path value="../config/path"/>
+          </type>
+          <description>
+            <text>Reference to the path of interest.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configure the parameters for a customized event.</text>
+          </description>
+          <uses name="telemetry-sensor-path-config-self-define-event"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state of a customized event.</text>
+          </description>
+          <uses name="telemetry-sensor-path-config-self-define-event"/>
+        </container>
+        <uses name="telemetry-sensor-path-filter-config"/>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/ot:telemetry-system/ot:destination-groups/ot:destination-group">
+    <description>
+      <text>List of destination-groups. Destination groups allow the reuse of common telemetry destinations across the telemetry configuration. An operator references a set of destinations via the configurable destination-group-identifier. A destination group may contain one or more telemetry destinations.</text>
+    </description>
+    <container name="destinations-with-vpn">
+      <description>
+        <text>Configure the destination container to list the information about the destination with the VPN such as IP address, port, and VPN of the telemetry messages from the network element.</text>
+      </description>
+      <list name="destination-with-vpn">
+        <key value="destination-address destination-port vpn-instance"/>
+        <description>
+          <text>Configure the telemetry stream destinations, including vpn-instance.</text>
+        </description>
+        <leaf name="destination-address">
+          <type name="leafref">
+            <path value="../config/destination-address"/>
+          </type>
+          <description>
+            <text>Reference to the destination address of the telemetry stream.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-port">
+          <type name="leafref">
+            <path value="../config/destination-port"/>
+          </type>
+          <description>
+            <text>Reference to the port number of the stream destination.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-instance">
+          <type name="leafref">
+            <path value="../config/vpn-instance"/>
+          </type>
+          <description>
+            <text>Name of a VPN instance for the telemetry stream destination.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configure the parameters relating to telemetry destinations.</text>
+          </description>
+          <uses name="telemetry-stream-destination-with-vpn-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Telemetry destinations-associated state.</text>
+          </description>
+          <uses name="telemetry-stream-destination-with-vpn-config"/>
+        </container>
+      </list>
+    </container>
+  </augment>
+</module>

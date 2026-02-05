@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bgp-srpolicy"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgp-srpolicy="urn:huawei:yang:huawei-bgp-srpolicy"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp"
+        xmlns:xpl="urn:huawei:yang:huawei-xpl"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bgp-srpolicy"/>
+  <prefix value="bgp-srpolicy"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <import module="huawei-xpl">
+    <prefix value="xpl"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Inter-AS routing protocol that exchanges Network Layer Reachability Information (NLRI) with other BGP systems.</text>
+  </description>
+  <revision date="2020-02-25">
+    <description>
+      <text>The YANG descriptions are modified according to new standards.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af">
+    <description>
+      <text>BGP IPv4-srpolicy address family configuration.</text>
+    </description>
+    <container name="ipv4-srpolicy">
+      <when condition="../bgp:type='ipv4srpolicy'"/>
+      <description>
+        <text>Configure IPv4-family srpolicy options.</text>
+      </description>
+      <container name="common">
+        <description>
+          <text>Configure IPv4-family srpolicy common options.</text>
+        </description>
+        <leaf name="routerid-neglect">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable BGP to ignore router IDs when selecting the optimal route. Comparing router IDs is the last resort in route selection. This means that if one optimal route must be selected and no other parameters can be used to break the tie, router IDs can be used. If this option is selected, the first received route will be selected as the optimal route, and BGP will ignore the router ID and peer address in route selection.</text>
+          </description>
+        </leaf>
+        <leaf name="reflect-change-path">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable an RR to use an export policy to change route AS_Path.</text>
+          </description>
+        </leaf>
+        <leaf name="reflect-between-client">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable route reflection between clients. If clients of a route reflector (RR) are fully meshed, you can disable route reflection among clients to reduce the cost.</text>
+          </description>
+        </leaf>
+        <uses name="bgp:reflector-cluster-type"/>
+        <leaf name="router-id-filter">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable router ID filtering.</text>
+          </description>
+        </leaf>
+        <leaf name="default-local-preference">
+          <type name="uint32">
+            <range value="0..4294967295"/>
+          </type>
+          <default value="100"/>
+          <description>
+            <text>The local preference of BGP routes.</text>
+          </description>
+        </leaf>
+        <leaf name="bestroute-as-path-ignore">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable BGP to ignore the AS_Path attribute when selecting the optimal route. By default, BGP uses the AS_Path attribute as one of route selection rules, and a route with a shorter AS_Path is preferred. After bestroute-as-path-ignore is selected, BGP does not compare the AS_Path length.</text>
+          </description>
+        </leaf>
+        <leaf name="nexthop-select-depend-type">
+          <type name="bgp:select-depend-ip-type"/>
+          <default value="depend-ip"/>
+          <description>
+            <text>Specify the route iteration mode: IP or tunnel. In tunnel mode, the labeled BGP IPv4 route can participate in route selection only after its next hop is iterated to an LSP. In IP
+mode, the labeled BGP IPv4 route can participate in route selection only after its next hop is iterated to an IP address. By default, the labeled BGP IPv4 route can participate in route selection
+if its next hop can be iterated to an IP address, regardless of whether the LSP of the next hop exists. This allows the RR that is not enabled with MPLS to forward labeled routes. In non-RR
+networking or RR networking where the BGP next hop is changed, BGP needs to check whether there is an LSP destined for the next hop. If such an LSP is not found, BGP needs to establish an LSP in
+advance. If the default setting is adopted, a labeled BGP IPv4 unicast route may be selected prior to LSP establishment. As a result, services are incorrectly switched before LSP establishment and
+service stability is affected. Therefore, allow route selection only after the labeled BGP IPv4 route is iterated to an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="advertise-ebgp">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable advertise to EBGP peer.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:peers/bgp:peer/bgp:afs/bgp:af">
+    <description>
+      <text>BGP peer IPv4-srpolicy address family configuration.</text>
+    </description>
+    <container name="ipv4-srpolicy">
+      <when condition="../bgp:type='ipv4srpolicy'"/>
+      <description>
+        <text>Configure IPv4-family srpolicy options.</text>
+      </description>
+      <leaf name="reflect-client">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the local device as a route reflector (RR) and a peer or peer group as its client. This configuration is applicable between IBGP peers only. The configurations of RRs and its clients in an address family are valid only in this address family. Therefore, it is recommended to configure RRs and its clients in the specified address family that is required.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-ext-community">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise the extended community attribute to a peer or peer group.</text>
+        </description>
+      </leaf>
+      <leaf name="allow-as-loop">
+        <type name="uint32">
+          <range value="1..10"/>
+        </type>
+        <description>
+          <text>Allow repetitive local AS numbers. By default, repetitive local AS numbers are not allowed.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-community">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise the community attribute to a peer or a peer group.</text>
+        </description>
+      </leaf>
+      <leaf name="graceful-restart-static-timer">
+        <type name="uint32">
+          <range value="3600..2147483647"/>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Specifies the maximum time during which a peer waits for a BGP session reestablishment.</text>
+        </description>
+      </leaf>
+      <choice name="import-policy-type">
+        <description>
+          <text>Set route policy or filter.</text>
+        </description>
+        <case name="rtp-ref">
+          <description>
+            <text>Route policy.</text>
+          </description>
+          <leaf name="import-policy">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the filtering policy applied to the routes learned from a peer. By default, no such policy is specified.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="xpl-ref">
+          <description>
+            <text>Route filter.</text>
+          </description>
+          <container name="import-filter">
+            <description>
+              <text>Configure an import route-filter to filter the routes received from peers. By default, no route-filter is specified to filter the routes imported from peers.</text>
+            </description>
+            <leaf name="name">
+              <type name="leafref">
+                <path value="/xpl:xpl/xpl:route-filters/xpl:route-filter/xpl:name"/>
+              </type>
+              <description>
+                <text>Specify an import route-filter name.</text>
+              </description>
+            </leaf>
+            <leaf name="parameter">
+              <when condition="../name"/>
+              <type name="xpl:filter-parameter-type"/>
+              <description>
+                <text>Specify an import route-filter parameter.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+      </choice>
+      <choice name="export-policy-type">
+        <description>
+          <text>Set route policy or filter.</text>
+        </description>
+        <case name="rtp-ref">
+          <description>
+            <text>Route policy.</text>
+          </description>
+          <leaf name="export-policy">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the filtering policy applied to the routes to be advertised to a peer. By default, no such policy is specified.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="xpl-ref">
+          <description>
+            <text>Route filter.</text>
+          </description>
+          <container name="export-filter">
+            <description>
+              <text>Configure an export route-filter to filter the routes to be advertised to peers. By default, no route-filter is specified to filter the routes to be advertised to peers.</text>
+            </description>
+            <leaf name="name">
+              <type name="leafref">
+                <path value="/xpl:xpl/xpl:route-filters/xpl:route-filter/xpl:name"/>
+              </type>
+              <description>
+                <text>Specify an export route-filter name.</text>
+              </description>
+            </leaf>
+            <leaf name="parameter">
+              <when condition="../name"/>
+              <type name="xpl:filter-parameter-type"/>
+              <description>
+                <text>Specify an export route-filter parameter.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+      </choice>
+      <leaf name="advertise-large-community">
+        <type name="bgp:peer-enable-config-type"/>
+        <default value="default"/>
+        <description>
+          <text>Enable large-community attribute advertisement. The Link-state address family and the RPD address family do not support this element.</text>
+        </description>
+      </leaf>
+      <uses name="bgp:as-path-filter-type"/>
+      <uses name="bgp:rt-update-interval-type"/>
+      <uses name="bgp:route-limit-type"/>
+      <uses name="bgp:path-attr-map-type"/>
+    </container>
+  </augment>
+  <ext:task-name value="bgp"/>
+</module>

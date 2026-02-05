@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-tftpc"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tftpc="urn:huawei:yang:huawei-tftpc"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:acl="urn:huawei:yang:huawei-acl">
+  <namespace uri="urn:huawei:yang:huawei-tftpc"/>
+  <prefix value="tftpc"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Trivial file transfer protocol (TFTP) client.</text>
+  </description>
+  <revision date="2019-05-03">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="tftp-client"/>
+  <typedef name="trans-cmd-type">
+    <type name="enumeration">
+      <enum name="put">
+        <value value="2"/>
+        <description>
+          <text>Upload the local file to the remote server.</text>
+        </description>
+      </enum>
+      <enum name="get">
+        <value value="1"/>
+        <description>
+          <text>Download a file from the remote server to the client.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>TFTP client transfer command type.</text>
+    </description>
+  </typedef>
+  <container name="tftpc">
+    <description>
+      <text>Trivial file transfer protocol (TFTP) client.</text>
+    </description>
+    <container name="client">
+      <description>
+        <text>Configure TFTP client configuration table.</text>
+      </description>
+      <leaf name="src-ipv4-addr">
+        <when condition="not(../src-interface)"/>
+        <type name="inet:ipv4-address-no-zone"/>
+        <description>
+          <text>Specify the source IPv4 address.</text>
+        </description>
+      </leaf>
+      <leaf name="src-interface">
+        <type name="pub-type:if-name"/>
+        <description>
+          <text>Specify the source interface name. The specified source interface must exist and an IP address must be configured on the interface.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv4-acl">
+        <type name="leafref">
+          <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+        </type>
+        <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+        <description>
+          <text>Specify the IPv4 ACL number.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv6-acl">
+        <type name="leafref">
+          <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+        </type>
+        <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic'"/>
+        <description>
+          <text>Specify the IPv6 ACL number.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <rpc name="tftpc-transfer-file">
+    <description>
+      <text>TFTP client file transfer.</text>
+    </description>
+    <input>
+      <leaf name="source-ipv4-address">
+        <type name="inet:ipv4-address-no-zone"/>
+        <must condition="../server-ipv4-address"/>
+        <description>
+          <text>Specify the source IPv4 address to transfer files.</text>
+        </description>
+      </leaf>
+      <leaf name="server-ipv4-address">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <must condition="not(../server-ipv6-address)"/>
+        <description>
+          <text>Specify the server IPv4 address or server hostname for file transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="source-ipv6-address">
+        <type name="inet:ipv6-address-no-zone"/>
+        <must condition="../server-ipv6-address"/>
+        <description>
+          <text>Specify the source IPv4 address to transfer files.</text>
+        </description>
+      </leaf>
+      <leaf name="server-ipv6-address">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <description>
+          <text>Specify the server IPv6 address or server hostname for file transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="local-file-name">
+        <type name="string">
+          <length value="1..128"/>
+        </type>
+        <description>
+          <text>Specify the local file name for transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="remote-file-name">
+        <type name="string">
+          <length value="1..128"/>
+        </type>
+        <description>
+          <text>Specify the remote file name. The server uses the file to store received data.</text>
+        </description>
+      </leaf>
+      <leaf name="command-type">
+        <type name="trans-cmd-type"/>
+        <description>
+          <text>Specify the type of the operation to be performed.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <must condition="(../server-ipv4-address) and not(../public-net) and not(../source-interface-name)"/>
+        <description>
+          <text>Specify the VPN instance name for connection to the server.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv6-vpn-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <must condition="(../server-ipv6-address) and not(../public-net) and not(../source-interface-name)"/>
+        <description>
+          <text>Specify the IPv6 VPN instance name for connection to the server.</text>
+        </description>
+      </leaf>
+      <leaf name="public-net">
+        <type name="boolean"/>
+        <description>
+          <text>Using public net or not.</text>
+        </description>
+      </leaf>
+      <leaf name="source-interface-name">
+        <type name="pub-type:if-name"/>
+        <must condition="not(../public-net)"/>
+        <description>
+          <text>Specify the source interface name for file transfer.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

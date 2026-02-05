@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-bgp-neighbor"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-bgp="http://openconfig.net/yang/bgp"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-rpol="http://openconfig.net/yang/routing-policy"
+           xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+           xmlns:oc-bgp-types="http://openconfig.net/yang/bgp-types"
+           xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+           xmlns:oc-yang="http://openconfig.net/yang/types/yang">
+  <belongs-to module="openconfig-bgp">
+    <prefix value="oc-bgp"/>
+  </belongs-to>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-routing-policy">
+    <prefix value="oc-rpol"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-bgp-types">
+    <prefix value="oc-bgp-types"/>
+  </import>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <include module="openconfig-bgp-common"/>
+  <include module="openconfig-bgp-common-multiprotocol"/>
+  <include module="openconfig-bgp-peer-group"/>
+  <include module="openconfig-bgp-common-structure"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This sub-module contains groupings that are specific to the
+neighbor context of the OpenConfig BGP module.</text>
+  </description>
+  <oc-ext:openconfig-version semver="6.0.0"/>
+  <revision date="2019-07-10">
+    <description>
+      <text>Normalise timestamp units to nanoseconds.</text>
+    </description>
+    <reference>
+      <text>6.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-28">
+    <description>
+      <text>Clarify prefix counter descriptions, add received-pre-policy
+counter.</text>
+    </description>
+    <reference>
+      <text>5.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-16">
+    <description>
+      <text>Add BGP RIB to the top-level BGP container</text>
+    </description>
+    <reference>
+      <text>5.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>5.0.2</text>
+    </reference>
+  </revision>
+  <revision date="2018-08-20">
+    <description>
+      <text>Correct description of AFI-SAFI enabled leaf.</text>
+    </description>
+    <reference>
+      <text>5.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-04-11">
+    <description>
+      <text>Correct naming of BGP maximum prefix warning percentage leaf.</text>
+    </description>
+    <reference>
+      <text>5.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-03-20">
+    <description>
+      <text>Added SR-TE policy SAFI</text>
+    </description>
+    <reference>
+      <text>4.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-30">
+    <description>
+      <text>Clarification of add-paths send-max leaf</text>
+    </description>
+    <reference>
+      <text>4.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-10">
+    <description>
+      <text>Add error notifications; moved add-paths config; add AS
+prepend policy features; removed unneeded config leaves</text>
+    </description>
+    <reference>
+      <text>4.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-02">
+    <description>
+      <text>Bugfix to remove remaining global-level policy data</text>
+    </description>
+    <reference>
+      <text>3.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-26">
+    <description>
+      <text>Add dynamic neighbor support, migrate to OpenConfig types</text>
+    </description>
+    <reference>
+      <text>3.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-06-21">
+    <description>
+      <text>OpenConfig BGP refactor</text>
+    </description>
+    <reference>
+      <text>2.1.1</text>
+    </reference>
+  </revision>
+  <grouping name="bgp-neighbor-config">
+    <description>
+      <text>Configuration parameters relating to a base BGP neighbor that
+are not also applicable to any other context
+(e.g., peer group)</text>
+    </description>
+    <leaf name="peer-group">
+      <type name="leafref">
+        <path value="../../../../peer-groups/peer-group/peer-group-name"/>
+      </type>
+      <description>
+        <text>The peer-group with which this neighbor is associated</text>
+      </description>
+    </leaf>
+    <leaf name="neighbor-address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>Address of the BGP peer, either in IPv4 or IPv6</text>
+      </description>
+    </leaf>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Whether the BGP peer is enabled. In cases where the
+enabled leaf is set to false, the local system should not
+initiate connections to the neighbor, and should not
+respond to TCP connections attempts from the neighbor. If
+the state of the BGP session is ESTABLISHED at the time
+that this leaf is set to false, the BGP session should be
+ceased.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-use-multiple-paths">
+    <description>
+      <text>Multipath configuration and state applicable to a BGP
+neighbor</text>
+    </description>
+    <container name="use-multiple-paths">
+      <description>
+        <text>Parameters related to the use of multiple-paths for the same
+NLRI when they are received only from this neighbor</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters relating to multipath</text>
+        </description>
+        <uses name="bgp-common-use-multiple-paths-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State parameters relating to multipath</text>
+        </description>
+        <uses name="bgp-common-use-multiple-paths-config"/>
+      </container>
+      <container name="ebgp">
+        <description>
+          <text>Multipath configuration for eBGP</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration parameters relating to eBGP multipath</text>
+          </description>
+          <uses name="bgp-common-use-multiple-paths-ebgp-as-options-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State information relating to eBGP multipath</text>
+          </description>
+          <uses name="bgp-common-use-multiple-paths-ebgp-as-options-config"/>
+        </container>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="bgp-neighbor-state">
+    <description>
+      <text>Operational state parameters relating only to a BGP neighbor</text>
+    </description>
+    <leaf name="session-state">
+      <type name="enumeration">
+        <enum name="IDLE">
+          <description>
+            <text>neighbor is down, and in the Idle state of the
+FSM</text>
+          </description>
+        </enum>
+        <enum name="CONNECT">
+          <description>
+            <text>neighbor is down, and the session is waiting for
+the underlying transport session to be established</text>
+          </description>
+        </enum>
+        <enum name="ACTIVE">
+          <description>
+            <text>neighbor is down, and the local system is awaiting
+a conncetion from the remote peer</text>
+          </description>
+        </enum>
+        <enum name="OPENSENT">
+          <description>
+            <text>neighbor is in the process of being established.
+The local system has sent an OPEN message</text>
+          </description>
+        </enum>
+        <enum name="OPENCONFIRM">
+          <description>
+            <text>neighbor is in the process of being established.
+The local system is awaiting a NOTIFICATION or
+KEEPALIVE message</text>
+          </description>
+        </enum>
+        <enum name="ESTABLISHED">
+          <description>
+            <text>neighbor is up - the BGP session with the peer is
+established</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Operational state of the BGP peer</text>
+      </description>
+    </leaf>
+    <leaf name="last-established">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>This timestamp indicates the time that the
+BGP session last transitioned in or out of the Established
+state.  The value is the timestamp in nanoseconds relative to
+the Unix Epoch (Jan 1, 1970 00:00:00 UTC).
+
+The BGP session uptime can be computed by clients as the
+difference between this value and the current time in UTC
+(assuming the session is in the ESTABLISHED state, per the
+session-state leaf).</text>
+      </description>
+    </leaf>
+    <leaf name="established-transitions">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of transitions to the Established state for
+the neighbor session.  This value is analogous to the
+bgpPeerFsmEstablishedTransitions object from the standard
+BGP-4 MIB</text>
+      </description>
+      <reference>
+        <text>RFC 4273 - Definitions of Managed Objects for BGP-4</text>
+      </reference>
+    </leaf>
+    <leaf-list name="supported-capabilities">
+      <type name="identityref">
+        <base name="oc-bgp-types:BGP_CAPABILITY"/>
+      </type>
+      <description>
+        <text>BGP capabilities negotiated as supported with the peer</text>
+      </description>
+    </leaf-list>
+    <container name="messages">
+      <description>
+        <text>Counters for BGP messages sent and received from the
+neighbor</text>
+      </description>
+      <container name="sent">
+        <description>
+          <text>Counters relating to BGP messages sent to the neighbor</text>
+        </description>
+        <uses name="bgp-neighbor-counters-message-types-state"/>
+      </container>
+      <container name="received">
+        <description>
+          <text>Counters for BGP messages received from the neighbor</text>
+        </description>
+        <uses name="bgp-neighbor-counters-message-types-state"/>
+      </container>
+    </container>
+    <container name="queues">
+      <description>
+        <text>Counters related to queued messages associated with the
+BGP neighbor</text>
+      </description>
+      <uses name="bgp-neighbor-queue-counters-state"/>
+    </container>
+    <leaf name="dynamically-configured">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When this leaf is set to true, the peer was configured dynamically
+due to an inbound connection request from a specified source prefix
+within a dynamic-neighbor-prefix.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-counters-message-types-state">
+    <description>
+      <text>Grouping of BGP message types, included for re-use
+across counters</text>
+    </description>
+    <leaf name="UPDATE">
+      <type name="uint64"/>
+      <description>
+        <text>Number of BGP UPDATE messages announcing, withdrawing
+or modifying paths exchanged.</text>
+      </description>
+    </leaf>
+    <leaf name="NOTIFICATION">
+      <type name="uint64"/>
+      <description>
+        <text>Number of BGP NOTIFICATION messages indicating an
+error condition has occurred exchanged.</text>
+      </description>
+    </leaf>
+    <leaf name="last-notification-time">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>This timestamp indicates the time that a NOTIFICATION
+message was sent or received on the peering session
+(based on whether this leaf is associated with
+sent or received messages).
+
+The value is the timestamp in nanoseconds relative to
+the Unix Epoch (Jan 1, 1970 00:00:00 UTC).</text>
+      </description>
+    </leaf>
+    <leaf name="last-notification-error-code">
+      <type name="identityref">
+        <base name="oc-bgp-types:BGP_ERROR_CODE"/>
+      </type>
+      <description>
+        <text>Indicates the last BGP error sent or received on the peering
+session (based on whether this leaf is associated with
+sent or received messages).</text>
+      </description>
+    </leaf>
+    <leaf name="last-notification-error-subcode">
+      <type name="identityref">
+        <base name="oc-bgp-types:BGP_ERROR_SUBCODE"/>
+      </type>
+      <description>
+        <text>Indicates the last BGP error subcode sent or received on
+the peering session (based on whether this leaf is associated
+with sent or received messages)</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-queue-counters-state">
+    <description>
+      <text>Counters relating to the message queues associated with the
+BGP peer</text>
+    </description>
+    <leaf name="input">
+      <type name="uint32"/>
+      <description>
+        <text>The number of messages received from the peer currently
+queued</text>
+      </description>
+    </leaf>
+    <leaf name="output">
+      <type name="uint32"/>
+      <description>
+        <text>The number of messages queued to be sent to the peer</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-transport-state">
+    <description>
+      <text>Operational state parameters relating to the transport session
+used for the BGP session</text>
+    </description>
+    <leaf name="local-port">
+      <type name="oc-inet:port-number"/>
+      <description>
+        <text>Local TCP port being used for the TCP session supporting
+the BGP session</text>
+      </description>
+    </leaf>
+    <leaf name="remote-address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>Remote address to which the BGP session has been
+established</text>
+      </description>
+    </leaf>
+    <leaf name="remote-port">
+      <type name="oc-inet:port-number"/>
+      <description>
+        <text>Remote port being used by the peer for the TCP session
+supporting the BGP session</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-error-handling-state">
+    <description>
+      <text>Operational state parameters relating to enhanced error
+error handling for BGP</text>
+    </description>
+    <leaf name="erroneous-update-messages">
+      <type name="uint32"/>
+      <description>
+        <text>The number of BGP UPDATE messages for which the
+treat-as-withdraw mechanism has been applied based
+on erroneous message contents</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-timers-state">
+    <description>
+      <text>Operational state parameters relating to BGP timers associated
+with the BGP session</text>
+    </description>
+    <leaf name="negotiated-hold-time">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <description>
+        <text>The negotiated hold-time for the BGP session</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-afi-safi-graceful-restart-state">
+    <description>
+      <text>Operational state variables relating to the graceful-restart
+mechanism on a per-AFI-SAFI basis</text>
+    </description>
+    <leaf name="received">
+      <type name="boolean"/>
+      <description>
+        <text>This leaf indicates whether the neighbor advertised the
+ability to support graceful-restart for this AFI-SAFI</text>
+      </description>
+    </leaf>
+    <leaf name="advertised">
+      <type name="boolean"/>
+      <description>
+        <text>This leaf indicates whether the ability to support
+graceful-restart has been advertised to the peer</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-graceful-restart-state">
+    <description>
+      <text>Operational state information relevant to graceful restart
+for BGP</text>
+    </description>
+    <leaf name="peer-restart-time">
+      <type name="uint16">
+        <range value="0..4096"/>
+      </type>
+      <description>
+        <text>The period of time (advertised by the peer) that
+the peer expects a restart of a BGP session to
+take</text>
+      </description>
+    </leaf>
+    <leaf name="peer-restarting">
+      <type name="boolean"/>
+      <description>
+        <text>This flag indicates whether the remote neighbor is currently
+in the process of restarting, and hence received routes are
+currently stale</text>
+      </description>
+    </leaf>
+    <leaf name="local-restarting">
+      <type name="boolean"/>
+      <description>
+        <text>This flag indicates whether the local neighbor is currently
+restarting. The flag is unset after all NLRI have been
+advertised to the peer, and the End-of-RIB (EOR) marker has
+been unset</text>
+      </description>
+    </leaf>
+    <leaf name="mode">
+      <type name="enumeration">
+        <enum name="HELPER_ONLY">
+          <description>
+            <text>The local router is operating in helper-only mode, and
+hence will not retain forwarding state during a local
+session restart, but will do so during a restart of the
+remote peer</text>
+          </description>
+        </enum>
+        <enum name="BILATERAL">
+          <description>
+            <text>The local router is operating in both helper mode, and
+hence retains forwarding state during a remote restart,
+and also maintains forwarding state during local session
+restart</text>
+          </description>
+        </enum>
+        <enum name="REMOTE_HELPER">
+          <description>
+            <text>The local system is able to retain routes during restart
+but the remote system is only able to act as a helper</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Ths leaf indicates the mode of operation of BGP graceful
+restart with the peer</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-neighbor-afi-safi-state">
+    <description>
+      <text>Operational state parameters relating to an individual AFI,
+SAFI for a neighbor</text>
+    </description>
+    <leaf name="active">
+      <type name="boolean"/>
+      <description>
+        <text>This value indicates whether a particular AFI-SAFI has
+been succesfully negotiated with the peer. An AFI-SAFI
+may be enabled in the current running configuration, but a
+session restart may be required in order to negotiate the new
+capability.</text>
+      </description>
+    </leaf>
+    <container name="prefixes">
+      <description>
+        <text>Prefix counters for the BGP session</text>
+      </description>
+      <leaf name="received">
+        <type name="uint32"/>
+        <description>
+          <text>The number of prefixes that are received from the
+neighbor after applying any policies. This count is the
+number of prefixes present in the post-policy Adj-RIB-In
+for the neighbor</text>
+        </description>
+      </leaf>
+      <leaf name="received-pre-policy">
+        <type name="uint32"/>
+        <description>
+          <text>The number of prefixes that are received from the
+neighbor before applying any policies. This count is
+the number of prefixes present in the pre-policy
+Adj-RIB-In for the neighbor</text>
+        </description>
+      </leaf>
+      <leaf name="sent">
+        <type name="uint32"/>
+        <description>
+          <text>The number of prefixes that are advertised to the
+neighbor after applying any policies. This count is
+the number of prefixes present in the post-policy
+Adj-RIB-Out for the neighbor</text>
+        </description>
+      </leaf>
+      <leaf name="installed">
+        <type name="uint32"/>
+        <description>
+          <text>The number of prefices received from the neighbor that
+are installed in the network instance RIB and actively used
+for forwarding.
+
+Routes that are actively used for forwarding are
+defined to be those that:
+- are selected, after the application of policies, to be
+  included in the Adj-RIB-In-Post, AND
+- are selected by best path selection and hence installed
+  in the Loc-RIB (either as the only route, or as part of
+  a multipath set, AND
+- are selected, after the application of protocol
+  preferences (e.g., administrative distance) as the
+  route to be used by the system's RIB</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="bgp-neighbor-afi-safi-list">
+    <description>
+      <text>List of address-families associated with the BGP neighbor</text>
+    </description>
+    <list name="afi-safi">
+      <key value="afi-safi-name"/>
+      <description>
+        <text>AFI,SAFI configuration available for the
+neighbour or group</text>
+      </description>
+      <leaf name="afi-safi-name">
+        <type name="leafref">
+          <path value="../config/afi-safi-name"/>
+        </type>
+        <description>
+          <text>Reference to the AFI-SAFI name used as a key
+for the AFI-SAFI list</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for the AFI-SAFI</text>
+        </description>
+        <uses name="bgp-common-mp-afi-safi-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State information relating to the AFI-SAFI</text>
+        </description>
+        <uses name="bgp-common-mp-afi-safi-config"/>
+        <uses name="bgp-neighbor-afi-safi-state"/>
+      </container>
+      <container name="graceful-restart">
+        <description>
+          <text>Parameters relating to BGP graceful-restart</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration options for BGP graceful-restart</text>
+          </description>
+          <uses name="bgp-common-mp-afi-safi-graceful-restart-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State information for BGP graceful-restart</text>
+          </description>
+          <uses name="bgp-common-mp-afi-safi-graceful-restart-config"/>
+          <uses name="bgp-neighbor-afi-safi-graceful-restart-state"/>
+        </container>
+      </container>
+      <uses name="bgp-common-structure-neighbor-group-add-paths"/>
+      <uses name="bgp-common-mp-all-afi-safi-list-contents"/>
+      <uses name="bgp-neighbor-use-multiple-paths"/>
+    </list>
+  </grouping>
+  <grouping name="bgp-neighbor-base">
+    <description>
+      <text>Parameters related to a BGP neighbor</text>
+    </description>
+    <container name="config">
+      <description>
+        <text>Configuration parameters relating to the BGP neighbor or
+group</text>
+      </description>
+      <uses name="bgp-neighbor-config"/>
+      <uses name="bgp-common-neighbor-group-config"/>
+    </container>
+    <container name="state">
+      <config value="false"/>
+      <description>
+        <text>State information relating to the BGP neighbor</text>
+      </description>
+      <uses name="bgp-neighbor-config"/>
+      <uses name="bgp-common-neighbor-group-config"/>
+      <uses name="bgp-neighbor-state"/>
+    </container>
+    <container name="timers">
+      <description>
+        <text>Timers related to a BGP neighbor</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters relating to timers used for the
+BGP neighbor</text>
+        </description>
+        <uses name="bgp-common-neighbor-group-timers-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State information relating to the timers used for the BGP
+neighbor</text>
+        </description>
+        <uses name="bgp-common-neighbor-group-timers-config"/>
+        <uses name="bgp-neighbor-timers-state"/>
+      </container>
+    </container>
+    <container name="transport">
+      <description>
+        <text>Transport session parameters for the BGP neighbor</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters relating to the transport
+session(s) used for the BGP neighbor</text>
+        </description>
+        <uses name="bgp-common-neighbor-group-transport-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State information relating to the transport session(s)
+used for the BGP neighbor</text>
+        </description>
+        <uses name="bgp-common-neighbor-group-transport-config"/>
+        <uses name="bgp-neighbor-transport-state"/>
+      </container>
+    </container>
+    <container name="error-handling">
+      <description>
+        <text>Error handling parameters used for the BGP neighbor or
+group</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters enabling or modifying the
+behavior or enhanced error handling mechanisms for the BGP
+neighbor</text>
+        </description>
+        <uses name="bgp-common-neighbor-group-error-handling-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State information relating to enhanced error handling
+mechanisms for the BGP neighbor</text>
+        </description>
+        <uses name="bgp-common-neighbor-group-error-handling-config"/>
+        <uses name="bgp-neighbor-error-handling-state"/>
+      </container>
+    </container>
+    <container name="graceful-restart">
+      <description>
+        <text>Parameters relating the graceful restart mechanism for BGP</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters relating to graceful-restart</text>
+        </description>
+        <uses name="bgp-common-graceful-restart-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State information associated with graceful-restart</text>
+        </description>
+        <uses name="bgp-common-graceful-restart-config"/>
+        <uses name="bgp-neighbor-graceful-restart-state"/>
+      </container>
+    </container>
+    <uses name="bgp-common-structure-neighbor-group-logging-options"/>
+    <uses name="bgp-common-structure-neighbor-group-ebgp-multihop"/>
+    <uses name="bgp-common-structure-neighbor-group-route-reflector"/>
+    <uses name="bgp-common-structure-neighbor-group-as-path-options"/>
+    <uses name="bgp-neighbor-use-multiple-paths"/>
+    <uses name="oc-rpol:apply-policy-group"/>
+    <container name="afi-safis">
+      <description>
+        <text>Per-address-family configuration parameters associated with
+the neighbor</text>
+      </description>
+      <uses name="bgp-neighbor-afi-safi-list"/>
+    </container>
+  </grouping>
+  <grouping name="bgp-neighbor-list">
+    <description>
+      <text>The list of BGP neighbors</text>
+    </description>
+    <list name="neighbor">
+      <key value="neighbor-address"/>
+      <description>
+        <text>List of BGP neighbors configured on the local system,
+uniquely identified by peer IPv[46] address</text>
+      </description>
+      <leaf name="neighbor-address">
+        <type name="leafref">
+          <path value="../config/neighbor-address"/>
+        </type>
+        <description>
+          <text>Reference to the address of the BGP neighbor used as
+a key in the neighbor list</text>
+        </description>
+      </leaf>
+      <uses name="bgp-neighbor-base"/>
+    </list>
+  </grouping>
+</submodule>

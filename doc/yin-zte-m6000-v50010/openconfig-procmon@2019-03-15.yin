@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-procmon"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-proc="http://openconfig.net/yang/system/procmon"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+        xmlns:oc-yang="http://openconfig.net/yang/types/yang">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/system/procmon"/>
+  <prefix value="oc-proc"/>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module provides data definitions for process health
+monitoring of one or more processes running on the system.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.4.0"/>
+  <revision date="2019-03-15">
+    <description>
+      <text>Update process start time to be an absolute timestamp,
+ensure that the units for CPU time are expressed correctly.
+Update cpu-usage leaves to commonly use counter64 for consumed
+CPU time.</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.3.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-09-18">
+    <description>
+      <text>Updated to use OpenConfig types modules</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-06">
+    <description>
+      <text>Move to oc-inet types, add IETF attribution, add RADIUS
+counters, changed password leaf names to indicate hashed</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-29">
+    <description>
+      <text>Initial public release</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="procmon-processes-top">
+    <description>
+      <text>Top level grouping for attributes for processes.</text>
+    </description>
+    <container name="processes">
+      <description>
+        <text>Parameters related to all monitored processes</text>
+      </description>
+      <list name="process">
+        <key value="pid"/>
+        <config value="false"/>
+        <description>
+          <text>List of monitored processes</text>
+        </description>
+        <leaf name="pid">
+          <type name="leafref">
+            <path value="../state/pid"/>
+          </type>
+          <description>
+            <text>Reference to the process pid key</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State parameters related to monitored processes</text>
+          </description>
+          <uses name="procmon-process-attributes-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="procmon-process-attributes-state">
+    <description>
+      <text>Attributes state definitions for a process</text>
+    </description>
+    <leaf name="pid">
+      <type name="uint64"/>
+      <description>
+        <text>The process pid</text>
+      </description>
+    </leaf>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>The process name</text>
+      </description>
+    </leaf>
+    <leaf-list name="args">
+      <type name="string"/>
+      <description>
+        <text>Current process command line arguments.  Arguments with
+a parameter (e.g., --option 10  or -option=10) should be
+represented as a single element of the list with the
+argument name and parameter together.  Flag arguments, i.e.,
+those without a parameter should also be in their own list
+element.</text>
+      </description>
+    </leaf-list>
+    <leaf name="start-time">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>The time at which this process started,
+relative to the UNIX epoch.  The system must be
+synchronized such that the start-time can be
+reported accurately, otherwise it should not be reported.</text>
+      </description>
+    </leaf>
+    <leaf name="cpu-usage-user">
+      <type name="oc-yang:counter64"/>
+      <units name="nanoseconds"/>
+      <description>
+        <text>CPU time consumed by this process in user mode in
+nanoseconds.</text>
+      </description>
+    </leaf>
+    <leaf name="cpu-usage-system">
+      <type name="oc-yang:counter64"/>
+      <units name="nanoseconds"/>
+      <description>
+        <text>CPU time consumed by this process in kernel mode.</text>
+      </description>
+    </leaf>
+    <leaf name="cpu-utilization">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The percentage of CPU that is being used by the process.</text>
+      </description>
+    </leaf>
+    <leaf name="memory-usage">
+      <type name="uint64"/>
+      <units name="bytes"/>
+      <description>
+        <text>Bytes allocated and still in use by the process</text>
+      </description>
+    </leaf>
+    <leaf name="memory-utilization">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The percentage of RAM that is being used by the process.</text>
+      </description>
+    </leaf>
+  </grouping>
+</module>

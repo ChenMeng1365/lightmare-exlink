@@ -1,0 +1,1867 @@
+module: zxr10-acl
+  +--rw configuration
+  |  +--rw acl
+  |     +--rw templates
+  |     |  +--rw udf-template-vxlans
+  |     |     +--rw udf-template-vxlan* [template-name]
+  |     |        +--rw template-name    acl-name-type
+  |     |        +--rw format!
+  |     |           +--rw segment1!
+  |     |           |  +--rw head-type1    vxlan-head-type
+  |     |           |  +--rw offset1       uint8
+  |     |           |  +--rw matchlen1?    uint8
+  |     |           +--rw segment2!
+  |     |           |  +--rw head-type2    vxlan-head-type
+  |     |           |  +--rw offset2       uint8
+  |     |           |  +--rw matchlen2?    uint8
+  |     |           +--rw segment3!
+  |     |           |  +--rw head-type3    vxlan-head-type
+  |     |           |  +--rw offset3       uint8
+  |     |           |  +--rw matchlen3?    uint8
+  |     |           +--rw segment4!
+  |     |           |  +--rw head-type4    vxlan-head-type
+  |     |           |  +--rw offset4       uint8
+  |     |           |  +--rw matchlen4?    uint8
+  |     |           +--rw segment5!
+  |     |           |  +--rw head-type5    vxlan-head-type
+  |     |           |  +--rw offset5       uint8
+  |     |           |  +--rw matchlen5?    uint8
+  |     |           +--rw segment6!
+  |     |           |  +--rw head-type6    vxlan-head-type
+  |     |           |  +--rw offset6       uint8
+  |     |           |  +--rw matchlen6?    uint8
+  |     |           +--rw segment7!
+  |     |           |  +--rw head-type7    vxlan-head-type
+  |     |           |  +--rw offset7       uint8
+  |     |           |  +--rw matchlen7?    uint8
+  |     |           +--rw segment8!
+  |     |              +--rw head-type8    vxlan-head-type
+  |     |              +--rw offset8       uint8
+  |     |              +--rw matchlen8?    uint8
+  |     +--rw access-list
+  |     |  +--rw ipv4-access-list* [acl-name]
+  |     |  |  +--rw acl-name           acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |  |  +--rw ruleid                        uint32
+  |     |  |  |  +--rw (permit-deny)?
+  |     |  |  |  |  +--:(deny)
+  |     |  |  |  |  |  +--rw deny                    empty
+  |     |  |  |  |  +--:(permit)
+  |     |  |  |  |     +--rw permit                  empty
+  |     |  |  |  +--rw (src-addr)?
+  |     |  |  |  |  +--:(src-ip-address)
+  |     |  |  |  |  |  +--rw src-address             ncd:ipv4-address
+  |     |  |  |  |  |  +--rw src-wildcard            ncd:ipv4-address
+  |     |  |  |  |  +--:(src-any)
+  |     |  |  |  |  |  +--rw src-any                 empty
+  |     |  |  |  |  +--:(src-url)
+  |     |  |  |  |     +--rw src-url                 ncd:url
+  |     |  |  |  +--rw log?                          boolean
+  |     |  |  |  +--rw time-range?                   string
+  |     |  |  |  +--rw (rule-type)?
+  |     |  |  |  |  +--:(std)
+  |     |  |  |  |  |  +--rw ipv4-protocol-std       empty
+  |     |  |  |  |  +--:(extend)
+  |     |  |  |  |     +--rw extended
+  |     |  |  |  |        +--rw (dest-addr)
+  |     |  |  |  |        |  +--:(dest-ip-address)
+  |     |  |  |  |        |  |  +--rw dest-address          ncd:ipv4-address
+  |     |  |  |  |        |  |  +--rw dest-wildcard         ncd:ipv4-address
+  |     |  |  |  |        |  +--:(dest-any)
+  |     |  |  |  |        |  |  +--rw dest-any?             empty
+  |     |  |  |  |        |  +--:(dest-url)
+  |     |  |  |  |        |     +--rw dest-url?             ncd:url
+  |     |  |  |  |        +--rw (priority)?
+  |     |  |  |  |        |  +--:(precedence)
+  |     |  |  |  |        |  |  +--rw precedence?           uint8
+  |     |  |  |  |        |  +--:(prec-range)
+  |     |  |  |  |        |  |  +--rw prec-range?           acl-prec-range
+  |     |  |  |  |        |  +--:(tos)
+  |     |  |  |  |        |  |  +--rw tos?                  uint8
+  |     |  |  |  |        |  +--:(dscp)
+  |     |  |  |  |        |  |  +--rw dscp?                 uint8
+  |     |  |  |  |        |  +--:(dscp-range)
+  |     |  |  |  |        |     +--rw dscp-range?           acl-dscp-range
+  |     |  |  |  |        +--rw fragment?                   boolean
+  |     |  |  |  |        o--rw (ttl)?
+  |     |  |  |  |        |  o--:(ttl-value)
+  |     |  |  |  |        |  |  o--rw ttl-value-operator    enumeration
+  |     |  |  |  |        |  |  o--rw ttl-value             uint8
+  |     |  |  |  |        |  o--:(ttl-range)
+  |     |  |  |  |        |     o--rw ttl-range-operator    empty
+  |     |  |  |  |        |     o--rw ttl-range             acl-ttl-range
+  |     |  |  |  |        +--rw time-to-live!
+  |     |  |  |  |        |  +--rw (ttl)
+  |     |  |  |  |        |     +--:(ttl-value)
+  |     |  |  |  |        |     |  +--rw ttl-value!
+  |     |  |  |  |        |     |     +--rw ttl-operator    enumeration
+  |     |  |  |  |        |     |     +--rw ttl-value       uint8
+  |     |  |  |  |        |     +--:(ttl-range)
+  |     |  |  |  |        |        +--rw ttl-range!
+  |     |  |  |  |        |           +--rw ttl-operator    enumeration
+  |     |  |  |  |        |           +--rw ttl-range       acl-ttl-range
+  |     |  |  |  |        +--rw (ipv4-protocol-type)
+  |     |  |  |  |        |  +--:(udp-tcp)
+  |     |  |  |  |        |  |  +--rw udp-tcp
+  |     |  |  |  |        |  |     +--rw (udpOrTcp)
+  |     |  |  |  |        |  |     |  +--:(udp)
+  |     |  |  |  |        |  |     |  |  +--rw ipv4-protocol-udp?     empty
+  |     |  |  |  |        |  |     |  +--:(tcp)
+  |     |  |  |  |        |  |     |     +--rw ipv4-protocol-tcp      empty
+  |     |  |  |  |        |  |     |     +--rw established?           boolean
+  |     |  |  |  |        |  |     |     +--rw rst?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw ack?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw fin?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw syn?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw psh?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw urg?                   acl-tcp-flag
+  |     |  |  |  |        |  |     o--rw (src-port)?
+  |     |  |  |  |        |  |     |  o--:(src-value)
+  |     |  |  |  |        |  |     |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |        |  |     |  |  o--rw src-port-number        uint16
+  |     |  |  |  |        |  |     |  o--:(src-range)
+  |     |  |  |  |        |  |     |     o--rw src-range-operator     empty
+  |     |  |  |  |        |  |     |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |        |  |     o--rw (dest-port)?
+  |     |  |  |  |        |  |     |  o--:(dest-value)
+  |     |  |  |  |        |  |     |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |        |  |     |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |        |  |     |  o--:(dest-range)
+  |     |  |  |  |        |  |     |     o--rw dest-range-operator    empty
+  |     |  |  |  |        |  |     |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |        |  |     +--rw source-port!
+  |     |  |  |  |        |  |     |  +--rw (source-port)
+  |     |  |  |  |        |  |     |     +--:(src-port-value)
+  |     |  |  |  |        |  |     |     |  +--rw src-port-value!
+  |     |  |  |  |        |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |        |  |     |     |     +--rw src-port-value       uint16
+  |     |  |  |  |        |  |     |     +--:(src-port-range)
+  |     |  |  |  |        |  |     |        +--rw src-port-range!
+  |     |  |  |  |        |  |     |           +--rw src-port-operator    enumeration
+  |     |  |  |  |        |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |        |  |     +--rw destination-port!
+  |     |  |  |  |        |  |        +--rw (destination-port)
+  |     |  |  |  |        |  |           +--:(dst-port-value)
+  |     |  |  |  |        |  |           |  +--rw dst-port-value!
+  |     |  |  |  |        |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |  |           |     +--rw dst-port-value       uint16
+  |     |  |  |  |        |  |           +--:(dst-port-range)
+  |     |  |  |  |        |  |              +--rw dst-port-range!
+  |     |  |  |  |        |  |                 +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |  |  |        |  +--:(icmp)
+  |     |  |  |  |        |  |  +--rw ipv4-protocol-icmp    empty
+  |     |  |  |  |        |  |  +--rw icmp-conf!
+  |     |  |  |  |        |  |  |  +--rw icmp-type    uint16
+  |     |  |  |  |        |  |  |  +--rw icmp-code?   uint16
+  |     |  |  |  |        |  |  +--rw icmp-port
+  |     |  |  |  |        |  |     o--rw (src-port)?
+  |     |  |  |  |        |  |     |  o--:(src-value)
+  |     |  |  |  |        |  |     |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |        |  |     |  |  o--rw src-port-number        uint16
+  |     |  |  |  |        |  |     |  o--:(src-range)
+  |     |  |  |  |        |  |     |     o--rw src-range-operator     empty
+  |     |  |  |  |        |  |     |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |        |  |     o--rw (dest-port)?
+  |     |  |  |  |        |  |     |  o--:(dest-value)
+  |     |  |  |  |        |  |     |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |        |  |     |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |        |  |     |  o--:(dest-range)
+  |     |  |  |  |        |  |     |     o--rw dest-range-operator    empty
+  |     |  |  |  |        |  |     |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |        |  |     +--rw source-port!
+  |     |  |  |  |        |  |     |  +--rw (source-port)
+  |     |  |  |  |        |  |     |     +--:(src-port-value)
+  |     |  |  |  |        |  |     |     |  +--rw src-port-value!
+  |     |  |  |  |        |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |        |  |     |     |     +--rw src-port-value       uint16
+  |     |  |  |  |        |  |     |     +--:(src-port-range)
+  |     |  |  |  |        |  |     |        +--rw src-port-range!
+  |     |  |  |  |        |  |     |           +--rw src-port-operator    enumeration
+  |     |  |  |  |        |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |        |  |     +--rw destination-port!
+  |     |  |  |  |        |  |        +--rw (destination-port)
+  |     |  |  |  |        |  |           +--:(dst-port-value)
+  |     |  |  |  |        |  |           |  +--rw dst-port-value!
+  |     |  |  |  |        |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |  |           |     +--rw dst-port-value       uint16
+  |     |  |  |  |        |  |           +--:(dst-port-range)
+  |     |  |  |  |        |  |              +--rw dst-port-range!
+  |     |  |  |  |        |  |                 +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |  |  |        |  +--:(ip)
+  |     |  |  |  |        |     +--rw ipv4-protocol         uint16
+  |     |  |  |  |        |     +--rw port
+  |     |  |  |  |        |        o--rw (src-port)?
+  |     |  |  |  |        |        |  o--:(src-value)
+  |     |  |  |  |        |        |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |        |        |  |  o--rw src-port-number        uint16
+  |     |  |  |  |        |        |  o--:(src-range)
+  |     |  |  |  |        |        |     o--rw src-range-operator     empty
+  |     |  |  |  |        |        |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |        |        o--rw (dest-port)?
+  |     |  |  |  |        |        |  o--:(dest-value)
+  |     |  |  |  |        |        |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |        |        |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |        |        |  o--:(dest-range)
+  |     |  |  |  |        |        |     o--rw dest-range-operator    empty
+  |     |  |  |  |        |        |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |        |        +--rw source-port!
+  |     |  |  |  |        |        |  +--rw (source-port)
+  |     |  |  |  |        |        |     +--:(src-port-value)
+  |     |  |  |  |        |        |     |  +--rw src-port-value!
+  |     |  |  |  |        |        |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |        |        |     |     +--rw src-port-value       uint16
+  |     |  |  |  |        |        |     +--:(src-port-range)
+  |     |  |  |  |        |        |        +--rw src-port-range!
+  |     |  |  |  |        |        |           +--rw src-port-operator    enumeration
+  |     |  |  |  |        |        |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |        |        +--rw destination-port!
+  |     |  |  |  |        |           +--rw (destination-port)
+  |     |  |  |  |        |              +--:(dst-port-value)
+  |     |  |  |  |        |              |  +--rw dst-port-value!
+  |     |  |  |  |        |              |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |              |     +--rw dst-port-value       uint16
+  |     |  |  |  |        |              +--:(dst-port-range)
+  |     |  |  |  |        |                 +--rw dst-port-range!
+  |     |  |  |  |        |                    +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |                    +--rw dst-port-range       acl-port-range
+  |     |  |  |  |        +--rw packet-length!
+  |     |  |  |  |        |  +--rw (packet-length)
+  |     |  |  |  |        |     +--:(packet-length-value)
+  |     |  |  |  |        |     |  +--rw packet-length-value!
+  |     |  |  |  |        |     |     +--rw packet-length-oper     acl-pktlen-opr
+  |     |  |  |  |        |     |     +--rw packet-length-value    uint16
+  |     |  |  |  |        |     +--:(packet-length-range)
+  |     |  |  |  |        |        +--rw packet-length-range!
+  |     |  |  |  |        |           +--rw packet-length-oper     enumeration
+  |     |  |  |  |        |           +--rw packet-length-range    acl-pktlen-range
+  |     |  |  |  |        +--rw monitor-group-id?           uint8
+  |     |  |  |  |        +--rw source-monitor-group-id?    uint8
+  |     |  |  |  +--rw description?                  ncd:string-with-blank
+  |     |  |  |  +--rw (vrf-config)?
+  |     |  |  |  |  +--:(vrf-config-choice-clear)
+  |     |  |  |  |  |  +--rw vrf-config-all-clear!
+  |     |  |  |  |  +--:(vrf)
+  |     |  |  |  |  |  +--rw vrf?                    acl-vrf-name
+  |     |  |  |  |  +--:(vrf-dcn)
+  |     |  |  |  |     +--rw vrf-dcn?                empty
+  |     |  |  |  +--rw policy-route-id!
+  |     |  |  |     +--rw (policy-route-id)
+  |     |  |  |        +--:(src)
+  |     |  |  |        |  +--rw source!
+  |     |  |  |        |     +--rw src-policy-route-id    uint8
+  |     |  |  |        +--:(dest)
+  |     |  |  |           +--rw destination!
+  |     |  |  |              +--rw dest-policy-route-id    uint8
+  |     |  |  +--rw acl-description!
+  |     |  |     +--rw acl-description    ncd:string-with-blank
+  |     |  +--rw ipv4-mixed-access-list* [acl-name]
+  |     |  |  +--rw acl-name           acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |  |  +--rw ruleid                     uint32
+  |     |  |  |  +--rw (link-prot)?
+  |     |  |  |  |  +--:(link-protocol)
+  |     |  |  |  |  |  +--rw link-protocol?       uint32
+  |     |  |  |  |  o--:(link-protocol-hex)
+  |     |  |  |  |  |  +--rw link-protocol-hex?   ncd:hex
+  |     |  |  |  |  +--:(sap)
+  |     |  |  |  |     +--rw dsap-ssap!
+  |     |  |  |  |        +--rw dsap    uint16
+  |     |  |  |  |        +--rw ssap    uint16
+  |     |  |  |  +--rw (src-mac-addr)?
+  |     |  |  |  |  +--:(src-mac-addr)
+  |     |  |  |  |  |  +--rw src-mac-address      ncd:mac-address
+  |     |  |  |  |  |  +--rw src-mac-wildcard     ncd:mac-address
+  |     |  |  |  |  +--:(src-mac-any)
+  |     |  |  |  |  |  +--rw src-mac-any?         empty
+  |     |  |  |  |  +--:(src-mac-range)
+  |     |  |  |  |     +--rw src-mac-from1        ncd:mac-address
+  |     |  |  |  |     +--rw src-mac-to1          ncd:mac-address
+  |     |  |  |  |     +--rw src-mac-range2!
+  |     |  |  |  |        +--rw src-mac-from2    ncd:mac-address
+  |     |  |  |  |        +--rw src-mac-to2      ncd:mac-address
+  |     |  |  |  +--rw (dest-mac-addr)?
+  |     |  |  |  |  +--:(dest-mac-addr)
+  |     |  |  |  |  |  +--rw dest-mac-address     ncd:mac-address
+  |     |  |  |  |  |  +--rw dest-mac-wildcard    ncd:mac-address
+  |     |  |  |  |  +--:(dest-mac-any)
+  |     |  |  |  |  |  +--rw dest-mac-any?        empty
+  |     |  |  |  |  +--:(dest-mac-range)
+  |     |  |  |  |     +--rw dest-mac-from1       ncd:mac-address
+  |     |  |  |  |     +--rw dest-mac-to1         ncd:mac-address
+  |     |  |  |  |     +--rw dest-mac-range2!
+  |     |  |  |  |        +--rw dest-mac-from2    ncd:mac-address
+  |     |  |  |  |        +--rw dest-mac-to2      ncd:mac-address
+  |     |  |  |  +--rw inner-cos?                 uint8
+  |     |  |  |  +--rw inner-cos-range?           acl-cos-range
+  |     |  |  |  +--rw outer-cos?                 uint8
+  |     |  |  |  +--rw outer-cos-range?           acl-cos-range
+  |     |  |  |  +--rw (vlan-conf)?
+  |     |  |  |  |  +--:(vlan-value)
+  |     |  |  |  |  |  +--rw inne-vlan-value?     uint16
+  |     |  |  |  |  |  +--rw outer-vlan-value?    uint16
+  |     |  |  |  |  +--:(vlan-range)
+  |     |  |  |  |     +--rw inner-vlan-range?    acl-vlan-range
+  |     |  |  |  |     +--rw cfi?                 enumeration
+  |     |  |  |  |     +--rw outer-vlan-range?    acl-vlan-range
+  |     |  |  |  |     +--rw dei?                 enumeration
+  |     |  |  |  +--rw (permit-deny)?
+  |     |  |  |  |  +--:(deny)
+  |     |  |  |  |  |  +--rw deny?                empty
+  |     |  |  |  |  +--:(permit)
+  |     |  |  |  |     +--rw permit?              empty
+  |     |  |  |  +--rw (src-addr)?
+  |     |  |  |  |  +--:(src-ip-address)
+  |     |  |  |  |  |  +--rw src-address          ncd:ipv4-address
+  |     |  |  |  |  |  +--rw src-wildcard         ncd:ipv4-address
+  |     |  |  |  |  +--:(src-any)
+  |     |  |  |  |     +--rw src-any?             empty
+  |     |  |  |  +--rw time-range?                string
+  |     |  |  |  +--rw (rule-type)?
+  |     |  |  |  |  +--:(std)
+  |     |  |  |  |  |  +--rw ipv4-protocol-std?   empty
+  |     |  |  |  |  +--:(extend)
+  |     |  |  |  |     +--rw extended
+  |     |  |  |  |        +--rw (dest-addr)
+  |     |  |  |  |        |  +--:(dest-ip-address)
+  |     |  |  |  |        |  |  +--rw dest-address              ncd:ipv4-address
+  |     |  |  |  |        |  |  +--rw dest-wildcard             ncd:ipv4-address
+  |     |  |  |  |        |  +--:(dest-any)
+  |     |  |  |  |        |     +--rw dest-any?                 empty
+  |     |  |  |  |        +--rw (priority)?
+  |     |  |  |  |        |  +--:(precedence)
+  |     |  |  |  |        |  |  +--rw precedence?               uint8
+  |     |  |  |  |        |  +--:(prec-range)
+  |     |  |  |  |        |  |  +--rw prec-range?               acl-prec-range
+  |     |  |  |  |        |  +--:(tos)
+  |     |  |  |  |        |  |  +--rw tos?                      uint8
+  |     |  |  |  |        |  +--:(dscp)
+  |     |  |  |  |        |  |  +--rw dscp?                     uint8
+  |     |  |  |  |        |  +--:(dscp-range)
+  |     |  |  |  |        |     +--rw dscp-range?               acl-dscp-range
+  |     |  |  |  |        +--rw fragment?                       boolean
+  |     |  |  |  |        +--rw (ipv4-protocol-type)
+  |     |  |  |  |        |  +--:(udp-tcp)
+  |     |  |  |  |        |  |  +--rw udp-tcp
+  |     |  |  |  |        |  |     +--rw (udpOrTcp)
+  |     |  |  |  |        |  |     |  +--:(udp)
+  |     |  |  |  |        |  |     |  |  +--rw ipv4-protocol-udp?     empty
+  |     |  |  |  |        |  |     |  +--:(tcp)
+  |     |  |  |  |        |  |     |     +--rw ipv4-protocol-tcp      empty
+  |     |  |  |  |        |  |     |     +--rw established?           boolean
+  |     |  |  |  |        |  |     |     +--rw rst?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw ack?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw fin?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw syn?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw psh?                   acl-tcp-flag
+  |     |  |  |  |        |  |     |     +--rw urg?                   acl-tcp-flag
+  |     |  |  |  |        |  |     o--rw (src-port)?
+  |     |  |  |  |        |  |     |  o--:(src-value)
+  |     |  |  |  |        |  |     |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |        |  |     |  |  o--rw src-port-number        uint16
+  |     |  |  |  |        |  |     |  o--:(src-range)
+  |     |  |  |  |        |  |     |     o--rw src-range-operator     empty
+  |     |  |  |  |        |  |     |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |        |  |     o--rw (dest-port)?
+  |     |  |  |  |        |  |     |  o--:(dest-value)
+  |     |  |  |  |        |  |     |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |        |  |     |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |        |  |     |  o--:(dest-range)
+  |     |  |  |  |        |  |     |     o--rw dest-range-operator    empty
+  |     |  |  |  |        |  |     |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |        |  |     +--rw source-port!
+  |     |  |  |  |        |  |     |  +--rw (source-port)
+  |     |  |  |  |        |  |     |     +--:(src-port-value)
+  |     |  |  |  |        |  |     |     |  +--rw src-port-value!
+  |     |  |  |  |        |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |        |  |     |     |     +--rw src-port-value       uint16
+  |     |  |  |  |        |  |     |     +--:(src-port-range)
+  |     |  |  |  |        |  |     |        +--rw src-port-range!
+  |     |  |  |  |        |  |     |           +--rw src-port-operator    enumeration
+  |     |  |  |  |        |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |        |  |     +--rw destination-port!
+  |     |  |  |  |        |  |        +--rw (destination-port)
+  |     |  |  |  |        |  |           +--:(dst-port-value)
+  |     |  |  |  |        |  |           |  +--rw dst-port-value!
+  |     |  |  |  |        |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |  |           |     +--rw dst-port-value       uint16
+  |     |  |  |  |        |  |           +--:(dst-port-range)
+  |     |  |  |  |        |  |              +--rw dst-port-range!
+  |     |  |  |  |        |  |                 +--rw dst-port-operator    enumeration
+  |     |  |  |  |        |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |  |  |        |  +--:(icmp)
+  |     |  |  |  |        |  |  +--rw ipv4-protocol-icmp        empty
+  |     |  |  |  |        |  |  +--rw icmp-conf!
+  |     |  |  |  |        |  |     +--rw icmp-type    uint16
+  |     |  |  |  |        |  |     +--rw icmp-code?   uint16
+  |     |  |  |  |        |  +--:(ip)
+  |     |  |  |  |        |     +--rw ipv4-protocol?            uint16
+  |     |  |  |  |        +--rw source-monitor-group-id?        uint8
+  |     |  |  |  |        +--rw destination-monitor-group-id?   uint8
+  |     |  |  |  +--rw exp?                       uint8
+  |     |  |  |  +--rw label?                     uint32
+  |     |  |  |  +--rw label2?                    uint32
+  |     |  |  |  +--rw log?                       boolean
+  |     |  |  |  +--rw v4mix-desc?                ncd:string-with-blank
+  |     |  |  |  +--rw policy-route-id!
+  |     |  |  |     +--rw (policy-route-id)
+  |     |  |  |        +--:(src)
+  |     |  |  |        |  +--rw source!
+  |     |  |  |        |     +--rw src-policy-route-id    uint8
+  |     |  |  |        +--:(dest)
+  |     |  |  |           +--rw destination!
+  |     |  |  |              +--rw dest-policy-route-id    uint8
+  |     |  |  +--rw acl-description!
+  |     |  |     +--rw acl-description    ncd:string-with-blank
+  |     |  +--rw ipv6-access-list* [acl-name]
+  |     |  |  +--rw acl-name           acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |  |  +--rw ruleid                        uint32
+  |     |  |  |  +--rw (permit-deny)?
+  |     |  |  |  |  +--:(deny)
+  |     |  |  |  |  |  +--rw deny                    empty
+  |     |  |  |  |  +--:(permit)
+  |     |  |  |  |     +--rw permit                  empty
+  |     |  |  |  +--rw flowlabel?                    uint32
+  |     |  |  |  +--rw (src-addr)?
+  |     |  |  |  |  +--:(src-ip-address)
+  |     |  |  |  |  |  +--rw src-address             ncd:ipv6-address
+  |     |  |  |  |  |  +--rw src-wildcard            ncd:ipv6-mask-length
+  |     |  |  |  |  +--:(src-any)
+  |     |  |  |  |  |  +--rw src-any                 empty
+  |     |  |  |  |  +--:(src-url)
+  |     |  |  |  |     +--rw src-url                 ncd:url
+  |     |  |  |  +--rw (dest-addr)?
+  |     |  |  |  |  +--:(dest-ip-address)
+  |     |  |  |  |  |  +--rw dest-address            ncd:ipv6-address
+  |     |  |  |  |  |  +--rw dest-wildcard           ncd:ipv6-mask-length
+  |     |  |  |  |  +--:(dest-any)
+  |     |  |  |  |  |  +--rw dest-any                empty
+  |     |  |  |  |  +--:(dest-url)
+  |     |  |  |  |     +--rw dest-url                ncd:url
+  |     |  |  |  +--rw log?                          boolean
+  |     |  |  |  +--rw time-range?                   string
+  |     |  |  |  +--rw routing?                      boolean
+  |     |  |  |  +--rw authen?                       boolean
+  |     |  |  |  +--rw destopts?                     boolean
+  |     |  |  |  +--rw fragment?                     boolean
+  |     |  |  |  +--rw hop-by-hop?                   boolean
+  |     |  |  |  +--rw esp?                          boolean
+  |     |  |  |  +--rw (dscp-tc)?
+  |     |  |  |  |  +--:(dscp)
+  |     |  |  |  |  |  +--rw dscp?                   uint8
+  |     |  |  |  |  |  +--rw dscp-range?             acl-dscp-range
+  |     |  |  |  |  +--:(tc)
+  |     |  |  |  |     +--rw traffic-class?          uint16
+  |     |  |  |  +--rw (rule-type)?
+  |     |  |  |  |  +--:(udp-tcp)
+  |     |  |  |  |  |  +--rw udp-tcp
+  |     |  |  |  |  |     +--rw (udpOrTcp)
+  |     |  |  |  |  |     |  +--:(udp)
+  |     |  |  |  |  |     |  |  +--rw ipv6-protocol-udp?     empty
+  |     |  |  |  |  |     |  +--:(tcp)
+  |     |  |  |  |  |     |     +--rw ipv6-protocol-tcp      empty
+  |     |  |  |  |  |     |     +--rw established?           boolean
+  |     |  |  |  |  |     |     +--rw rst?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw ack?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw fin?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw syn?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw psh?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw urg?                   acl-tcp-flag
+  |     |  |  |  |  |     o--rw (src-port)?
+  |     |  |  |  |  |     |  o--:(src-value)
+  |     |  |  |  |  |     |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |  |     |  |  o--rw src-port-number        uint16
+  |     |  |  |  |  |     |  o--:(src-range)
+  |     |  |  |  |  |     |     o--rw src-range-operator     empty
+  |     |  |  |  |  |     |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |  |     o--rw (dest-port)?
+  |     |  |  |  |  |     |  o--:(dest-value)
+  |     |  |  |  |  |     |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |  |     |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |  |     |  o--:(dest-range)
+  |     |  |  |  |  |     |     o--rw dest-range-operator    empty
+  |     |  |  |  |  |     |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |  |     +--rw source-port!
+  |     |  |  |  |  |     |  +--rw (source-port)
+  |     |  |  |  |  |     |     +--:(src-port-value)
+  |     |  |  |  |  |     |     |  +--rw src-port-value!
+  |     |  |  |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |  |     |     |     +--rw src-port-value       uint16
+  |     |  |  |  |  |     |     +--:(src-port-range)
+  |     |  |  |  |  |     |        +--rw src-port-range!
+  |     |  |  |  |  |     |           +--rw src-port-operator    enumeration
+  |     |  |  |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |  |     +--rw destination-port!
+  |     |  |  |  |  |        +--rw (destination-port)
+  |     |  |  |  |  |           +--:(dst-port-value)
+  |     |  |  |  |  |           |  +--rw dst-port-value!
+  |     |  |  |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |  |           |     +--rw dst-port-value       uint16
+  |     |  |  |  |  |           +--:(dst-port-range)
+  |     |  |  |  |  |              +--rw dst-port-range!
+  |     |  |  |  |  |                 +--rw dst-port-operator    enumeration
+  |     |  |  |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |  |  |  +--:(icmp)
+  |     |  |  |  |  |  +--rw ipv6-protocol-icmp      empty
+  |     |  |  |  |  |  +--rw icmp-conf!
+  |     |  |  |  |  |  |  +--rw icmp-type    uint16
+  |     |  |  |  |  |  |  +--rw icmp-code?   uint16
+  |     |  |  |  |  |  +--rw icmp-port
+  |     |  |  |  |  |     o--rw (src-port)?
+  |     |  |  |  |  |     |  o--:(src-value)
+  |     |  |  |  |  |     |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |  |     |  |  o--rw src-port-number        uint16
+  |     |  |  |  |  |     |  o--:(src-range)
+  |     |  |  |  |  |     |     o--rw src-range-operator     empty
+  |     |  |  |  |  |     |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |  |     o--rw (dest-port)?
+  |     |  |  |  |  |     |  o--:(dest-value)
+  |     |  |  |  |  |     |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |  |     |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |  |     |  o--:(dest-range)
+  |     |  |  |  |  |     |     o--rw dest-range-operator    empty
+  |     |  |  |  |  |     |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |  |     +--rw source-port!
+  |     |  |  |  |  |     |  +--rw (source-port)
+  |     |  |  |  |  |     |     +--:(src-port-value)
+  |     |  |  |  |  |     |     |  +--rw src-port-value!
+  |     |  |  |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |  |     |     |     +--rw src-port-value       uint16
+  |     |  |  |  |  |     |     +--:(src-port-range)
+  |     |  |  |  |  |     |        +--rw src-port-range!
+  |     |  |  |  |  |     |           +--rw src-port-operator    enumeration
+  |     |  |  |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |  |     +--rw destination-port!
+  |     |  |  |  |  |        +--rw (destination-port)
+  |     |  |  |  |  |           +--:(dst-port-value)
+  |     |  |  |  |  |           |  +--rw dst-port-value!
+  |     |  |  |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |  |           |     +--rw dst-port-value       uint16
+  |     |  |  |  |  |           +--:(dst-port-range)
+  |     |  |  |  |  |              +--rw dst-port-range!
+  |     |  |  |  |  |                 +--rw dst-port-operator    enumeration
+  |     |  |  |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |  |  |  +--:(ip)
+  |     |  |  |  |     +--rw ipv6-protocol           uint16
+  |     |  |  |  |     +--rw port
+  |     |  |  |  |        o--rw (src-port)?
+  |     |  |  |  |        |  o--:(src-value)
+  |     |  |  |  |        |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |        |  |  o--rw src-port-number        uint16
+  |     |  |  |  |        |  o--:(src-range)
+  |     |  |  |  |        |     o--rw src-range-operator     empty
+  |     |  |  |  |        |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |        o--rw (dest-port)?
+  |     |  |  |  |        |  o--:(dest-value)
+  |     |  |  |  |        |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |        |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |        |  o--:(dest-range)
+  |     |  |  |  |        |     o--rw dest-range-operator    empty
+  |     |  |  |  |        |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |        +--rw source-port!
+  |     |  |  |  |        |  +--rw (source-port)
+  |     |  |  |  |        |     +--:(src-port-value)
+  |     |  |  |  |        |     |  +--rw src-port-value!
+  |     |  |  |  |        |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |        |     |     +--rw src-port-value       uint16
+  |     |  |  |  |        |     +--:(src-port-range)
+  |     |  |  |  |        |        +--rw src-port-range!
+  |     |  |  |  |        |           +--rw src-port-operator    enumeration
+  |     |  |  |  |        |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |        +--rw destination-port!
+  |     |  |  |  |           +--rw (destination-port)
+  |     |  |  |  |              +--:(dst-port-value)
+  |     |  |  |  |              |  +--rw dst-port-value!
+  |     |  |  |  |              |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |              |     +--rw dst-port-value       uint16
+  |     |  |  |  |              +--:(dst-port-range)
+  |     |  |  |  |                 +--rw dst-port-range!
+  |     |  |  |  |                    +--rw dst-port-operator    enumeration
+  |     |  |  |  |                    +--rw dst-port-range       acl-port-range
+  |     |  |  |  +--rw description?                  ncd:string-with-blank
+  |     |  |  |  +--rw (vrf-config)?
+  |     |  |  |  |  +--:(vrf-config-choice-clear)
+  |     |  |  |  |  |  +--rw vrf-config-all-clear!
+  |     |  |  |  |  +--:(vrf)
+  |     |  |  |  |  |  +--rw vrf?                    acl-vrf-name
+  |     |  |  |  |  +--:(vrf-dcn)
+  |     |  |  |  |     +--rw vrf-dcn?                empty
+  |     |  |  |  +--rw packet-length!
+  |     |  |  |  |  +--rw (packet-length)
+  |     |  |  |  |     +--:(packet-length-value)
+  |     |  |  |  |     |  +--rw packet-length-value!
+  |     |  |  |  |     |     +--rw packet-length-oper     acl-pktlen-opr
+  |     |  |  |  |     |     +--rw packet-length-value    uint16
+  |     |  |  |  |     +--:(packet-length-range)
+  |     |  |  |  |        +--rw packet-length-range!
+  |     |  |  |  |           +--rw packet-length-oper     enumeration
+  |     |  |  |  |           +--rw packet-length-range    acl-pktlen-range
+  |     |  |  |  +--rw policy-route-id!
+  |     |  |  |  |  +--rw (policy-route-id)
+  |     |  |  |  |     +--:(src)
+  |     |  |  |  |     |  +--rw source!
+  |     |  |  |  |     |     +--rw src-policy-route-id    uint8
+  |     |  |  |  |     +--:(dest)
+  |     |  |  |  |        +--rw destination!
+  |     |  |  |  |           +--rw dest-policy-route-id    uint8
+  |     |  |  |  +--rw monitor-group-id?             uint8
+  |     |  |  |  +--rw source-monitor-group-id?      uint8
+  |     |  |  |  +--rw time-to-live!
+  |     |  |  |     +--rw (ttl)
+  |     |  |  |        +--:(ttl-value)
+  |     |  |  |        |  +--rw ttl-value!
+  |     |  |  |        |     +--rw ttl-operator    enumeration
+  |     |  |  |        |     +--rw ttl-value       uint8
+  |     |  |  |        +--:(ttl-range)
+  |     |  |  |           +--rw ttl-range!
+  |     |  |  |              +--rw ttl-operator    enumeration
+  |     |  |  |              +--rw ttl-range       acl-ttl-range
+  |     |  |  +--rw acl-description!
+  |     |  |     +--rw acl-description    ncd:string-with-blank
+  |     |  +--rw ipv6-mixed-access-list* [acl-name]
+  |     |  |  +--rw acl-name           acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |  |  +--rw ruleid                      uint32
+  |     |  |  |  +--rw (link-prot)?
+  |     |  |  |  |  +--:(link-protocol)
+  |     |  |  |  |  |  +--rw link-protocol?        uint32
+  |     |  |  |  |  o--:(link-protocol-hex)
+  |     |  |  |  |  |  +--rw link-protocol-hex?    ncd:hex
+  |     |  |  |  |  +--:(sap)
+  |     |  |  |  |     +--rw dsap-ssap!
+  |     |  |  |  |        +--rw dsap    uint16
+  |     |  |  |  |        +--rw ssap    uint16
+  |     |  |  |  +--rw (src-mac-addr)?
+  |     |  |  |  |  +--:(src-mac-addr)
+  |     |  |  |  |  |  +--rw src-mac-address       ncd:mac-address
+  |     |  |  |  |  |  +--rw src-mac-wildcard      ncd:mac-address
+  |     |  |  |  |  +--:(src-mac-any)
+  |     |  |  |  |  |  +--rw src-mac-any?          empty
+  |     |  |  |  |  +--:(src-mac-range)
+  |     |  |  |  |     +--rw src-mac-from1         ncd:mac-address
+  |     |  |  |  |     +--rw src-mac-to1           ncd:mac-address
+  |     |  |  |  |     +--rw src-mac-range2!
+  |     |  |  |  |        +--rw src-mac-from2    ncd:mac-address
+  |     |  |  |  |        +--rw src-mac-to2      ncd:mac-address
+  |     |  |  |  +--rw (dest-mac-addr)?
+  |     |  |  |  |  +--:(dest-mac-addr)
+  |     |  |  |  |  |  +--rw dest-mac-address      ncd:mac-address
+  |     |  |  |  |  |  +--rw dest-mac-wildcard     ncd:mac-address
+  |     |  |  |  |  +--:(dest-mac-any)
+  |     |  |  |  |  |  +--rw dest-mac-any?         empty
+  |     |  |  |  |  +--:(dest-mac-range)
+  |     |  |  |  |     +--rw dest-mac-from1        ncd:mac-address
+  |     |  |  |  |     +--rw dest-mac-to1          ncd:mac-address
+  |     |  |  |  |     +--rw dest-mac-range2!
+  |     |  |  |  |        +--rw dest-mac-from2    ncd:mac-address
+  |     |  |  |  |        +--rw dest-mac-to2      ncd:mac-address
+  |     |  |  |  +--rw inner-cos?                  uint8
+  |     |  |  |  +--rw inner-cos-range?            acl-cos-range
+  |     |  |  |  +--rw outer-cos?                  uint8
+  |     |  |  |  +--rw outer-cos-range?            acl-cos-range
+  |     |  |  |  +--rw (vlan-conf)?
+  |     |  |  |  |  +--:(vlan-value)
+  |     |  |  |  |  |  +--rw inne-vlan-value?      uint16
+  |     |  |  |  |  |  +--rw outer-vlan-value?     uint16
+  |     |  |  |  |  +--:(vlan-range)
+  |     |  |  |  |     +--rw inner-vlan-range?     acl-vlan-range
+  |     |  |  |  |     +--rw outer-vlan-range?     acl-vlan-range
+  |     |  |  |  +--rw (permit-deny)?
+  |     |  |  |  |  +--:(deny)
+  |     |  |  |  |  |  +--rw deny?                 empty
+  |     |  |  |  |  +--:(permit)
+  |     |  |  |  |     +--rw permit?               empty
+  |     |  |  |  +--rw flowlabel?                  uint32
+  |     |  |  |  +--rw (src-addr)?
+  |     |  |  |  |  +--:(src-ip-address)
+  |     |  |  |  |  |  +--rw src-address           ncd:ipv6-address
+  |     |  |  |  |  |  +--rw src-wildcard          ncd:ipv6-mask-length
+  |     |  |  |  |  +--:(src-any)
+  |     |  |  |  |     +--rw src-any?              empty
+  |     |  |  |  +--rw (dest-addr)?
+  |     |  |  |  |  +--:(dest-ip-address)
+  |     |  |  |  |  |  +--rw dest-address          ncd:ipv6-address
+  |     |  |  |  |  |  +--rw dest-wildcard         ncd:ipv6-mask-length
+  |     |  |  |  |  +--:(dest-any)
+  |     |  |  |  |     +--rw dest-any?             empty
+  |     |  |  |  +--rw time-range?                 string
+  |     |  |  |  +--rw routing?                    boolean
+  |     |  |  |  +--rw authen?                     boolean
+  |     |  |  |  +--rw destopts?                   boolean
+  |     |  |  |  +--rw fragment?                   boolean
+  |     |  |  |  +--rw hop-by-hop?                 boolean
+  |     |  |  |  +--rw esp?                        boolean
+  |     |  |  |  +--rw (dscp-tc)?
+  |     |  |  |  |  +--:(dscp)
+  |     |  |  |  |  |  +--rw dscp?                 uint8
+  |     |  |  |  |  |  +--rw dscp-range?           acl-dscp-range
+  |     |  |  |  |  +--:(tc)
+  |     |  |  |  |     +--rw traffic-class?        uint16
+  |     |  |  |  +--rw (rule-type)?
+  |     |  |  |  |  +--:(udp-tcp)
+  |     |  |  |  |  |  +--rw udp-tcp
+  |     |  |  |  |  |     +--rw (udpOrTcp)
+  |     |  |  |  |  |     |  +--:(udp)
+  |     |  |  |  |  |     |  |  +--rw ipv6-protocol-udp?     empty
+  |     |  |  |  |  |     |  +--:(tcp)
+  |     |  |  |  |  |     |     +--rw ipv6-protocol-tcp      empty
+  |     |  |  |  |  |     |     +--rw established?           boolean
+  |     |  |  |  |  |     |     +--rw rst?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw ack?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw fin?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw syn?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw psh?                   acl-tcp-flag
+  |     |  |  |  |  |     |     +--rw urg?                   acl-tcp-flag
+  |     |  |  |  |  |     o--rw (src-port)?
+  |     |  |  |  |  |     |  o--:(src-value)
+  |     |  |  |  |  |     |  |  o--rw src-value-operator     enumeration
+  |     |  |  |  |  |     |  |  o--rw src-port-number        uint16
+  |     |  |  |  |  |     |  o--:(src-range)
+  |     |  |  |  |  |     |     o--rw src-range-operator     empty
+  |     |  |  |  |  |     |     o--rw src-port-range         acl-port-range
+  |     |  |  |  |  |     o--rw (dest-port)?
+  |     |  |  |  |  |     |  o--:(dest-value)
+  |     |  |  |  |  |     |  |  o--rw dest-value-operator    enumeration
+  |     |  |  |  |  |     |  |  o--rw dest-port-number       uint16
+  |     |  |  |  |  |     |  o--:(dest-range)
+  |     |  |  |  |  |     |     o--rw dest-range-operator    empty
+  |     |  |  |  |  |     |     o--rw dest-port-range        acl-port-range
+  |     |  |  |  |  |     +--rw source-port!
+  |     |  |  |  |  |     |  +--rw (source-port)
+  |     |  |  |  |  |     |     +--:(src-port-value)
+  |     |  |  |  |  |     |     |  +--rw src-port-value!
+  |     |  |  |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |  |  |  |     |     |     +--rw src-port-value       uint16
+  |     |  |  |  |  |     |     +--:(src-port-range)
+  |     |  |  |  |  |     |        +--rw src-port-range!
+  |     |  |  |  |  |     |           +--rw src-port-operator    enumeration
+  |     |  |  |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |  |  |  |     +--rw destination-port!
+  |     |  |  |  |  |        +--rw (destination-port)
+  |     |  |  |  |  |           +--:(dst-port-value)
+  |     |  |  |  |  |           |  +--rw dst-port-value!
+  |     |  |  |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |  |  |  |           |     +--rw dst-port-value       uint16
+  |     |  |  |  |  |           +--:(dst-port-range)
+  |     |  |  |  |  |              +--rw dst-port-range!
+  |     |  |  |  |  |                 +--rw dst-port-operator    enumeration
+  |     |  |  |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |  |  |  +--:(icmp)
+  |     |  |  |  |  |  +--rw ipv6-protocol-icmp    empty
+  |     |  |  |  |  |  +--rw icmp-conf!
+  |     |  |  |  |  |     +--rw icmp-type    uint16
+  |     |  |  |  |  |     +--rw icmp-code?   uint16
+  |     |  |  |  |  +--:(ip)
+  |     |  |  |  |     +--rw ipv6-protocol?        uint16
+  |     |  |  |  +--rw v6mix-desc?                 ncd:string-with-blank
+  |     |  |  +--rw acl-description!
+  |     |  |     +--rw acl-description    ncd:string-with-blank
+  |     |  +--rw link-access-list* [acl-name]
+  |     |  |  +--rw acl-name    acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |     +--rw ruleid                          uint32
+  |     |  |     +--rw (permit-deny)?
+  |     |  |     |  +--:(deny)
+  |     |  |     |  |  +--rw deny                      empty
+  |     |  |     |  +--:(permit)
+  |     |  |     |     +--rw permit                    empty
+  |     |  |     +--rw (link-prot)?
+  |     |  |     |  +--:(link-protocol)
+  |     |  |     |  |  +--rw link-protocol?            uint32
+  |     |  |     |  |  +--rw link-protocol-mask?       ncd:hex
+  |     |  |     |  +--:(link-protocol-hex)
+  |     |  |     |  |  +--rw link-protocol-hex?        ncd:hex
+  |     |  |     |  |  +--rw link-protocol-hex-mask?   ncd:hex
+  |     |  |     |  +--:(sap)
+  |     |  |     |     +--rw dsap-ssap!
+  |     |  |     |        +--rw dsap    uint16
+  |     |  |     |        +--rw ssap    uint16
+  |     |  |     +--rw (src-mac-addr)?
+  |     |  |     |  +--:(src-mac-addr)
+  |     |  |     |  |  +--rw src-mac-address           ncd:mac-address
+  |     |  |     |  |  +--rw src-mac-wildcard          ncd:mac-address
+  |     |  |     |  +--:(src-mac-any)
+  |     |  |     |  |  +--rw src-mac-any               empty
+  |     |  |     |  +--:(src-mac-range)
+  |     |  |     |     +--rw src-mac-from1             ncd:mac-address
+  |     |  |     |     +--rw src-mac-to1               ncd:mac-address
+  |     |  |     |     +--rw src-mac-range2!
+  |     |  |     |        +--rw src-mac-from2    ncd:mac-address
+  |     |  |     |        +--rw src-mac-to2      ncd:mac-address
+  |     |  |     +--rw (dest-mac-addr)?
+  |     |  |     |  +--:(dest-mac-addr)
+  |     |  |     |  |  +--rw dest-mac-address          ncd:mac-address
+  |     |  |     |  |  +--rw dest-mac-wildcard         ncd:mac-address
+  |     |  |     |  +--:(dest-mac-any)
+  |     |  |     |  |  +--rw dest-mac-any              empty
+  |     |  |     |  +--:(dest-mac-range)
+  |     |  |     |     +--rw dest-mac-from1            ncd:mac-address
+  |     |  |     |     +--rw dest-mac-to1              ncd:mac-address
+  |     |  |     |     +--rw dest-mac-range2!
+  |     |  |     |        +--rw dest-mac-from2    ncd:mac-address
+  |     |  |     |        +--rw dest-mac-to2      ncd:mac-address
+  |     |  |     +--rw inner-cos?                      uint8
+  |     |  |     +--rw inner-cos-range?                acl-cos-range
+  |     |  |     +--rw outer-cos?                      uint8
+  |     |  |     +--rw outer-cos-range?                acl-cos-range
+  |     |  |     +--rw (vlan-conf)?
+  |     |  |     |  +--:(vlan-value)
+  |     |  |     |  |  +--rw inne-vlan-value?          uint16
+  |     |  |     |  |  +--rw outer-vlan-value?         uint16
+  |     |  |     |  +--:(vlan-range)
+  |     |  |     |     +--rw inner-vlan-range?         acl-vlan-range
+  |     |  |     |     +--rw cfi?                      enumeration
+  |     |  |     |     +--rw outer-vlan-range?         acl-vlan-range
+  |     |  |     |     +--rw dei?                      enumeration
+  |     |  |     +--rw time-range?                     string
+  |     |  |     +--rw log?                            boolean
+  |     |  |     +--rw description?                    ncd:string-with-blank
+  |     |  |     +--rw vrf?                            acl-vrf-name
+  |     |  |     +--rw exp?                            uint8
+  |     |  |     +--rw label?                          uint32
+  |     |  |     +--rw label2?                         uint32
+  |     |  +--rw user-protocol-access-list* [acl-name]
+  |     |  |  +--rw acl-name    acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |     +--rw ruleid                      uint32
+  |     |  |     +--rw (ethernet-type)
+  |     |  |     |  +--:(any-ethernet-type)
+  |     |  |     |  |  +--rw any?                  empty
+  |     |  |     |  +--:(ethernet-type-value)
+  |     |  |     |     +--rw ether-type?           ncd:hex
+  |     |  |     +--rw destination-mac             ncd:mac-address
+  |     |  |     +--rw destination-mac-wildcard    ncd:mac-address
+  |     |  +--rw user-defined-list* [acl-name]
+  |     |  |  +--rw acl-name    acl-name-type
+  |     |  |  +--rw rule* [ruleid]
+  |     |  |     +--rw ruleid            uint32
+  |     |  |     +--rw (permit-deny)
+  |     |  |     |  +--:(deny)
+  |     |  |     |  |  +--rw deny?       empty
+  |     |  |     |  +--:(permit)
+  |     |  |     |     +--rw permit      empty
+  |     |  |     +--rw frame-type        enumeration
+  |     |  |     +--rw tag-status        enumeration
+  |     |  |     +--rw ip-flag           enumeration
+  |     |  |     +--rw (segment-type)
+  |     |  |     |  +--:(any-segment)
+  |     |  |     |  |  +--rw any         empty
+  |     |  |     |  +--:(segment)
+  |     |  |     |     +--rw segment1
+  |     |  |     |        +--rw offset         uint32
+  |     |  |     |        +--rw rule-string    string
+  |     |  |     |        +--rw rule-mask      string
+  |     |  |     |        +--rw segment2!
+  |     |  |     |           +--rw offset         uint32
+  |     |  |     |           +--rw rule-string    string
+  |     |  |     |           +--rw rule-mask      string
+  |     |  |     |           +--rw segment3!
+  |     |  |     |              +--rw offset         uint32
+  |     |  |     |              +--rw rule-string    string
+  |     |  |     |              +--rw rule-mask      string
+  |     |  |     |              +--rw segment4!
+  |     |  |     |                 +--rw offset         uint32
+  |     |  |     |                 +--rw rule-string    string
+  |     |  |     |                 +--rw rule-mask      string
+  |     |  |     +--rw time-range?       string
+  |     |  +--rw ipv4-vxlan-access-lists
+  |     |  |  +--rw ipv4-vxlan-access-list* [acl-name]
+  |     |  |     +--rw acl-name               acl-name-type
+  |     |  |     +--rw without-vni?           empty
+  |     |  |     +--rw mode-type?             enumeration
+  |     |  |     +--rw rules
+  |     |  |     |  +--rw rule* [ruleid]
+  |     |  |     |     +--rw ruleid          uint32
+  |     |  |     |     +--rw (permit-deny)
+  |     |  |     |     |  +--:(deny)
+  |     |  |     |     |  |  +--rw deny      empty
+  |     |  |     |     |  +--:(permit)
+  |     |  |     |     |     +--rw permit    empty
+  |     |  |     |     +--rw inner-layer
+  |     |  |     |     |  +--rw (protocol-type)
+  |     |  |     |     |  |  +--:(tcp-udp)
+  |     |  |     |     |  |  |  +--rw tcp-udp
+  |     |  |     |     |  |  |     +--rw tcp-udp                  enumeration
+  |     |  |     |     |  |  |     +--rw (src-addr)
+  |     |  |     |     |  |  |     |  +--:(addr-type)
+  |     |  |     |     |  |  |     |  |  +--rw src-address        ncd:ipv4-address
+  |     |  |     |     |  |  |     |  |  +--rw src-wildcard       ncd:ipv4-address
+  |     |  |     |     |  |  |     |  +--:(any-type)
+  |     |  |     |     |  |  |     |     +--rw src-any-addr       empty
+  |     |  |     |     |  |  |     o--rw (src-port)?
+  |     |  |     |     |  |  |     |  o--:(src-oper)
+  |     |  |     |     |  |  |     |  |  o--rw src-oper           enumeration
+  |     |  |     |     |  |  |     |  |  o--rw src-port-number    uint16
+  |     |  |     |     |  |  |     |  o--:(src-range)
+  |     |  |     |     |  |  |     |     o--rw src-range          empty
+  |     |  |     |     |  |  |     |     o--rw src-range-value    acl-port-range
+  |     |  |     |     |  |  |     +--rw source-port!
+  |     |  |     |     |  |  |     |  +--rw (source-port)
+  |     |  |     |     |  |  |     |     +--:(src-port-value)
+  |     |  |     |     |  |  |     |     |  +--rw src-port-value!
+  |     |  |     |     |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |     |     |  |  |     |     |     +--rw src-port-value       uint16
+  |     |  |     |     |  |  |     |     +--:(src-port-range)
+  |     |  |     |     |  |  |     |        +--rw src-port-range!
+  |     |  |     |     |  |  |     |           +--rw src-port-operator    enumeration
+  |     |  |     |     |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |     |     |  |  |     +--rw (dst-addr)
+  |     |  |     |     |  |  |     |  +--:(addr-type)
+  |     |  |     |     |  |  |     |  |  +--rw dst-address        ncd:ipv4-address
+  |     |  |     |     |  |  |     |  |  +--rw dst-wildcard       ncd:ipv4-address
+  |     |  |     |     |  |  |     |  +--:(any-type)
+  |     |  |     |     |  |  |     |     +--rw dst-any-addr       empty
+  |     |  |     |     |  |  |     o--rw (dst-port)?
+  |     |  |     |     |  |  |     |  o--:(dst-oper)
+  |     |  |     |     |  |  |     |  |  o--rw dst-oper           enumeration
+  |     |  |     |     |  |  |     |  |  o--rw dst-port-number    uint16
+  |     |  |     |     |  |  |     |  o--:(dst-range)
+  |     |  |     |     |  |  |     |     o--rw dst-range          empty
+  |     |  |     |     |  |  |     |     o--rw dst-range-value    acl-port-range
+  |     |  |     |     |  |  |     +--rw destination-port!
+  |     |  |     |     |  |  |        +--rw (destination-port)
+  |     |  |     |     |  |  |           +--:(dst-port-value)
+  |     |  |     |     |  |  |           |  +--rw dst-port-value!
+  |     |  |     |     |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |  |           |     +--rw dst-port-value       uint16
+  |     |  |     |     |  |  |           +--:(dst-port-range)
+  |     |  |     |     |  |  |              +--rw dst-port-range!
+  |     |  |     |     |  |  |                 +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |     |     |  |  +--:(ip)
+  |     |  |     |     |  |     +--rw ipv4-protocol
+  |     |  |     |     |  |        +--rw protocol-type         uint16
+  |     |  |     |     |  |        +--rw (src-addr)
+  |     |  |     |     |  |        |  +--:(addr-type)
+  |     |  |     |     |  |        |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |     |     |  |        |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |        |  +--:(any-type)
+  |     |  |     |     |  |        |     +--rw src-any-addr    empty
+  |     |  |     |     |  |        +--rw (dst-addr)
+  |     |  |     |     |  |           +--:(addr-type)
+  |     |  |     |     |  |           |  +--rw dst-address     ncd:ipv4-address
+  |     |  |     |     |  |           |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |           +--:(any-type)
+  |     |  |     |     |  |              +--rw dst-any-addr    empty
+  |     |  |     |     |  +--rw (priority)?
+  |     |  |     |     |     +--:(dscp)
+  |     |  |     |     |     |  +--rw dscp?            uint8
+  |     |  |     |     |     +--:(precedence)
+  |     |  |     |     |     |  +--rw precedence?      uint8
+  |     |  |     |     |     +--:(tos)
+  |     |  |     |     |        +--rw tos?             uint8
+  |     |  |     |     +--rw vni!
+  |     |  |     |     |  +--rw vxlan-id    uint32
+  |     |  |     |     +--rw sgt!
+  |     |  |     |     |  +--rw sgt-value    uint16
+  |     |  |     |     +--rw outer-layer!
+  |     |  |     |     |  +--rw udp                      empty
+  |     |  |     |     |  +--rw (src-addr)
+  |     |  |     |     |  |  +--:(addr-type)
+  |     |  |     |     |  |  |  +--rw src-address        ncd:ipv4-address
+  |     |  |     |     |  |  |  +--rw src-wildcard       ncd:ipv4-address
+  |     |  |     |     |  |  +--:(any-type)
+  |     |  |     |     |  |     +--rw src-any-addr       empty
+  |     |  |     |     |  o--rw (src-port)?
+  |     |  |     |     |  |  o--:(src-oper)
+  |     |  |     |     |  |  |  o--rw src-oper           enumeration
+  |     |  |     |     |  |  |  o--rw src-port-number    uint16
+  |     |  |     |     |  |  o--:(src-range)
+  |     |  |     |     |  |     o--rw src-range          empty
+  |     |  |     |     |  |     o--rw src-range-value    acl-port-range
+  |     |  |     |     |  +--rw source-port!
+  |     |  |     |     |  |  +--rw (source-port)
+  |     |  |     |     |  |     +--:(src-port-value)
+  |     |  |     |     |  |     |  +--rw src-port-value!
+  |     |  |     |     |  |     |     +--rw src-port-operator    enumeration
+  |     |  |     |     |  |     |     +--rw src-port-value       uint16
+  |     |  |     |     |  |     +--:(src-port-range)
+  |     |  |     |     |  |        +--rw src-port-range!
+  |     |  |     |     |  |           +--rw src-port-operator    enumeration
+  |     |  |     |     |  |           +--rw src-port-range       acl-port-range
+  |     |  |     |     |  +--rw (dst-addr)
+  |     |  |     |     |  |  +--:(addr-type)
+  |     |  |     |     |  |  |  +--rw dst-address        ncd:ipv4-address
+  |     |  |     |     |  |  |  +--rw dst-wildcard       ncd:ipv4-address
+  |     |  |     |     |  |  +--:(any-type)
+  |     |  |     |     |  |     +--rw dst-any-addr       empty
+  |     |  |     |     |  o--rw (dst-port)?
+  |     |  |     |     |  |  o--:(dst-oper)
+  |     |  |     |     |  |  |  o--rw dst-oper           enumeration
+  |     |  |     |     |  |  |  o--rw dst-port-number    uint16
+  |     |  |     |     |  |  o--:(dst-range)
+  |     |  |     |     |  |     o--rw dst-range          empty
+  |     |  |     |     |  |     o--rw dst-range-value    acl-port-range
+  |     |  |     |     |  +--rw destination-port!
+  |     |  |     |     |  |  +--rw (destination-port)
+  |     |  |     |     |  |     +--:(dst-port-value)
+  |     |  |     |     |  |     |  +--rw dst-port-value!
+  |     |  |     |     |  |     |     +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |     |     +--rw dst-port-value       uint16
+  |     |  |     |     |  |     +--:(dst-port-range)
+  |     |  |     |     |  |        +--rw dst-port-range!
+  |     |  |     |     |  |           +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |           +--rw dst-port-range       acl-port-range
+  |     |  |     |     |  +--rw (priority)?
+  |     |  |     |     |     +--:(dscp)
+  |     |  |     |     |     |  +--rw dscp?              uint8
+  |     |  |     |     |     +--:(precedence)
+  |     |  |     |     |     |  +--rw precedence?        uint8
+  |     |  |     |     |     +--:(tos)
+  |     |  |     |     |        +--rw tos?               uint8
+  |     |  |     |     +--rw vrf?            acl-vrf-name
+  |     |  |     +--rw rules-transit-inner
+  |     |  |     |  +--rw rule-transit-inner* [ruleid]
+  |     |  |     |     +--rw ruleid          uint32
+  |     |  |     |     +--rw (permit-deny)
+  |     |  |     |     |  +--:(deny)
+  |     |  |     |     |  |  +--rw deny      empty
+  |     |  |     |     |  +--:(permit)
+  |     |  |     |     |     +--rw permit    empty
+  |     |  |     |     +--rw inner-layer
+  |     |  |     |     |  +--rw (protocol-type)
+  |     |  |     |     |  |  +--:(tcp-udp)
+  |     |  |     |     |  |  |  +--rw tcp-udp
+  |     |  |     |     |  |  |     +--rw tcp-udp               enumeration
+  |     |  |     |     |  |  |     +--rw (src-addr)
+  |     |  |     |     |  |  |     |  +--:(addr-type)
+  |     |  |     |     |  |  |     |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |     |     |  |  |     |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |  |     |  +--:(any-type)
+  |     |  |     |     |  |  |     |     +--rw src-any-addr    empty
+  |     |  |     |     |  |  |     +--rw source-port!
+  |     |  |     |     |  |  |     |  +--rw (source-port)
+  |     |  |     |     |  |  |     |     +--:(src-port-value)
+  |     |  |     |     |  |  |     |     |  +--rw src-port-value!
+  |     |  |     |     |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |     |     |  |  |     |     |     +--rw src-port-value       uint16
+  |     |  |     |     |  |  |     |     +--:(src-port-range)
+  |     |  |     |     |  |  |     |        +--rw src-port-range!
+  |     |  |     |     |  |  |     |           +--rw src-port-operator    enumeration
+  |     |  |     |     |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |     |     |  |  |     +--rw (dst-addr)
+  |     |  |     |     |  |  |     |  +--:(addr-type)
+  |     |  |     |     |  |  |     |  |  +--rw dst-address     ncd:ipv4-address
+  |     |  |     |     |  |  |     |  |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |  |     |  +--:(any-type)
+  |     |  |     |     |  |  |     |     +--rw dst-any-addr    empty
+  |     |  |     |     |  |  |     +--rw destination-port!
+  |     |  |     |     |  |  |        +--rw (destination-port)
+  |     |  |     |     |  |  |           +--:(dst-port-value)
+  |     |  |     |     |  |  |           |  +--rw dst-port-value!
+  |     |  |     |     |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |  |           |     +--rw dst-port-value       uint16
+  |     |  |     |     |  |  |           +--:(dst-port-range)
+  |     |  |     |     |  |  |              +--rw dst-port-range!
+  |     |  |     |     |  |  |                 +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |     |     |  |  +--:(ip)
+  |     |  |     |     |  |     +--rw ipv4-protocol
+  |     |  |     |     |  |        +--rw protocol-type         uint16
+  |     |  |     |     |  |        +--rw (src-addr)
+  |     |  |     |     |  |        |  +--:(addr-type)
+  |     |  |     |     |  |        |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |     |     |  |        |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |        |  +--:(any-type)
+  |     |  |     |     |  |        |     +--rw src-any-addr    empty
+  |     |  |     |     |  |        +--rw (dst-addr)
+  |     |  |     |     |  |           +--:(addr-type)
+  |     |  |     |     |  |           |  +--rw dst-address     ncd:ipv4-address
+  |     |  |     |     |  |           |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |           +--:(any-type)
+  |     |  |     |     |  |              +--rw dst-any-addr    empty
+  |     |  |     |     |  +--rw (priority)?
+  |     |  |     |     |     +--:(dscp)
+  |     |  |     |     |     |  +--rw dscp?            uint8
+  |     |  |     |     |     +--:(precedence)
+  |     |  |     |     |     |  +--rw precedence?      uint8
+  |     |  |     |     |     +--:(tos)
+  |     |  |     |     |        +--rw tos?             uint8
+  |     |  |     |     +--rw vni!
+  |     |  |     |     |  +--rw vxlan-id    uint32
+  |     |  |     |     +--rw sgt!
+  |     |  |     |     |  +--rw sgt-value    uint16
+  |     |  |     |     +--rw vrf?            acl-vrf-name
+  |     |  |     +--rw rules-transit-outer
+  |     |  |     |  +--rw rule-transit-outer* [ruleid]
+  |     |  |     |     +--rw ruleid          uint32
+  |     |  |     |     +--rw (permit-deny)
+  |     |  |     |     |  +--:(deny)
+  |     |  |     |     |  |  +--rw deny      empty
+  |     |  |     |     |  +--:(permit)
+  |     |  |     |     |     +--rw permit    empty
+  |     |  |     |     +--rw vni!
+  |     |  |     |     |  +--rw vxlan-id    uint32
+  |     |  |     |     +--rw sgt!
+  |     |  |     |     |  +--rw sgt-value    uint16
+  |     |  |     |     +--rw outer-layer
+  |     |  |     |     |  +--rw udp                   empty
+  |     |  |     |     |  +--rw (src-addr)
+  |     |  |     |     |  |  +--:(addr-type)
+  |     |  |     |     |  |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |     |     |  |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |  +--:(any-type)
+  |     |  |     |     |  |     +--rw src-any-addr    empty
+  |     |  |     |     |  +--rw source-port!
+  |     |  |     |     |  |  +--rw (source-port)
+  |     |  |     |     |  |     +--:(src-port-value)
+  |     |  |     |     |  |     |  +--rw src-port-value!
+  |     |  |     |     |  |     |     +--rw src-port-operator    enumeration
+  |     |  |     |     |  |     |     +--rw src-port-value       uint16
+  |     |  |     |     |  |     +--:(src-port-range)
+  |     |  |     |     |  |        +--rw src-port-range!
+  |     |  |     |     |  |           +--rw src-port-operator    enumeration
+  |     |  |     |     |  |           +--rw src-port-range       acl-port-range
+  |     |  |     |     |  +--rw (dst-addr)
+  |     |  |     |     |  |  +--:(addr-type)
+  |     |  |     |     |  |  |  +--rw dst-address     ncd:ipv4-address
+  |     |  |     |     |  |  |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |  +--:(any-type)
+  |     |  |     |     |  |     +--rw dst-any-addr    empty
+  |     |  |     |     |  +--rw destination-port!
+  |     |  |     |     |  |  +--rw (destination-port)
+  |     |  |     |     |  |     +--:(dst-port-value)
+  |     |  |     |     |  |     |  +--rw dst-port-value!
+  |     |  |     |     |  |     |     +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |     |     +--rw dst-port-value       uint16
+  |     |  |     |     |  |     +--:(dst-port-range)
+  |     |  |     |     |  |        +--rw dst-port-range!
+  |     |  |     |     |  |           +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |           +--rw dst-port-range       acl-port-range
+  |     |  |     |     |  +--rw (priority)?
+  |     |  |     |     |     +--:(dscp)
+  |     |  |     |     |     |  +--rw dscp?           uint8
+  |     |  |     |     |     +--:(precedence)
+  |     |  |     |     |     |  +--rw precedence?     uint8
+  |     |  |     |     |     +--:(tos)
+  |     |  |     |     |        +--rw tos?            uint8
+  |     |  |     |     +--rw vrf?            acl-vrf-name
+  |     |  |     +--rw rules-vtep-inner
+  |     |  |     |  +--rw rule-vtep-inner* [ruleid]
+  |     |  |     |     +--rw ruleid          uint32
+  |     |  |     |     +--rw (permit-deny)
+  |     |  |     |     |  +--:(deny)
+  |     |  |     |     |  |  +--rw deny      empty
+  |     |  |     |     |  +--:(permit)
+  |     |  |     |     |     +--rw permit    empty
+  |     |  |     |     +--rw inner-layer
+  |     |  |     |     |  +--rw (protocol-type)
+  |     |  |     |     |  |  +--:(tcp-udp)
+  |     |  |     |     |  |  |  +--rw tcp-udp
+  |     |  |     |     |  |  |     +--rw tcp-udp               enumeration
+  |     |  |     |     |  |  |     +--rw (src-addr)
+  |     |  |     |     |  |  |     |  +--:(addr-type)
+  |     |  |     |     |  |  |     |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |     |     |  |  |     |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |  |     |  +--:(any-type)
+  |     |  |     |     |  |  |     |     +--rw src-any-addr    empty
+  |     |  |     |     |  |  |     +--rw source-port!
+  |     |  |     |     |  |  |     |  +--rw (source-port)
+  |     |  |     |     |  |  |     |     +--:(src-port-value)
+  |     |  |     |     |  |  |     |     |  +--rw src-port-value!
+  |     |  |     |     |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |  |     |     |  |  |     |     |     +--rw src-port-value       uint16
+  |     |  |     |     |  |  |     |     +--:(src-port-range)
+  |     |  |     |     |  |  |     |        +--rw src-port-range!
+  |     |  |     |     |  |  |     |           +--rw src-port-operator    enumeration
+  |     |  |     |     |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |  |     |     |  |  |     +--rw (dst-addr)
+  |     |  |     |     |  |  |     |  +--:(addr-type)
+  |     |  |     |     |  |  |     |  |  +--rw dst-address     ncd:ipv4-address
+  |     |  |     |     |  |  |     |  |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |  |     |  +--:(any-type)
+  |     |  |     |     |  |  |     |     +--rw dst-any-addr    empty
+  |     |  |     |     |  |  |     +--rw destination-port!
+  |     |  |     |     |  |  |        +--rw (destination-port)
+  |     |  |     |     |  |  |           +--:(dst-port-value)
+  |     |  |     |     |  |  |           |  +--rw dst-port-value!
+  |     |  |     |     |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |  |           |     +--rw dst-port-value       uint16
+  |     |  |     |     |  |  |           +--:(dst-port-range)
+  |     |  |     |     |  |  |              +--rw dst-port-range!
+  |     |  |     |     |  |  |                 +--rw dst-port-operator    enumeration
+  |     |  |     |     |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |  |     |     |  |  +--:(ip)
+  |     |  |     |     |  |     +--rw ipv4-protocol
+  |     |  |     |     |  |        +--rw protocol-type         uint16
+  |     |  |     |     |  |        +--rw (src-addr)
+  |     |  |     |     |  |        |  +--:(addr-type)
+  |     |  |     |     |  |        |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |     |     |  |        |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |        |  +--:(any-type)
+  |     |  |     |     |  |        |     +--rw src-any-addr    empty
+  |     |  |     |     |  |        +--rw (dst-addr)
+  |     |  |     |     |  |           +--:(addr-type)
+  |     |  |     |     |  |           |  +--rw dst-address     ncd:ipv4-address
+  |     |  |     |     |  |           |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |     |     |  |           +--:(any-type)
+  |     |  |     |     |  |              +--rw dst-any-addr    empty
+  |     |  |     |     |  +--rw (priority)?
+  |     |  |     |     |     +--:(dscp)
+  |     |  |     |     |     |  +--rw dscp?            uint8
+  |     |  |     |     |     +--:(precedence)
+  |     |  |     |     |     |  +--rw precedence?      uint8
+  |     |  |     |     |     +--:(tos)
+  |     |  |     |     |        +--rw tos?             uint8
+  |     |  |     |     +--rw vni!
+  |     |  |     |     |  +--rw vxlan-id    uint32
+  |     |  |     |     +--rw sgt!
+  |     |  |     |     |  +--rw sgt-value    uint16
+  |     |  |     |     +--rw vrf?            acl-vrf-name
+  |     |  |     +--rw rules-vtep-outer
+  |     |  |        +--rw rule-vtep-outer* [ruleid]
+  |     |  |           +--rw ruleid          uint32
+  |     |  |           +--rw (permit-deny)
+  |     |  |           |  +--:(deny)
+  |     |  |           |  |  +--rw deny      empty
+  |     |  |           |  +--:(permit)
+  |     |  |           |     +--rw permit    empty
+  |     |  |           +--rw vni!
+  |     |  |           |  +--rw vxlan-id    uint32
+  |     |  |           +--rw sgt!
+  |     |  |           |  +--rw sgt-value    uint16
+  |     |  |           +--rw outer-layer
+  |     |  |           |  +--rw udp                   empty
+  |     |  |           |  +--rw (src-addr)
+  |     |  |           |  |  +--:(addr-type)
+  |     |  |           |  |  |  +--rw src-address     ncd:ipv4-address
+  |     |  |           |  |  |  +--rw src-wildcard    ncd:ipv4-address
+  |     |  |           |  |  +--:(any-type)
+  |     |  |           |  |     +--rw src-any-addr    empty
+  |     |  |           |  +--rw source-port!
+  |     |  |           |  |  +--rw (source-port)
+  |     |  |           |  |     +--:(src-port-value)
+  |     |  |           |  |     |  +--rw src-port-value!
+  |     |  |           |  |     |     +--rw src-port-operator    enumeration
+  |     |  |           |  |     |     +--rw src-port-value       uint16
+  |     |  |           |  |     +--:(src-port-range)
+  |     |  |           |  |        +--rw src-port-range!
+  |     |  |           |  |           +--rw src-port-operator    enumeration
+  |     |  |           |  |           +--rw src-port-range       acl-port-range
+  |     |  |           |  +--rw (dst-addr)
+  |     |  |           |  |  +--:(addr-type)
+  |     |  |           |  |  |  +--rw dst-address     ncd:ipv4-address
+  |     |  |           |  |  |  +--rw dst-wildcard    ncd:ipv4-address
+  |     |  |           |  |  +--:(any-type)
+  |     |  |           |  |     +--rw dst-any-addr    empty
+  |     |  |           |  +--rw destination-port!
+  |     |  |           |  |  +--rw (destination-port)
+  |     |  |           |  |     +--:(dst-port-value)
+  |     |  |           |  |     |  +--rw dst-port-value!
+  |     |  |           |  |     |     +--rw dst-port-operator    enumeration
+  |     |  |           |  |     |     +--rw dst-port-value       uint16
+  |     |  |           |  |     +--:(dst-port-range)
+  |     |  |           |  |        +--rw dst-port-range!
+  |     |  |           |  |           +--rw dst-port-operator    enumeration
+  |     |  |           |  |           +--rw dst-port-range       acl-port-range
+  |     |  |           |  +--rw (priority)?
+  |     |  |           |     +--:(dscp)
+  |     |  |           |     |  +--rw dscp?           uint8
+  |     |  |           |     +--:(precedence)
+  |     |  |           |     |  +--rw precedence?     uint8
+  |     |  |           |     +--:(tos)
+  |     |  |           |        +--rw tos?            uint8
+  |     |  |           +--rw vrf?            acl-vrf-name
+  |     |  +--rw user-defined-template-acls
+  |     |  |  +--rw user-defined-template-acl* [acl-name]
+  |     |  |     +--rw acl-name         acl-name-type
+  |     |  |     +--rw template-name    acl-name-type
+  |     |  |     +--rw rules
+  |     |  |        +--rw rule* [ruleid]
+  |     |  |           +--rw ruleid            uint32
+  |     |  |           +--rw (permit-deny)
+  |     |  |           |  +--:(deny)
+  |     |  |           |  |  +--rw deny?       empty
+  |     |  |           |  +--:(permit)
+  |     |  |           |     +--rw permit      empty
+  |     |  |           +--rw (segment)
+  |     |  |              +--:(segment-any)
+  |     |  |              |  +--rw any?        empty
+  |     |  |              +--:(segment-value)
+  |     |  |                 +--rw segment1!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment2!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment3!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment4!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment5!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment6!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment7!
+  |     |  |                 |  +--rw rule-string    string
+  |     |  |                 |  +--rw rule-mask      string
+  |     |  |                 +--rw segment8!
+  |     |  |                    +--rw rule-string    string
+  |     |  |                    +--rw rule-mask      string
+  |     |  +--rw ipv6-vxlan-access-lists
+  |     |     +--rw ipv6-vxlan-access-list* [acl-name]
+  |     |        +--rw acl-name               acl-name-type
+  |     |        +--rw mode-type              enumeration
+  |     |        +--rw rules-transit-inner
+  |     |        |  +--rw rule-transit-inner* [ruleid]
+  |     |        |     +--rw ruleid          uint32
+  |     |        |     +--rw (permit-deny)
+  |     |        |     |  +--:(deny)
+  |     |        |     |  |  +--rw deny      empty
+  |     |        |     |  +--:(permit)
+  |     |        |     |     +--rw permit    empty
+  |     |        |     +--rw inner-layer
+  |     |        |     |  +--rw (protocol-type)
+  |     |        |     |  |  +--:(tcp-udp)
+  |     |        |     |  |  |  +--rw tcp-udp
+  |     |        |     |  |  |     +--rw tcp-udp               enumeration
+  |     |        |     |  |  |     +--rw (src-addr)
+  |     |        |     |  |  |     |  +--:(addr-type)
+  |     |        |     |  |  |     |  |  +--rw src-address     ncd:ipv6-address
+  |     |        |     |  |  |     |  |  +--rw src-wildcard
+  |     |        |     |  |  |     |  |     +--rw (wildcard-type)
+  |     |        |     |  |  |     |  |        +--:(wildcard-len)
+  |     |        |     |  |  |     |  |        |  +--rw src-wildcard-len     uint8
+  |     |        |     |  |  |     |  |        +--:(wildcard-bits)
+  |     |        |     |  |  |     |  |           +--rw src-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |  |     |  +--:(any-type)
+  |     |        |     |  |  |     |     +--rw src-any-addr    empty
+  |     |        |     |  |  |     +--rw source-port!
+  |     |        |     |  |  |     |  +--rw (source-port)
+  |     |        |     |  |  |     |     +--:(src-port-value)
+  |     |        |     |  |  |     |     |  +--rw src-port-value!
+  |     |        |     |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |        |     |  |  |     |     |     +--rw src-port-value       uint16
+  |     |        |     |  |  |     |     +--:(src-port-range)
+  |     |        |     |  |  |     |        +--rw src-port-range!
+  |     |        |     |  |  |     |           +--rw src-port-operator    enumeration
+  |     |        |     |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |        |     |  |  |     +--rw (dst-addr)
+  |     |        |     |  |  |     |  +--:(addr-type)
+  |     |        |     |  |  |     |  |  +--rw dst-address     ncd:ipv6-address
+  |     |        |     |  |  |     |  |  +--rw dst-wildcard
+  |     |        |     |  |  |     |  |     +--rw (wildcard-type)
+  |     |        |     |  |  |     |  |        +--:(wildcard-len)
+  |     |        |     |  |  |     |  |        |  +--rw dst-wildcard-len     uint8
+  |     |        |     |  |  |     |  |        +--:(wildcard-bits)
+  |     |        |     |  |  |     |  |           +--rw dst-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |  |     |  +--:(any-type)
+  |     |        |     |  |  |     |     +--rw dst-any-addr    empty
+  |     |        |     |  |  |     +--rw destination-port!
+  |     |        |     |  |  |        +--rw (destination-port)
+  |     |        |     |  |  |           +--:(dst-port-value)
+  |     |        |     |  |  |           |  +--rw dst-port-value!
+  |     |        |     |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |        |     |  |  |           |     +--rw dst-port-value       uint16
+  |     |        |     |  |  |           +--:(dst-port-range)
+  |     |        |     |  |  |              +--rw dst-port-range!
+  |     |        |     |  |  |                 +--rw dst-port-operator    enumeration
+  |     |        |     |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |        |     |  |  +--:(ip)
+  |     |        |     |  |     +--rw ipv6-protocol
+  |     |        |     |  |        +--rw protocol-type         uint16
+  |     |        |     |  |        +--rw (src-addr)
+  |     |        |     |  |        |  +--:(addr-type)
+  |     |        |     |  |        |  |  +--rw src-address     ncd:ipv6-address
+  |     |        |     |  |        |  |  +--rw src-wildcard
+  |     |        |     |  |        |  |     +--rw (wildcard-type)
+  |     |        |     |  |        |  |        +--:(wildcard-len)
+  |     |        |     |  |        |  |        |  +--rw src-wildcard-len     uint8
+  |     |        |     |  |        |  |        +--:(wildcard-bits)
+  |     |        |     |  |        |  |           +--rw src-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |        |  +--:(any-type)
+  |     |        |     |  |        |     +--rw src-any-addr    empty
+  |     |        |     |  |        +--rw (dst-addr)
+  |     |        |     |  |           +--:(addr-type)
+  |     |        |     |  |           |  +--rw dst-address     ncd:ipv6-address
+  |     |        |     |  |           |  +--rw dst-wildcard
+  |     |        |     |  |           |     +--rw (wildcard-type)
+  |     |        |     |  |           |        +--:(wildcard-len)
+  |     |        |     |  |           |        |  +--rw dst-wildcard-len     uint8
+  |     |        |     |  |           |        +--:(wildcard-bits)
+  |     |        |     |  |           |           +--rw dst-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |           +--:(any-type)
+  |     |        |     |  |              +--rw dst-any-addr    empty
+  |     |        |     |  +--rw dscp?                  uint8
+  |     |        |     +--rw vni!
+  |     |        |     |  +--rw vxlan-id    uint32
+  |     |        |     +--rw vrf?            acl-vrf-name
+  |     |        +--rw rules-transit-outer
+  |     |        |  +--rw rule-transit-outer* [ruleid]
+  |     |        |     +--rw ruleid          uint32
+  |     |        |     +--rw (permit-deny)
+  |     |        |     |  +--:(deny)
+  |     |        |     |  |  +--rw deny      empty
+  |     |        |     |  +--:(permit)
+  |     |        |     |     +--rw permit    empty
+  |     |        |     +--rw vni!
+  |     |        |     |  +--rw vxlan-id    uint32
+  |     |        |     +--rw outer-layer
+  |     |        |     |  +--rw udp                   empty
+  |     |        |     |  +--rw (src-addr)
+  |     |        |     |  |  +--:(addr-type)
+  |     |        |     |  |  |  +--rw src-address     ncd:ipv6-address
+  |     |        |     |  |  |  +--rw src-wildcard
+  |     |        |     |  |  |     +--rw (wildcard-type)
+  |     |        |     |  |  |        +--:(wildcard-len)
+  |     |        |     |  |  |        |  +--rw src-wildcard-len     uint8
+  |     |        |     |  |  |        +--:(wildcard-bits)
+  |     |        |     |  |  |           +--rw src-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |  +--:(any-type)
+  |     |        |     |  |     +--rw src-any-addr    empty
+  |     |        |     |  +--rw source-port!
+  |     |        |     |  |  +--rw (source-port)
+  |     |        |     |  |     +--:(src-port-value)
+  |     |        |     |  |     |  +--rw src-port-value!
+  |     |        |     |  |     |     +--rw src-port-operator    enumeration
+  |     |        |     |  |     |     +--rw src-port-value       uint16
+  |     |        |     |  |     +--:(src-port-range)
+  |     |        |     |  |        +--rw src-port-range!
+  |     |        |     |  |           +--rw src-port-operator    enumeration
+  |     |        |     |  |           +--rw src-port-range       acl-port-range
+  |     |        |     |  +--rw (dst-addr)
+  |     |        |     |  |  +--:(addr-type)
+  |     |        |     |  |  |  +--rw dst-address     ncd:ipv6-address
+  |     |        |     |  |  |  +--rw dst-wildcard
+  |     |        |     |  |  |     +--rw (wildcard-type)
+  |     |        |     |  |  |        +--:(wildcard-len)
+  |     |        |     |  |  |        |  +--rw dst-wildcard-len     uint8
+  |     |        |     |  |  |        +--:(wildcard-bits)
+  |     |        |     |  |  |           +--rw dst-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |  +--:(any-type)
+  |     |        |     |  |     +--rw dst-any-addr    empty
+  |     |        |     |  +--rw destination-port!
+  |     |        |     |  |  +--rw (destination-port)
+  |     |        |     |  |     +--:(dst-port-value)
+  |     |        |     |  |     |  +--rw dst-port-value!
+  |     |        |     |  |     |     +--rw dst-port-operator    enumeration
+  |     |        |     |  |     |     +--rw dst-port-value       uint16
+  |     |        |     |  |     +--:(dst-port-range)
+  |     |        |     |  |        +--rw dst-port-range!
+  |     |        |     |  |           +--rw dst-port-operator    enumeration
+  |     |        |     |  |           +--rw dst-port-range       acl-port-range
+  |     |        |     |  +--rw dscp?                 uint8
+  |     |        |     +--rw vrf?            acl-vrf-name
+  |     |        +--rw rules-vtep-inner
+  |     |        |  +--rw rule-vtep-inner* [ruleid]
+  |     |        |     +--rw ruleid          uint32
+  |     |        |     +--rw (permit-deny)
+  |     |        |     |  +--:(deny)
+  |     |        |     |  |  +--rw deny      empty
+  |     |        |     |  +--:(permit)
+  |     |        |     |     +--rw permit    empty
+  |     |        |     +--rw inner-layer
+  |     |        |     |  +--rw (protocol-type)
+  |     |        |     |  |  +--:(tcp-udp)
+  |     |        |     |  |  |  +--rw tcp-udp
+  |     |        |     |  |  |     +--rw tcp-udp               enumeration
+  |     |        |     |  |  |     +--rw (src-addr)
+  |     |        |     |  |  |     |  +--:(addr-type)
+  |     |        |     |  |  |     |  |  +--rw src-address     ncd:ipv6-address
+  |     |        |     |  |  |     |  |  +--rw src-wildcard
+  |     |        |     |  |  |     |  |     +--rw (wildcard-type)
+  |     |        |     |  |  |     |  |        +--:(wildcard-len)
+  |     |        |     |  |  |     |  |        |  +--rw src-wildcard-len     uint8
+  |     |        |     |  |  |     |  |        +--:(wildcard-bits)
+  |     |        |     |  |  |     |  |           +--rw src-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |  |     |  +--:(any-type)
+  |     |        |     |  |  |     |     +--rw src-any-addr    empty
+  |     |        |     |  |  |     +--rw source-port!
+  |     |        |     |  |  |     |  +--rw (source-port)
+  |     |        |     |  |  |     |     +--:(src-port-value)
+  |     |        |     |  |  |     |     |  +--rw src-port-value!
+  |     |        |     |  |  |     |     |     +--rw src-port-operator    enumeration
+  |     |        |     |  |  |     |     |     +--rw src-port-value       uint16
+  |     |        |     |  |  |     |     +--:(src-port-range)
+  |     |        |     |  |  |     |        +--rw src-port-range!
+  |     |        |     |  |  |     |           +--rw src-port-operator    enumeration
+  |     |        |     |  |  |     |           +--rw src-port-range       acl-port-range
+  |     |        |     |  |  |     +--rw (dst-addr)
+  |     |        |     |  |  |     |  +--:(addr-type)
+  |     |        |     |  |  |     |  |  +--rw dst-address     ncd:ipv6-address
+  |     |        |     |  |  |     |  |  +--rw dst-wildcard
+  |     |        |     |  |  |     |  |     +--rw (wildcard-type)
+  |     |        |     |  |  |     |  |        +--:(wildcard-len)
+  |     |        |     |  |  |     |  |        |  +--rw dst-wildcard-len     uint8
+  |     |        |     |  |  |     |  |        +--:(wildcard-bits)
+  |     |        |     |  |  |     |  |           +--rw dst-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |  |     |  +--:(any-type)
+  |     |        |     |  |  |     |     +--rw dst-any-addr    empty
+  |     |        |     |  |  |     +--rw destination-port!
+  |     |        |     |  |  |        +--rw (destination-port)
+  |     |        |     |  |  |           +--:(dst-port-value)
+  |     |        |     |  |  |           |  +--rw dst-port-value!
+  |     |        |     |  |  |           |     +--rw dst-port-operator    enumeration
+  |     |        |     |  |  |           |     +--rw dst-port-value       uint16
+  |     |        |     |  |  |           +--:(dst-port-range)
+  |     |        |     |  |  |              +--rw dst-port-range!
+  |     |        |     |  |  |                 +--rw dst-port-operator    enumeration
+  |     |        |     |  |  |                 +--rw dst-port-range       acl-port-range
+  |     |        |     |  |  +--:(ip)
+  |     |        |     |  |     +--rw ipv6-protocol
+  |     |        |     |  |        +--rw protocol-type         uint16
+  |     |        |     |  |        +--rw (src-addr)
+  |     |        |     |  |        |  +--:(addr-type)
+  |     |        |     |  |        |  |  +--rw src-address     ncd:ipv6-address
+  |     |        |     |  |        |  |  +--rw src-wildcard
+  |     |        |     |  |        |  |     +--rw (wildcard-type)
+  |     |        |     |  |        |  |        +--:(wildcard-len)
+  |     |        |     |  |        |  |        |  +--rw src-wildcard-len     uint8
+  |     |        |     |  |        |  |        +--:(wildcard-bits)
+  |     |        |     |  |        |  |           +--rw src-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |        |  +--:(any-type)
+  |     |        |     |  |        |     +--rw src-any-addr    empty
+  |     |        |     |  |        +--rw (dst-addr)
+  |     |        |     |  |           +--:(addr-type)
+  |     |        |     |  |           |  +--rw dst-address     ncd:ipv6-address
+  |     |        |     |  |           |  +--rw dst-wildcard
+  |     |        |     |  |           |     +--rw (wildcard-type)
+  |     |        |     |  |           |        +--:(wildcard-len)
+  |     |        |     |  |           |        |  +--rw dst-wildcard-len     uint8
+  |     |        |     |  |           |        +--:(wildcard-bits)
+  |     |        |     |  |           |           +--rw dst-wildcard-bits    ncd:ipv6-address
+  |     |        |     |  |           +--:(any-type)
+  |     |        |     |  |              +--rw dst-any-addr    empty
+  |     |        |     |  +--rw dscp?                  uint8
+  |     |        |     +--rw vni!
+  |     |        |     |  +--rw vxlan-id    uint32
+  |     |        |     +--rw vrf?            acl-vrf-name
+  |     |        +--rw rules-vtep-outer
+  |     |           +--rw rule-vtep-outer* [ruleid]
+  |     |              +--rw ruleid          uint32
+  |     |              +--rw (permit-deny)
+  |     |              |  +--:(deny)
+  |     |              |  |  +--rw deny      empty
+  |     |              |  +--:(permit)
+  |     |              |     +--rw permit    empty
+  |     |              +--rw vni!
+  |     |              |  +--rw vxlan-id    uint32
+  |     |              +--rw outer-layer
+  |     |              |  +--rw udp                   empty
+  |     |              |  +--rw (src-addr)
+  |     |              |  |  +--:(addr-type)
+  |     |              |  |  |  +--rw src-address     ncd:ipv6-address
+  |     |              |  |  |  +--rw src-wildcard
+  |     |              |  |  |     +--rw (wildcard-type)
+  |     |              |  |  |        +--:(wildcard-len)
+  |     |              |  |  |        |  +--rw src-wildcard-len     uint8
+  |     |              |  |  |        +--:(wildcard-bits)
+  |     |              |  |  |           +--rw src-wildcard-bits    ncd:ipv6-address
+  |     |              |  |  +--:(any-type)
+  |     |              |  |     +--rw src-any-addr    empty
+  |     |              |  +--rw source-port!
+  |     |              |  |  +--rw (source-port)
+  |     |              |  |     +--:(src-port-value)
+  |     |              |  |     |  +--rw src-port-value!
+  |     |              |  |     |     +--rw src-port-operator    enumeration
+  |     |              |  |     |     +--rw src-port-value       uint16
+  |     |              |  |     +--:(src-port-range)
+  |     |              |  |        +--rw src-port-range!
+  |     |              |  |           +--rw src-port-operator    enumeration
+  |     |              |  |           +--rw src-port-range       acl-port-range
+  |     |              |  +--rw (dst-addr)
+  |     |              |  |  +--:(addr-type)
+  |     |              |  |  |  +--rw dst-address     ncd:ipv6-address
+  |     |              |  |  |  +--rw dst-wildcard
+  |     |              |  |  |     +--rw (wildcard-type)
+  |     |              |  |  |        +--:(wildcard-len)
+  |     |              |  |  |        |  +--rw dst-wildcard-len     uint8
+  |     |              |  |  |        +--:(wildcard-bits)
+  |     |              |  |  |           +--rw dst-wildcard-bits    ncd:ipv6-address
+  |     |              |  |  +--:(any-type)
+  |     |              |  |     +--rw dst-any-addr    empty
+  |     |              |  +--rw destination-port!
+  |     |              |  |  +--rw (destination-port)
+  |     |              |  |     +--:(dst-port-value)
+  |     |              |  |     |  +--rw dst-port-value!
+  |     |              |  |     |     +--rw dst-port-operator    enumeration
+  |     |              |  |     |     +--rw dst-port-value       uint16
+  |     |              |  |     +--:(dst-port-range)
+  |     |              |  |        +--rw dst-port-range!
+  |     |              |  |           +--rw dst-port-operator    enumeration
+  |     |              |  |           +--rw dst-port-range       acl-port-range
+  |     |              |  +--rw dscp?                 uint8
+  |     |              +--rw vrf?            acl-vrf-name
+  |     +--rw port-acl
+  |     |  +--rw if-ipv4
+  |     |  |  +--rw egress* [if-name]
+  |     |  |  |  +--rw if-name                 ncd:ifname
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [if-name]
+  |     |  |     +--rw if-name                 ncd:ifname
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw vlan-ipv4
+  |     |  |  +--rw egress* [vlan-id]
+  |     |  |  |  +--rw vlan-id                 uint16
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [vlan-id]
+  |     |  |     +--rw vlan-id                 uint16
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw device-ipv4s
+  |     |  |  +--rw device-ipv4* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw slot-ipv4s
+  |     |  |  +--rw slot-ipv4* [slot-id direction]
+  |     |  |     +--rw slot-id      uint8
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw if-ipv4-mixed
+  |     |  |  +--rw egress* [if-name]
+  |     |  |  |  +--rw if-name                 ncd:ifname
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [if-name]
+  |     |  |     +--rw if-name                 ncd:ifname
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw vlan-ipv4-mixed
+  |     |  |  +--rw egress* [vlan-id]
+  |     |  |  |  +--rw vlan-id                 uint16
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [vlan-id]
+  |     |  |     +--rw vlan-id                 uint16
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw device-ipv4-mixeds
+  |     |  |  +--rw device-ipv4-mixed* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw if-ipv6
+  |     |  |  +--rw egress* [if-name]
+  |     |  |  |  +--rw if-name                 ncd:ifname
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [if-name]
+  |     |  |     +--rw if-name                 ncd:ifname
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw vlan-ipv6
+  |     |  |  +--rw egress* [vlan-id]
+  |     |  |  |  +--rw vlan-id                 uint16
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [vlan-id]
+  |     |  |     +--rw vlan-id                 uint16
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw device-ipv6s
+  |     |  |  +--rw device-ipv6* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw slot-ipv6s
+  |     |  |  +--rw slot-ipv6* [slot-id direction]
+  |     |  |     +--rw slot-id      uint8
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw if-ipv6-mixed
+  |     |  |  +--rw egress* [if-name]
+  |     |  |  |  +--rw if-name                 ncd:ifname
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [if-name]
+  |     |  |     +--rw if-name                 ncd:ifname
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw vlan-ipv6-mixed
+  |     |  |  +--rw egress* [vlan-id]
+  |     |  |  |  +--rw vlan-id                 uint16
+  |     |  |  |  +--rw acl-name                acl-name-type
+  |     |  |  |  +--rw port-acl-description?   ncd:string-with-blank
+  |     |  |  +--rw ingress* [vlan-id]
+  |     |  |     +--rw vlan-id                 uint16
+  |     |  |     +--rw acl-name                acl-name-type
+  |     |  |     +--rw port-acl-description?   ncd:string-with-blank
+  |     |  +--rw device-ipv6-mixeds
+  |     |  |  +--rw device-ipv6-mixed* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw if-link
+  |     |  |  +--rw egress* [if-name]
+  |     |  |  |  +--rw if-name     ncd:ifname
+  |     |  |  |  +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingress* [if-name]
+  |     |  |     +--rw if-name     ncd:ifname
+  |     |  |     +--rw acl-name    acl-name-type
+  |     |  +--rw vlan-link
+  |     |  |  +--rw egress* [vlan-id]
+  |     |  |  |  +--rw vlan-id     uint16
+  |     |  |  |  +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingress* [vlan-id]
+  |     |  |     +--rw vlan-id     uint16
+  |     |  |     +--rw acl-name    acl-name-type
+  |     |  +--rw device-links
+  |     |  |  +--rw device-link* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw device-user-defineds
+  |     |  |  +--rw device-user-defined* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw if-ipv4-vxlan
+  |     |  |  +--rw egresses
+  |     |  |  |  +--rw egress* [if-name]
+  |     |  |  |     +--rw if-name     ncd:ifname
+  |     |  |  |     +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingresses
+  |     |  |     +--rw ingress* [if-name]
+  |     |  |        +--rw if-name     ncd:ifname
+  |     |  |        +--rw acl-name    acl-name-type
+  |     |  +--rw vlan-ipv4-vxlan
+  |     |  |  +--rw egresses
+  |     |  |  |  +--rw egress* [vlan-id]
+  |     |  |  |     +--rw vlan-id     uint16
+  |     |  |  |     +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingresses
+  |     |  |     +--rw ingress* [vlan-id]
+  |     |  |        +--rw vlan-id     uint16
+  |     |  |        +--rw acl-name    acl-name-type
+  |     |  +--rw device-ipv4-vxlans
+  |     |  |  +--rw device-ipv4-vxlan* [direction]
+  |     |  |     +--rw direction    acl-if-direction
+  |     |  |     +--rw acl-name     acl-name-type
+  |     |  +--rw if-udf-template
+  |     |  |  +--rw egresses
+  |     |  |  |  +--rw egress* [if-name]
+  |     |  |  |     +--rw if-name     ncd:ifname
+  |     |  |  |     +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingresses
+  |     |  |     +--rw ingress* [if-name]
+  |     |  |        +--rw if-name     ncd:ifname
+  |     |  |        +--rw acl-name    acl-name-type
+  |     |  +--rw if-ipv6-vxlan
+  |     |  |  +--rw egresses
+  |     |  |  |  +--rw egress* [if-name]
+  |     |  |  |     +--rw if-name     ncd:ifname
+  |     |  |  |     +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingresses
+  |     |  |     +--rw ingress* [if-name]
+  |     |  |        +--rw if-name     ncd:ifname
+  |     |  |        +--rw acl-name    acl-name-type
+  |     |  +--rw vlan-ipv6-vxlan
+  |     |  |  +--rw egresses
+  |     |  |  |  +--rw egress* [vlan-id]
+  |     |  |  |     +--rw vlan-id     uint16
+  |     |  |  |     +--rw acl-name    acl-name-type
+  |     |  |  +--rw ingresses
+  |     |  |     +--rw ingress* [vlan-id]
+  |     |  |        +--rw vlan-id     uint16
+  |     |  |        +--rw acl-name    acl-name-type
+  |     |  +--rw device-ipv6-vxlans
+  |     |     +--rw device-ipv6-vxlan* [direction]
+  |     |        +--rw direction    acl-if-direction
+  |     |        +--rw acl-name     acl-name-type
+  |     +--rw vni-acl
+  |     |  +--rw vni-ipv4-vxlans
+  |     |     +--rw vni-ipv4-vxlan* [vxlan-id direction]
+  |     |        +--rw vxlan-id     uint32
+  |     |        +--rw direction    acl-if-direction
+  |     |        +--rw acl-name     acl-name-type
+  |     +--rw statistics-switch!
+  |        +--rw ipv4-log-switchs
+  |        |  +--rw ipv4-log-switch* [if-name if-direction]
+  |        |     +--rw if-name         ncd:ifname
+  |        |     +--rw if-direction    acl-if-direction
+  |        |     +--rw (switch-option)
+  |        |        +--:(off)
+  |        |        |  +--rw off       empty
+  |        |        +--:(on)
+  |        |           +--rw on        empty
+  |        |           +--rw action    enumeration
+  |        +--rw ipv6-log-switchs
+  |        |  +--rw ipv6-log-switch* [if-name if-direction]
+  |        |     +--rw if-name         ncd:ifname
+  |        |     +--rw if-direction    acl-if-direction
+  |        |     +--rw (switch-option)
+  |        |        +--:(off)
+  |        |        |  +--rw off       empty
+  |        |        +--:(on)
+  |        |           +--rw on        empty
+  |        |           +--rw action    enumeration
+  |        +--rw link-log-switchs
+  |        |  +--rw link-log-switch* [if-name if-direction]
+  |        |     +--rw if-name         ncd:ifname
+  |        |     +--rw if-direction    acl-if-direction
+  |        |     +--rw (switch-option)
+  |        |        +--:(off)
+  |        |        |  +--rw off       empty
+  |        |        +--:(on)
+  |        |           +--rw on        empty
+  |        |           +--rw action    enumeration
+  |        +--rw ipv4-mixed-log-switchs
+  |           +--rw ipv4-mixed-log-switch* [if-name if-direction]
+  |              +--rw if-name         ncd:ifname
+  |              +--rw if-direction    acl-if-direction
+  |              +--rw (switch-option)
+  |                 +--:(off)
+  |                 |  +--rw off       empty
+  |                 +--:(on)
+  |                    +--rw on        empty
+  |                    +--rw action    enumeration
+  +--ro operation
+  |  +--ro acl
+  |     +--ro ipv4-log-clears
+  |     |  +--ro ipv4-log-clear* [if-name if-direction]
+  |     |     +--ro if-name         ncd:ifname
+  |     |     +--ro if-direction    acl-if-direction
+  |     +--ro ipv6-log-clears
+  |     |  +--ro ipv6-log-clear* [if-name if-direction]
+  |     |     +--ro if-name         ncd:ifname
+  |     |     +--ro if-direction    acl-if-direction
+  |     +--ro link-log-clears
+  |     |  +--ro link-log-clear* [if-name if-direction]
+  |     |     +--ro if-name         ncd:ifname
+  |     |     +--ro if-direction    acl-if-direction
+  |     +--ro ipv4-mixed-log-clears
+  |        +--ro ipv4-mixed-log-clear* [if-name if-direction]
+  |           +--ro if-name         ncd:ifname
+  |           +--ro if-direction    acl-if-direction
+  +--ro state
+     +--ro acl
+        +--ro acl-v4-statistics
+        |  +--ro acl-v4-statistic* [if-name if-direction acl-ruleid]
+        |     +--ro if-name          ncd:ifname
+        |     +--ro if-direction     acl-if-direction
+        |     +--ro acl-ruleid       uint32
+        |     +--ro acl-name?        acl-name-type
+        |     +--ro stats-bytes?     uint64
+        |     +--ro stats-packets?   uint64
+        |     +--ro stats-rate?      uint64
+        +--ro acl-v6-statistics
+        |  +--ro acl-v6-statistic* [if-name if-direction acl-ruleid]
+        |     +--ro if-name          ncd:ifname
+        |     +--ro if-direction     acl-if-direction
+        |     +--ro acl-ruleid       uint32
+        |     +--ro acl-name?        acl-name-type
+        |     +--ro stats-bytes?     uint64
+        |     +--ro stats-packets?   uint64
+        |     +--ro stats-rate?      uint64
+        +--ro acl-link-statistics
+        |  +--ro acl-link-statistic* [if-name if-direction acl-ruleid]
+        |     +--ro if-name          ncd:ifname
+        |     +--ro if-direction     acl-if-direction
+        |     +--ro acl-ruleid       uint32
+        |     +--ro acl-name?        acl-name-type
+        |     +--ro stats-bytes?     uint64
+        |     +--ro stats-packets?   uint64
+        |     +--ro stats-rate?      uint64
+        +--ro acl-v4-mixed-statistics
+           +--ro acl-v4-mixed-statistic* [if-name if-direction acl-ruleid]
+              +--ro if-name          ncd:ifname
+              +--ro if-direction     acl-if-direction
+              +--ro acl-ruleid       uint32
+              +--ro acl-name?        acl-name-type
+              +--ro stats-bytes?     uint64
+              +--ro stats-packets?   uint64
+              +--ro stats-rate?      uint64

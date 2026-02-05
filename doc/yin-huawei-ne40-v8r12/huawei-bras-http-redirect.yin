@@ -1,0 +1,881 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-http-redirect"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-http-redirect="urn:huawei:yang:huawei-bras-http-redirect"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access"
+        xmlns:qos="urn:huawei:yang:huawei-qos"
+        xmlns:bras-vas="urn:huawei:yang:huawei-bras-vas"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:bras-web-authen="urn:huawei:yang:huawei-bras-web-authen">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bras-http-redirect"/>
+  <prefix value="bras-http-redirect"/>
+  <import module="huawei-aaa">
+    <prefix value="aaa"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <import module="huawei-qos">
+    <prefix value="qos"/>
+  </import>
+  <import module="huawei-bras-vas">
+    <prefix value="bras-vas"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-bras-web-authen">
+    <prefix value="bras-web-authen"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras-http-redirect.</text>
+  </description>
+  <revision date="2020-02-22">
+    <description>
+      <text>Description modification.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-16">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-control"/>
+  <grouping name="work-mode-group">
+    <description>
+      <text>Work mode group.</text>
+    </description>
+    <leaf name="work-mode">
+      <type name="enumeration">
+        <enum name="get">
+          <value value="1"/>
+          <description>
+            <text>Indicates that the working mode is get.</text>
+          </description>
+        </enum>
+        <enum name="post">
+          <value value="2"/>
+          <description>
+            <text>Indicates that the working mode is post.</text>
+          </description>
+        </enum>
+      </type>
+      <default value="get"/>
+      <description>
+        <text>Indicates that the working mode.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="web-server-url-group">
+    <description>
+      <text>Web server url group.</text>
+    </description>
+    <leaf name="url-name">
+      <type name="string">
+        <length value="1..200"/>
+      </type>
+      <must condition="../url-name != '-' and ../url-name != '--'"/>
+      <description>
+        <text>Specifies the redirection URL for mandatory web authentication.</text>
+      </description>
+    </leaf>
+    <leaf name="auth-ip-address">
+      <when condition="../url-name"/>
+      <type name="leafref">
+        <path value="/bras-web-authen:bras-web-authen/bras-web-authen:ip-servers/bras-web-authen:ip-server/bras-web-authen:ip"/>
+      </type>
+      <description>
+        <text>Specifies the IPv4 or IPv6 address of the web authentication server to which the mandatory web server is bound, in dotted decimal notation.</text>
+      </description>
+    </leaf>
+    <leaf name="vpn-name">
+      <when condition="../auth-ip-address"/>
+      <type name="leafref">
+        <path value="/bras-web-authen:bras-web-authen/bras-web-authen:ip-servers/bras-web-authen:ip-server[bras-web-authen:ip=current()/../auth-ip-address]/bras-web-authen:vpn-name"/>
+      </type>
+      <mandatory value="true"/>
+      <description>
+        <text>Specifies the name of the VPN instance to which the bound web authentication server belongs. Public network vpn-name value is '_public_'.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="web-server-address-group">
+    <description>
+      <text>Web server address group.</text>
+    </description>
+    <leaf name="ip-address">
+      <type name="inet:ipv4-address-no-zone"/>
+      <description>
+        <text>Specifies the IP address of the web server.</text>
+      </description>
+    </leaf>
+    <leaf name="ipv6-address">
+      <type name="inet:ipv6-address-no-zone"/>
+      <description>
+        <text>Specifies the IPv6 address of the web server.</text>
+      </description>
+    </leaf>
+    <leaf name="auth-ip-address">
+      <when condition="../ipv6-address or ../ip-address"/>
+      <type name="leafref">
+        <path value="/bras-web-authen:bras-web-authen/bras-web-authen:ip-servers/bras-web-authen:ip-server/bras-web-authen:ip"/>
+      </type>
+      <description>
+        <text>Specifies the IPv4 or IPv6 address of the web authentication server to which the mandatory web server is bound, in dotted decimal notation.</text>
+      </description>
+    </leaf>
+    <leaf name="vpn-instance">
+      <when condition="../auth-ip-address"/>
+      <type name="leafref">
+        <path value="/bras-web-authen:bras-web-authen/bras-web-authen:ip-servers/bras-web-authen:ip-server[bras-web-authen:ip=current()/../auth-ip-address]/bras-web-authen:vpn-name"/>
+      </type>
+      <mandatory value="true"/>
+      <description>
+        <text>Specifies the name of the VPN instance to which the bound web authentication server belongs. Public network vpn-name value is '_public_'.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <container name="bras-http-redirect">
+    <description>
+      <text>Bras http redirect.</text>
+    </description>
+    <container name="web-url-profiles">
+      <description>
+        <text>List of redirect templates.</text>
+      </description>
+      <list name="web-url-profile">
+        <key value="name"/>
+        <description>
+          <text>Configure a redirect template.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..64"/>
+            <pattern value="[a-z0-9._-]{1,64}"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <description>
+            <text>Specifies the name of the redirect template.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <container name="url">
+          <description>
+            <text>Configure a redirect URL in a redirect template. By default, no redirect URL is configured in the redirect template scenario.</text>
+          </description>
+          <leaf name="content">
+            <type name="string">
+              <length value="1..200"/>
+            </type>
+            <description>
+              <text>Specifies the redirect URL, either in a domain name or an IP address, such as 10.0.0.1, http://10.0.0.1, www.huawei.com or http://www.huawei.com.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+    <container name="url-or-dnss">
+      <description>
+        <text>List of blacklists of URLs for which web authentication or portal redirection will be performed forcibly or configures a whitelist for users who access web services using HTTPS.</text>
+      </description>
+      <list name="url-or-dns">
+        <key value="url-string deny-or-permit"/>
+        <description>
+          <text>Configure a blacklist of URLs for which web authentication or portal redirection will be performed forcibly or configures a whitelist for users who access web services using HTTPS.</text>
+        </description>
+        <leaf name="url-string">
+          <type name="string">
+            <length value="1..200"/>
+          </type>
+          <description>
+            <text>Specifies an address of a web page.</text>
+          </description>
+        </leaf>
+        <leaf name="deny-or-permit">
+          <type name="boolean"/>
+          <description>
+            <text>Enable/disable a whitelist for users who access web services using HTTPS or a blacklist of URLs for which web authentication or portal redirection will be performed forcibly.</text>
+          </description>
+        </leaf>
+        <container name="url-deny-counts">
+          <config value="false"/>
+          <description>
+            <text>List of statistics for times that an HTTP blacklist is hit.</text>
+          </description>
+          <list name="url-deny-count">
+            <key value="slot-id"/>
+            <description>
+              <text>Display the statistics for times that an HTTP blacklist is hit.</text>
+            </description>
+            <leaf name="slot-id">
+              <type name="string">
+                <length value="1..15"/>
+              </type>
+              <description>
+                <text>Display the slot ID.</text>
+              </description>
+            </leaf>
+            <leaf name="deny-count">
+              <type name="uint32"/>
+              <description>
+                <text>Number of times that an HTTP blacklist is hit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="http-redirect-profiles">
+      <description>
+        <text>List of redirection templates.</text>
+      </description>
+      <list name="http-redirect-profile">
+        <key value="name"/>
+        <max-elements value="255"/>
+        <description>
+          <text>Configure the redirection template.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..31"/>
+            <pattern value="[a-z0-9._-]{1,31}"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <description>
+            <text>The redirection template name.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <uses name="work-mode-group"/>
+        <leaf name="url">
+          <type name="string">
+            <length value="1..200"/>
+          </type>
+          <description>
+            <text>Specifies the URL address.</text>
+          </description>
+        </leaf>
+        <leaf name="push-times">
+          <type name="uint8">
+            <range value="1..5"/>
+          </type>
+          <default value="2"/>
+          <description>
+            <text>Sets number of times to push advertisements.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="portal-age-time">
+      <description>
+        <text>Configure the captive portal timeout period.</text>
+      </description>
+      <leaf name="value">
+        <type name="uint32">
+          <range value="1..900"/>
+        </type>
+        <description>
+          <text>Configure captive portal timeout period (configuration in the domain has high priority) in second.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <augment target-node="/qos:qos/qos:classifier-template/qos:traffic-behaviors/qos:traffic-behavior/bras-vas:bas">
+    <description>
+      <text>Traffic behaviors.</text>
+    </description>
+    <container name="http-redirect">
+      <description>
+        <text>Configure http-redirect under qos traffic-behavior model.</text>
+      </description>
+      <container name="redirect-cpu-portal">
+        <description>
+          <text>Configure the next hop of the packets to send to the CPU according to limits of idle web users.</text>
+        </description>
+        <leaf name="enable">
+          <type name="enumeration">
+            <enum name="http-enable">
+              <value value="0"/>
+              <description>
+                <text>Parsing the user MAC address by duid.</text>
+              </description>
+            </enum>
+            <enum name="http-plus-enable">
+              <value value="1"/>
+              <description>
+                <text>Enables or disables httpRedirect Plus.</text>
+              </description>
+            </enum>
+            <enum name="cpu-redirect-enable">
+              <value value="2"/>
+              <description>
+                <text>The redirect-cpu portal command configures flow-based captive portal redirection.</text>
+              </description>
+            </enum>
+            <enum name="redirect-chasten-enable">
+              <value value="3"/>
+              <description>
+                <text>The redirect-cpu http-redirect-chasten command to run to configure the next hop of the packets to send to the CPU according to limits of idle web users.</text>
+              </description>
+            </enum>
+            <enum name="dns-enable">
+              <value value="4"/>
+              <description>
+                <text>Configures dns redirection.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Redirects login users to an authentication web page.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas">
+    <description>
+      <text>Creates a domain and enters the domain scenario; alternatively, you can enter the scenario of an existing domain. Exceptionally, in this module it cannot be deleted or removed to delete its child.</text>
+    </description>
+    <container name="http-redirect">
+      <must condition="not(./web-server-url/auth-ip-address and ./web-server-address/auth-ip-address and ./web-server-url/auth-ip-address!=./web-server-address/auth-ip-address)"/>
+      <must condition="not(./web-server-url-slave/auth-ip-address and ./web-server-address-slave/auth-ip-address and ./web-server-url-slave/auth-ip-address!=./web-server-address-slave/auth-ip-address)"/>
+      <must condition="not(./web-server-address/ip-address and ./web-server-address-slave/ip-address and ./web-server-address/ip-address=./web-server-address-slave/ip-address)"/>
+      <must condition="not(./web-server-address/ipv6-address and ./web-server-address-slave/ipv6-address and ./web-server-address/ipv6-address=./web-server-address-slave/ipv6-address)"/>
+      <must condition="not(./web-server-url/url-name = ./web-server-url-slave/url-name)"/>
+      <description>
+        <text>Configure HTTP redirect.</text>
+      </description>
+      <container name="portal-redirect-age">
+        <description>
+          <text>Configure the portal redirect function.</text>
+        </description>
+        <leaf name="time">
+          <type name="uint32">
+            <range value="1..900"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>Specifies the captive portal timeout period.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="portal-redirect-pppoe-url">
+        <description>
+          <text>Configure the portal redirect function.</text>
+        </description>
+        <leaf name="authenticate">
+          <type name="string">
+            <length value="1..200"/>
+          </type>
+          <description>
+            <text>Sets the URL for forcibly redirecting an authenticated PPPoE user to a portal.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="portal-redirect-identical-url">
+        <description>
+          <text>Configure the portal redirect function.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable IPv4 and IPv6 users to use identical URL and the IPv6 redirection web page to be pushed to users in IPv6 forcible redirection scenarios.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="portal-server">
+        <description>
+          <text>Configure the mandatory parameters in the domain. Including the IP address of the portal server, redirected URL, number of forcible redirection attempts, URL parameters, and whether a user is redirected to the first URL entered by the user, user MAC address in redirection packets.</text>
+        </description>
+        <leaf name="url-parameter">
+          <type name="empty"/>
+          <description>
+            <text>Indicates whether the redirected URL carries wlanusername.</text>
+          </description>
+        </leaf>
+        <leaf name="cipher-key-type">
+          <type name="enumeration">
+            <enum name="cipher-without-key">
+              <value value="1"/>
+              <description>
+                <text>Use an empty string as the key for encryption.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Displays whether the ciphertext of a user MAC address is empty.</text>
+          </description>
+        </leaf>
+        <leaf name="shared-key-cipher">
+          <when condition="not(../cipher-key-type)"/>
+          <type name="pub-type:password-extend">
+            <length value="1..128"/>
+          </type>
+          <description>
+            <text>Specifies the keyword for generating ciphertext user MAC address to be displayed,the simple password length ranges from 1 to 16, and the cipher password length ranges from 1 to 128.</text>
+          </description>
+        </leaf>
+        <leaf name="ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Specifies the IPv4 address of the portal server.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv6-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Specifies the IPv6 address of the portal server.</text>
+          </description>
+        </leaf>
+        <leaf name="redirect-limit">
+          <type name="uint32">
+            <range value="1..5"/>
+          </type>
+          <default value="2"/>
+          <description>
+            <text>Specifies the number of forcible redirection attempts.</text>
+          </description>
+        </leaf>
+        <leaf name="url">
+          <type name="string">
+            <length value="1..200"/>
+          </type>
+          <description>
+            <text>Indicates the redirected URL address.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="web-server-url">
+        <presence value="Create web-server-url."/>
+        <description>
+          <text>Enable/disable a redirection URL for mandatory web authentication and configures the web authentication server bound to the mandatory web authentication server in a domain.</text>
+        </description>
+        <uses name="web-server-url-group"/>
+      </container>
+      <container name="web-server-url-slave">
+        <presence value="Create web-server-url-slave."/>
+        <description>
+          <text>Enable/disable a redirection URL for mandatory web authentication and configures the web authentication server bound to the mandatory web authentication server in a domain as slave.</text>
+        </description>
+        <uses name="web-server-url-group"/>
+      </container>
+      <container name="web-server-address">
+        <presence value="Create web-server-address."/>
+        <description>
+          <text>Enable/disable an IP address or an IPv6 address for the web server and configures the web authentication server bound to the mandatory web authentication server in a domain.</text>
+        </description>
+        <uses name="web-server-address-group"/>
+      </container>
+      <container name="web-server-address-slave">
+        <presence value="Create web-server-address-slave."/>
+        <description>
+          <text>Enable/disable an IP address or an IPv6 address for the web server and configures the web authentication server bound to the mandatory web authentication server in a domain as slave.</text>
+        </description>
+        <uses name="web-server-address-group"/>
+      </container>
+      <container name="web-redirect">
+        <description>
+          <text>Configure web redirect.</text>
+        </description>
+        <uses name="work-mode-group"/>
+      </container>
+      <container name="web-redirect-identical">
+        <description>
+          <text>Configure web redirect identical url.</text>
+        </description>
+        <leaf name="url">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable identical url.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="redirect-users-to-urls">
+        <description>
+          <text>List of forcibly redirects users in a domain to a URL.</text>
+        </description>
+        <list name="redirect-users-to-url">
+          <key value="index"/>
+          <description>
+            <text>Configure forcibly redirects users in a domain to a URL.</text>
+          </description>
+          <leaf name="index">
+            <type name="uint32">
+              <range value="1..5"/>
+            </type>
+            <description>
+              <text>Specifies the index of a URL.</text>
+            </description>
+          </leaf>
+          <leaf name="value">
+            <type name="string">
+              <length value="1..200"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specifies the URL to which users are forcibly redirected. The URL can be a domain name or an IP address, such as 10.0.0.1, http://10.0.0.1, www.huawei.com, and http://www.huawei.com.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="web-first-url">
+        <must condition="not(./key-string and ./default-name='true')"/>
+        <description>
+          <text>Configure the web-first-url.</text>
+        </description>
+        <leaf name="key-string">
+          <type name="string">
+            <length value="1..31"/>
+            <pattern value="[a-zA-Z0-9._-]{1,31}"/>
+          </type>
+          <must condition="../key-string != '-' and ../key-string != '--'"/>
+          <description>
+            <text>Specifies a homepage to be displayed after a user is authenticated by a web server. By default, a homepage will not be displayed after a user is authenticated by a web server.</text>
+          </description>
+        </leaf>
+        <leaf name="default-name">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the default keyword used when a homepage to be displayed after a user is authenticated by a web server is wlanuserfirsturl.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="web-individualization">
+        <must condition="not(./subscription-id-keyword and ./agent-remoteid-keyword)"/>
+        <presence value="web-individualization."/>
+        <description>
+          <text>Configure the web individualization.</text>
+        </description>
+        <leaf name="user-ipaddress-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the keyword of the user IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="ipaddress-of-router-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the keyword of the IP address of the router. If a source interface on the BRAS to the web server is specified using the web-auth-server source command in the system scenario, mscg-ip is the IP address of the outbound interface. If no source interface is specified, mscg-ip is the IP address of the outbound interface of the route to the network segment of the IP address of the web server in the routing table of the BRAS.</text>
+          </description>
+        </leaf>
+        <leaf name="bras-name-for-users-login-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the keyword of the router name for users' login.</text>
+          </description>
+        </leaf>
+        <leaf name="logical-host-name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the logical host name.</text>
+          </description>
+        </leaf>
+        <leaf name="user-defined-ssid-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the key value of the user-defined portal parameter SSID.</text>
+          </description>
+        </leaf>
+        <leaf name="physical-location-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the keyword of physical location information.</text>
+          </description>
+        </leaf>
+        <leaf name="agent-remoteid-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the key value of the user-defined portal parameter agent-remote-id.</text>
+          </description>
+        </leaf>
+        <leaf name="subscription-id-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the key value of the user-defined portal parameter subscription-id.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the keyword of the user MAC address.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-simple-text-keyword">
+          <when condition="../user-mac-keyword"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keyword of the user MAC address in simple text.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-display-format">
+          <when condition="../user-mac-simple-text-keyword='true'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the user MAC address is displayed in the format of aa:bb:cc:dd:ee:ff. By default, the MAC address is displayed in the format of aa-bb-cc-dd-ee-ff.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-aes128-cipher-text">
+          <when condition="../user-mac-keyword"/>
+          <type name="boolean"/>
+          <must condition="(../user-mac-aes128-cipher-text='false' and ../user-mac-simple-text-keyword='false' and ../user-mac-encrypt-in-des='true') or (../user-mac-aes128-cipher-text='false' and ../user-mac-encrypt-in-des='false' and ../user-mac-simple-text-keyword='true') or (../user-mac-encrypt-in-des='false' and ../user-mac-simple-text-keyword='false' and ../user-mac-aes128-cipher-text='true')"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the keyword of the user MAC address to be encrypted in AES128 mode and to be transmitted in ciphertext.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-encrypt-in-cbc">
+          <when condition="../user-mac-aes128-cipher-text='true'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keyword of user MAC address to be encrypted in CBC mode.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-encrypt-in-gcm">
+          <when condition="../user-mac-aes128-cipher-text='true'"/>
+          <type name="boolean"/>
+          <must condition="not(../user-mac-encrypt-in-cbc='true' and ../user-mac-encrypt-in-gcm='true')"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the keyword of user MAC address to be encrypted in GCM mode.</text>
+          </description>
+        </leaf>
+        <leaf name="user-mac-encrypt-in-des">
+          <when condition="../user-mac-keyword"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keyword of user MAC address to be encrypted in DES mode.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-keyword">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specifies the keyword of the AP MAC address.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-simple-text-keyword">
+          <when condition="../ap-mac-keyword"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keyword of the AP MAC address in simple text.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-display-format">
+          <when condition="../ap-mac-simple-text-keyword='true'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the AP MAC address is displayed in the format of aa:bb:cc:dd:ee:ff. By default, the MAC address is displayed in the format of aa-bb-cc-dd-ee-ff.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-aes128-cipher-text">
+          <when condition="../ap-mac-keyword"/>
+          <type name="boolean"/>
+          <must condition="(../ap-mac-aes128-cipher-text='false' and ../ap-mac-simple-text-keyword='false' and ../ap-mac-encrypted-in-des='true') or (../ap-mac-aes128-cipher-text='false' and ../ap-mac-encrypted-in-des='false' and ../ap-mac-simple-text-keyword='true') or (../ap-mac-encrypted-in-des='false' and ../ap-mac-simple-text-keyword='false' and ../ap-mac-aes128-cipher-text='true')"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the keyword of the AP MAC address to be encrypted in AES128 mode and to be transmitted in ciphertext.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-encrypted-in-cbc">
+          <when condition="../ap-mac-aes128-cipher-text='true'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keyword of AP MAC address to be encrypted in CBC mode.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-encrypted-in-gcm">
+          <when condition="../ap-mac-aes128-cipher-text='true'"/>
+          <type name="boolean"/>
+          <must condition="not(../ap-mac-encrypted-in-cbc='true' and ../ap-mac-encrypted-in-gcm='true')"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the keyword of AP MAC address to be encrypted in GCM mode.</text>
+          </description>
+        </leaf>
+        <leaf name="ap-mac-encrypted-in-des">
+          <when condition="../ap-mac-keyword"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keyword of AP MAC address to be encrypted in DES mode.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="web-share-key">
+        <description>
+          <text>Configure the web share key.</text>
+        </description>
+        <leaf name="carried-in-url-of-web-page">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the keywords carried in the URL of a web page pushed by the portal server. The keywords are user-ip and ac-name nas-serial.</text>
+          </description>
+        </leaf>
+        <leaf name="cipher-key-type">
+          <type name="enumeration">
+            <enum name="cipher-without-key">
+              <value value="1"/>
+              <description>
+                <text>Use an empty string as the key for encryption.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Displays whether the ciphertext of a user MAC address or an AP MAC address is empty.</text>
+          </description>
+        </leaf>
+        <leaf name="shared-key-cipher">
+          <when condition="not(../cipher-key-type)"/>
+          <type name="pub-type:password-extend">
+            <length value="1..128"/>
+          </type>
+          <description>
+            <text>Specifies the keyword for generating ciphertext user MAC address or AP MAC address to be displayed.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="portal-individualization">
+        <must condition="not(./first-page-url-keyword and ./first-page-url-default-keyword='true')"/>
+        <description>
+          <text>Configure the portal individualization.</text>
+        </description>
+        <leaf name="user-macaddress">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <must condition="not(../user-macaddress-in-simple-mode='false' and ../user-macaddress-in-aes128-gcm='false' and ../user-macaddress-in-aes128-cbc='false' and ../user-macaddress-in-des='false')"/>
+          <description>
+            <text>Specifies a user MAC address.</text>
+          </description>
+        </leaf>
+        <leaf name="user-macaddress-in-simple-mode">
+          <when condition="../user-macaddress"/>
+          <type name="boolean"/>
+          <must condition="(../user-macaddress-in-simple-mode='false') or (../user-macaddress-in-aes128-gcm='false' and ../user-macaddress-in-aes128-cbc='false' and ../user-macaddress-in-des='false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the user MAC address carried in redirection packets is encapsulated in simple mode.</text>
+          </description>
+        </leaf>
+        <leaf name="delimiter-of-user-macaddress">
+          <when condition="../user-macaddress-in-simple-mode='true'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the delimiter of user MAC addresses is a colon (:).</text>
+          </description>
+        </leaf>
+        <leaf name="user-macaddress-in-aes128-cbc">
+          <when condition="../user-macaddress"/>
+          <type name="boolean"/>
+          <must condition="(../user-macaddress-in-aes128-cbc='false') or (../user-macaddress-in-simple-mode='false' and ../user-macaddress-in-des='false' and ../user-macaddress-in-aes128-gcm='false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the user MAC address carried in redirection packets is encrypted in AES128 and CBC mode and to be transmitted in ciphertext.</text>
+          </description>
+        </leaf>
+        <leaf name="user-macaddress-in-aes128-gcm">
+          <when condition="../user-macaddress"/>
+          <type name="boolean"/>
+          <must condition="(../user-macaddress-in-aes128-gcm='false') or (../user-macaddress-in-simple-mode='false' and ../user-macaddress-in-des='false' and ../user-macaddress-in-aes128-cbc='false')"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the user MAC address carried in redirection packets is encrypted in AES128 and GCM mode and to be transmitted in ciphertext.</text>
+          </description>
+        </leaf>
+        <leaf name="user-macaddress-in-des">
+          <when condition="../user-macaddress"/>
+          <type name="boolean"/>
+          <must condition="(../user-macaddress-in-des='false') or (../user-macaddress-in-simple-mode='false' and ../user-macaddress-in-aes128-cbc='false' and ../user-macaddress-in-aes128-gcm='false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the user MAC address carried in redirection packets is encapsulated in DES mode.</text>
+          </description>
+        </leaf>
+        <leaf name="first-page-url-keyword">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Specifies the keyword used in the function of displaying the page at the first URL.</text>
+          </description>
+        </leaf>
+        <leaf name="first-page-url-default-keyword">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the default keyword wlanuserfirsturl in the function of displaying the page at the first URL.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="dns-redirect">
+        <description>
+          <text>Configure DNS redirect Web server address.</text>
+        </description>
+        <leaf name="server-ip">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>The IP address of the redirect Web server.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

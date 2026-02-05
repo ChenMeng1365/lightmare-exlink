@@ -1,0 +1,862 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-netconf-sync"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nc-sync="urn:huawei:yang:huawei-netconf-sync"
+        xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:huawei:yang:huawei-netconf-sync"/>
+  <prefix value="nc-sync"/>
+  <import module="ietf-netconf">
+    <prefix value="nc"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Netconf synchronization operation to get the complete config and state data and the difference,
+Private features sync-full and sync-increment supported by the schema are added to the YANG file to follow the standard method.</text>
+  </description>
+  <revision date="2020-07-02">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="netconf"/>
+  <typedef name="synchronization-status">
+    <type name="enumeration">
+      <enum name="in-progress">
+        <value value="1"/>
+        <description>
+          <text>Operation id in progress.</text>
+        </description>
+      </enum>
+      <enum name="success">
+        <value value="2"/>
+        <description>
+          <text>Operation is success.</text>
+        </description>
+      </enum>
+      <enum name="failed">
+        <value value="3"/>
+        <description>
+          <text>Operation is failed.</text>
+        </description>
+      </enum>
+      <enum name="partly-failed">
+        <value value="4"/>
+        <description>
+          <text>Operation partly failed.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization status.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-file-transfer-protocol">
+    <type name="enumeration">
+      <enum name="ftp">
+        <value value="1"/>
+        <description>
+          <text>Transfer protocol FTP.</text>
+        </description>
+      </enum>
+      <enum name="sftp">
+        <value value="2"/>
+        <description>
+          <text>Transfer protocol SFTP.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization file transfer protocol.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-file-transfer-method">
+    <type name="enumeration">
+      <enum name="auto">
+        <value value="0"/>
+        <description>
+          <text>Transfer method auto.</text>
+        </description>
+      </enum>
+      <enum name="manual">
+        <value value="1"/>
+        <description>
+          <text>Transfer method manual, use upload-cync-file to transfer the file.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization file transfer method.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-error-option">
+    <type name="enumeration">
+      <enum name="continue-on-error">
+        <value value="0"/>
+        <description>
+          <text>Stop query when app pquery process is error.</text>
+        </description>
+      </enum>
+      <enum name="stop-on-error">
+        <value value="1"/>
+        <description>
+          <text>Continue query other app when app query process is error.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization app error option.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-sftp-key-ex-alg">
+    <type name="enumeration">
+      <enum name="dh-group1">
+        <value value="0"/>
+        <description>
+          <text>Key exchange method DH_Group1_SHA1.</text>
+        </description>
+      </enum>
+      <enum name="dh-exchange-group">
+        <value value="1"/>
+        <description>
+          <text>Key exchange method DH_GroupEx_SHA1.</text>
+        </description>
+      </enum>
+      <enum name="sm2-kep">
+        <value value="2"/>
+        <description>
+          <text>Key exchange method SM2_KEP.</text>
+        </description>
+      </enum>
+      <enum name="dh-exchange-group-sha256">
+        <value value="3"/>
+        <description>
+          <text>Key exchange method DH_GroupEx_SHA256.</text>
+        </description>
+      </enum>
+      <enum name="ecdh-sha2-nistp256">
+        <value value="4"/>
+        <description>
+          <text>Key exchange method ECDH with curve 256.</text>
+        </description>
+      </enum>
+      <enum name="ecdh-sha2-nistp384">
+        <value value="5"/>
+        <description>
+          <text>Key exchange method ECDH with curve 384.</text>
+        </description>
+      </enum>
+      <enum name="ecdh-sha2-nistp521">
+        <value value="6"/>
+        <description>
+          <text>Key exchange method ECDH with curve 521.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization sftp key exchange algorithm.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-sftp-cipher-alg">
+    <type name="enumeration">
+      <enum name="des">
+        <value value="0"/>
+        <description>
+          <text>Cipher DES.</text>
+        </description>
+      </enum>
+      <enum name="des3">
+        <value value="1"/>
+        <description>
+          <text>Cipher TripleDES.</text>
+        </description>
+      </enum>
+      <enum name="aes128">
+        <value value="2"/>
+        <description>
+          <text>Cipher AES128.</text>
+        </description>
+      </enum>
+      <enum name="aes256">
+        <value value="3"/>
+        <description>
+          <text>Cipher AES256.</text>
+        </description>
+      </enum>
+      <enum name="arcfour128">
+        <value value="4"/>
+        <description>
+          <text>Cipher RC4-128.</text>
+        </description>
+      </enum>
+      <enum name="arcfour256">
+        <value value="5"/>
+        <description>
+          <text>Cipher RC4-256.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization sftp Cipher.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-sftp-hmac-alg">
+    <type name="enumeration">
+      <enum name="sha1">
+        <value value="0"/>
+        <description>
+          <text>Cipher TripleDES.</text>
+        </description>
+      </enum>
+      <enum name="sha1-96">
+        <value value="1"/>
+        <description>
+          <text>Cipher DES.</text>
+        </description>
+      </enum>
+      <enum name="md5">
+        <value value="2"/>
+        <description>
+          <text>Cipher AES128.</text>
+        </description>
+      </enum>
+      <enum name="md5-96">
+        <value value="3"/>
+        <description>
+          <text>Cipher AES256.</text>
+        </description>
+      </enum>
+      <enum name="sha2-256">
+        <value value="4"/>
+        <description>
+          <text>Cipher RC4-128.</text>
+        </description>
+      </enum>
+      <enum name="sha2-256-96">
+        <value value="5"/>
+        <description>
+          <text>Cipher RC4-256.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization sftp Cipher.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-sftp-hostkey-alg">
+    <type name="enumeration">
+      <enum name="rsa">
+        <value value="0"/>
+        <description>
+          <text>Identity key RSA.</text>
+        </description>
+      </enum>
+      <enum name="dsa">
+        <value value="1"/>
+        <description>
+          <text>Identity key DSA.</text>
+        </description>
+      </enum>
+      <enum name="ecc">
+        <value value="2"/>
+        <description>
+          <text>Identity key ECC.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization sftp identity key.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-sftp-compress-alg">
+    <type name="enumeration">
+      <enum name="zlib">
+        <value value="0"/>
+        <description>
+          <text>Compress zlib.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization sftp compression.</text>
+    </description>
+  </typedef>
+  <typedef name="sync-force-pubkey">
+    <type name="enumeration">
+      <enum name="yes">
+        <value value="0"/>
+        <description>
+          <text>Force receive pub key YES.</text>
+        </description>
+      </enum>
+      <enum name="no">
+        <value value="1"/>
+        <description>
+          <text>Force receive pub key NO.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Synchronization sftp compression.</text>
+    </description>
+  </typedef>
+  <typedef name="percent">
+    <type name="uint32">
+      <range value="0 .. 100"/>
+    </type>
+    <description>
+      <text>Percentage.</text>
+    </description>
+  </typedef>
+  <typedef name="password">
+    <type name="string">
+      <length value="1..128"/>
+    </type>
+    <description>
+      <text>The password is a string ranging from 1 to 16 characters for a plaintext password and 20 to 128 characters for a ciphertext password.</text>
+    </description>
+  </typedef>
+  <container name="synchronization">
+    <config value="false"/>
+    <description>
+      <text>Data nodes for sync operation progress query.</text>
+    </description>
+    <container name="query-statuss">
+      <description>
+        <text>List of data nodes for query the progress status of sync-full operation.</text>
+      </description>
+      <list name="query-status">
+        <key value="sync-full-id"/>
+        <description>
+          <text>Operational state of query.query the progress of sync-full query operation with condition as sync-full-id only supported for this list.</text>
+        </description>
+        <leaf name="sync-full-id">
+          <type name="uint32"/>
+          <description>
+            <text>Sync-full operation identifer given by device; this is replied as an output element for the sync-full rpc.</text>
+          </description>
+        </leaf>
+        <leaf name="app-num">
+          <type name="uint32"/>
+          <description>
+            <text>Total number of applications queried in the sync-full request.</text>
+          </description>
+        </leaf>
+        <leaf name="status">
+          <type name="synchronization-status"/>
+          <description>
+            <text>Sync-full operation query status.</text>
+          </description>
+        </leaf>
+        <leaf name="progress">
+          <type name="percent"/>
+          <description>
+            <text>Progress percentage of the sync-full operation query.</text>
+          </description>
+        </leaf>
+        <leaf name="in-progress-app">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Name of application which is being queried.</text>
+          </description>
+        </leaf>
+        <leaf name="in-progress-vs-name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Name of virtual system which is being queried.</text>
+          </description>
+        </leaf>
+        <leaf name="in-progress-vs-id">
+          <type name="uint32"/>
+          <description>
+            <text>Identifier of virtual system which is being queried.</text>
+          </description>
+        </leaf>
+        <container name="success-apps">
+          <description>
+            <text>List of success-apps.</text>
+          </description>
+          <list name="success-app">
+            <key value="app-name vs-name"/>
+            <description>
+              <text>Statistics of success-app.</text>
+            </description>
+            <leaf name="app-name">
+              <type name="string">
+                <length value="1..63"/>
+              </type>
+              <description>
+                <text>Name of application which has completed sync query successfully.</text>
+              </description>
+            </leaf>
+            <leaf name="vs-name">
+              <type name="string">
+                <length value="1..32"/>
+              </type>
+              <description>
+                <text>Name of virtual system in which application query is success.</text>
+              </description>
+            </leaf>
+            <leaf name="vs-id">
+              <type name="uint32"/>
+              <ext:support-filter value="true"/>
+              <description>
+                <text>Identifier of virtual system in which application query is success.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="failed-apps">
+          <description>
+            <text>List of failed-apps.</text>
+          </description>
+          <list name="failed-app">
+            <key value="app-name vs-name"/>
+            <description>
+              <text>Statistics of failed-app.</text>
+            </description>
+            <leaf name="app-name">
+              <type name="string">
+                <length value="1..63"/>
+              </type>
+              <description>
+                <text>Name of application for which sync-full query has failed.</text>
+              </description>
+            </leaf>
+            <leaf name="vs-name">
+              <type name="string">
+                <length value="1..32"/>
+              </type>
+              <description>
+                <text>Name of virtual system in which application query failed.</text>
+              </description>
+            </leaf>
+            <leaf name="vs-id">
+              <type name="uint32"/>
+              <ext:support-filter value="true"/>
+              <description>
+                <text>Identifier of virtual system in which application query failed.</text>
+              </description>
+            </leaf>
+            <leaf name="error-message">
+              <type name="string">
+                <length value="1..512"/>
+              </type>
+              <ext:support-filter value="true"/>
+              <description>
+                <text>Query failure error message.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="file-transfer-statuss">
+      <description>
+        <text>List of file transfer status query.</text>
+      </description>
+      <list name="file-transfer-status">
+        <key value="sync-full-id"/>
+        <description>
+          <text>Operational state of query. Query nodes data for file transfer.</text>
+        </description>
+        <leaf name="sync-full-id">
+          <type name="uint32"/>
+          <description>
+            <text>Sync-full operation identifer given by device.</text>
+          </description>
+        </leaf>
+        <leaf name="status">
+          <type name="synchronization-status"/>
+          <description>
+            <text>Sync-full operation file transfer status.</text>
+          </description>
+        </leaf>
+        <leaf name="progress">
+          <type name="percent"/>
+          <description>
+            <text>Progress percentage of the sync-full file transfer.</text>
+          </description>
+        </leaf>
+        <leaf name="error-message">
+          <type name="string">
+            <length value="1..512"/>
+          </type>
+          <description>
+            <text>Query failure error message.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <rpc name="sync-full">
+    <description>
+      <text>Synchronization operation.</text>
+    </description>
+    <input>
+      <container name="target">
+        <description>
+          <text>Configure target information to transfer the sync-full zip file.</text>
+        </description>
+        <leaf name="user-name">
+          <type name="string">
+            <length value="1..253"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>File transfer user name.</text>
+          </description>
+        </leaf>
+        <leaf name="password">
+          <type name="pub-type:password"/>
+          <mandatory value="true"/>
+          <description>
+            <text>File transfer password.</text>
+          </description>
+        </leaf>
+        <leaf name="target-addr">
+          <type name="inet:ip-address"/>
+          <mandatory value="true"/>
+          <description>
+            <text>File transfer target ip address.</text>
+          </description>
+        </leaf>
+        <leaf name="path">
+          <type name="string">
+            <length value="1..255"/>
+          </type>
+          <description>
+            <text>File transfer destination path.</text>
+          </description>
+        </leaf>
+        <leaf name="port-number">
+          <type name="inet:port-number"/>
+          <description>
+            <text>File transfer port number.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-instance-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>File transfer vpn instance name.</text>
+          </description>
+        </leaf>
+      </container>
+      <leaf name="transfer-protocol">
+        <type name="sync-file-transfer-protocol"/>
+        <default value="ftp"/>
+        <description>
+          <text>Sync-full zip file transfer protocol.</text>
+        </description>
+      </leaf>
+      <leaf name="transfer-method">
+        <type name="sync-file-transfer-method"/>
+        <default value="auto"/>
+        <description>
+          <text>Sync-full zip file transfer method, it will auto, manual.</text>
+        </description>
+      </leaf>
+      <leaf name="file-save-time">
+        <when condition="(../transfer-method = 'manual')"/>
+        <type name="uint32">
+          <range value="1..20"/>
+        </type>
+        <units name="min"/>
+        <description>
+          <text>Sync-full file save time in minutues.</text>
+        </description>
+      </leaf>
+      <container name="secure-transfer-options">
+        <when condition="(../transfer-protocol = 'sftp')"/>
+        <description>
+          <text>Configure transfer options for secure target.</text>
+        </description>
+        <leaf name="prefer-kex">
+          <type name="sync-sftp-key-ex-alg"/>
+          <description>
+            <text>The key exchange algorithm.</text>
+          </description>
+        </leaf>
+        <leaf name="prefer-stoc-cipher">
+          <type name="sync-sftp-cipher-alg"/>
+          <description>
+            <text>The preferential encryption algorithm from server to client.</text>
+          </description>
+        </leaf>
+        <leaf name="prefer-ctos-cipher">
+          <type name="sync-sftp-cipher-alg"/>
+          <description>
+            <text>The preferential encryption algorithm from client to server.</text>
+          </description>
+        </leaf>
+        <leaf name="prefer-stoc-hmac">
+          <type name="sync-sftp-hmac-alg"/>
+          <description>
+            <text>The preferential HMAC algorithm from server to client.</text>
+          </description>
+        </leaf>
+        <leaf name="prefer-ctos-hmac">
+          <type name="sync-sftp-hmac-alg"/>
+          <description>
+            <text>The preferential HMAC algorithm from client to server.</text>
+          </description>
+        </leaf>
+        <leaf name="compression-type-ctos">
+          <type name="sync-sftp-compress-alg"/>
+          <description>
+            <text>The preferential compression algorithm from client to server.</text>
+          </description>
+        </leaf>
+        <leaf name="compression-type-stoc">
+          <type name="sync-sftp-compress-alg"/>
+          <description>
+            <text>The preferential compression algorithm from server to client.</text>
+          </description>
+        </leaf>
+        <leaf name="force-receive-pubkey">
+          <type name="sync-force-pubkey"/>
+          <description>
+            <text>Force server public key authentication.</text>
+          </description>
+        </leaf>
+      </container>
+      <leaf name="filename-prefix">
+        <type name="string">
+          <length value="1..32"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Sync-full zip file name prefix.</text>
+        </description>
+      </leaf>
+      <leaf name="app-err-operation">
+        <type name="sync-error-option"/>
+        <description>
+          <text>Sync-full app error operation, To continue or stop if any app query results in error.</text>
+        </description>
+      </leaf>
+      <anyxml name="filter">
+        <description>
+          <text>Filter element to sync datamodel.</text>
+        </description>
+        <nc:get-filter-element-attributes/>
+      </anyxml>
+    </input>
+    <output>
+      <leaf name="sync-full-id">
+        <type name="uint32"/>
+        <description>
+          <text>Sync-full operation identifer given by device;
+this is replied as an output element for the sync-full rpc.</text>
+        </description>
+      </leaf>
+    </output>
+  </rpc>
+  <rpc name="upload-sync-file">
+    <description>
+      <text>Upload the synchronization file.</text>
+    </description>
+    <input>
+      <leaf name="sync-full-id">
+        <type name="uint32"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Sync-full operation identifer given by device.</text>
+        </description>
+      </leaf>
+      <leaf name="result-save-time">
+        <type name="uint32">
+          <range value="1..5"/>
+        </type>
+        <units name="min"/>
+        <default value="5"/>
+        <description>
+          <text>Sync-full operation file transfer result saved time in minutes.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="cancel-synchronization">
+    <description>
+      <text>Cancel the specified synchronization operation.</text>
+    </description>
+    <input>
+      <leaf name="sync-full-id">
+        <type name="uint32"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Sync-full operation identifer given by device.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="sync-increment">
+    <description>
+      <text>Syncronize the increment data.</text>
+    </description>
+    <input>
+      <container name="target">
+        <description>
+          <text>Configure target information to transfer the sync-increment file.</text>
+        </description>
+        <leaf name="flow-id">
+          <type name="uint32">
+            <range value="1..max"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Target flow id.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="source">
+        <description>
+          <text>Configure source information to transfer the sync-increment file.</text>
+        </description>
+        <leaf name="flow-id">
+          <type name="uint32">
+            <range value="1..max"/>
+          </type>
+          <must condition="not(../../target/flow-id) or (../../target/flow-id and ../flow-id&lt;../../target/flow-id)">
+            <error-message>
+              <value>The source flow-id must be less than the target flow-id.</value>
+            </error-message>
+          </must>
+          <mandatory value="true"/>
+          <description>
+            <text>Source flow id.</text>
+          </description>
+        </leaf>
+      </container>
+      <anyxml name="filter">
+        <description>
+          <text>Filter element to sync datamodel.</text>
+        </description>
+        <nc:get-filter-element-attributes/>
+      </anyxml>
+    </input>
+    <output>
+      <anyxml name="data">
+        <description>
+          <text>Data model output with record information.</text>
+        </description>
+      </anyxml>
+    </output>
+  </rpc>
+  <rpc name="sync-mda-resource-file">
+    <description>
+      <text>Synchronization mda resource file operation.</text>
+    </description>
+    <input>
+      <leaf name="resource-type">
+        <type name="bits">
+          <bit name="yang"/>
+          <bit name="yang-patch"/>
+          <bit name="yang-zh-cn"/>
+          <bit name="yang-zh-cn-patch"/>
+          <bit name="alarm"/>
+          <bit name="alarm-patch"/>
+          <bit name="panel"/>
+          <bit name="panel-patch"/>
+        </type>
+        <default value="yang yang-patch yang-zh-cn yang-zh-cn-patch alarm alarm-patch panel panel-patch"/>
+        <description>
+          <text>Sync mda resource zip file type.</text>
+        </description>
+      </leaf>
+      <leaf name="transfer-protocol">
+        <type name="sync-file-transfer-protocol"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Sync file transfer protocol.</text>
+        </description>
+      </leaf>
+      <leaf name="user-name">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>File transfer user name.</text>
+        </description>
+      </leaf>
+      <leaf name="password">
+        <type name="pub-type:password-extend">
+          <length value="1..255"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>File transfer password.</text>
+        </description>
+      </leaf>
+      <leaf name="target-addr">
+        <type name="inet:ip-address"/>
+        <mandatory value="true"/>
+        <description>
+          <text>File transfer target ip address.</text>
+        </description>
+      </leaf>
+      <leaf name="port-number">
+        <type name="inet:port-number"/>
+        <description>
+          <text>File transfer port number.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-instance">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>File transfer vpn instance name.</text>
+        </description>
+      </leaf>
+      <leaf name="target-file-path">
+        <type name="string">
+          <length value="1..128"/>
+        </type>
+        <description>
+          <text>File transfer destination path.</text>
+        </description>
+      </leaf>
+      <leaf name="file-name-prefix">
+        <type name="string">
+          <length value="1..64"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Sync mda resource zip file name prefix.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

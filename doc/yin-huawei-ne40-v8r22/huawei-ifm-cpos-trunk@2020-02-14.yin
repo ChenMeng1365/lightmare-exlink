@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ifm-cpos-trunk"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ifm-cpos-trunk="urn:huawei:yang:huawei-ifm-cpos-trunk"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-ifm-cpos-trunk"/>
+  <prefix value="ifm-cpos-trunk"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Defines the Cpos-Trunk bundling technology, which bundles multiple physical interfaces into a logical interface.</text>
+  </description>
+  <revision date="2020-02-14">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="trunk"/>
+  <typedef name="channel-mode-type">
+    <type name="enumeration">
+      <enum name="vc12">
+        <value value="0"/>
+        <description>
+          <text>VC12.</text>
+        </description>
+      </enum>
+      <enum name="vc4">
+        <value value="1"/>
+        <description>
+          <text>VC4.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Cpos Trunk Channel Mode.</text>
+    </description>
+  </typedef>
+  <typedef name="active-status-type">
+    <type name="enumeration">
+      <enum name="invalid">
+        <value value="0"/>
+        <description>
+          <text>Invalid.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="1"/>
+        <description>
+          <text>The interface is in Active state.</text>
+        </description>
+      </enum>
+      <enum name="inactive">
+        <value value="2"/>
+        <description>
+          <text>The interface is in InActive state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Cpos trunk member active state.</text>
+    </description>
+  </typedef>
+  <typedef name="e1t1-work-mode-type">
+    <type name="enumeration">
+      <enum name="framed">
+        <value value="0"/>
+        <description>
+          <text>Framed.</text>
+        </description>
+      </enum>
+      <enum name="unframed">
+        <value value="1"/>
+        <description>
+          <text>Unframed.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E1T1 work mode type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <when condition="ifm:type='Cpos-Trunk'"/>
+    <description>
+      <text>Active when the interface is set to type Cpos-Trunk.</text>
+    </description>
+    <container name="cpos-trunk">
+      <description>
+        <text>Configure the Cpos-Trunk interface, which is a logical interface with multiple physical interfaces being bundled.</text>
+      </description>
+      <leaf name="channel-mode">
+        <type name="channel-mode-type"/>
+        <default value="vc12"/>
+        <description>
+          <text>Channel mode.</text>
+        </description>
+      </leaf>
+      <leaf name="up-member-num">
+        <type name="uint32">
+          <range value="0..2"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Specifies the number of member interfaces in the Up state.</text>
+        </description>
+      </leaf>
+      <container name="members">
+        <description>
+          <text>List of cpos-trunk member interfaces.</text>
+        </description>
+        <list name="member">
+          <key value="name"/>
+          <max-elements value="2"/>
+          <description>
+            <text>Configure cpos-trunk member interfaces.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Cpos'"/>
+            <description>
+              <text>Configures a name for a cpos-trunk member interface.</text>
+            </description>
+          </leaf>
+          <leaf name="port-status">
+            <type name="ifm:port-status"/>
+            <config value="false"/>
+            <description>
+              <text>Displays the status of a cpos-trunk member interface.</text>
+            </description>
+          </leaf>
+          <leaf name="active-status">
+            <type name="active-status-type"/>
+            <config value="false"/>
+            <description>
+              <text>Displays the active status of a cpos-trunk member interface.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="e1t1s">
+        <when condition="not(../channel-mode='vc4')"/>
+        <description>
+          <text>List of E1T1 port attributes.</text>
+        </description>
+        <list name="e1t1">
+          <key value="number"/>
+          <max-elements value="63"/>
+          <ext:operation-exclude value="create"/>
+          <ext:generated-by value="system">
+            <when condition="not(../../channel-mode='vc4')"/>
+            <description>
+              <text>The all instances are generated automatically when channel-mode is not vc4.</text>
+            </description>
+          </ext:generated-by>
+          <description>
+            <text>Configure E1T1 port attribute.</text>
+          </description>
+          <leaf name="number">
+            <type name="uint32">
+              <range value="1..63"/>
+            </type>
+            <description>
+              <text>E1T1 number.</text>
+            </description>
+          </leaf>
+          <leaf name="work-mode">
+            <type name="e1t1-work-mode-type"/>
+            <default value="framed"/>
+            <description>
+              <text>Work mode.</text>
+            </description>
+          </leaf>
+          <container name="channel-sets">
+            <when condition="not(../work-mode='unframed')"/>
+            <description>
+              <text>List of channel-sets.</text>
+            </description>
+            <list name="channel-set">
+              <key value="number"/>
+              <max-elements value="31"/>
+              <description>
+                <text>Configure channel-set.</text>
+              </description>
+              <leaf name="number">
+                <type name="uint32">
+                  <range value="0..30"/>
+                </type>
+                <description>
+                  <text>Channel-set number.</text>
+                </description>
+              </leaf>
+              <leaf name="timeslot-list">
+                <type name="string">
+                  <length value="1..83"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Timeslot list. Please enter a number from 0 to 31 with ',' or '-' in the middle, like '1-10,11'.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

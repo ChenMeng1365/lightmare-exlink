@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-telemetry-ex"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:zxr10-telemetry-ex="http://www.zte.com.cn/zxr10/netconf/schema/rosng/telemetry"
+        xmlns:oc-telemetry="http://openconfig.net/yang/telemetry"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/telemetry"/>
+  <prefix value="zxr10-telemetry-ex"/>
+  <import module="openconfig-telemetry">
+    <prefix value="oc-telemetry"/>
+  </import>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation
+      Nanjing Institute of ZTE Corporation
+      No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China
+      Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>Data model which creates the configuration for the telemetry
+systems and functions on the device.</text>
+  </description>
+  <revision date="2021-01-22">
+    <description>
+      <text>Adding leaf pki-profile to /oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group/oc-telemetry:destinations/oc-telemetry:destination/oc-telemetry:config.
+Adding leaf pki-profile to /oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group/oc-telemetry:destinations/oc-telemetry:destination/oc-telemetry:state.</text>
+    </description>
+  </revision>
+  <revision date="2021-01-12">
+    <description>
+      <text>condition add multi.</text>
+    </description>
+  </revision>
+  <revision date="2020-11-10">
+    <description>
+      <text>proto-name add cmcc-spn and telecom-olt.</text>
+    </description>
+  </revision>
+  <revision date="2020-07-27">
+    <description>
+      <text>Add container proto.</text>
+    </description>
+  </revision>
+  <revision date="2019-08-22">
+    <description>
+      <text>Add container system-id.</text>
+    </description>
+  </revision>
+  <revision date="2019-05-24">
+    <description>
+      <text>Add container destinations-vrf.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-12-25">
+    <description>
+      <text>Initial release.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <feature name="proto">
+    <description>
+      <text>Proto feature.</text>
+    </description>
+  </feature>
+  <typedef name="proto-name">
+    <type name="enumeration">
+      <enum name="zte-v1">
+        <value value="1"/>
+        <description>
+          <text>The 1st version proto of ZTE.</text>
+        </description>
+      </enum>
+      <enum name="zte-v2">
+        <value value="2"/>
+        <description>
+          <text>The 2nd version proto of ZTE.</text>
+        </description>
+      </enum>
+      <enum name="baidu">
+        <value value="3"/>
+        <description>
+          <text>The proto of Baidu.</text>
+        </description>
+      </enum>
+      <enum name="tencent">
+        <value value="51"/>
+        <description>
+          <text>The proto of Tencent.</text>
+        </description>
+      </enum>
+      <enum name="cmcc-spn">
+        <value value="4"/>
+        <description>
+          <text>The proto of CMCC Slicing Packet Network.</text>
+        </description>
+      </enum>
+      <enum name="telecom-olt">
+        <value value="5"/>
+        <description>
+          <text>The proto of Telecom Optical Line Terminal.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The proto name used in grpc connections.</text>
+    </description>
+  </typedef>
+  <augment target-node="/oc-telemetry:telemetry-system/oc-telemetry:sensor-groups/oc-telemetry:sensor-group/oc-telemetry:sensor-paths/oc-telemetry:sensor-path/oc-telemetry:config">
+    <description>
+      <text>Adding condition to sensor-path.</text>
+    </description>
+    <container name="conditions">
+      <description>
+        <text>Configuration parameters relating to the sensor path condition.</text>
+      </description>
+      <choice name="choice">
+        <description>
+          <text>The choice of conditions.</text>
+        </description>
+        <case name="single">
+          <description>
+            <text>Single express.</text>
+          </description>
+          <leaf name="express">
+            <description>
+              <text>The express allows certain values in the the telemetry stream.</text>
+            </description>
+            <type name="ncd:string-with-blank">
+              <length value="1..107"/>
+              <pattern value="(^\S+\s{1}(eq|ge|gt|le|lt)\s{1}\S+$)|(^\S+\s{1}(eq|ge|gt|le|lt)\s{1}\S+\s{1}(and|or)\s{1}(eq|ge|gt|le|lt)\s{1}\S+$)"/>
+            </type>
+          </leaf>
+        </case>
+        <case name="multi">
+          <container name="filters">
+            <description>
+              <text>Top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.</text>
+            </description>
+            <list name="filter">
+              <description>
+                <text>Filter list of a sampling path.</text>
+              </description>
+              <key value="name"/>
+              <max-elements value="1"/>
+              <leaf name="name">
+                <description>
+                  <text>Filter name of a sampling path.</text>
+                </description>
+                <type name="string">
+                  <length value="1..8"/>
+                  <pattern value="[A-Za-z0-9]+"/>
+                </type>
+              </leaf>
+              <leaf name="condition-relation">
+                <description>
+                  <text>Relationship between filter criteria in a filter of a sampling path.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="and">
+                    <value value="1"/>
+                    <description>
+                      <text>The relationship between filter criteria in a filter of a sampling path is and.</text>
+                    </description>
+                  </enum>
+                  <enum name="or">
+                    <value value="2"/>
+                    <description>
+                      <text>The relationship between filter criteria in a filter of a sampling path is or.</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="and"/>
+              </leaf>
+              <container name="conditions">
+                <description>
+                  <text>Top level container for filter criteria, including the filter information such as op-field, op-type, and op-value.</text>
+                </description>
+                <list name="condition">
+                  <description>
+                    <text>List of filter criteria.</text>
+                  </description>
+                  <key value="op-field op-type op-value"/>
+                  <max-elements value="2"/>
+                  <leaf name="op-field">
+                    <description>
+                      <text>Reference to the op-field of the filter criterion.</text>
+                    </description>
+                    <type name="string">
+                      <length value="1..63"/>
+                    </type>
+                  </leaf>
+                  <leaf name="op-type">
+                    <description>
+                      <text>Reference to the op-type of the filter criterion.</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="eq">
+                        <value value="0"/>
+                        <description>
+                          <text>Equal.</text>
+                        </description>
+                      </enum>
+                      <enum name="gt">
+                        <value value="1"/>
+                        <description>
+                          <text>Greater than.</text>
+                        </description>
+                      </enum>
+                      <enum name="ge">
+                        <value value="2"/>
+                        <description>
+                          <text>Greater than or equal.</text>
+                        </description>
+                      </enum>
+                      <enum name="lt">
+                        <value value="3"/>
+                        <description>
+                          <text>Less than.</text>
+                        </description>
+                      </enum>
+                      <enum name="le">
+                        <value value="4"/>
+                        <description>
+                          <text>Less than or equal.</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="op-value">
+                    <description>
+                      <text>Comparison value of the filter criterion. For the actual value range, see the definition of op-field in the YANG model.</text>
+                    </description>
+                    <type name="string">
+                      <length value="1..63"/>
+                    </type>
+                  </leaf>
+                </list>
+              </container>
+            </list>
+          </container>
+          <ncd:revise-date date="2021-01-12"/>
+        </case>
+      </choice>
+    </container>
+  </augment>
+  <augment target-node="/oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group">
+    <description>
+      <text>Adding destination with vrf to destination-group.</text>
+    </description>
+    <container name="destinations-vrf">
+      <description>
+        <text>The destination container lists the destination information such as IP address, VRF name and port of the telemetry messages from the network element.</text>
+      </description>
+      <list name="destination">
+        <description>
+          <text>List of telemetry stream destinations.</text>
+        </description>
+        <key value="destination-address destination-port vrf"/>
+        <leaf name="destination-address">
+          <description>
+            <text>Reference to the destination address of the telemetry stream.</text>
+          </description>
+          <type name="ncd:ip-address-string">
+            <length value="1..46"/>
+          </type>
+        </leaf>
+        <leaf name="destination-port">
+          <description>
+            <text>Reference to the port number of the stream destination.</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+        </leaf>
+        <leaf name="vrf">
+          <description>
+            <text>VPN routing/forwarding instance (VRF) name.</text>
+          </description>
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+        </leaf>
+        <leaf name="pki-profile">
+          <description>
+            <text>PKI profile name.</text>
+          </description>
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <ncd:revise-date date="2021-01-22"/>
+        </leaf>
+      </list>
+    </container>
+    <ncd:revise-date date="2019-05-24"/>
+  </augment>
+  <augment target-node="/oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group/oc-telemetry:destinations/oc-telemetry:destination/oc-telemetry:config">
+    <description>
+      <text>Adding leaf pki-profile to /oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group/oc-telemetry:destinations/oc-telemetry:destination/oc-telemetry:config.</text>
+    </description>
+    <leaf name="pki-profile">
+      <description>
+        <text>PKI profile name.</text>
+      </description>
+      <type name="string">
+        <length value="1..63"/>
+      </type>
+    </leaf>
+    <ncd:revise-date date="2021-01-22"/>
+  </augment>
+  <augment target-node="/oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group/oc-telemetry:destinations/oc-telemetry:destination/oc-telemetry:state">
+    <description>
+      <text>Adding leaf pki-profile to /oc-telemetry:telemetry-system/oc-telemetry:destination-groups/oc-telemetry:destination-group/oc-telemetry:destinations/oc-telemetry:destination/oc-telemetry:state.</text>
+    </description>
+    <leaf name="pki-profile">
+      <description>
+        <text>PKI profile name.</text>
+      </description>
+      <config value="false"/>
+      <type name="string">
+        <length value="1..63"/>
+      </type>
+    </leaf>
+    <ncd:revise-date date="2021-01-22"/>
+  </augment>
+  <augment target-node="/oc-telemetry:telemetry-system">
+    <description>
+      <text>Adding node under telemetry-system.</text>
+    </description>
+    <container name="system-id">
+      <description>
+        <text>System ID.</text>
+      </description>
+      <leaf name="name">
+        <description>
+          <text>system ID name.</text>
+        </description>
+        <type name="string">
+          <length value="1..63"/>
+        </type>
+      </leaf>
+    </container>
+    <container name="proto">
+      <description>
+        <text>The proto used in grpc connections.</text>
+      </description>
+      <leaf name="name">
+        <description>
+          <text>The proto name used in grpc connections.</text>
+        </description>
+        <type name="proto-name"/>
+      </leaf>
+      <ncd:revise-date date="2020-07-27"/>
+    </container>
+    <ncd:revise-date date="2019-08-22"/>
+  </augment>
+</module>

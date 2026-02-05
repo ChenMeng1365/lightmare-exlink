@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-types"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/openconfig-types"/>
+  <prefix value="oc-types"/>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This module contains a set of general type definitions that
+are used across OpenConfig models. It can be imported by modules
+that make use of these types.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.6.0"/>
+  <revision date="2019-04-16">
+    <description>
+      <text>Clarify definition of timeticks64.</text>
+    </description>
+    <reference>
+      <text>0.6.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.5.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-05-05">
+    <description>
+      <text>Add grouping of min-max-time and
+included them to all stats with min/max/avg</text>
+    </description>
+    <reference>
+      <text>0.5.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-01-16">
+    <description>
+      <text>Add interval to min/max/avg stats; add percentage stat</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-16">
+    <description>
+      <text>Apply fix for ieetfloat32 length parameter</text>
+    </description>
+    <reference>
+      <text>0.3.3</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-13">
+    <description>
+      <text>Add ADDRESS_FAMILY identity</text>
+    </description>
+    <reference>
+      <text>0.3.2</text>
+    </reference>
+  </revision>
+  <revision date="2016-11-14">
+    <description>
+      <text>Correct length of ieeefloat32</text>
+    </description>
+    <reference>
+      <text>0.3.1</text>
+    </reference>
+  </revision>
+  <revision date="2016-11-11">
+    <description>
+      <text>Additional types - ieeefloat32 and routing-password</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-05-31">
+    <description>
+      <text>OpenConfig public release</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <typedef name="percentage">
+    <type name="uint8">
+      <range value="0..100"/>
+    </type>
+    <description>
+      <text>Integer indicating a percentage value</text>
+    </description>
+  </typedef>
+  <typedef name="std-regexp">
+    <type name="string"/>
+    <description>
+      <text>This type definition is a placeholder for a standard
+definition of a regular expression that can be utilised in
+OpenConfig models. Further discussion is required to
+consider the type of regular expressions that are to be
+supported. An initial proposal is POSIX compatible.</text>
+    </description>
+  </typedef>
+  <typedef name="timeticks64">
+    <type name="uint64"/>
+    <units name="nanoseconds"/>
+    <description>
+      <text>The timeticks64 represents the time, modulo 2^64 in
+nanoseconds between two epochs. The leaf using this
+type must define the epochs that tests are relative to.</text>
+    </description>
+  </typedef>
+  <typedef name="ieeefloat32">
+    <type name="binary">
+      <length value="4"/>
+    </type>
+    <description>
+      <text>An IEEE 32-bit floating point number. The format of this number
+is of the form:
+ 1-bit  sign
+ 8-bit  exponent
+ 23-bit fraction
+The floating point value is calculated using:
+ (-1)**S * 2**(Exponent-127) * (1+Fraction)</text>
+    </description>
+  </typedef>
+  <typedef name="routing-password">
+    <type name="string"/>
+    <description>
+      <text>This type is indicative of a password that is used within
+a routing protocol which can be returned in plain text to the
+NMS by the local system. Such passwords are typically stored
+as encrypted strings. Since the encryption used is generally
+well known, it is possible to extract the original value from
+the string - and hence this format is not considered secure.
+Leaves specified with this type should not be modified by
+the system, and should be returned to the end-user in plain
+text. This type exists to differentiate passwords, which
+may be sensitive, from other string leaves. It could, for
+example, be used by the NMS to censor this data when
+viewed by particular users.</text>
+    </description>
+  </typedef>
+  <typedef name="stat-interval">
+    <type name="uint64"/>
+    <units name="nanoseconds"/>
+    <description>
+      <text>A time interval over which a set of statistics is computed.
+A common usage is to report the interval over which
+avg/min/max stats are computed and reported.</text>
+    </description>
+  </typedef>
+  <grouping name="stat-interval-state">
+    <description>
+      <text>Reusable leaf definition for stats computation interval</text>
+    </description>
+    <leaf name="interval">
+      <type name="oc-types:stat-interval"/>
+      <description>
+        <text>If supported by the system, this reports the time interval
+over which the min/max/average statistics are computed by
+the system.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="min-max-time">
+    <description>
+      <text>Common grouping for recording the absolute time at which
+the minimum and maximum values occurred in the statistics</text>
+    </description>
+    <leaf name="min-time">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>The absolute time at which the minimum value occurred.
+The value is the timestamp in nanoseconds relative to
+ the Unix Epoch (Jan 1, 1970 00:00:00 UTC).</text>
+      </description>
+    </leaf>
+    <leaf name="max-time">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>The absolute time at which the maximum value occurred.
+The value is the timestamp in nanoseconds relative to
+ the Unix Epoch (Jan 1, 1970 00:00:00 UTC).</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="avg-min-max-stats-precision1">
+    <description>
+      <text>Common nodes for recording average, minimum, and
+maximum values for a statistic.  These values all have
+fraction-digits set to 1.  Statistics are computed
+and reported based on a moving time interval (e.g., the last
+30s).  If supported by the device, the time interval over which
+the statistics are computed is also reported.</text>
+    </description>
+    <leaf name="avg">
+      <type name="decimal64">
+        <fraction-digits value="1"/>
+      </type>
+      <description>
+        <text>The arithmetic mean value of the statistic over the
+time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="min">
+      <type name="decimal64">
+        <fraction-digits value="1"/>
+      </type>
+      <description>
+        <text>The minimum value of the statistic over the time
+interval.</text>
+      </description>
+    </leaf>
+    <leaf name="max">
+      <type name="decimal64">
+        <fraction-digits value="1"/>
+      </type>
+      <description>
+        <text>The maximum value of the statitic over the time
+interval.</text>
+      </description>
+    </leaf>
+    <uses name="stat-interval-state"/>
+    <uses name="min-max-time"/>
+  </grouping>
+  <grouping name="avg-min-max-instant-stats-precision1">
+    <description>
+      <text>Common grouping for recording an instantaneous statistic value
+in addition to avg-min-max stats</text>
+    </description>
+    <leaf name="instant">
+      <type name="decimal64">
+        <fraction-digits value="1"/>
+      </type>
+      <description>
+        <text>The instantaneous value of the statistic.</text>
+      </description>
+    </leaf>
+    <uses name="avg-min-max-stats-precision1"/>
+  </grouping>
+  <grouping name="avg-min-max-instant-stats-precision2-dB">
+    <description>
+      <text>Common grouping for recording dB values with 2 decimal
+precision. Values include the instantaneous, average,
+minimum, and maximum statistics.  Statistics are computed
+and reported based on a moving time interval (e.g., the last
+30s).  If supported by the device, the time interval over which
+the statistics are computed, and the times at which the minimum
+and maximum values occurred, are also reported.</text>
+    </description>
+    <leaf name="instant">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dB"/>
+      <description>
+        <text>The instantaneous value of the statistic.</text>
+      </description>
+    </leaf>
+    <leaf name="avg">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dB"/>
+      <description>
+        <text>The arithmetic mean value of the statistic over the
+time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="min">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dB"/>
+      <description>
+        <text>The minimum value of the statistic over the time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="max">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dB"/>
+      <description>
+        <text>The maximum value of the statistic over the time
+interval.</text>
+      </description>
+    </leaf>
+    <uses name="stat-interval-state"/>
+    <uses name="min-max-time"/>
+  </grouping>
+  <grouping name="avg-min-max-instant-stats-precision2-dBm">
+    <description>
+      <text>Common grouping for recording dBm values with 2 decimal
+precision. Values include the instantaneous, average,
+minimum, and maximum statistics.  Statistics are computed
+and reported based on a moving time interval (e.g., the last
+30s).  If supported by the device, the time interval over which
+the statistics are computed, and the times at which the minimum
+and maximum values occurred, are also reported.</text>
+    </description>
+    <leaf name="instant">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dBm"/>
+      <description>
+        <text>The instantaneous value of the statistic.</text>
+      </description>
+    </leaf>
+    <leaf name="avg">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dBm"/>
+      <description>
+        <text>The arithmetic mean value of the statistic over the
+time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="min">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dBm"/>
+      <description>
+        <text>The minimum value of the statistic over the time
+interval.</text>
+      </description>
+    </leaf>
+    <leaf name="max">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="dBm"/>
+      <description>
+        <text>The maximum value of the statistic over the time interval.</text>
+      </description>
+    </leaf>
+    <uses name="stat-interval-state"/>
+    <uses name="min-max-time"/>
+  </grouping>
+  <grouping name="avg-min-max-instant-stats-precision2-mA">
+    <description>
+      <text>Common grouping for recording mA values with 2 decimal
+precision. Values include the instantaneous, average,
+minimum, and maximum statistics.  Statistics are computed
+and reported based on a moving time interval (e.g., the last
+30s).  If supported by the device, the time interval over which
+the statistics are computed, and the times at which the minimum
+and maximum values occurred, are also reported.</text>
+    </description>
+    <leaf name="instant">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="mA"/>
+      <description>
+        <text>The instantaneous value of the statistic.</text>
+      </description>
+    </leaf>
+    <leaf name="avg">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="mA"/>
+      <description>
+        <text>The arithmetic mean value of the statistic over the
+time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="min">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="mA"/>
+      <description>
+        <text>The minimum value of the statistic over the time
+interval.</text>
+      </description>
+    </leaf>
+    <leaf name="max">
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+      <units name="mA"/>
+      <description>
+        <text>The maximum value of the statistic over the time
+interval.</text>
+      </description>
+    </leaf>
+    <uses name="stat-interval-state"/>
+    <uses name="min-max-time"/>
+  </grouping>
+  <grouping name="avg-min-max-instant-stats-pct">
+    <description>
+      <text>Common grouping for percentage statistics.
+Values include the instantaneous, average,
+minimum, and maximum statistics.  Statistics are computed
+and reported based on a moving time interval (e.g., the last
+30s).  If supported by the device, the time interval over which
+the statistics are computed, and the times at which the minimum
+and maximum values occurred, are also reported.</text>
+    </description>
+    <leaf name="instant">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The instantaneous percentage value.</text>
+      </description>
+    </leaf>
+    <leaf name="avg">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The arithmetic mean value of the percentage measure of the
+statistic over the time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="min">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The minimum value of the percentage measure of the
+statistic over the time interval.</text>
+      </description>
+    </leaf>
+    <leaf name="max">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The maximum value of the percentage measure of the
+statistic over the time interval.</text>
+      </description>
+    </leaf>
+    <uses name="stat-interval-state"/>
+    <uses name="min-max-time"/>
+  </grouping>
+  <identity name="ADDRESS_FAMILY">
+    <description>
+      <text>A base identity for all address families</text>
+    </description>
+  </identity>
+  <identity name="IPV4">
+    <base name="ADDRESS_FAMILY"/>
+    <description>
+      <text>The IPv4 address family</text>
+    </description>
+  </identity>
+  <identity name="IPV6">
+    <base name="ADDRESS_FAMILY"/>
+    <description>
+      <text>The IPv6 address family</text>
+    </description>
+  </identity>
+  <identity name="MPLS">
+    <base name="ADDRESS_FAMILY"/>
+    <description>
+      <text>The MPLS address family</text>
+    </description>
+  </identity>
+  <identity name="L2_ETHERNET">
+    <base name="ADDRESS_FAMILY"/>
+    <description>
+      <text>The 802.3 Ethernet address family</text>
+    </description>
+  </identity>
+</module>

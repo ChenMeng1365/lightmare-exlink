@@ -1,0 +1,184 @@
+module: huawei-bras-cu-controller
+  +--rw bras-cu-controller
+     +--rw vm-capacity
+     |  +--rw vups-num?    uint32
+     |  +--rw ulpus-num?   uint32
+     +--rw up-backup-groups
+     |  +--rw up-backup-group* [name]
+     |     +--rw name     string
+     |     +--rw up-id*   uint32
+     +--rw cusp-down-hold
+     |  +--rw hold-time?   uint32
+     +--rw resource-ups
+     |  +--rw resource-up* [up-id]
+     |     +--rw up-id                      uint32
+     |     +--rw remote-interface-name*     pub-type:if-name
+     |     +--rw resource-up-description
+     |     |  +--rw up-description?   string
+     |     +--ro brief
+     |     |  +--ro sysname?            string
+     |     |  +--ro netconf-agent-ip?   inet:ipv4-address-no-zone
+     |     +--rw remote-up-boards
+     |     |  +--rw remote-up-board* [board-id]
+     |     |     +--rw board-id    uint32
+     |     +--rw cp-channel
+     |     |  +--rw netconf-connection!
+     |     |  |  +--rw bind-policy
+     |     |  |  |  +--rw name?   string
+     |     |  |  +--rw res-sftp-directory
+     |     |  |     +--rw path-name?   string
+     |     |  +--rw cusp-connection
+     |     |  |  +--rw agent-name?   string
+     |     |  +--rw vxlan-connection!
+     |     |     +--rw vni                       uint32
+     |     |     +--rw source-ip-address         inet:ipv4-address-no-zone
+     |     |     +--rw destination-ip-address    inet:ipv4-address-no-zone
+     |     |     +--rw vpn-instance-name?        -> /ni:network-instance/instances/instance/name
+     |     +--rw cp-to-up!
+     |     |  +--rw cu-agent!
+     |     |  |  +--rw cusp-agent
+     |     |  |  |  +--rw agent-name?   -> ../../../up-cusp-agents/up-cusp-agent/agent-name
+     |     |  |  +--rw vxlan-channel!
+     |     |  |     +--rw vni                       uint32
+     |     |  |     +--rw source-ip-address         inet:ipv4-address-no-zone
+     |     |  |     +--rw destination-ip-address*   inet:ipv4-address-no-zone
+     |     |  |     +--rw vpn-instance-name?        string
+     |     |  +--rw up-cusp-agents
+     |     |     +--rw up-cusp-agent* [agent-name]
+     |     |        +--rw agent-name            string
+     |     |        +--rw transport-address?    inet:ipv4-address-no-zone
+     |     |        +--rw transport-vpn-name?   string
+     |     |        +--rw echo-interval?        uint8
+     |     |        +--rw keychain-name?        string
+     |     |        +--rw ssl-policy-name?      string
+     |     |        +--rw timeout-count?        uint8
+     |     |        +--rw congest-duration?     uint8
+     |     |        +--rw tcp-mss?              uint16
+     |     |        +--rw connections
+     |     |           +--rw connection* [controller-ip]
+     |     |              +--rw controller-ip    inet:ipv4-address-no-zone
+     |     +--rw cp-nqa-detect!
+     |     |  +--rw count?                   uint32
+     |     |  +--rw (detect-time-type)?
+     |     |  |  +--:(minute-level)
+     |     |  |  |  +--rw minute-interval?   uint32
+     |     |  |  |  +--rw minute-timeout?    uint32
+     |     |  |  +--:(second-level)
+     |     |  |     +--rw second-interval?   uint32
+     |     |  |     +--rw second-timeout?    uint32
+     |     |  +--rw destination-port         uint32
+     |     |  +--rw resume-threshold?        uint8
+     |     |  +--rw alarm-threshold?         uint8
+     |     +--rw up-block
+     |     |  +--rw block-enable?   empty
+     |     +--ro south-conflicts
+     |        +--ro south-conflict* [index]
+     |           +--ro index      uint32
+     |           +--ro command?   string
+     |           +--ro reason?    string
+     |           +--ro time?      yang:date-and-time
+     |           +--ro view?      string
+     +--rw hot-profiles
+     |  +--rw hot-profile* [name]
+     |     +--rw name             string
+     |     +--rw backup-basic
+     |     |  +--rw ipv4-assigned-mode?     ip-assigned-mode-type
+     |     |  +--rw ipv6-assigned-mode?     ip-assigned-mode-type
+     |     |  +--rw nas-logic-port?         pub-type:if-name
+     |     |  +--rw fail-recovery-enable?   boolean
+     |     |  +--rw delay-time?             uint32
+     |     |  +--rw backup-mode?            hot-backup-mode-type
+     |     |  +--rw load-balance
+     |     |     +--rw hash-arithmetic
+     |     |     |  +--rw arithmetic-type?   hash-arithmetic-type
+     |     |     |  +--rw mac-offset?        uint8
+     |     |     +--rw remark-macs
+     |     |        +--rw remark-mac* [address]
+     |     |           +--rw address     pub-type:mac-address
+     |     |           +--rw mac-type    hot-backup-mac-type
+     |     +--rw backup-groups
+     |     |  +--rw backup-group* [master-interface slave-interface]
+     |     |     +--rw master-interface    -> /ifm:ifm/interfaces/interface/name
+     |     |     +--rw slave-interface     -> /ifm:ifm/interfaces/interface/name
+     |     +--ro up-status
+     |        +--ro master-vup
+     |        |  +--ro up-id?                  uint32
+     |        |  +--ro state?                  up-state-type
+     |        |  +--ro interface?              pub-type:if-name
+     |        |  +--ro track-odd-mac-state?    up-state-type
+     |        |  +--ro track-even-mac-state?   up-state-type
+     |        |  +--ro track-odd-interface?    pub-type:if-name
+     |        |  +--ro track-even-interface?   pub-type:if-name
+     |        +--ro slave-vup
+     |           +--ro up-id?                  uint32
+     |           +--ro state?                  up-state-type
+     |           +--ro interface?              pub-type:if-name
+     |           +--ro track-odd-mac-state?    up-state-type
+     |           +--ro track-even-mac-state?   up-state-type
+     |           +--ro track-odd-interface?    pub-type:if-name
+     |           +--ro track-even-interface?   pub-type:if-name
+     +--rw other-profiles
+     |  +--rw other-profile* [name]
+     |     +--rw name                         string
+     |     +--rw standby-type                 other-profile-type
+     |     +--rw backup-basic
+     |     |  +--rw ipv4-assigned-mode?     ip-assigned-mode-type
+     |     |  +--rw ipv6-assigned-mode?     ip-assigned-mode-type
+     |     |  +--rw nas-logic-port?         pub-type:if-name
+     |     |  +--rw sub-interface-enable?   empty
+     |     +--rw master-profile-interfaces
+     |     |  +--rw master-profile-interface* [name]
+     |     |     +--rw name                 -> /ifm:ifm/interfaces/interface/name
+     |     |     +--rw virtual-router-id    uint8
+     |     +--rw slave-profile-interfaces
+     |        +--rw slave-profile-interface* [name]
+     |           +--rw name    -> /ifm:ifm/interfaces/interface/name
+     +--ro up-statistics
+     |  +--ro total-up-number?   uint32
+     +--ro resource-upmngs
+     |  +--ro resource-upmng* [upmng-slot up-id]
+     |     +--ro upmng-slot    string
+     |     +--ro up-id         uint32
+     |     +--ro agent-name?   string
+     |     +--ro agent-ip?     inet:ipv4-address-no-zone
+     +--ro resource-upaccs
+     |  +--ro resource-upacc* [upacc-slot up-id up-slot]
+     |     +--ro upacc-slot    string
+     |     +--ro up-id         uint32
+     |     +--ro up-slot       uint32
+     +--ro resource-upboards
+     |  +--ro resource-upboard* [board-position]
+     |     +--ro board-position       string
+     |     +--ro present-status?      present-status-type
+     |     +--ro registered-status?   registered-status-type
+     |     +--ro board-type?          board-type
+     |     +--ro deploy-status?       deploy-status-type
+     +--ro resource-vpns
+     |  +--ro resource-vpn* [up-id identifier]
+     |     +--ro up-id          uint32
+     |     +--ro identifier     string
+     |     +--ro cp-vpn-name?   string
+     |     +--ro up-vpn-name?   string
+     |     +--ro status?        string
+     +--ro up-abilitys
+     |  +--ro up-ability* [interface-name]
+     |     +--ro interface-name    pub-type:if-name
+     |     +--ro access-type?      access-type
+     |     +--ro support-backup?   boolean
+     |     +--ro standby-type?     enumeration
+     +--ro cp-version
+        +--ro interface-version?                     string
+        +--ro management-interface-version-first?    string
+        +--ro management-interface-version-second?   string
+        +--ro management-interface-version-third?    string
+        +--ro connected-up-versions
+           +--ro connected-up-version* [up-id]
+              +--ro up-id                 uint32
+              +--ro up-version?           string
+              +--ro negotiation-result?   string
+
+  rpcs:
+    +---x reset-south-conflict-by-up
+    |  +---w input
+    |     +---w up-id    -> /bras-cu-controller/resource-ups/resource-up/up-id
+    +---x reset-south-conflict-all-up

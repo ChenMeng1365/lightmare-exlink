@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-dcn"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dcn="urn:huawei:yang:huawei-dcn"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-dcn"/>
+  <prefix value="dcn"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Data communication network.</text>
+  </description>
+  <revision date="2020-09-23">
+    <description>
+      <text>Added the DCN and TC DCN functions for interfaces.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-07-16">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="dcn"/>
+  <container name="dcn">
+    <description>
+      <text>Data communication network.</text>
+    </description>
+    <container name="site">
+      <description>
+        <text>Configure data communication network.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable DCN.</text>
+        </description>
+      </leaf>
+      <leaf name="ne-id">
+        <ext:dynamic-default/>
+        <ext:operation-exclude value="create|delete"/>
+        <type name="pub-type:hex-binary"/>
+        <description>
+          <text>Configure the NE identifier.
+Neid identify a network element (NE) uniquely.
+Neid=subnetid&lt;&lt;16+baseid, in which subnetid varies from 0x01 to 0xfe, and baseid varies from 0x0001 to 0xfffe.
+An error is reported if the NE ID conflicts with the NE ID in the core routing table.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>DCN interface configuration.</text>
+    </description>
+    <container name="dcn">
+      <when condition="/dcn:dcn/dcn:site/dcn:enable = 'true'"/>
+      <description>
+        <text>Configure DCN interface.</text>
+      </description>
+      <container name="dcnv4">
+        <description>
+          <text>Configure DCN interface.</text>
+        </description>
+        <leaf name="default-port">
+          <type name="boolean"/>
+          <ext:operation-exclude value="create|delete|update"/>
+          <description>
+            <text>Enable/disable auto enable DCN.</text>
+          </description>
+        </leaf>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <ext:dynamic-default>
+            <ext:default-value value="true">
+              <when condition="/dcn:dcn/dcn:site/dcn:enable = 'true' and ../default-port = 'true'"/>
+              <description>
+                <text>DCN is enabled on a default DCN port when the global DCN is enabled.</text>
+              </description>
+            </ext:default-value>
+          </ext:dynamic-default>
+          <description>
+            <text>Enable/disable DCN.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="tc-dcn">
+        <description>
+          <text>Configure TC DCN interface.</text>
+        </description>
+        <leaf name="default-port">
+          <type name="boolean"/>
+          <ext:operation-exclude value="create|delete|update"/>
+          <description>
+            <text>Enable/disable auto enable TC DCN.</text>
+          </description>
+        </leaf>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <ext:dynamic-default>
+            <ext:default-value value="true">
+              <when condition="/dcn:dcn/dcn:site/dcn:enable = 'true' and ../default-port = 'true'"/>
+              <description>
+                <text>TC DCN is enabled on a default TC DCN port when the global DCN is enabled.</text>
+              </description>
+            </ext:default-value>
+          </ext:dynamic-default>
+          <description>
+            <text>Enable/disable TC DCN.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <ext:refine-ext value="/ni:network-instance/ni:instances/ni:instance">
+    <ext:generated-by value="system">
+      <description>
+        <text>The instance is create by DCN.</text>
+      </description>
+      <when condition="/dcn:dcn/dcn:site/dcn:enable = 'true'"/>
+      <ext:filter value="starts-with(ni:name, '__dcn_vpn__')"/>
+    </ext:generated-by>
+  </ext:refine-ext>
+</module>

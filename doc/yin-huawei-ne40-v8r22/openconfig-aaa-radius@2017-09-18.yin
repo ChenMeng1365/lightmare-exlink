@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-aaa-radius"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-aaa="http://openconfig.net/yang/aaa"
+           xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-aaa-types="http://openconfig.net/yang/aaa/types"
+           xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+           xmlns:oc-yang="http://openconfig.net/yang/types/yang">
+  <yang-version value="1"/>
+  <belongs-to module="openconfig-aaa">
+    <prefix value="oc-aaa"/>
+  </belongs-to>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-aaa-types">
+    <prefix value="oc-aaa-types"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module defines configuration and operational state data
+related to the RADIUS protocol for authentication,
+authorization, and accounting.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.3.0"/>
+  <revision date="2017-09-18">
+    <description>
+      <text>Updated to use OpenConfig types modules</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-06">
+    <description>
+      <text>Move to oc-inet types, add IETF attribution, add RADIUS
+counters, changed password leaf names to indicate hashed</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-29">
+    <description>
+      <text>Initial public release</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <identity name="RADIUS">
+    <base name="oc-aaa-types:AAA_SERVER_TYPE"/>
+    <description>
+      <text>Remote Authentication Dial In User Service (RADIUS) AAA
+server</text>
+    </description>
+    <reference>
+      <text>RFC 2865 - Remote Authentication Dial In User Service
+(RADIUS)</text>
+    </reference>
+  </identity>
+  <grouping name="aaa-radius-server-config">
+    <description>
+      <text>Configuration data for a RADIUS server</text>
+    </description>
+    <leaf name="auth-port">
+      <type name="oc-inet:port-number"/>
+      <default value="1812"/>
+      <description>
+        <text>Port number for authentication requests</text>
+      </description>
+    </leaf>
+    <leaf name="acct-port">
+      <type name="oc-inet:port-number"/>
+      <default value="1813"/>
+      <description>
+        <text>Port number for accounting requests</text>
+      </description>
+    </leaf>
+    <leaf name="secret-key">
+      <type name="oc-types:routing-password"/>
+      <description>
+        <text>The unencrypted shared key used between the authentication
+server and the device.</text>
+      </description>
+    </leaf>
+    <leaf name="source-address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>Source IP address to use in messages to the RADIUS server</text>
+      </description>
+    </leaf>
+    <leaf name="retransmit-attempts">
+      <type name="uint8"/>
+      <description>
+        <text>Number of times the system may resend a request to the
+RADIUS server when it is unresponsive</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-radius-server-state">
+    <description>
+      <text>Operational state data for a RADIUS server</text>
+    </description>
+    <container name="counters">
+      <description>
+        <text>A collection of RADIUS related state objects.</text>
+      </description>
+      <leaf name="retried-access-requests">
+        <type name="oc-yang:counter64"/>
+        <description>
+          <text>Retransmitted Access-Request messages.</text>
+        </description>
+      </leaf>
+      <leaf name="access-accepts">
+        <type name="oc-yang:counter64"/>
+        <description>
+          <text>Received Access-Accept messages.</text>
+        </description>
+      </leaf>
+      <leaf name="access-rejects">
+        <type name="oc-yang:counter64"/>
+        <description>
+          <text>Received Access-Reject messages.</text>
+        </description>
+      </leaf>
+      <leaf name="timeout-access-requests">
+        <type name="oc-yang:counter64"/>
+        <description>
+          <text>Access-Request messages that have timed-out,
+requiring retransmission.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="aaa-radius-server-top">
+    <description>
+      <text>Top-level grouping for RADIUS server data</text>
+    </description>
+    <container name="radius">
+      <description>
+        <text>Top-level container for RADIUS server data</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for RADIUS servers</text>
+        </description>
+        <uses name="aaa-radius-server-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for RADIUS servers</text>
+        </description>
+        <uses name="aaa-radius-server-config"/>
+        <uses name="aaa-radius-server-state"/>
+      </container>
+    </container>
+  </grouping>
+</submodule>

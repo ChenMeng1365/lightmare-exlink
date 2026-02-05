@@ -1,0 +1,271 @@
+module zxr10-section-group {
+  namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/section-group'
+            ;
+  prefix section-group ;
+  yang-version 1 ;
+  organization 'ZTE Corporation'
+               ;
+  contact 'ZTE Corporation  '+"\n"
+        + '   Nanjing Institute of ZTE Corporation '+"\n"
+        + '   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China '+"\n"
+        + '   Tel: +86-25-52870000'
+          ;
+  description 'The netconf module to describe the section group.'
+              ;
+  revision 2017-08-10 {
+    description '1.Support MSR(ASR/ZSRV2/ZSRV2-GM) project.'
+                ;
+  }
+  revision 2016-11-18 {
+    description '1,Change the maxmum value of /configuration/section-group/sect'
+              + 'ion-group-configuration/wrapping-protection/east-section from '
+              + '4000 to performance ID 67305544.'+"\n"
+              + '2,Change the maxmum value of /configuration/section-group/sect'
+              + 'ion-group-configuration/wrapping-protection/west-section from '
+              + '4000 to performance ID 67305544.'
+                ;
+  }
+  revision 2013-10-18 {
+    description 'Initial version.'
+                ;
+  }
+  feature wrapping-protection {
+    description 'Wrapping protection.'
+                ;
+  }
+  feature ring-cross-protection {
+    description 'Ring cross protection of wrapping protection.'
+                ;
+  }
+  typedef protect-strategy {
+    type enumeration {
+      enum aps {
+        value 1 ;
+        description 'Automatic protection switching.'
+                    ;
+      }
+    }
+    description 'Protection strategy of section group.'
+                ;
+  }
+  typedef section-state {
+    type enumeration {
+      enum OK {
+        value 0 ;
+        description 'Signal OK.'
+                    ;
+      }
+      enum SF {
+        value 1 ;
+        description 'Signal Fail.'
+                    ;
+      }
+      enum SD {
+        value 2 ;
+        description 'Signal degrade.'
+                    ;
+      }
+    }
+    description 'Section state.'
+                ;
+  }
+  typedef switch-state {
+    type enumeration {
+      enum unknown {
+        value 0 ;
+        description 'Unknown switching state.'
+                    ;
+      }
+      enum switch {
+        value 1 ;
+        description 'Switch to protection entity.'
+                    ;
+      }
+      enum unswitch {
+        value 2 ;
+        description 'Working entity is active.'
+                    ;
+      }
+    }
+    description 'Protection switching state of section group.'
+                ;
+  }
+  container configuration {
+    description 'Configuration model information of section group.'
+                ;
+    container section-group {
+      description 'The configuration information of section group, depend zxr10'
+                + '-section.'
+                  ;
+      list section-group-configuration {
+        description 'Configure section group parameters.'
+                    ;
+        key group-id ;
+        leaf group-id {
+          description "Configure ID of section group.The group ID is between [1"
+                    + ",x].The value of x depends on the performance parameters"
+                    + ",it's default value is 64."
+                      ;
+          type uint32 {
+            range 1..64 {
+              description 'Section group ID.'
+                          ;
+            }
+          }
+        }
+        container wrapping-protection {
+          // if-feature wrapping-protection ;
+          description 'Configure wrapping protection parameters.'
+                      ;
+          leaf east-section {
+            description 'Configure east section of wrapping protection.'
+                        ;
+            type uint32 {
+              range 1..4000 {
+                description 'ID of east section.'
+                            ;
+              }
+            }
+          }
+          leaf west-section {
+            description 'Configure west section of wrapping protection.'
+                        ;
+            type uint32 {
+              range 1..4000 {
+                description 'ID of west section.'
+                            ;
+              }
+            }
+          }
+          leaf protect-strategy {
+            description 'Configure protection switching strategy.'
+                        ;
+            type protect-strategy ;
+          }
+          container ring-cross-protection {
+            // if-feature ring-cross-protection ;
+            // if-feature wrapping-protection ;
+            description 'Configure ring cross protection.'
+                        ;
+            presence 'Configure ring cross protection'
+                     ;
+            list cross-device {
+              description 'Ring cross node device configuration of ring cross p'
+                        + 'rotection.'
+                          ;
+              key 'cross-group-id master-aps-id slave-aps-id'
+                  ;
+              leaf cross-group-id {
+                description "Section group ID of ring cross node device in cros"
+                          + "sed ring.The group ID is between [1,x].The value o"
+                          + "f x depends on the performance parameters,it's def"
+                          + "ault value is 64."
+                            ;
+                type uint32 {
+                  range 1..64 {
+                    description 'Section group ID.'
+                                ;
+                  }
+                }
+              }
+              leaf master-aps-id {
+                description 'APS ID of master ring cross node device.'
+                            ;
+                type uint8 {
+                  range 1..127 {
+                    description 'APS ID.'
+                                ;
+                  }
+                }
+              }
+              leaf slave-aps-id {
+                description 'APS ID of slave ring cross node device.'
+                            ;
+                type uint8 {
+                  range 1..127 {
+                    description 'APS ID.'
+                                ;
+                  }
+                }
+              }
+            }
+            list non-cross-device {
+              description 'Non cross node device configuration of ring cross pr'
+                        + 'otection.'
+                          ;
+              key 'master-aps-id slave-aps-id'
+                  ;
+              leaf master-aps-id {
+                description 'APS ID of master ring cross node device.'
+                            ;
+                type uint8 {
+                  range 1..127 {
+                    description 'APS ID.'
+                                ;
+                  }
+                }
+              }
+              leaf slave-aps-id {
+                description 'APS ID of slave ring cross node device.'
+                            ;
+                type uint8 {
+                  range 1..127 {
+                    description 'APS ID.'
+                                ;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  container state {
+    config false ;
+    description 'State model information of section group.'
+                ;
+    container section-group {
+      description 'State data of section group.'
+                  ;
+      list section-group-state {
+        description "Query section group status information, the group ID is be"
+                  + "tween [1,x].The value of x depends on the performance para"
+                  + "meters,it's default value is 64.Support queries without co"
+                  + "nditions and at protection group ID query."
+                    ;
+        key group-id ;
+        leaf group-id {
+          description 'ID of section group.'
+                      ;
+          type uint32 {
+            range 1..64 {
+              description 'Section group ID.'
+                          ;
+            }
+          }
+        }
+        leaf east-section-state {
+          description 'State of east section.'
+                      ;
+          type section-state ;
+        }
+        leaf west-section-state {
+          description 'State of west section.'
+                      ;
+          type section-state ;
+        }
+        leaf east-switch-state {
+          description 'East section switching state.'
+                      ;
+          type switch-state ;
+        }
+        leaf west-switch-state {
+          description 'West section switching state.'
+                      ;
+          type switch-state ;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,237 @@
+module: zxr10-rip
+  +--rw configuration
+  |  +--rw rip
+  |     +--rw public-instance
+  |     |  +--rw version?                  rip-version-def
+  |     |  +--rw max-paths?                uint8
+  |     |  +--rw default-metric?           uint8
+  |     |  +--rw distance?                 uint8
+  |     |  +--rw auto-summary?             enable-or-disable
+  |     |  +--rw validate-update-source?   enable-or-disable
+  |     |  +--rw flash-update-threshold?   uint8
+  |     |  +--rw bfd?                      enable-or-disable
+  |     |  +--rw fast-reroute?             enable-or-disable
+  |     |  +--rw track-name?               string
+  |     |  +--rw timer-basic!
+  |     |  |  +--rw update-time      uint32
+  |     |  |  +--rw invalid-time     uint32
+  |     |  |  +--rw holddown-time    uint32
+  |     |  |  +--rw flush-time       uint32
+  |     |  +--rw output-delay!
+  |     |  |  +--rw packets       uint32
+  |     |  |  +--rw delay-time    uint8
+  |     |  +--rw networks
+  |     |  |  +--rw network* [network-addr network-wildmask]
+  |     |  |     +--rw network-addr        ncd:ipv4-address
+  |     |  |     +--rw network-wildmask    ncd:ipv4-imask
+  |     |  +--rw neighbors
+  |     |  |  +--rw neighbor* [neighbor-addr]
+  |     |  |     +--rw neighbor-addr    ncd:ipv4-address
+  |     |  +--rw redistributes
+  |     |  |  +--rw redistribute-isiss
+  |     |  |  |  +--rw redistribute-isis* [protocol process-id]
+  |     |  |  |     +--rw protocol        enumeration
+  |     |  |  |     +--rw process-id      uint32
+  |     |  |  |     +--rw metric?         uint8
+  |     |  |  |     +--rw route-map?      string
+  |     |  |  |     +--rw route-policy?   string
+  |     |  |  +--rw redistribute-ospfs
+  |     |  |  |  +--rw redistribute-ospf* [protocol process-id]
+  |     |  |  |     +--rw protocol        enumeration
+  |     |  |  |     +--rw process-id      uint32
+  |     |  |  |     +--rw metric?         uint8
+  |     |  |  |     +--rw route-map?      string
+  |     |  |  |     +--rw route-policy?   string
+  |     |  |  +--rw redistribute-pss
+  |     |  |  |  +--rw redistribute-ps* [protocol]
+  |     |  |  |     +--rw protocol                 enumeration
+  |     |  |  |     +--rw metric?                  uint8
+  |     |  |  |     +--rw with-originate-metric?   empty
+  |     |  |  |     +--rw route-map?               string
+  |     |  |  |     +--rw route-policy?            string
+  |     |  |  +--rw redistribute-others
+  |     |  |     +--rw redistribute-other* [protocol]
+  |     |  |        +--rw protocol        enumeration
+  |     |  |        +--rw metric?         uint8
+  |     |  |        +--rw route-map?      string
+  |     |  |        +--rw route-policy?   string
+  |     |  +--rw offset-lists
+  |     |  |  +--rw for-insts!
+  |     |  |  |  +--rw for-inst* [in-or-out]
+  |     |  |  |     +--rw in-or-out    enumeration
+  |     |  |  |     +--rw acl-name     string
+  |     |  |  |     +--rw metric       uint8
+  |     |  |  +--rw for-ifs!
+  |     |  |     +--rw for-if* [in-or-out interface]
+  |     |  |        +--rw in-or-out    enumeration
+  |     |  |        +--rw interface    ncd:ifname
+  |     |  |        +--rw acl-name     string
+  |     |  |        +--rw metric       uint8
+  |     |  +--rw interfaces
+  |     |     +--rw interface* [if-name]
+  |     |        +--rw if-name                     ncd:ifname
+  |     |        +--rw poison-reverse?             enable-or-disable
+  |     |        +--rw split-horizen?              enable-or-disable
+  |     |        +--rw if-mode?                    enumeration
+  |     |        +--rw only-send-subnet?           enable-or-disable
+  |     |        +--rw originate-default-route?    enumeration
+  |     |        +--rw notify-default-route?       enumeration
+  |     |        +--rw originate-default-rpl?      string
+  |     |        +--rw neighbor-restrict?          enable-or-disable
+  |     |        +--rw auth-mode?                  enumeration
+  |     |        +--rw bfd?                        enumeration
+  |     |        +--rw keychain-name?              string
+  |     |        +--rw send-version?               enumeration
+  |     |        +--rw send-type?                  enumeration
+  |     |        +--rw (auth-key)?
+  |     |        |  +--:(auth-key-clear)
+  |     |        |  |  +--rw auth-key-clear
+  |     |        |  |     +--rw key-clear?   string
+  |     |        |  +--:(auth-key-encrypted)
+  |     |        |     +--rw auth-key-encrypted
+  |     |        |        +--rw key-encrypted?   string
+  |     |        +--rw receive-version!
+  |     |           +--rw receive-v1    rip-version-def
+  |     |           +--rw receive-v2    enumeration
+  |     +--rw vrf-instances
+  |     |  +--rw vrf-instance* [vrf-name]
+  |     |     +--rw vrf-name                  string
+  |     |     +--rw version?                  rip-version-def
+  |     |     +--rw max-paths?                uint8
+  |     |     +--rw default-metric?           uint8
+  |     |     +--rw distance?                 uint8
+  |     |     +--rw auto-summary?             enable-or-disable
+  |     |     +--rw validate-update-source?   enable-or-disable
+  |     |     +--rw bfd?                      enable-or-disable
+  |     |     +--rw fast-reroute?             enable-or-disable
+  |     |     +--rw track-name?               string
+  |     +--rw vrf-networks
+  |     |  +--rw vrf-network* [vrf-name network-addr network-wildmask]
+  |     |     +--rw vrf-name            string
+  |     |     +--rw network-addr        ncd:ipv4-address
+  |     |     +--rw network-wildmask    ncd:ipv4-imask
+  |     +--rw vrf-neighbors
+  |     |  +--rw vrf-neighbor* [vrf-name neighbor-addr]
+  |     |     +--rw vrf-name         string
+  |     |     +--rw neighbor-addr    ncd:ipv4-address
+  |     +--rw vrf-redistributes
+  |     |  +--rw redistribute-isiss
+  |     |  |  +--rw redistribute-isis* [vrf-name protocol process-id]
+  |     |  |     +--rw vrf-name        string
+  |     |  |     +--rw protocol        enumeration
+  |     |  |     +--rw process-id      uint32
+  |     |  |     +--rw metric?         uint8
+  |     |  |     +--rw route-map?      string
+  |     |  |     +--rw route-policy?   string
+  |     |  +--rw redistribute-ospfs
+  |     |  |  +--rw redistribute-ospf* [vrf-name protocol process-id]
+  |     |  |     +--rw vrf-name        string
+  |     |  |     +--rw protocol        enumeration
+  |     |  |     +--rw process-id      uint32
+  |     |  |     +--rw metric?         uint8
+  |     |  |     +--rw route-map?      string
+  |     |  |     +--rw route-policy?   string
+  |     |  +--rw redistribute-pss
+  |     |  |  +--rw redistribute-ps* [vrf-name protocol]
+  |     |  |     +--rw vrf-name                 string
+  |     |  |     +--rw protocol                 enumeration
+  |     |  |     +--rw metric?                  uint8
+  |     |  |     +--rw with-originate-metric?   empty
+  |     |  |     +--rw route-map?               string
+  |     |  |     +--rw route-policy?            string
+  |     |  +--rw redistribute-others
+  |     |     +--rw redistribute-other* [vrf-name protocol]
+  |     |        +--rw vrf-name        string
+  |     |        +--rw protocol        enumeration
+  |     |        +--rw metric?         uint8
+  |     |        +--rw route-map?      string
+  |     |        +--rw route-policy?   string
+  |     +--rw vrf-offset-lists
+  |     |  +--rw for-insts!
+  |     |  |  +--rw for-inst* [vrf-name in-or-out]
+  |     |  |     +--rw vrf-name     string
+  |     |  |     +--rw in-or-out    enumeration
+  |     |  |     +--rw acl-name     string
+  |     |  |     +--rw metric       uint8
+  |     |  +--rw for-ifs!
+  |     |     +--rw for-if* [vrf-name in-or-out interface]
+  |     |        +--rw vrf-name     string
+  |     |        +--rw in-or-out    enumeration
+  |     |        +--rw interface    ncd:ifname
+  |     |        +--rw acl-name     string
+  |     |        +--rw metric       uint8
+  |     +--rw auth-keychains
+  |        +--rw auth-keychain* [if-name key-id]
+  |           +--rw if-name                     ncd:ifname
+  |           +--rw key-id                      uint8
+  |           +--rw (auth-key)?
+  |              +--:(auth-key-clear)
+  |              |  +--rw auth-key-clear
+  |              |     +--rw key-clear    string
+  |              +--:(auth-key-encrypted)
+  |                 +--rw auth-key-encrypted
+  |                    +--rw key-encrypted    string
+  +--ro state
+     +--ro rip
+        +--ro neighbors
+        |  +--ro neighbor* [obj-type vrf-name neighbor-addr]
+        |     +--ro obj-type         select-mode-def
+        |     +--ro vrf-name         string
+        |     +--ro neighbor-addr    ncd:ipv4-address
+        |     +--ro if-name?         ncd:ifname
+        +--ro interfaces
+        |  +--ro interface* [obj-type vrf-name if-name if-ip-addr]
+        |     +--ro obj-type                   select-mode-def
+        |     +--ro vrf-name                   string
+        |     +--ro if-name                    ncd:ifname
+        |     +--ro if-ip-addr                 ncd:ipv4-address
+        |     +--ro if-ip-masklen?             uint8
+        |     +--ro status?                    enable-or-disable
+        |     +--ro recieve-version?           enumeration
+        |     +--ro send-version?              enumeration
+        |     +--ro split-horizon?             enable-or-disable
+        |     +--ro poison-reverse?            enable-or-disable
+        |     +--ro subnet-only?               enable-or-disable
+        |     +--ro notify-default-route?      enumeration
+        |     +--ro originate-default-route?   enumeration
+        |     +--ro neighbor-strict?           enable-or-disable
+        |     +--ro if-mode?                   enumeration
+        |     +--ro auth-mode?                 enumeration
+        |     +--ro bfd?                       enable-or-disable
+        |     +--ro keychain-name?             string
+        |     +--ro route-policy-name?         string
+        +--ro statistics
+        |  +--ro statistic* [obj-type vrf-name]
+        |     +--ro obj-type                     select-mode-def
+        |     +--ro vrf-name                     string
+        |     +--ro total-packets-sent?          uint32
+        |     +--ro request-packets-sent?        uint32
+        |     +--ro response-packets-sent?       uint32
+        |     +--ro total-packets-recieved?      uint32
+        |     +--ro request-packets-recieved?    uint32
+        |     +--ro response-packets-recieved?   uint32
+        +--ro routes
+        |  +--ro route* [obj-type vrf-name dest-addr dest-mask-len serial-number nexthop-addr]
+        |     +--ro obj-type         select-mode-def
+        |     +--ro vrf-name         string
+        |     +--ro dest-addr        ncd:ipv4-address
+        |     +--ro dest-mask-len    uint8
+        |     +--ro serial-number    uint32
+        |     +--ro nexthop-addr     ncd:ipv4-address
+        |     +--ro route-owner?     route-owner-def
+        |     +--ro route-stauts?    route-status-def
+        |     +--ro metric?          uint32
+        |     +--ro distance?        uint8
+        |     +--ro tag?             uint32
+        |     +--ro instance-id?     uint32
+        |     +--ro time?            ncd:time
+        |     +--ro time-status?     route-time-status-def
+        +--ro route-statistics
+           +--ro route-statistic* [obj-type vrf-name]
+              +--ro obj-type         select-mode-def
+              +--ro vrf-name         string
+              +--ro rip?             uint32
+              +--ro rip-discard?     uint32
+              +--ro rip-connected?   uint32
+              +--ro redistributed?   uint32
+              +--ro total?           uint32

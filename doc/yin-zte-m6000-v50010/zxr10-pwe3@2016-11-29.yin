@@ -1,0 +1,1437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-pwe3"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pwe3="http://www.zte.com.cn/zxr10/netconf/schema/rosng/pwe3"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/pwe3"/>
+  <prefix value="pwe3"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe PW info, such as interface parameters,signal status and PW labels.</text>
+  </description>
+  <revision date="2016-11-29">
+    <description>
+      <text>1.Add the attachment-circuit and flow-label nodes in state/pwe3/pws/pw.
+2.Add the flow-label node in state/pwe3/pws/pw/local-params.
+3.Add the flow-label node in state/pwe3/pws/pw/remote-params.</text>
+    </description>
+  </revision>
+  <revision date="2014-12-05">
+    <description>
+      <text>1. Add the received-spe-tlv-info container in state/pwe3/pws/pw for SPE TLV function.
+2. Delete the import zxr10-netconf-defs revision-date.</text>
+    </description>
+  </revision>
+  <revision date="2013-12-11">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <typedef name="pw-signal-mode">
+    <type name="enumeration">
+      <enum name="UNKNOWN">
+        <value value="0"/>
+        <description>
+          <text>The signal mode of PW is unknown.</text>
+        </description>
+      </enum>
+      <enum name="MARTINI">
+        <value value="1"/>
+        <description>
+          <text>The signal mode of PW is Martini.</text>
+        </description>
+      </enum>
+      <enum name="PWE3">
+        <value value="2"/>
+        <description>
+          <text>The signal mode of PW is PWE3.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The signal mode of PW.
+UNKNOWN   0
+MARTINI   1
+PWE3      2</text>
+    </description>
+  </typedef>
+  <typedef name="pw-standby-flag">
+    <type name="enumeration">
+      <enum name="UNKNOWN">
+        <value value="0"/>
+        <description>
+          <text>The standby flag of PW is unknown.</text>
+        </description>
+      </enum>
+      <enum name="ACTIVE">
+        <value value="1"/>
+        <description>
+          <text>The standby flag of PW is active.</text>
+        </description>
+      </enum>
+      <enum name="STANDBY">
+        <value value="2"/>
+        <description>
+          <text>The standby flag of PW is standby.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The standby flag of PW which indicates the forward status.
+UNKNOWN     0
+ACTIVE      1
+STANDBY     2</text>
+    </description>
+  </typedef>
+  <typedef name="pw-cword">
+    <type name="enumeration">
+      <enum name="NotPreferred">
+        <value value="0"/>
+        <description>
+          <text>The cword of the PW is not preferred.</text>
+        </description>
+      </enum>
+      <enum name="Preferred">
+        <value value="1"/>
+        <description>
+          <text>The cword of the PW is preferred.</text>
+        </description>
+      </enum>
+      <enum name="UNKNOWN">
+        <value value="2"/>
+        <description>
+          <text>The cword of the PW is unknown.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The cword of the PW.
+NotPreferred :    0
+Preferred    :    1
+UNKNOWN      :    2</text>
+    </description>
+  </typedef>
+  <typedef name="pw-rtp-flag">
+    <type name="enumeration">
+      <enum name="UNUSE">
+        <value value="0"/>
+        <description>
+          <text>Not use the rtp header.</text>
+        </description>
+      </enum>
+      <enum name="USE">
+        <value value="1"/>
+        <description>
+          <text>Use the rtp header.</text>
+        </description>
+      </enum>
+      <enum name="UNKNOWN">
+        <value value="3"/>
+        <description>
+          <text>The usage of the rtp header is unknown.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The use flag of rtp header.</text>
+    </description>
+  </typedef>
+  <typedef name="pw-timestamp-mode">
+    <type name="enumeration">
+      <enum name="Absolute">
+        <value value="0"/>
+        <description>
+          <text>The timestamp mode is absolute.</text>
+        </description>
+      </enum>
+      <enum name="Differential">
+        <value value="1"/>
+        <description>
+          <text>The timestamp mode is differential .</text>
+        </description>
+      </enum>
+      <enum name="UNKNOWN">
+        <value value="3"/>
+        <description>
+          <text>The timestamp mode is unknown.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The timestamp mode of TDM service.</text>
+    </description>
+  </typedef>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>PWE3 module state info.</text>
+    </description>
+    <container name="pwe3">
+      <description>
+        <text>PWE3 module query root node.It contains pw signal info.</text>
+      </description>
+      <container name="pws">
+        <description>
+          <text>PW query info. It contains the pw list info.</text>
+        </description>
+        <list name="pw">
+          <description>
+            <text>PW query info. It contains the following attributes: pw-name,peer-address,pw-type,fec-type,service-type,instance-id,instance-name,ldp-session-status,signal-status,signal-mode,standby-flag,local-label,remote-label,local-status,remote-status,interface parameters. PW supports only carrying the name as a query, or not carrying seach criteria.</text>
+          </description>
+          <key value="pw-name"/>
+          <leaf name="pw-name">
+            <description>
+              <text>The name of the PW.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+          <leaf name="peer-address">
+            <description>
+              <text>The remote peer's IP address of the PW.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="pw-type">
+            <description>
+              <text>L2VPN PW Type. Assigned values are specified in IANA Allocations for Pseudowire Edge to Edge Emulation (PWE3).</text>
+            </description>
+            <type name="enumeration">
+              <enum name="UNKNOWN">
+                <value value="0"/>
+                <description>
+                  <text>The PW type is unknown.</text>
+                </description>
+              </enum>
+              <enum name="DLCI_old">
+                <value value="1"/>
+                <description>
+                  <text>The PW type is FR_DLCI_MARTINI.</text>
+                </description>
+              </enum>
+              <enum name="ATM_SDU">
+                <value value="2"/>
+                <description>
+                  <text>The PW type is ATM_AAL5_SDU.</text>
+                </description>
+              </enum>
+              <enum name="ATM_cell">
+                <value value="3"/>
+                <description>
+                  <text>The PW type is ATM_CELL.</text>
+                </description>
+              </enum>
+              <enum name="VLAN">
+                <value value="4"/>
+                <description>
+                  <text>The PW type is ETH_VLAN.</text>
+                </description>
+              </enum>
+              <enum name="Ethernet">
+                <value value="5"/>
+                <description>
+                  <text>The PW type is Ethernet.</text>
+                </description>
+              </enum>
+              <enum name="HDLC">
+                <value value="6"/>
+                <description>
+                  <text>The PW type is HDLC.</text>
+                </description>
+              </enum>
+              <enum name="PPP">
+                <value value="7"/>
+                <description>
+                  <text>The PW type is PPP.</text>
+                </description>
+              </enum>
+              <enum name="SDH_CESoM">
+                <value value="8"/>
+                <description>
+                  <text>The PW type is SONET SDH CESoM.</text>
+                </description>
+              </enum>
+              <enum name="ATM_VCCn">
+                <value value="9"/>
+                <description>
+                  <text>The PW type is ATM_VCC n:1.</text>
+                </description>
+              </enum>
+              <enum name="ATM_VPCn">
+                <value value="10"/>
+                <description>
+                  <text>The PW type is ATM_VPC n:1.</text>
+                </description>
+              </enum>
+              <enum name="IP_L2">
+                <value value="11"/>
+                <description>
+                  <text>The PW type is IP_L2.</text>
+                </description>
+              </enum>
+              <enum name="ATM_VCC1">
+                <value value="12"/>
+                <description>
+                  <text>The PW type is ATM_VCC 1:1.</text>
+                </description>
+              </enum>
+              <enum name="ATM_VPC1">
+                <value value="13"/>
+                <description>
+                  <text>The PW type is ATM_VPC 1:1.</text>
+                </description>
+              </enum>
+              <enum name="ATM_PDU">
+                <value value="14"/>
+                <description>
+                  <text>The PW type is ATM AAL5 PDU.</text>
+                </description>
+              </enum>
+              <enum name="FR_PORT">
+                <value value="15"/>
+                <description>
+                  <text>The PW type is FR_PORT.</text>
+                </description>
+              </enum>
+              <enum name="SDH_CEoP">
+                <value value="16"/>
+                <description>
+                  <text>The PW type is SONET SDH CEoP.</text>
+                </description>
+              </enum>
+              <enum name="SAToP_E1">
+                <value value="17"/>
+                <description>
+                  <text>The PW type is SAToP_E1.</text>
+                </description>
+              </enum>
+              <enum name="SAToP_T1">
+                <value value="18"/>
+                <description>
+                  <text>The PW type is SAToP_T1.</text>
+                </description>
+              </enum>
+              <enum name="SAToP_E3">
+                <value value="19"/>
+                <description>
+                  <text>The PW type is SAToP_E3.</text>
+                </description>
+              </enum>
+              <enum name="SAToP_T3">
+                <value value="20"/>
+                <description>
+                  <text>The PW type is SAToP_T3.</text>
+                </description>
+              </enum>
+              <enum name="CESoPSN_B">
+                <value value="21"/>
+                <description>
+                  <text>The PW type is CESoPSN basic.</text>
+                </description>
+              </enum>
+              <enum name="TDM_AAL1">
+                <value value="22"/>
+                <description>
+                  <text>The PW type is TDMoIP AAL1.</text>
+                </description>
+              </enum>
+              <enum name="CESoPSN_C">
+                <value value="23"/>
+                <description>
+                  <text>The PW type is CESoPSN CAS.</text>
+                </description>
+              </enum>
+              <enum name="TDM_AAL2">
+                <value value="24"/>
+                <description>
+                  <text>The PW type is TDMoIP AAL2.</text>
+                </description>
+              </enum>
+              <enum name="DLCI_new">
+                <value value="25"/>
+                <description>
+                  <text>The PW type is FR_DLCI.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <choice name="fec-type">
+            <description>
+              <text>The fec type of the PW. It contains 128 type and 129 type.</text>
+            </description>
+            <case name="fec128">
+              <description>
+                <text>The fec type is 128.</text>
+              </description>
+              <leaf name="vcid">
+                <description>
+                  <text>The VCID of the PW.</text>
+                </description>
+                <type name="uint32"/>
+              </leaf>
+            </case>
+            <case name="fec129">
+              <description>
+                <text>The fec type is 129.</text>
+              </description>
+              <leaf name="agi">
+                <description>
+                  <text>The attachment group identifier.</text>
+                </description>
+                <type name="string">
+                  <length value="0..20"/>
+                </type>
+              </leaf>
+              <leaf name="local-taii">
+                <description>
+                  <text>The local target attachment individual identifier.</text>
+                </description>
+                <type name="uint32"/>
+              </leaf>
+              <leaf name="remote-taii">
+                <description>
+                  <text>The remote target attachment individual identifier.</text>
+                </description>
+                <type name="uint32"/>
+              </leaf>
+              <leaf name="local-saii">
+                <description>
+                  <text>The local source attachment individual identifier.</text>
+                </description>
+                <type name="uint32"/>
+              </leaf>
+              <leaf name="remote-saii">
+                <description>
+                  <text>The remote source attachment individual identifier.</text>
+                </description>
+                <type name="uint32"/>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="service-type">
+            <description>
+              <text>The service type of L2VPN instance which the PW belonged to.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="UNKNOWN">
+                <value value="0"/>
+                <description>
+                  <text>The service type is unknown.</text>
+                </description>
+              </enum>
+              <enum name="VPWS">
+                <value value="1"/>
+                <description>
+                  <text>The service type is VPWS.</text>
+                </description>
+              </enum>
+              <enum name="VPLS">
+                <value value="2"/>
+                <description>
+                  <text>The service type is VPLS.</text>
+                </description>
+              </enum>
+              <enum name="MSPW">
+                <value value="3"/>
+                <description>
+                  <text>The service type is MSPW.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="instance-id">
+            <description>
+              <text>The instance ID of L2VPN instance which the PW belonged to.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="instance-name">
+            <description>
+              <text>The instance name of L2VPN instance which the PW belonged to.</text>
+            </description>
+            <type name="string">
+              <length value="0..36"/>
+            </type>
+          </leaf>
+          <leaf name="ldp-session-status">
+            <description>
+              <text>The state of LDP session,NON,DOWN,UP,GR1 or GR2.
+
+NON : The LDP session is absent.
+
+DOWN: The LDP session is DOWN, not UP(or NON,or GR1,or GR2).
+
+UP  : The LDP session is OPERATIONAL.
+
+GR1 : The LDP session is reconnecting.
+
+GR2 : TheLDP session's remote mappings are recovering.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="NON">
+                <value value="0"/>
+                <description>
+                  <text>The LDP session is absent.</text>
+                </description>
+              </enum>
+              <enum name="DOWN">
+                <value value="1"/>
+                <description>
+                  <text>The LDP session is DOWN, not UP(or NON,or GR1,or GR2).</text>
+                </description>
+              </enum>
+              <enum name="UP">
+                <value value="2"/>
+                <description>
+                  <text>The LDP session is OPERATIONAL.</text>
+                </description>
+              </enum>
+              <enum name="GR1">
+                <value value="3"/>
+                <description>
+                  <text>The LDP session is reconnecting.</text>
+                </description>
+              </enum>
+              <enum name="GR2">
+                <value value="4"/>
+                <description>
+                  <text>The LDP session's remote mappings are recovering.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="signal-status">
+            <description>
+              <text>The signal status of the PW, UP or DOWN.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="UP">
+                <value value="1"/>
+                <description>
+                  <text>The signal state of PW is UP.</text>
+                </description>
+              </enum>
+              <enum name="DOWN">
+                <value value="2"/>
+                <description>
+                  <text>The signal state of PW is DOWN.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="signal-mode">
+            <description>
+              <text>The negotiated signal mode of the PW, MARTINI,PWE3 or UNKNOWN.</text>
+            </description>
+            <type name="pw-signal-mode"/>
+          </leaf>
+          <leaf name="standby-flag">
+            <description>
+              <text>The negotiated standby flag of the PW, ACTIVE,STANDBY or UNKNOWN.</text>
+            </description>
+            <type name="pw-standby-flag"/>
+          </leaf>
+          <leaf name="local-label">
+            <description>
+              <text>The local label of the PW. The value 0 represents the local label absent.</text>
+            </description>
+            <type name="uint32">
+              <range value="0 | 16..1048575"/>
+            </type>
+          </leaf>
+          <leaf name="remote-label">
+            <description>
+              <text>The remote label of the PW. The value 0 represents the remote label absent.</text>
+            </description>
+            <type name="uint32">
+              <range value="0 | 16..1048575"/>
+            </type>
+          </leaf>
+          <leaf name="local-status">
+            <description>
+              <text>The local status of the PW. Contain:ALLOK,PWNF,AR,AT,PSNR,PSNT.
+ALLOK - Pseudo Wire Forwarding
+PWNF  - Pseudo Wire Not Forwarding
+AR    - Local AC (ingress) Receive Fault
+AT    - Local AC (egress) Transmit Fault
+PSNR  - Local PSN-facing PW (ingress) Receive Fault
+PSNT  - Local PSN-facing PW (egress) Transmit Fault</text>
+            </description>
+            <type name="string">
+              <length value="0..20"/>
+            </type>
+          </leaf>
+          <leaf name="remote-status">
+            <description>
+              <text>The remote status of the PW. Contain:ALLOK,PWNF,AR,AT,PSNR,PSNT.
+ALLOK - Pseudo Wire Forwarding
+PWNF  - Pseudo Wire Not Forwarding
+AR    - Local AC (ingress) Receive Fault
+AT    - Local AC (egress) Transmit Fault
+PSNR  - Local PSN-facing PW (ingress) Receive Fault
+PSNT  - Local PSN-facing PW (egress) Transmit Fault</text>
+            </description>
+            <type name="string">
+              <length value="0..20"/>
+            </type>
+          </leaf>
+          <leaf name="cword">
+            <description>
+              <text>The negotiated cword of the PW.</text>
+            </description>
+            <type name="pw-cword"/>
+          </leaf>
+          <leaf name="mtu">
+            <description>
+              <text>The negotiaed mtu of the PW.</text>
+            </description>
+            <type name="uint16"/>
+          </leaf>
+          <leaf name="vccv">
+            <description>
+              <text>The negotiated vccv of the PW, it contains CV type and CC type. According to the protocol, CV type contains :LSP,ICMP,BFD_BASIC_HEAD,BFD_STATUS_HEAD,BFD_BASIC_RAW and BFD_STATUS_RAW; CC type contains : ALERT,CW and TTL.</text>
+            </description>
+            <type name="string">
+              <length value="0..50"/>
+            </type>
+          </leaf>
+          <leaf name="fcs-retention-indicator">
+            <description>
+              <text>The negotiated fcs retention indicator of the PW.</text>
+            </description>
+            <type name="uint16"/>
+          </leaf>
+          <leaf name="attachment-circuit">
+            <description>
+              <text>Attachment circuit information.</text>
+            </description>
+            <type name="string">
+              <length value="0..31">
+                <description>
+                  <text>The length of attachment circuit information.</text>
+                </description>
+              </length>
+            </type>
+            <ncd:revise-date date="2016-11-29"/>
+          </leaf>
+          <leaf name="flow-label">
+            <description>
+              <text>Flow label capability.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="none">
+                <value value="0"/>
+                <description>
+                  <text>Flow label capability is not available.</text>
+                </description>
+              </enum>
+              <enum name="push">
+                <value value="1"/>
+                <description>
+                  <text>Transmit capability is available.</text>
+                </description>
+              </enum>
+              <enum name="pop">
+                <value value="2"/>
+                <description>
+                  <text>Receive capability is available.</text>
+                </description>
+              </enum>
+              <enum name="push-pop">
+                <value value="3"/>
+                <description>
+                  <text>Transmit and receive capability is available.</text>
+                </description>
+              </enum>
+            </type>
+            <ncd:revise-date date="2016-11-29"/>
+          </leaf>
+          <choice name="pw-emu-type">
+            <description>
+              <text>The emulation type of the PW. It could be tdm, fr and atm. There are different interface parameters for different emulation types.</text>
+            </description>
+            <case name="tdm">
+              <description>
+                <text>The emulation type of the PW is tdm.</text>
+              </description>
+              <leaf name="bit-rate">
+                <description>
+                  <text>The negotiated bit rate of the PW. It is meaningful only when the pw type is the  following value: SDH_CESoM(8),SDH_CEoP(16),SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),TDM_AAL1(22),CESoPSN_C(23),TDM_AAL2(24).</text>
+                </description>
+                <type name="uint32"/>
+              </leaf>
+              <leaf name="payload-bytes">
+                <description>
+                  <text>The negotiated payload bytes of the PW. It is meaningful only when the pw type is the  following value: SDH_CESoM(8),SDH_CEoP(16),SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),CESoPSN_C(23).</text>
+                </description>
+                <type name="uint16"/>
+              </leaf>
+              <leaf name="cells-per-packet">
+                <description>
+                  <text>The negotiated TDMoIP AAL1 cells per packet of the PW. It is meaningful only when the pw type is TDM_AAL1(22).</text>
+                </description>
+                <type name="uint16"/>
+              </leaf>
+              <leaf name="tdmoip-aal1-mode">
+                <description>
+                  <text>The negotiated tdmoip aal1 mode of the PW. It is meaningful only when the pw type is TDM_AAL1(22).</text>
+                </description>
+                <type name="uint16"/>
+              </leaf>
+              <container name="tdmoip-options">
+                <description>
+                  <text>The TDMoIP AAL2 Options parameter of the PW. It contains vad,encoding,duration. It is meaningful only when the pw type is TDM_AAL2(24).</text>
+                </description>
+                <leaf name="vad">
+                  <description>
+                    <text>The negotiated vad of TDMoIP AAL2 Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="encoding">
+                  <description>
+                    <text>The negotiated encoding of TDMoIP AAL2 Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="duration">
+                  <description>
+                    <text>The negotiated duration of TDMoIP AAL2 Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint32"/>
+                </leaf>
+              </container>
+              <container name="tdm-options">
+                <description>
+                  <text>The TDM Options parameter of the PW. It contains rtp, timestamp-mode, frequency, ssrc, payload-type, cas and sp. It is meaningful only when the pw type is the following value: SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),TDM_AAL1(22),CESoPSN_C(23),TDM_AAL2(24).</text>
+                </description>
+                <leaf name="rtp">
+                  <description>
+                    <text>The negotiated rtp header usage.</text>
+                  </description>
+                  <type name="pw-rtp-flag"/>
+                </leaf>
+                <leaf name="timestamp-mode">
+                  <description>
+                    <text>The negotiated timestamp mode. It could be absolute mode or differential mode.</text>
+                  </description>
+                  <type name="pw-timestamp-mode"/>
+                </leaf>
+                <leaf name="frequency">
+                  <description>
+                    <text>The negotiated frequency of timestamping clock.</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="ssrc">
+                  <description>
+                    <text>The negotiated value of the Synchronization source ID.</text>
+                  </description>
+                  <type name="uint32"/>
+                </leaf>
+                <leaf name="payload-type">
+                  <description>
+                    <text>The negotiated payload type in the RTP header expected by the PW endpoint distributing
+this FEC.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="cas">
+                  <description>
+                    <text>The negotiated cas of the PW, it is meaningful only when the pw type is CESoPSN_C(23).</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="sp">
+                  <description>
+                    <text>The negotiated sp of the PW, which encodes support for the CESoPSN signaling packets.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+              </container>
+              <container name="cep-option">
+                <description>
+                  <text>The CEP Options parameter of the PW. It contains ais, une, rtp, ebm, async-t3, async-e3, cep-type. It is meaningful only when the pw type is the following value: SDH_CESoM(8),SDH_CEoP(16).</text>
+                </description>
+                <leaf name="ais">
+                  <description>
+                    <text>The negotiated ais of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="une">
+                  <description>
+                    <text>The negotiated une of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="rtp">
+                  <description>
+                    <text>The negotiated rtp of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="ebm">
+                  <description>
+                    <text>The negotiated ebm of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="async-t3">
+                  <description>
+                    <text>The negotiated async-t3 of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="async-e3">
+                  <description>
+                    <text>The negotiated async-e3 of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint8"/>
+                </leaf>
+                <leaf name="cep-type">
+                  <description>
+                    <text>The negotiated cep type of CEP Options parameter of the PW.</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+              </container>
+            </case>
+            <case name="fr">
+              <description>
+                <text>The emulation type of the PW is fr.</text>
+              </description>
+              <leaf name="fr-dlci-len">
+                <description>
+                  <text>The negotiated fr dlci length of the PW. It is meaningful only when the pw type is the  following value: DLCI_old(1),FR_PORT(15,DLCI_new(25).</text>
+                </description>
+                <type name="uint16"/>
+              </leaf>
+            </case>
+            <case name="atm">
+              <description>
+                <text>The emulation type of the PW is atm.</text>
+              </description>
+              <leaf name="max-atm-cells">
+                <description>
+                  <text>The negotiated max atm cells of the PW.</text>
+                </description>
+                <type name="uint16"/>
+              </leaf>
+            </case>
+          </choice>
+          <container name="local-params">
+            <description>
+              <text>The local parameters of the PW.</text>
+            </description>
+            <leaf name="signal-mode">
+              <description>
+                <text>The local signal mode of the PW, MARTINI,PWE3 or UNKNOWN.</text>
+              </description>
+              <type name="pw-signal-mode"/>
+            </leaf>
+            <leaf name="standby-flag">
+              <description>
+                <text>The local standby flag of the PW, ACTIVE,STANDBY or UNKNOWN.</text>
+              </description>
+              <type name="pw-standby-flag"/>
+            </leaf>
+            <leaf name="cword">
+              <description>
+                <text>The local cword of the PW.</text>
+              </description>
+              <type name="pw-cword"/>
+            </leaf>
+            <leaf name="mtu">
+              <description>
+                <text>The local mtu of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="vccv">
+              <description>
+                <text>The local vccv of the PW, it contains CV type and CC type. According to the protocol, CV type contains :LSP,ICMP,BFD_BASIC_HEAD,BFD_STATUS_HEAD,BFD_BASIC_RAW and BFD_STATUS_RAW; CC type contains : ALERT,CW and TTL.</text>
+              </description>
+              <type name="string">
+                <length value="0..50"/>
+              </type>
+            </leaf>
+            <leaf name="requested-vlan-id">
+              <description>
+                <text>The local requested VLAN ID of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="frag-indicator">
+              <description>
+                <text>The local fragmentation indicator of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="fcs-retention-indicator">
+              <description>
+                <text>The local fcs retention indicator of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="interface-description">
+              <description>
+                <text>The local interface description of the PW.</text>
+              </description>
+              <type name="string">
+                <length value="0..81"/>
+              </type>
+            </leaf>
+            <choice name="pw-emu-type">
+              <description>
+                <text>The emulation type of the PW. It could be tdm, fr and atm. There are different interface parameters for different emulation types.</text>
+              </description>
+              <case name="tdm">
+                <description>
+                  <text>The emulation type of the PW is tdm.</text>
+                </description>
+                <leaf name="bit-rate">
+                  <description>
+                    <text>The local bit rate of the PW. It is meaningful only when the pw type is the  following value: SDH_CESoM(8),SDH_CEoP(16),SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),TDM_AAL1(22),CESoPSN_C(23),TDM_AAL2(24).</text>
+                  </description>
+                  <type name="uint32"/>
+                </leaf>
+                <leaf name="payload-bytes">
+                  <description>
+                    <text>The local payload bytes of the PW. It is meaningful only when the pw type is the  following value: SDH_CESoM(8),SDH_CEoP(16),SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),CESoPSN_C(23).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="cells-per-packet">
+                  <description>
+                    <text>The local TDMoIP AAL1 cells per packet of the PW. It is meaningful only when the pw type is TDM_AAL1(22).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="tdmoip-aal1-mode">
+                  <description>
+                    <text>The local tdmoip aal1 mode of the PW. It is meaningful only when the pw type is TDM_AAL1(22).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <container name="tdmoip-options">
+                  <description>
+                    <text>The TDMoIP AAL2 Options parameter of the PW. It contains vad,encoding,duration. It is meaningful only when the pw type is TDM_AAL2(24).</text>
+                  </description>
+                  <leaf name="vad">
+                    <description>
+                      <text>The local vad of TDMoIP AAL2 Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                  <leaf name="encoding">
+                    <description>
+                      <text>The local encoding of TDMoIP AAL2 Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                  <leaf name="duration">
+                    <description>
+                      <text>The local duration of TDMoIP AAL2 Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint32"/>
+                  </leaf>
+                </container>
+                <container name="tdm-options">
+                  <description>
+                    <text>The TDM Options parameter of the PW. It contains rtp, timestamp-mode, frequency, ssrc, payload-type, cas and sp. It is meaningful only when the pw type is the following value: SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),TDM_AAL1(22),CESoPSN_C(23),TDM_AAL2(24).</text>
+                  </description>
+                  <leaf name="rtp">
+                    <description>
+                      <text>The local rtp header usage.</text>
+                    </description>
+                    <type name="pw-rtp-flag"/>
+                  </leaf>
+                  <leaf name="timestamp-mode">
+                    <description>
+                      <text>The local timestamp mode. It could be absolute mode or differential mode.</text>
+                    </description>
+                    <type name="pw-timestamp-mode"/>
+                  </leaf>
+                  <leaf name="frequency">
+                    <description>
+                      <text>The local frequency of timestamping clock.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                  <leaf name="ssrc">
+                    <description>
+                      <text>The local value of the Synchronization source ID.</text>
+                    </description>
+                    <type name="uint32"/>
+                  </leaf>
+                  <leaf name="payload-type">
+                    <description>
+                      <text>The local payload type in the RTP header expected by the PW endpoint distributing
+this FEC.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="cas">
+                    <description>
+                      <text>The local cas of the PW, it is meaningful only when the pw type is CESoPSN_C(23).</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="sp">
+                    <description>
+                      <text>The local sp of the PW, which encodes support for the CESoPSN signaling packets.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                </container>
+                <container name="cep-option">
+                  <description>
+                    <text>The CEP Options parameter of the PW. It contains ais, une, rtp, ebm, async-t3, async-e3, cep-type. It is meaningful only when the pw type is the following value: SDH_CESoM(8),SDH_CEoP(16).</text>
+                  </description>
+                  <leaf name="ais">
+                    <description>
+                      <text>The local ais of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="une">
+                    <description>
+                      <text>The local une of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="rtp">
+                    <description>
+                      <text>The local rtp of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="ebm">
+                    <description>
+                      <text>The local ebm of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="async-t3">
+                    <description>
+                      <text>The local async-t3 of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="async-e3">
+                    <description>
+                      <text>The local async-e3 of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="cep-type">
+                    <description>
+                      <text>The local cep type of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                </container>
+              </case>
+              <case name="fr">
+                <description>
+                  <text>The emulation type of the PW is fr.</text>
+                </description>
+                <leaf name="fr-dlci-len">
+                  <description>
+                    <text>The local fr dlci length of the PW. It is meaningful only when the pw type is the  following value: DLCI_old(1),FR_PORT(15,DLCI_new(25).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+              </case>
+              <case name="atm">
+                <description>
+                  <text>The emulation type of the PW is atm.</text>
+                </description>
+                <leaf name="max-atm-cells">
+                  <description>
+                    <text>The local max atm cells of the PW.</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+              </case>
+            </choice>
+            <leaf name="flow-label">
+              <description>
+                <text>Flow label capability.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="none">
+                  <value value="0"/>
+                  <description>
+                    <text>Flow label capability is not available.</text>
+                  </description>
+                </enum>
+                <enum name="push">
+                  <value value="1"/>
+                  <description>
+                    <text>Transmit capability is available.</text>
+                  </description>
+                </enum>
+                <enum name="pop">
+                  <value value="2"/>
+                  <description>
+                    <text>Receive capability is available.</text>
+                  </description>
+                </enum>
+                <enum name="push-pop">
+                  <value value="3"/>
+                  <description>
+                    <text>Transmit and receive capability is available.</text>
+                  </description>
+                </enum>
+              </type>
+              <ncd:revise-date date="2016-11-29"/>
+            </leaf>
+          </container>
+          <container name="remote-params">
+            <description>
+              <text>The remote parameters of the PW.</text>
+            </description>
+            <leaf name="signal-mode">
+              <description>
+                <text>The remote signal mode of the PW, MARTINI,PWE3 or UNKNOWN.</text>
+              </description>
+              <type name="pw-signal-mode"/>
+            </leaf>
+            <leaf name="standby-flag">
+              <description>
+                <text>The remote standby flag of the PW, ACTIVE,STANDBY or UNKNOWN.</text>
+              </description>
+              <type name="pw-standby-flag"/>
+            </leaf>
+            <leaf name="cword">
+              <description>
+                <text>The remote cword of the PW.</text>
+              </description>
+              <type name="pw-cword"/>
+            </leaf>
+            <leaf name="mtu">
+              <description>
+                <text>The remote mtu of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="vccv">
+              <description>
+                <text>The remote vccv of the PW, it contains CV type and CC type. According to the protocol, CV type contains :LSP,ICMP,BFD_BASIC_HEAD,BFD_STATUS_HEAD,BFD_BASIC_RAW and BFD_STATUS_RAW; CC type contains : ALERT,CW and TTL.</text>
+              </description>
+              <type name="string">
+                <length value="0..50"/>
+              </type>
+            </leaf>
+            <leaf name="requested-vlan-id">
+              <description>
+                <text>The remote requested VLAN ID of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="frag-indicator">
+              <description>
+                <text>The remote fragmentation indicator of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="fcs-retention-indicator">
+              <description>
+                <text>The remote fcs retention indicator of the PW.</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="interface-description">
+              <description>
+                <text>The remote interface description of the PW.</text>
+              </description>
+              <type name="string">
+                <length value="0..81"/>
+              </type>
+            </leaf>
+            <choice name="pw-emu-type">
+              <description>
+                <text>The emulation type of the PW. It could be tdm, fr and atm. There are different interface parameters for different emulation types.</text>
+              </description>
+              <case name="tdm">
+                <description>
+                  <text>The emulation type of the PW is tdm.</text>
+                </description>
+                <leaf name="bit-rate">
+                  <description>
+                    <text>The remote bit rate of the PW. It is meaningful only when the pw type is the  following value: SDH_CESoM(8),SDH_CEoP(16),SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),TDM_AAL1(22),CESoPSN_C(23),TDM_AAL2(24).</text>
+                  </description>
+                  <type name="uint32"/>
+                </leaf>
+                <leaf name="payload-bytes">
+                  <description>
+                    <text>The remote payload bytes of the PW. It is meaningful only when the pw type is the  following value: SDH_CESoM(8),SDH_CEoP(16),SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),CESoPSN_C(23).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="cells-per-packet">
+                  <description>
+                    <text>The remote TDMoIP AAL1 cells per packet of the PW. It is meaningful only when the pw type is TDM_AAL1(22).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <leaf name="tdmoip-aal1-mode">
+                  <description>
+                    <text>The remote tdmoip aal1 mode of the PW. It is meaningful only when the pw type is TDM_AAL1(22).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+                <container name="tdmoip-options">
+                  <description>
+                    <text>The TDMoIP AAL2 Options parameter of the PW. It contains vad,encoding,duration. It is meaningful only when the pw type is TDM_AAL2(24).</text>
+                  </description>
+                  <leaf name="vad">
+                    <description>
+                      <text>The remote vad of TDMoIP AAL2 Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                  <leaf name="encoding">
+                    <description>
+                      <text>The remote encoding of TDMoIP AAL2 Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                  <leaf name="duration">
+                    <description>
+                      <text>The remote duration of TDMoIP AAL2 Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint32"/>
+                  </leaf>
+                </container>
+                <container name="tdm-options">
+                  <description>
+                    <text>The TDM Options parameter of the PW. It contains rtp, timestamp-mode, frequency, ssrc, payload-type, cas and sp. It is meaningful only when the pw type is the following value: SAToP_E1(17),SAToP_T1(18),SAToP_E3(19),SAToP_T3(20),CESoPSN_B(21),TDM_AAL1(22),CESoPSN_C(23),TDM_AAL2(24).</text>
+                  </description>
+                  <leaf name="rtp">
+                    <description>
+                      <text>The remote rtp header usage.</text>
+                    </description>
+                    <type name="pw-rtp-flag"/>
+                  </leaf>
+                  <leaf name="timestamp-mode">
+                    <description>
+                      <text>The remote timestamp mode. It could be absolute mode or differential mode.</text>
+                    </description>
+                    <type name="pw-timestamp-mode"/>
+                  </leaf>
+                  <leaf name="frequency">
+                    <description>
+                      <text>The remote frequency of timestamping clock.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                  <leaf name="ssrc">
+                    <description>
+                      <text>The remote value of the Synchronization source ID.</text>
+                    </description>
+                    <type name="uint32"/>
+                  </leaf>
+                  <leaf name="payload-type">
+                    <description>
+                      <text>The remote payload type in the RTP header expected by the PW endpoint distributing
+this FEC.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="cas">
+                    <description>
+                      <text>The remote cas of the PW, it is meaningful only when the pw type is CESoPSN_C(23).</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="sp">
+                    <description>
+                      <text>The remote sp of the PW, which encodes support for the CESoPSN signaling packets.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                </container>
+                <container name="cep-option">
+                  <description>
+                    <text>The CEP Options parameter of the PW. It contains ais, une, rtp, ebm, async-t3, async-e3, cep-type. It is meaningful only when the pw type is the following value: SDH_CESoM(8),SDH_CEoP(16).</text>
+                  </description>
+                  <leaf name="ais">
+                    <description>
+                      <text>The remote ais of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="une">
+                    <description>
+                      <text>The remote une of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="rtp">
+                    <description>
+                      <text>The remote rtp of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="ebm">
+                    <description>
+                      <text>The remote ebm of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="async-t3">
+                    <description>
+                      <text>The remote async-t3 of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="async-e3">
+                    <description>
+                      <text>The remote async-e3 of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint8"/>
+                  </leaf>
+                  <leaf name="cep-type">
+                    <description>
+                      <text>The remote cep type of CEP Options parameter of the PW.</text>
+                    </description>
+                    <type name="uint16"/>
+                  </leaf>
+                </container>
+              </case>
+              <case name="fr">
+                <description>
+                  <text>The emulation type of the PW is fr.</text>
+                </description>
+                <leaf name="fr-dlci-len">
+                  <description>
+                    <text>The remote fr dlci length of the PW. It is meaningful only when the pw type is the  following value: DLCI_old(1),FR_PORT(15,DLCI_new(25).</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+              </case>
+              <case name="atm">
+                <description>
+                  <text>The emulation type of the PW is atm.</text>
+                </description>
+                <leaf name="max-atm-cells">
+                  <description>
+                    <text>The remote max atm cells of the PW.</text>
+                  </description>
+                  <type name="uint16"/>
+                </leaf>
+              </case>
+            </choice>
+            <leaf name="flow-label">
+              <description>
+                <text>Flow label capability.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="none">
+                  <value value="0"/>
+                  <description>
+                    <text>Flow label capability is not available.</text>
+                  </description>
+                </enum>
+                <enum name="push">
+                  <value value="1"/>
+                  <description>
+                    <text>Transmit capability is available.</text>
+                  </description>
+                </enum>
+                <enum name="pop">
+                  <value value="2"/>
+                  <description>
+                    <text>Receive capability is available.</text>
+                  </description>
+                </enum>
+                <enum name="push-pop">
+                  <value value="3"/>
+                  <description>
+                    <text>Transmit and receive capability is available.</text>
+                  </description>
+                </enum>
+              </type>
+              <ncd:revise-date date="2016-11-29"/>
+            </leaf>
+          </container>
+          <container name="received-spe-tlv-info">
+            <description>
+              <text>Received SPE TLV information.</text>
+            </description>
+            <list name="spe-tlv-list">
+              <description>
+                <text>The SPE TLV info,TLV information is in order.The order is determined by the distance number,distance to the SPE node closer the number is smaller.</text>
+              </description>
+              <key value="distance"/>
+              <leaf name="distance">
+                <description>
+                  <text>Distance hop to SPE node.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..16">
+                    <description>
+                      <text>The distance value from SPE.</text>
+                    </description>
+                  </range>
+                </type>
+              </leaf>
+              <leaf name="lsr-id">
+                <description>
+                  <text>PW Switching Point local identification.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="last-pw-peer">
+                <description>
+                  <text>The last PW peer address.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="last-pw-vcid">
+                <description>
+                  <text>The last PW identification.</text>
+                </description>
+                <type name="uint32">
+                  <range value="1..4294967295">
+                    <description>
+                      <text>The range of last PW identification.</text>
+                    </description>
+                  </range>
+                </type>
+              </leaf>
+              <leaf name="lsr-description">
+                <description>
+                  <text>PW Switching Point description string, an optional description string of text up to 80 characters long.</text>
+                </description>
+                <type name="string">
+                  <length value="0..80">
+                    <description>
+                      <text>The length of lsr description.</text>
+                    </description>
+                  </length>
+                </type>
+              </leaf>
+            </list>
+          </container>
+        </list>
+      </container>
+    </container>
+  </container>
+</module>

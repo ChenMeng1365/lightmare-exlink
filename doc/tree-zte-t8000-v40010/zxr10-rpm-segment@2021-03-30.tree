@@ -1,0 +1,388 @@
+module: zxr10-rpm-segment
+  +--rw configuration
+  |  +--rw ipv4
+  |  |  +--rw global-status
+  |  |  |  +--rw status?   GLOBAL-STATUS
+  |  |  +--rw local-prefix-sid
+  |  |  |  +--rw local-prefix-sid* [dest-addr mask-addr]
+  |  |  |     +--rw dest-addr    ncd:ipv4-address
+  |  |  |     +--rw mask-addr    ncd:ipv4-address
+  |  |  |     +--rw index?       uint32
+  |  |  |     +--rw node-flag?   LOCAL-PREFIX-NODE-FLAG
+  |  |  |     +--rw php-flag?    LOCAL-PREFIX-PHP-FLAG
+  |  |  +--rw adjacencys
+  |  |  |  +--rw adjacency* [local-ip remote-ip]
+  |  |  |     +--rw local-ip       ncd:ipv4-address
+  |  |  |     +--rw remote-ip      ncd:ipv4-address
+  |  |  |     +--rw sid?           int32
+  |  |  |     +--rw protect-sid?   uint32
+  |  |  +--rw mapping-server {mapping-server}?
+  |  |  |  +--rw prefix-sid-map* [dest-addr mask-addr]
+  |  |  |     +--rw dest-addr    ncd:ipv4-address
+  |  |  |     +--rw mask-addr    ncd:ipv4-address
+  |  |  |     +--rw first-sid    int32
+  |  |  |     +--rw range        int32
+  |  |  +--rw adjacency-intfs
+  |  |  |  +--rw adjacency-intf* [local-interface remote-router-id]
+  |  |  |     +--rw local-interface     ncd:ifname
+  |  |  |     +--rw remote-router-id    ncd:ipv4-address
+  |  |  |     +--rw sid?                int32
+  |  |  |     +--rw protect-sid?        uint32
+  |  |  +--rw adjacency-ip-protect-tunnels!
+  |  |  |  +--rw adjacency-ip-protect-tunnel* [loca-ip remote-ip]
+  |  |  |     +--rw loca-ip                ncd:ipv4-address-none-zero
+  |  |  |     +--rw remote-ip              ncd:ipv4-address-none-zero
+  |  |  |     +--rw primary-tunnel-id      uint32
+  |  |  |     +--rw secondary-tunnel-id?   uint32
+  |  |  +--rw adjacency-id-protect-tunnels!
+  |  |  |  +--rw adjacency-id-protect-tunnel* [local-interface remote-router-id]
+  |  |  |     +--rw local-interface        ncd:ifname
+  |  |  |     +--rw remote-router-id       ncd:ipv4-address-none-zero
+  |  |  |     +--rw primary-tunnel-id      uint32
+  |  |  |     +--rw secondary-tunnel-id?   uint32
+  |  |  o--rw adjacency-protect-ips
+  |  |  |  +--rw adjacency-protect-ip* [loca-ip remote-ip sr-path-identifier]
+  |  |  |     +--rw loca-ip               ncd:ipv4-address-none-zero
+  |  |  |     +--rw remote-ip             ncd:ipv4-address-none-zero
+  |  |  |     +--rw sr-path-identifier    uint32
+  |  |  |     +--rw bfd-rd?               ncd:ipv4-address
+  |  |  |     +--rw bfd-template-name?    string
+  |  |  o--rw adjacency-protect-ids
+  |  |     +--rw adjacency-protect-id* [local-interface remote-router-id sr-path-identifier]
+  |  |        +--rw local-interface       ncd:ifname
+  |  |        +--rw remote-router-id      ncd:ipv4-address-none-zero
+  |  |        +--rw sr-path-identifier    uint32
+  |  |        +--rw bfd-rd?               ncd:ipv4-address
+  |  |        +--rw bfd-template-name?    string
+  |  +--rw ipv6
+  |  |  +--rw global-status
+  |  |  |  +--rw status?   GLOBAL-STATUS
+  |  |  +--rw local-prefix-sid
+  |  |  |  +--rw local-prefix-sid* [prefix prefix-length]
+  |  |  |     +--rw prefix           ncd:ipv6-address
+  |  |  |     +--rw prefix-length    uint8
+  |  |  |     +--rw index?           uint32
+  |  |  |     +--rw node-flag?       LOCAL-PREFIX-NODE-FLAG
+  |  |  |     +--rw php-flag?        LOCAL-PREFIX-PHP-FLAG
+  |  |  +--rw mapping-server {mapping-server}?
+  |  |  |  +--rw prefix-sid-map* [prefix prefix-len]
+  |  |  |     +--rw prefix        ncd:ipv6-address
+  |  |  |     +--rw prefix-len    uint8
+  |  |  |     +--rw first-sid     int32
+  |  |  |     +--rw range         int32
+  |  |  +--rw adjacencys
+  |  |  |  +--rw adjacency* [local-ipv6 remote-ipv6]
+  |  |  |     +--rw local-ipv6     ncd:ipv6-address
+  |  |  |     +--rw remote-ipv6    ncd:ipv6-address
+  |  |  |     +--rw sid            int32
+  |  |  +--rw adjacency-intfs
+  |  |     +--rw adjacency-intf* [local-interface remote-router-id]
+  |  |        +--rw local-interface     ncd:ifname
+  |  |        +--rw remote-router-id    ncd:ipv6-address
+  |  |        +--rw sid                 int32
+  |  +--rw binding-sids
+  |  |  +--rw binding-sid* [tunnel-id]
+  |  |     +--rw tunnel-id     uint32
+  |  |     +--rw (label)?
+  |  |        +--:(sid)
+  |  |        |  +--rw sid     uint32
+  |  |        +--:(auto)
+  |  |           +--rw auto    enumeration
+  |  +--rw max-sid-depths {msd}?
+  |  |  +--rw max-sid-depth* [type]
+  |  |  |  +--rw type     enumeration
+  |  |  |  +--rw value    uint32
+  |  |  +--rw erld-value?      int32
+  |  +--rw aiis {network-slice}?
+  |  |  +--rw aii* [id]
+  |  |     +--rw id      uint32
+  |  |     +--rw ipv4
+  |  |        +--rw local-prefix-sids
+  |  |        |  +--rw local-prefix-sid* [dest-addr mask-addr]
+  |  |        |     +--rw dest-addr    ncd:ipv4-address
+  |  |        |     +--rw mask-addr    ncd:ipv4-address
+  |  |        |     +--rw index?       uint32
+  |  |        |     +--rw node-flag?   LOCAL-PREFIX-NODE-FLAG
+  |  |        |     +--rw php-flag?    LOCAL-PREFIX-PHP-FLAG
+  |  |        +--rw adjacencys
+  |  |        |  +--rw adjacency* [local-ip remote-ip]
+  |  |        |     +--rw local-ip     ncd:ipv4-address
+  |  |        |     +--rw remote-ip    ncd:ipv4-address
+  |  |        |     +--rw sid          int32
+  |  |        +--rw adjacency-intfs
+  |  |           +--rw adjacency-intf* [local-interface remote-router-id]
+  |  |              +--rw local-interface     ncd:ifname
+  |  |              +--rw remote-router-id    ncd:ipv4-address
+  |  |              +--rw sid                 int32
+  |  +--rw fas
+  |  |  +--rw fa* [fa-id]
+  |  |     +--rw fa-id    uint32
+  |  |     +--rw ipv4
+  |  |        +--rw local-prefix-sids
+  |  |           +--rw local-prefix-sid* [dest-addr mask-addr]
+  |  |              +--rw dest-addr    ncd:ipv4-address
+  |  |              +--rw mask-addr    ncd:ipv4-address
+  |  |              +--rw index?       uint32
+  |  |              +--rw node-flag?   LOCAL-PREFIX-NODE-FLAG
+  |  |              +--rw php-flag?    LOCAL-PREFIX-PHP-FLAG
+  |  +--rw interfaces-aiis {network-slice}?
+  |  |  +--rw interface-aii* [interface-name aii]
+  |  |     +--rw interface-name    ncd:ifname
+  |  |     +--rw aii               uint32
+  |  +--rw srv6
+  |  |  +--rw global-status?   GLOBAL-STATUS
+  |  |  o--rw sid-range
+  |  |  |  +--rw (range-type)?
+  |  |  |     +--:(hybrid)
+  |  |  |     |  +--rw hybird
+  |  |  |     |     +--rw hybrid              empty
+  |  |  |     |     +--rw prefix              ncd:ipv6-address
+  |  |  |     |     +--rw prefix-length       ncd:ipv6-mask-length
+  |  |  |     |     +--rw static-sub-range    enumeration
+  |  |  |     +--:(dynamic-only)
+  |  |  |     |  +--rw dynamic-ony
+  |  |  |     |     +--rw dynamic-only             empty
+  |  |  |     |     +--rw dynamic-prefix           ncd:ipv6-address
+  |  |  |     |     +--rw dynamic-prefix-length    ncd:ipv6-mask-length
+  |  |  |     +--:(static-only)
+  |  |  |        +--rw static
+  |  |  |           +--rw static-only             empty
+  |  |  |           +--rw static-prefix           ncd:ipv6-address
+  |  |  |           +--rw static-prefix-length    ncd:ipv6-mask-length
+  |  |  +--rw locators
+  |  |  |  +--rw locator* [locator-name]
+  |  |  |     +--rw locator-name    string
+  |  |  |     o--rw is-default?     boolean
+  |  |  |     +--rw sid-range!
+  |  |  |     |  +--rw ipv6-prefix           ncd:ipv6-address-none-zero
+  |  |  |     |  +--rw ipv6-prefix-length    ncd:ipv6-mask-length
+  |  |  |     |  +--rw static-length?        uint8
+  |  |  |     |  +--rw args-length?          uint8
+  |  |  |     |  +--rw compress!
+  |  |  |     |     +--rw c-target        enumeration
+  |  |  |     |     +--rw block-length    uint8
+  |  |  |     +--rw fa-id?          uint32
+  |  |  +--rw adjacency!
+  |  |     +--rw sid-hold-time?   uint16
+  |  +--rw sr-policys!
+  |  |  +--rw ipv4
+  |  |  |  +--rw binding-sids
+  |  |  |     +--rw binding-sid* [color end-point-ipv4]
+  |  |  |        +--rw color             uint32
+  |  |  |        +--rw end-point-ipv4    ncd:ipv4-address-none-zero
+  |  |  |        +--rw (label)?
+  |  |  |           +--:(sid)
+  |  |  |           |  +--rw sid         uint32
+  |  |  |           +--:(auto)
+  |  |  |              +--rw auto        enumeration
+  |  |  +--rw ipv6
+  |  |     +--rw binding-sids
+  |  |        +--rw binding-sid* [color end-point-ipv6]
+  |  |           +--rw color             uint32
+  |  |           +--rw end-point-ipv6    ncd:ipv6-address-none-zero
+  |  |           +--rw (label)?
+  |  |              +--:(sid)
+  |  |              |  +--rw sid         uint32
+  |  |              +--:(auto)
+  |  |                 +--rw auto        enumeration
+  |  +--rw sr-epes
+  |  |  +--rw ipv4-peer-sids
+  |  |  |  +--rw ipv4-peer-sid* [ipv4-address]
+  |  |  |     +--rw ipv4-address    ncd:ipv4-address-none-zero
+  |  |  |     +--rw sid?            uint32
+  |  |  +--rw ipv6-peer-sids
+  |  |  |  +--rw ipv6-peer-sid* [ipv6-address]
+  |  |  |     +--rw ipv6-address    ncd:ipv6-address-none-zero
+  |  |  |     +--rw sid?            uint32
+  |  |  +--rw peer-set-sids
+  |  |     +--rw peer-set-sid* [name]
+  |  |        +--rw name    ncd:string-all
+  |  |        +--rw sid?    uint32
+  |  +--rw adj-sid-holdtime
+  |     +--rw holdtime?   uint32
+  +--ro state
+     +--ro ipv4
+     |  +--ro global-status
+     |  |  +--ro status?   GLOBAL-STATUS
+     |  o--ro adjacency-sid
+     |  |  x--ro information* [type local-router-id local-ip remote-router-id remote-ip sid-index]
+     |  |     +--ro type                ADJ-TYPE
+     |  |     +--ro local-router-id     ncd:ipv4-address
+     |  |     +--ro local-ip            ncd:ipv4-address
+     |  |     +--ro remote-router-id    ncd:ipv4-address
+     |  |     +--ro remote-ip           ncd:ipv4-address
+     |  |     +--ro sid-index           uint32
+     |  |     +--ro sid-label?          uint32
+     |  |     +--ro weight?             uint32
+     |  |     o--ro local-id?           uint32
+     |  |     o--ro remote-id?          int32
+     |  |     o--ro local-interface?    ncd:string-all
+     |  +--ro local-prefix-sid
+     |  |  +--ro information* [dest-addr mask-addr]
+     |  |     +--ro dest-addr    ncd:ipv4-address
+     |  |     +--ro mask-addr    ncd:ipv4-address
+     |  |     +--ro index?       uint32
+     |  |     +--ro node-flag?   LOCAL-PREFIX-NODE-FLAG
+     |  |     +--ro php-flag?    LOCAL-PREFIX-PHP-FLAG
+     |  |     +--ro aii?         uint32 {network-slice}?
+     |  |     +--ro fa-id?       uint32
+     |  +--ro remote-prefix-sid
+     |  |  +--ro information* [dest-addr mask-addr nexthop-index]
+     |  |     +--ro dest-addr        ncd:ipv4-address
+     |  |     +--ro mask-addr        ncd:ipv4-address
+     |  |     +--ro nexthop-index    uint32
+     |  |     +--ro prefix-sid?      uint32
+     |  |     +--ro prefix-flag?     REMOTE-PREFIX-FLAG
+     |  |     +--ro router-id?       ncd:ipv4-address
+     |  |     +--ro nexthop?         ncd:ipv4-address
+     |  |     +--ro nexthop-sid?     uint32
+     |  |     +--ro nexthop-flag?    REMOTE-PREFIX-FLAG
+     |  |     +--ro aii?             uint32 {network-slice}?
+     |  |     +--ro fa-id?           uint32
+     |  +--ro local-srgb
+     |  |  +--ro label-begin?   uint32
+     |  |  +--ro label-end?     uint32
+     |  o--ro remote-srgb
+     |  |  o--ro information* [router-id range-index]
+     |  |     +--ro router-id      ncd:ipv4-address
+     |  |     +--ro range-index    uint32
+     |  |     +--ro label-begin?   uint32
+     |  |     +--ro label-end?     uint32
+     |  +--ro remote-srgbs
+     |  |  +--ro information* [router-id address-family range-index]
+     |  |     +--ro router-id         ncd:ipv4-address
+     |  |     +--ro address-family    enumeration
+     |  |     +--ro range-index       uint32
+     |  |     +--ro label-begin?      uint32
+     |  |     +--ro label-end?        uint32
+     |  +--ro prefix-sid-map {mapping-server}?
+     |  |  +--ro information* [first-dest-addr first-mask-addr]
+     |  |     +--ro first-dest-addr    ncd:ipv4-address
+     |  |     +--ro first-mask-addr    ncd:ipv4-address
+     |  |     +--ro first-sid?         uint32
+     |  |     +--ro range?             uint32
+     |  |     +--ro last-dest-addr?    ncd:ipv4-address
+     |  |     +--ro last-mask-addr?    ncd:ipv4-address
+     |  |     +--ro last-sid?          uint32
+     |  o--ro adjacency-sid-new
+     |     +--ro information* [type local-router-id local-ip remote-router-id remote-ip sid-index local-id remote-id]
+     |        +--ro type                ADJ-TYPE
+     |        +--ro local-router-id     ncd:ipv4-address
+     |        +--ro local-ip            ncd:ipv4-address
+     |        +--ro remote-router-id    ncd:ipv4-address
+     |        +--ro remote-ip           ncd:ipv4-address
+     |        +--ro sid-index           uint32
+     |        +--ro sid-label?          uint32
+     |        +--ro weight?             uint32
+     |        +--ro local-id            uint32
+     |        +--ro remote-id           int32
+     |        +--ro local-interface?    ncd:string-all
+     |        +--ro aii?                uint32 {network-slice}?
+     +--ro ipv6
+     |  +--ro global-status
+     |  |  +--ro status?   GLOBAL-STATUS
+     |  +--ro local-prefix-sid
+     |  |  +--ro information* [prefix prefix-length]
+     |  |     +--ro prefix           ncd:ipv6-address
+     |  |     +--ro prefix-length    uint8
+     |  |     +--ro index?           uint32
+     |  |     +--ro node-flag?       LOCAL-PREFIX-NODE-FLAG
+     |  |     +--ro php-flag?        LOCAL-PREFIX-PHP-FLAG
+     |  +--ro remote-prefix-sid
+     |  |  +--ro information* [prefix prefix-length nexthop-index]
+     |  |     +--ro prefix           ncd:ipv6-address
+     |  |     +--ro prefix-length    uint8
+     |  |     +--ro nexthop-index    uint32
+     |  |     +--ro prefix-sid?      uint32
+     |  |     +--ro prefix-flag?     REMOTE-PREFIX-FLAG
+     |  |     o--ro router-id?       ncd:ipv4-address
+     |  |     +--ro nexthop?         ncd:ipv6-address
+     |  |     +--ro nexthop-sid?     uint32
+     |  |     +--ro nexthop-flag?    REMOTE-PREFIX-FLAG
+     |  |     +--ro router-id-str?   string
+     |  +--ro prefix-sid-map {mapping-server}?
+     |  |  +--ro information* [first-prefix first-prefix-len]
+     |  |     +--ro first-prefix        ncd:ipv6-address
+     |  |     +--ro first-prefix-len    uint8
+     |  |     +--ro first-sid?          uint32
+     |  |     +--ro range?              uint32
+     |  |     +--ro last-prefix?        ncd:ipv6-address
+     |  |     +--ro last-prefix-len?    uint8
+     |  |     +--ro last-sid?           uint32
+     |  o--ro adjacency-sid
+     |  |  x--ro information* [type local-router-id local-ipv6 remote-router-id remote-ipv6 sid-index]
+     |  |     +--ro type                ADJ-TYPE
+     |  |     +--ro local-router-id     ncd:ipv6-address
+     |  |     +--ro local-ipv6          ncd:ipv6-address
+     |  |     +--ro remote-router-id    ncd:ipv6-address
+     |  |     +--ro remote-ipv6         ncd:ipv6-address
+     |  |     +--ro sid-index           uint32
+     |  |     +--ro sid-label?          uint32
+     |  |     +--ro weight?             uint32
+     |  |     o--ro local-id?           uint32
+     |  |     o--ro remote-id?          int32
+     |  |     o--ro local-interface?    ncd:string-all
+     |  o--ro adjacency-sid-new
+     |     +--ro information* [type local-router-id local-ipv6 remote-router-id remote-ipv6 sid-index local-id remote-id]
+     |        +--ro type                ADJ-TYPE
+     |        +--ro local-router-id     ncd:ipv6-address
+     |        +--ro local-ipv6          ncd:ipv6-address
+     |        +--ro remote-router-id    ncd:ipv6-address
+     |        +--ro remote-ipv6         ncd:ipv6-address
+     |        +--ro sid-index           uint32
+     |        +--ro sid-label?          uint32
+     |        +--ro weight?             uint32
+     |        +--ro local-id            uint32
+     |        +--ro remote-id           int32
+     |        +--ro local-interface?    ncd:string-all
+     +--ro srv6
+        +--ro global-status?       GLOBAL-STATUS
+        o--ro srv6-sids
+        |  +--ro srv6-sid* [type]
+        |     +--ro type             enumeration
+        |     +--ro sid-prefix?      ncd:ipv6-prefix
+        |     +--ro sid-length?      ncd:ipv6-mask-length
+        |     +--ro function-type?   string
+        |     +--ro flavor?          string
+        |     +--ro nexthop?         ncd:ipv6-address
+        |     +--ro interface?       string
+        o--ro srv6-sid-range
+        |  +--ro sid-range* [type]
+        |     +--ro type            string
+        |     +--ro range-prefix?   ncd:ipv6-prefix
+        +--ro locators
+        |  +--ro locator* [locator-name]
+        |     +--ro locator-name       string
+        |     +--ro range-prefix?      ncd:ipv6-prefix
+        |     o--ro is-default?        boolean
+        |     +--ro static-length?     uint8
+        |     +--ro auto-sid-begin?    string
+        |     +--ro auto-sid-end?      string
+        |     +--ro args-length?       uint8
+        |     +--ro compress-target?   uint8
+        |     +--ro block-length?      uint8
+        |     +--ro node-length?       uint8
+        |     +--ro function-length?   uint8
+        |     +--ro fa-id?             uint32
+        +--ro local-sids
+        |  +--ro local-sid* [sid]
+        |     +--ro sid                ncd:ipv6-prefix
+        |     +--ro locator-name?      string
+        |     +--ro vrf-name?          string
+        |     +--ro function-type?     SRV6-LOCAL-SID-FUNCTYPE
+        |     +--ro owner?             string
+        |     +--ro block-length?      uint8
+        |     +--ro node-length?       uint8
+        |     +--ro function-length?   uint8
+        |     +--ro flavor?            string
+        |     +--ro nexthop?           string
+        |     +--ro out-interface?     string
+        |     +--ro color?             uint32
+        |     +--ro end-point?         string
+        |     +--ro vpls-name?         string
+        |     +--ro fa-id?             uint8
+        +--ro local-sid-summary
+           +--ro total?        uint32
+           +--ro statistics* [function-type]
+              +--ro function-type    SRV6-LOCAL-SID-FUNCTYPE
+              +--ro count?           uint32

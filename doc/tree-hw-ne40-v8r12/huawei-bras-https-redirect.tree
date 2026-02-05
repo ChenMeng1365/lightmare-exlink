@@ -1,0 +1,104 @@
+module: huawei-bras-https-redirect
+  +--rw bras-https-redirect
+     +--rw access-https-redirect!
+     |  +--rw javascript-blacklist!
+     |  |  +--rw packet-rate?      uint16
+     |  |  +--rw aging-time?       uint32
+     |  |  +--rw retry-times?      uint16
+     |  |  +--rw retry-interval?   uint16
+     |  +--rw cipher-suite-support
+     |  |  +--rw code*   cipher-support-suite-code-type
+     |  +--rw self-signed-modulus
+     |  |  +--rw modulus?   uint16
+     |  +--rw chasten-flow
+     |  |  +--rw flow-number?         uint16
+     |  |  +--rw flow-period?         uint16
+     |  |  +--rw flow-block-period?   uint16
+     |  |  +--rw flow-block-rate?     uint16
+     |  +--rw chasten-redirect
+     |     +--rw redirect-number?         uint16
+     |     +--rw redirect-period?         uint16
+     |     +--rw redirect-block-period?   uint16
+     |     +--rw redirect-block-rate?     uint16
+     +--ro certificate-info
+     |  +--ro certificate-source?      enumeration
+     |  +--ro last-import-time?        yang:date-and-time
+     |  +--ro last-delete-time?        yang:date-and-time
+     |  +--ro certificate-file-name?   string
+     |  +--ro certificate-size?        uint16
+     |  +--ro cert-valid-start?        yang:date-and-time
+     |  +--ro cert-valid-end?          yang:date-and-time
+     |  +--ro imported-pub-key?        uint32
+     |  +--ro key-type?                enumeration
+     +--ro chasten-user-infos
+     |  +--ro chasten-user-info* [slot-id user-id]
+     |     +--ro slot-id                        string
+     |     +--ro user-id                        uint32
+     |     +--ro ipv4-address?                  inet:ipv4-address-no-zone
+     |     +--ro ipv6-address?                  inet:ipv6-address-no-zone
+     |     +--ro ipv6-pd-prefix?                inet:ipv6-prefix
+     |     +--ro vpn-instance-name?             string
+     |     +--ro status?                        chasten-user-status-type
+     |     +--ro start-flow-time?               yang:date-and-time
+     |     +--ro flow-number?                   uint32
+     |     +--ro check-flow-number?             uint32
+     |     +--ro block-flow-number?             uint32
+     |     +--ro flow-block-time?               yang:date-and-time
+     |     +--ro drop-flow-packet-number?       uint32
+     |     +--ro start-redirect-time?           yang:date-and-time
+     |     +--ro redirect-number?               uint32
+     |     +--ro check-redirect-number?         uint32
+     |     +--ro block-redirect-number?         uint32
+     |     +--ro redirect-block-time?           yang:date-and-time
+     |     +--ro drop-redirect-packet-number?   uint32
+     +--ro blacklist-ipv4-infos
+     |  +--ro blacklist-ipv4-info* [slot-id ipv4-address]
+     |     +--ro slot-id         string
+     |     +--ro ipv4-address    inet:ipv4-address-no-zone
+     |     +--ro age-time?       yang:date-and-time
+     +--ro blacklist-ipv6-infos
+        +--ro blacklist-ipv6-info* [slot-id ipv6-address]
+           +--ro slot-id         string
+           +--ro ipv6-address    inet:ipv6-address-no-zone
+           +--ro age-time?       yang:date-and-time
+
+  rpcs:
+    +---x import-certificate-der
+    |  +---w input
+    |     +---w certificate-file-name    string
+    |     +---w der-key-file-name        string
+    +---x import-certificate-pem
+    |  +---w input
+    |     +---w certificate-file-name    string
+    |     +---w pem-key-file-name        string
+    |     +---w password                 pub-type:password-extend
+    +---x delete-certificate
+    |  +---w input
+    |     +---w certificate-delete    boolean
+    +---x delete-chasten
+    |  +---w input
+    |     +---w slot-id    string
+    +---x delete-chasten-ipv4
+    |  +---w input
+    |     +---w slot-id         string
+    |     +---w ipv4-address    inet:ipv4-address-no-zone
+    |     +---w vpn-name?       -> /ni:network-instance/instances/instance/name
+    +---x delete-chasten-ipv6
+    |  +---w input
+    |     +---w slot-id         string
+    |     +---w ipv6-address    inet:ipv6-address-no-zone
+    |     +---w vpn-name?       -> /ni:network-instance/instances/instance/name
+    +---x delete-chasten-prefix
+    |  +---w input
+    |     +---w slot-id        string
+    |     +---w ipv6-prefix    inet:ipv6-prefix
+    |     +---w vpn-name?      -> /ni:network-instance/instances/instance/name
+    +---x delete-blacklist
+    |  +---w input
+    |     +---w ip-type    enumeration
+    +---x delete-blacklist-ipv4
+    |  +---w input
+    |     +---w ipv4-address    inet:ipv4-address-no-zone
+    +---x delete-blacklist-ipv6
+       +---w input
+          +---w ipv6-address    inet:ipv6-address-no-zone

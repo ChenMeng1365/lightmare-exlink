@@ -1,0 +1,938 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-ippoolv4"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ippoolv4="http://www.zte.com.cn/zxr10/netconf/schema/rosng/ippoolv4"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/ippoolv4"/>
+  <prefix value="ippoolv4"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe IPPOOLv4.</text>
+  </description>
+  <revision date="2020-05-16">
+    <description>
+      <text>Change the length of the poolname to 64.</text>
+    </description>
+  </revision>
+  <revision date="2019-03-12">
+    <description>
+      <text>Add container node ippool-openflow-disconnect under this path:/configuration/ippool/.</text>
+    </description>
+  </revision>
+  <revision date="2018-11-23">
+    <description>
+      <text>Add new leaf lock under configuration/ippool/pools/pool/ranges/range/
+Add new leaf lock under configuration/ippool/pools/pool/ranges-vrf/range-vrf/</text>
+    </description>
+  </revision>
+  <revision date="2017-12-28">
+    <description>
+      <text>Add new leaf include-edge under configuration/ippool/pools/pool</text>
+    </description>
+  </revision>
+  <revision date="2017-10-10">
+    <description>
+      <text>Add new leaf resource-utilization-ratio under state/ippool/config-info/detail
+Add new leaf resource-utilization-ratio under state/ippool/exclude-ip/detail</text>
+    </description>
+  </revision>
+  <revision date="2016-11-08">
+    <description>
+      <text>Add new ippool assign-policy random under configure/ippool/pools/pool/assign-policy</text>
+    </description>
+  </revision>
+  <revision date="2016-06-01">
+    <description>
+      <text>1)Add container node ranges-vrf under this path:/configuration/ippool/pools/pool/.
+2)Add container node exclude-ranges-vrf under this path:/configuration/ippools/pools/pool/.</text>
+    </description>
+  </revision>
+  <revision date="2016-05-19">
+    <description>
+      <text>1)Add leaf node threshold under this path:/configuration/ippool/pools/pool/.</text>
+    </description>
+  </revision>
+  <revision date="2015-08-11">
+    <description>
+      <text>Modify the config from true to false under the state and operation containers.</text>
+    </description>
+  </revision>
+  <revision date="2015-06-11">
+    <description>
+      <text>Change free-addr-faild in state/ippool/spec-statistics-info/detail/free-addr-faild to free-addr-fail.</text>
+    </description>
+  </revision>
+  <revision date="2015-03-12">
+    <description>
+      <text>Add the default of this leaf under the path:/configuration/ippool/pools/pool/assign-policy.</text>
+    </description>
+  </revision>
+  <revision date="2015-02-28">
+    <description>
+      <text>1.Set leaf type from string(string:all) to string:
+(1)state/ippool/exclude-ip/detail/pool-name;
+(2)state/ippool/exclude-ip/detail/vrf-instance;
+(3)state/ippool/used-ip/detail/pool-name;
+(4)state/ippool/used-ip/detail/vrf-instance;
+(5)state/ippool/used-exclude-ip/detail/pool-name;
+(6)state/ippool/used-exclude-ip/detail/vrf-instance;
+2.Set state/ippool/exclude-ip/detail/end-ip as key;
+3.Set operation/clear-ip-addr-pool-conflict/type/pool/pool-name mandatory.</text>
+    </description>
+  </revision>
+  <revision date="2014-03-12">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>Configuration.</text>
+    </description>
+    <container name="ippool">
+      <description>
+        <text>IPPOOLv4 config.</text>
+      </description>
+      <container name="pools">
+        <description>
+          <text>Configuration of IPPOOLv4.</text>
+        </description>
+        <list name="pool">
+          <description>
+            <text>Configuration of IPPOOLv4.</text>
+          </description>
+          <key value="name"/>
+          <leaf name="name">
+            <description>
+              <text>IP pool name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64">
+                <description>
+                  <text>Set IP pool name,length is 1 to 64.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+          <leaf name="conflict-time">
+            <description>
+              <text>Set IP address conflict time.</text>
+            </description>
+            <type name="uint32">
+              <range value="1..18000"/>
+            </type>
+            <default value="30"/>
+          </leaf>
+          <leaf name="assign-policy">
+            <description>
+              <text>Set IP address assign policy.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="forward">
+                <value value="0"/>
+                <description>
+                  <text>Set IP address assign policy forward.</text>
+                </description>
+              </enum>
+              <enum name="backward">
+                <value value="1"/>
+                <description>
+                  <text>Set IP address assign policy backward.</text>
+                </description>
+              </enum>
+              <enum name="random">
+                <value value="2"/>
+                <description>
+                  <text>Set IP address assign policy random.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="forward"/>
+          </leaf>
+          <leaf name="threshold">
+            <description>
+              <text>Set IP pool alarm threshold.</text>
+            </description>
+            <type name="uint32">
+              <range value="1..100"/>
+            </type>
+            <default value="100"/>
+            <ncd:revise-date date="2016-05-19"/>
+          </leaf>
+          <leaf name="include-edge">
+            <description>
+              <text>Include network edge IP address.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+                <description>
+                  <text>Enable include network edge IP address.</text>
+                </description>
+              </enum>
+              <enum name="disable">
+                <value value="0"/>
+                <description>
+                  <text>Disable include network edge IP address.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="disable"/>
+            <ncd:revise-date date="2017-12-28"/>
+          </leaf>
+          <container name="ranges">
+            <description>
+              <text>IP address ranges.</text>
+            </description>
+            <list name="range">
+              <description>
+                <text>IP address range.</text>
+              </description>
+              <key value="begin-ip end-ip mask-ip"/>
+              <leaf name="begin-ip">
+                <description>
+                  <text>Begin IP address of range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="end-ip">
+                <description>
+                  <text>End IP address of range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="mask-ip">
+                <description>
+                  <text>IP address mask.</text>
+                </description>
+                <type name="ncd:ipv4-mask"/>
+              </leaf>
+              <leaf name="lock">
+                <description>
+                  <text>Lock IP address range.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="enable">
+                    <value value="1"/>
+                    <description>
+                      <text>Enable lock IP address range.</text>
+                    </description>
+                  </enum>
+                  <enum name="disable">
+                    <value value="0"/>
+                    <description>
+                      <text>Disable lock IP address range.</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="disable"/>
+                <ncd:revise-date date="2018-11-23"/>
+              </leaf>
+            </list>
+          </container>
+          <container name="ranges-vrf">
+            <description>
+              <text>IP address ranges with VRF.</text>
+            </description>
+            <list name="range-vrf">
+              <description>
+                <text>IP address range with VRF.</text>
+              </description>
+              <key value="vrf-instance begin-ip end-ip mask-ip"/>
+              <leaf name="vrf-instance">
+                <description>
+                  <text>VPN Routing/Forwarding instance name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..32">
+                    <description>
+                      <text>The length of vrf instance.</text>
+                    </description>
+                  </length>
+                </type>
+              </leaf>
+              <leaf name="begin-ip">
+                <description>
+                  <text>Begin IP address of range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="end-ip">
+                <description>
+                  <text>End IP address of range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="mask-ip">
+                <description>
+                  <text>IP address mask.</text>
+                </description>
+                <type name="ncd:ipv4-mask"/>
+              </leaf>
+              <leaf name="lock">
+                <description>
+                  <text>Lock IP address range.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="enable">
+                    <value value="1"/>
+                    <description>
+                      <text>Enable lock IP address range.</text>
+                    </description>
+                  </enum>
+                  <enum name="disable">
+                    <value value="0"/>
+                    <description>
+                      <text>Disable lock IP address range.</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="disable"/>
+                <ncd:revise-date date="2018-11-23"/>
+              </leaf>
+            </list>
+            <ncd:revise-date date="2016-06-01"/>
+          </container>
+          <container name="exclude-ranges">
+            <description>
+              <text>Set exclude ranges.</text>
+            </description>
+            <list name="exclude-range">
+              <description>
+                <text>Set exclude range.</text>
+              </description>
+              <key value="begin-ip end-ip"/>
+              <leaf name="begin-ip">
+                <description>
+                  <text>Begin IP of exclude range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="end-ip">
+                <description>
+                  <text>End IP of exclude range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+            </list>
+          </container>
+          <container name="exclude-ranges-vrf">
+            <description>
+              <text>Set exclude ranges with VRF.</text>
+            </description>
+            <list name="exclude-range-vrf">
+              <description>
+                <text>Set exclude range with vrf.</text>
+              </description>
+              <key value="vrf-instance begin-ip end-ip"/>
+              <leaf name="vrf-instance">
+                <description>
+                  <text>VPN Routing/Forwarding instance name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..32">
+                    <description>
+                      <text>The length of vrf instance.</text>
+                    </description>
+                  </length>
+                </type>
+              </leaf>
+              <leaf name="begin-ip">
+                <description>
+                  <text>Begin IP of exclude range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="end-ip">
+                <description>
+                  <text>End IP of exclude range.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+            </list>
+            <ncd:revise-date date="2016-06-01"/>
+          </container>
+        </list>
+      </container>
+      <container name="ippool-openflow-disconnect">
+        <description>
+          <text>Configure IP address pool openflow disconnect.</text>
+        </description>
+        <choice name="response-delay">
+          <description>
+            <text>Response delay.</text>
+          </description>
+          <case name="delay-time">
+            <description>
+              <text>Delay time (default:240 minutes).</text>
+            </description>
+            <leaf name="delay-time">
+              <description>
+                <text>Delay time (default:240 minutes).</text>
+              </description>
+              <type name="uint32">
+                <range value="0..2880"/>
+              </type>
+            </leaf>
+          </case>
+          <case name="forever">
+            <description>
+              <text>Set no time limit.</text>
+            </description>
+            <leaf name="forever">
+              <description>
+                <text>Set no time limit.</text>
+              </description>
+              <type name="empty"/>
+            </leaf>
+          </case>
+        </choice>
+        <ncd:revise-date date="2019-03-12"/>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>state.</text>
+    </description>
+    <container name="ippool">
+      <description>
+        <text>IPPOOLv4 state.</text>
+      </description>
+      <container name="conflict-ip">
+        <description>
+          <text>Show conflict address statistics of IPPOOLv4.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Show conflict address statistics of IPPOOLv4.</text>
+          </description>
+          <key value="pool-name vrf-name conflict-ip"/>
+          <leaf name="pool-name">
+            <description>
+              <text>IPPOOL name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+          </leaf>
+          <leaf name="vrf-name">
+            <description>
+              <text>VRF name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="conflict-ip">
+            <description>
+              <text>Conflict IP.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="conflict-time">
+            <description>
+              <text>Conflict time.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="time-stamp">
+            <description>
+              <text>Time stamp.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <ncd:select fields="pool-name"/>
+        </list>
+      </container>
+      <container name="exclude-ip">
+        <description>
+          <text>Show exclude address statistics of IPPOOLv4.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Show exclude address statistics of IPPOOLv4.</text>
+          </description>
+          <key value="pool-name vrf-instance begin-ip end-ip"/>
+          <leaf name="pool-name">
+            <description>
+              <text>IPPOOL name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+          </leaf>
+          <leaf name="vrf-instance">
+            <description>
+              <text>VRF name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="begin-ip">
+            <description>
+              <text>Begin IP of the exclude IP range.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="end-ip">
+            <description>
+              <text>End IP of the exclude IP range.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="mask-ip">
+            <description>
+              <text>Mask IP of the exclude IP range.</text>
+            </description>
+            <type name="ncd:ipv4-mask"/>
+          </leaf>
+          <leaf name="free-number">
+            <description>
+              <text>Free number of exclude IP range.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="used-number">
+            <description>
+              <text>Used number of exclude IP range.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="range-num-per-pool">
+            <description>
+              <text>The exclude range number in this ippool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="resource-utilization-ratio">
+            <description>
+              <text>The resource utilization ratio of the pool.</text>
+            </description>
+            <type name="string"/>
+            <ncd:revise-date date="2017-10-10"/>
+          </leaf>
+          <ncd:select fields="pool-name"/>
+        </list>
+      </container>
+      <container name="spec-statistics-info">
+        <description>
+          <text>Show statistic information of a specific IPPOOLv4.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Show statistic information of IPPOOLv4.</text>
+          </description>
+          <key value="pool-name"/>
+          <leaf name="pool-name">
+            <description>
+              <text>IPPOOL name.</text>
+            </description>
+            <type name="ncd:string-all">
+              <length value="1..64"/>
+            </type>
+          </leaf>
+          <leaf name="get-addr-success">
+            <description>
+              <text>The number of client get address success from this pool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="get-addr-fail">
+            <description>
+              <text>The number of client get address failed from this pool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="get-addr-total">
+            <description>
+              <text>The total number of client get address from this pool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="free-addr-success">
+            <description>
+              <text>The number of client free address success to this pool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="free-addr-fail">
+            <description>
+              <text>The number of client free address failed to this pool.</text>
+            </description>
+            <type name="uint32"/>
+            <ncd:revise-date date="2015-06-11"/>
+          </leaf>
+          <leaf name="free-addr-total">
+            <description>
+              <text>The total number of client free address to this pool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <ncd:select fields="pool-name"/>
+        </list>
+      </container>
+      <container name="total-statistics-info">
+        <description>
+          <text>Show total statistic information of IPPOOLv4.</text>
+        </description>
+        <leaf name="get-appoint-addr-succ">
+          <description>
+            <text>The number of client get appoint address success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-appoint-addr-fail">
+          <description>
+            <text>The number of client get appoint address failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-appoint-addr-total">
+          <description>
+            <text>The total number of client get appoint address.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-addr-gw-succ">
+          <description>
+            <text>The number of client get address by gateway success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-addr-gw-fail">
+          <description>
+            <text>The number of client get address by gateway failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-addr-gw-total">
+          <description>
+            <text>The total number of client get address by gateway.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-addr-pool-succ">
+          <description>
+            <text>The number of client get address by pool success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-addr-pool-fail">
+          <description>
+            <text>The number of client get address by pool failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-addr-pool-total">
+          <description>
+            <text>The total number of client get address by pool.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-resv-addr-success">
+          <description>
+            <text>The number of client get reserved address success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-resv-addr-fail">
+          <description>
+            <text>The number of client get reserved address failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="get-resv-addr-total">
+          <description>
+            <text>The total number of client get reserved address.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="free-normal-addr-succ">
+          <description>
+            <text>The number of client free address success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="free-normal-addr-fail">
+          <description>
+            <text>The number of client free address failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="free-normal-addr-total">
+          <description>
+            <text>The total number of client free address.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="add-conflict-addr-succ">
+          <description>
+            <text>The number of add conflict address success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="add-conflict-addr-fail">
+          <description>
+            <text>The number of add conflict address failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="add-conflict-addr-total">
+          <description>
+            <text>The total number of add conflict address.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="free-resv-addr-succ">
+          <description>
+            <text>The number of free reserved address success.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="free-resv-addr-fail">
+          <description>
+            <text>The number of free reserved address failed.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="free-resv-addr-total">
+          <description>
+            <text>The total number of free reserved address.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+      </container>
+      <container name="used-ip">
+        <description>
+          <text>Used address statistics.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Used address statistics.</text>
+          </description>
+          <key value="pool-name vrf-name used-ip"/>
+          <leaf name="pool-name">
+            <description>
+              <text>IPPOOL name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+          </leaf>
+          <leaf name="vrf-name">
+            <description>
+              <text>VRF name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="used-ip">
+            <description>
+              <text>The used IP address in this ippool.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="if-conflict-ip">
+            <description>
+              <text>This IP address if or not a conflict IP.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="no">
+                <value value="0"/>
+                <description>
+                  <text>This IP address is not a conflict IP.</text>
+                </description>
+              </enum>
+              <enum name="yes">
+                <value value="1"/>
+                <description>
+                  <text>This IP address is a conflict IP.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="no"/>
+          </leaf>
+          <ncd:select fields="pool-name"/>
+        </list>
+      </container>
+      <container name="used-exclude-ip">
+        <description>
+          <text>Used exclude address statistics.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Used exclude address statistics.</text>
+          </description>
+          <key value="pool-name vrf-name used-exclude-ip"/>
+          <leaf name="pool-name">
+            <description>
+              <text>IPPOOL name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+          </leaf>
+          <leaf name="vrf-name">
+            <description>
+              <text>vrf name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="used-exclude-ip">
+            <description>
+              <text>The used IP address in reserved range.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <ncd:select fields="pool-name"/>
+        </list>
+      </container>
+      <container name="config-info">
+        <description>
+          <text>Show address allocation for pool.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Show address allocation for pool.</text>
+          </description>
+          <key value="pool-name vrf-name begin-ip end-ip"/>
+          <leaf name="pool-name">
+            <description>
+              <text>IPPOOL name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+          </leaf>
+          <leaf name="vrf-name">
+            <description>
+              <text>VRF name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="begin-ip">
+            <description>
+              <text>Begin IP of this IPPOOL.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="end-ip">
+            <description>
+              <text>End IP of this IPPOOL.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="mask-ip">
+            <description>
+              <text>Mask IP of this IPPOOL.</text>
+            </description>
+            <type name="ncd:ipv4-mask"/>
+          </leaf>
+          <leaf name="free-number">
+            <description>
+              <text>Free number IP address of this IPPOOL.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="used-number">
+            <description>
+              <text>Used number IP address of this IPPOOL.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="range-num-per-pool">
+            <description>
+              <text>The range number in this ippool.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="resource-utilization-ratio">
+            <description>
+              <text>The resource utilization ratio of the pool.</text>
+            </description>
+            <type name="string"/>
+            <ncd:revise-date date="2017-10-10"/>
+          </leaf>
+          <ncd:select fields="pool-name"/>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>Operation.</text>
+    </description>
+    <container name="clear-ip-addr-pool-conflict">
+      <description>
+        <text>Clear conflict address of IP address pool.</text>
+      </description>
+      <choice name="type">
+        <description>
+          <text>The way to clear conflict address.</text>
+        </description>
+        <case name="address">
+          <description>
+            <text>Clear specific conflict address.</text>
+          </description>
+          <leaf name="ip-address">
+            <description>
+              <text>The specific conflict address.</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="vrf-instance">
+            <description>
+              <text>The VRF instance of the address.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+        </case>
+        <case name="all">
+          <description>
+            <text>Clear all conlict address.</text>
+          </description>
+          <leaf name="all">
+            <description>
+              <text>Clear all conlict address.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="none">
+                <value value="0"/>
+              </enum>
+              <enum name="all">
+                <value value="1"/>
+              </enum>
+            </type>
+            <default value="none"/>
+          </leaf>
+        </case>
+        <case name="pool">
+          <description>
+            <text>Clear conflict address of a specific address pool.</text>
+          </description>
+          <leaf name="pool-name">
+            <description>
+              <text>Clear a specific pool's conflict address by its name.</text>
+            </description>
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </case>
+      </choice>
+    </container>
+  </container>
+</module>

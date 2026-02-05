@@ -1,0 +1,288 @@
+  module zxr10-rtm {
+    namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/rtm';
+    prefix rtm;
+    import zxr10-netconf-defs {
+      prefix ncd;
+    }
+    organization 'ZTE Corporation';
+    contact 'ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000';
+    description 'The netconf module to describe the routing table management(rtm).';
+    revision 2013-06-13 {
+      description 'This Netconf module provides commonly used textual conventions for RTM.
+It is initial version.';
+    }
+    typedef owner-type {
+      type enumeration {
+        enum init {
+          value 0;
+          description 'This owner should not appear.';
+        }
+        enum static {
+          value 1;
+          description 'Route owner is static.';
+        }
+        enum direct {
+          value 2;
+          description 'Route owner is direct.';
+        }
+        enum broadcast {
+          value 3;
+          description 'Route owner is broadcast.';
+        }
+        enum multicast {
+          value 4;
+          description 'Route owner is multicast.';
+        }
+        enum martian {
+          value 5;
+          description 'Route owner is martian.';
+        }
+        enum address {
+          value 6;
+          description 'Route owner is address.';
+        }
+        enum ospf {
+          value 7;
+          description 'Route owner is ospf.';
+        }
+        enum bgp {
+          value 8;
+          description 'Route owner is bgp.';
+        }
+        enum bgp-lable {
+          value 9;
+          description 'Route owner is bgp-lable.';
+        }
+        enum rip {
+          value 10;
+          description 'Route owner is rip.';
+        }
+        enum isis-l1 {
+          value 11;
+          description 'Route owner is isis-l1.';
+        }
+        enum isis-l2 {
+          value 12;
+          description 'Route owner is isis-l2.';
+        }
+        enum icmp {
+          value 13;
+          description 'Route owner is icmp.';
+        }
+        enum snmp {
+          value 14;
+          description 'Route owner is snmp.';
+        }
+        enum nat {
+          value 15;
+          description 'Route owner is nat.';
+        }
+        enum natpt {
+          value 16;
+          description 'Route owner is natpt.';
+        }
+        enum vrrp {
+          value 17;
+          description 'Route owner is vrrp.';
+        }
+        enum ppp {
+          value 18;
+          description 'Route owner is ppp.';
+        }
+        enum asbr-vpn {
+          value 19;
+          description 'Route owner is asbr-vpn.';
+        }
+        enum rsvp-te {
+          value 20;
+          description 'Route owner is rsvp-te.';
+        }
+        enum user-ipaddress {
+          value 21;
+          description 'Route owner is user-ipaddress.';
+        }
+        enum user-network {
+          value 22;
+          description 'Route owner is user-network.';
+        }
+        enum static-vrf-glboal-nh {
+          value 23;
+          description 'Route owner is static-vrf-glboal-nh.';
+        }
+        enum IPSec {
+          value 24;
+          description 'Route owner is IPSec.';
+        }
+        enum vpn-lable {
+          value 25;
+          description 'Route owner is vpn-lable.';
+        }
+        enum psbusi-address {
+          value 26;
+          description 'Route owner is psbusi-address.';
+        }
+        enum psuser-address {
+          value 27;
+          description 'Route owner is psuser-address.';
+        }
+        enum ldp-area {
+          value 28;
+          description 'Route owner is ldp-area.';
+        }
+        enum user-special {
+          value 29;
+          description 'Route owner is user-special.';
+        }
+        enum dhcp-default {
+          value 30;
+          description 'Route owner is dhcp-default.';
+        }
+        enum dhcp-static {
+          value 31;
+          description 'Route owner is dhcp-static.';
+        }
+        enum slnat64 {
+          value 32;
+          description 'Route owner is slnat64.';
+        }
+      }
+      description 'The owner type of nexthop.';
+    }
+    typedef forward-status {
+      type enumeration {
+        enum master {
+          value 1;
+          description 'The master nexthop of this frr is active.';
+        }
+        enum slave {
+          value 2;
+          description 'The slave nexthop of this frr is active.';
+        }
+        enum no-forwarding {
+          value 3;
+          description 'There is no active nexthop for this frr.';
+        }
+        enum wtr {
+          value 4;
+          description 'This frr is waiting for cutback.';
+        }
+      }
+      description 'The forwarding status of frr.';
+    }
+    container state {
+      config false;
+      container frr {
+        description 'This modul show the forwarding infor of frr.';
+        list ipfrr {
+          description 'This modul show the forwarding infor of ip frr.For global frr,the query condition route-vrfname should be null string.';
+          key 'route-vrfname route-dest route-prefix';
+          ncd:select 'route-vrfname route-dest route-prefix';
+          ncd:select route-vrfname;
+          leaf route-vrfname {
+            description 'VRF name of the route.';
+            type string {
+              length 0..32;
+            }
+          }
+          leaf route-dest {
+            description 'The destination IP address of this route.';
+            type ncd:ipv4-address;
+          }
+          leaf route-prefix {
+            description 'The mask of this route.';
+            type ncd:ipv4-mask;
+          }
+          leaf route-master-nexthop {
+            description 'The nexthop of master route.';
+            type ncd:ipv4-address;
+            mandatory true;
+          }
+          leaf route-master-ifname {
+            description 'The local interface name through which the master next hop of this route should be reached.';
+            type string {
+              length 0..31;
+            }
+            mandatory true;
+          }
+          leaf route-master-owner {
+            description 'The protocol of master route.';
+            type owner-type;
+            mandatory true;
+          }
+          leaf route-master-label {
+            description 'The out label of master route.';
+            type uint32;
+            mandatory true;
+          }
+          leaf route-master-priority {
+            description 'The priority of master route.';
+            type uint8 {
+              range 1..255;
+            }
+            mandatory true;
+          }
+          leaf route-master-metric {
+            description 'The metric of master route.';
+            type uint32;
+            mandatory true;
+          }
+          leaf route-master-is-pe {
+            description "Whether the next hop of master route is PE.
+Ture:It's pe.
+False:It's not pe.";
+            type boolean;
+            mandatory true;
+          }
+          leaf route-slave-nexthop {
+            description 'The nexthop of slave route.';
+            type ncd:ipv4-address;
+            mandatory true;
+          }
+          leaf route-slave-ifname {
+            description 'The local interface name through which the slave next hop of this route should be reached.';
+            type string {
+              length 0..31;
+            }
+            mandatory true;
+          }
+          leaf route-slave-owner {
+            description 'The protocol of slave route.';
+            type owner-type;
+            mandatory true;
+          }
+          leaf route-slave-label {
+            description 'The out label of slave route.';
+            type uint32;
+            mandatory true;
+          }
+          leaf route-slave-priority {
+            description 'The priority of slave route.';
+            type uint8 {
+              range 1..255;
+            }
+            mandatory true;
+          }
+          leaf route-slave-metric {
+            description 'The metric of slave route.';
+            type uint32;
+            mandatory true;
+          }
+          leaf route-slave-is-pe {
+            description "Whether the next hop of slave route is PE.
+True:It's pe.
+False:It's not pe.";
+            type boolean;
+            mandatory true;
+          }
+          leaf route-forwarding-status {
+            description 'Forwarding status of frr.';
+            type forward-status;
+            mandatory true;
+          }
+        }
+      }
+    }
+  }

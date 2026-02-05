@@ -1,0 +1,3329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-routing-policy"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-routing-policy"/>
+  <prefix value="rtp"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-tunnel-management">
+    <prefix value="tnlm"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <include module="huawei-routing-policy-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Routing policies are used to filter routes and control the receiving and advertising of routes. By changing the route attributes, such as reachability, you can change the path through which the traffic passes.</text>
+  </description>
+  <revision date="2019-04-27">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="route-base"/>
+  <container name="routing-policy">
+    <description>
+      <text>Routing policies are used to filter routes and control the receiving and advertising of routes. By changing the route attributes, such as reachability, you can change the path through which the traffic passes.</text>
+    </description>
+    <container name="ext-community-soo-filters">
+      <description>
+        <text>List of extended community attribute SoO filters. Routes are filtered based on the SoO extended community attributes of routes.</text>
+      </description>
+      <list name="ext-community-soo-filter">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure an SoO extended community filter, which filters routes based on the SoO extended community attribute.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..51"/>
+          </type>
+          <description>
+            <text>Name of an extended community SoO filter. The name is a string and cannot contain spaces.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-type">
+          <ext:operation-exclude value="update"/>
+          <type name="community-filter-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Type of an extended community SoO filter, which can be basic or advanced.</text>
+          </description>
+        </leaf>
+        <container name="basic-nodes">
+          <when condition="../filter-type='basic'"/>
+          <description>
+            <text>List of basic extended community SoO filter nodes. You can use the SoO extended community ID as a matching condition.</text>
+          </description>
+          <list name="basic-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node for a basic SoO extended community filter, with the SoO extended community attribute specified as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf-list name="community-member">
+              <type name="ext-community-type"/>
+              <min-elements value="1"/>
+              <max-elements value="16"/>
+              <description>
+                <text>Configure a value for the SoO attribute in an SoO extended community filter. The value can be in any of the following formats:
+(1) as-number:nn (as-number is an integer ranging from 0 to 65535, and nn is an integer ranging from 0 to 4294967295)
+(2) IPv4-address:nn
+(3) as-number.as-number:nn
+(4) as-number:nn (as-number is an integer ranging from 65536 to 4294967295, and nn is an integer ranging from 0 to 65535.</text>
+              </description>
+            </leaf-list>
+          </list>
+        </container>
+        <container name="advanced-nodes">
+          <when condition="../filter-type='advanced'"/>
+          <description>
+            <text>List of advanced extended community SoO filter nodes. You can use a regular expression as a matching condition.</text>
+          </description>
+          <list name="advanced-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in an advanced extended community SoO filter, with a regular expression specified as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="regular">
+              <type name="string">
+                <length value="1..1024"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Regular expression that is used for matching.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="community-filters">
+      <description>
+        <text>List of community attribute filters. Routes are filtered based on the community attributes of routes.</text>
+      </description>
+      <list name="community-filter">
+        <must condition="(string(number(name))='NaN' and filter-type) or (number(name)&gt;=1 and number(name)&lt;=99 and filter-type='basic') or (number(name)&gt;= 100 and number(name)&lt;=199 and filter-type='advanced')"/>
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure a community attribute filter, which filters routes based on community attributes. Different nodes of a community filter cannot be configured with the same filtering rules.</text>
+        </description>
+        <leaf name="name">
+          <type name="community-filter-name-type"/>
+          <description>
+            <text>Name of a community filter, which can be a numeral or a string. The ID of a basic community attribute filter is an integer ranging from 1 to 99; the ID of an advanced community attribute filter is an integer ranging from 100 to 199. The name of a community attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-type">
+          <ext:operation-exclude value="update"/>
+          <type name="community-filter-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Type of a community filter, which can be basic or advanced.</text>
+          </description>
+        </leaf>
+        <container name="basic-nodes">
+          <when condition="../filter-type='basic'"/>
+          <description>
+            <text>List of basic community filter nodes. You can use the community ID or the attribute of a known community as a matching condition.</text>
+          </description>
+          <list name="basic-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in a basic community filter, with a community number or well-known community attribute as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <container name="community-members">
+              <description>
+                <text>List of community attributes.</text>
+              </description>
+              <list name="community-member">
+                <key value="value"/>
+                <max-elements value="20"/>
+                <description>
+                  <text>Configure a community attribute.</text>
+                </description>
+                <leaf name="value">
+                  <type name="community-type"/>
+                  <description>
+                    <text>Community attribute value.</text>
+                  </description>
+                </leaf>
+                <leaf name="internet-strict-match">
+                  <when condition="../value='internet'"/>
+                  <type name="boolean"/>
+                  <default value="false"/>
+                  <description>
+                    <text>Enable/disable strict matching for routes with the internet community attribute.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+        <container name="advanced-nodes">
+          <when condition="../filter-type='advanced'"/>
+          <description>
+            <text>List of advanced community filter nodes. You can use a regular expression as a matching condition.</text>
+          </description>
+          <list name="advanced-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in an advanced community filter, with a regular expression specified as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="regular">
+              <type name="string">
+                <length value="1..1024"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Regular expression that is used for matching.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ext-community-filters">
+      <description>
+        <text>List of extended community filters. You can use the route-target extended community as a matching condition.</text>
+      </description>
+      <list name="ext-community-filter">
+        <must condition="(string(number(name))='NaN' and filter-type) or (number(name)&gt;=1 and number(name)&lt;=199 and filter-type='basic') or (number(name)&gt;= 200 and number(name)&lt;=399 and filter-type='advanced')"/>
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure an extended community filter, with a VPN-Target extended community specified as a matching rule.</text>
+        </description>
+        <leaf name="name">
+          <type name="ext-community-filter-name-type"/>
+          <description>
+            <text>Name of an extended community filter, which can be a numeral or a string. The ID of a basic extended community attribute filter is an integer ranging from 1 to 199; the ID of an advanced extended community attribute filter is an integer ranging from 200 to 399. The name of an extended community attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-type">
+          <ext:operation-exclude value="update"/>
+          <type name="community-filter-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Type of an extended community filter, which can be basic or advanced.</text>
+          </description>
+        </leaf>
+        <container name="basic-nodes">
+          <when condition="../filter-type='basic'"/>
+          <description>
+            <text>List of extended community filter nodes.</text>
+          </description>
+          <list name="basic-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node for an extended community filter.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <container name="ext-community-members">
+              <description>
+                <text>List of nodes in an extended community filter.</text>
+              </description>
+              <list name="ext-community-member">
+                <key value="value"/>
+                <min-elements value="1"/>
+                <max-elements value="16"/>
+                <description>
+                  <text>Configure a node for an extended community filter.</text>
+                </description>
+                <leaf name="value">
+                  <type name="ext-community-type"/>
+                  <description>
+                    <text>Extended community attribute value. The format are as follows:
+(1)as-number : nn ('as-number' ranges from 0 to 65535 and 'nn' ranges from 0 to 4294967295).
+(2)IPv4-address : nn ('IPv4-address' is an IPv4 address and 'nn' ranges from 0 to 65535).
+(3)as-number.as-number:nn ('as-number' ranges from 0 to 65535 and 'nn' ranges from 0 to 65535).
+(4)as-number : nn ('as-number' ranges from 65536 to 4294967295 and 'nn' ranges from 0 to 65535).</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+        <container name="advanced-nodes">
+          <when condition="../filter-type='advanced'"/>
+          <description>
+            <text>List of advanced extended community filter nodes. You can use a regular expression as a matching condition.</text>
+          </description>
+          <list name="advanced-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in an advanced extended community filter, with a regular expression specified as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="regular">
+              <type name="string">
+                <length value="1..1024"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Regular expression that is used for matching.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ipv4-prefix-filters">
+      <description>
+        <text>List of IPv4 prefix filters.</text>
+      </description>
+      <list name="ipv4-prefix-filter">
+        <key value="name"/>
+        <max-elements value="400000"/>
+        <description>
+          <text>Configure an IPv4 prefix list, which contains a group of route filtering rules. Different nodes of an IPv4 prefix filter cannot be configured with the same filtering rules.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..169"/>
+          </type>
+          <description>
+            <text>Name of an IPv4 prefix filter.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..80"/>
+          </type>
+          <description>
+            <text>Description of prefix filter.</text>
+          </description>
+        </leaf>
+        <leaf name="permit-count">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <default value="0"/>
+          <config value="false"/>
+          <description>
+            <text>Number of routes that match the route-policy.</text>
+          </description>
+        </leaf>
+        <leaf name="deny-count">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <default value="0"/>
+          <config value="false"/>
+          <description>
+            <text>Number of routes that do not match the route-policy.</text>
+          </description>
+        </leaf>
+        <container name="nodes">
+          <description>
+            <text>List of IPv4 prefix filter nodes.</text>
+          </description>
+          <list name="node">
+            <must condition="(not(masklength-lower) and not(masklength-upper)) or (masklength &lt;= masklength-lower and masklength-lower &lt;= masklength-upper)"/>
+            <key value="sequence"/>
+            <max-elements value="400000"/>
+            <description>
+              <text>Configure a node in an IPv4 prefix list. You can specify a prefix range and a mask length range in the node to match the destination network segment addresses or next-hop addresses in routes. There must be at least one node in a filter, min-elements 1. An IPv4 address and its mask must strictly match.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <mandatory value="true"/>
+              <description>
+                <text>IPv4 address.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength">
+              <type name="uint8">
+                <range value="0..32"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Mask length.</text>
+              </description>
+            </leaf>
+            <leaf name="match-network">
+              <type name="boolean"/>
+              <must condition="../ip-address='0.0.0.0' or ../match-network='false'"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable matching of network segment routes with the IPv4 prefix being 0.0.0.0.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength-lower">
+              <type name="uint8">
+                <range value="0..32"/>
+              </type>
+              <description>
+                <text>If both the IP address and mask length match, this parameter is used to specify the range lower of IP prefixes.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength-upper">
+              <type name="uint8">
+                <range value="1..32"/>
+              </type>
+              <description>
+                <text>If both the IP address and mask length match, this parameter is used to specify the range upper of IP prefixes.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ipv6-prefix-filters">
+      <description>
+        <text>List of IPv6 prefix filters.</text>
+      </description>
+      <list name="ipv6-prefix-filter">
+        <key value="name"/>
+        <max-elements value="400000"/>
+        <description>
+          <text>Configure an IPv6 prefix list, which contains a group of route filtering rules. Different nodes of an IPv6 prefix filter cannot be configured with the same filtering rules.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..169"/>
+          </type>
+          <description>
+            <text>Name of an IPv6 prefix filter. The name is a string and cannot contain spaces.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..80"/>
+          </type>
+          <description>
+            <text>Description of prefix filter.</text>
+          </description>
+        </leaf>
+        <leaf name="permit-count">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <default value="0"/>
+          <config value="false"/>
+          <description>
+            <text>Number of routes that match the route-policy.</text>
+          </description>
+        </leaf>
+        <leaf name="deny-count">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <default value="0"/>
+          <config value="false"/>
+          <description>
+            <text>Number of routes that do not match the route-policy.</text>
+          </description>
+        </leaf>
+        <container name="nodes">
+          <description>
+            <text>List of IPv6 prefix filter nodes.</text>
+          </description>
+          <list name="node">
+            <must condition="(not(masklength-lower) and not(masklength-upper)) or (masklength &lt;= masklength-lower and masklength-lower &lt;= masklength-upper)"/>
+            <key value="sequence"/>
+            <max-elements value="400000"/>
+            <description>
+              <text>Configure a node in an IPv6 prefix list. You can specify a prefix range and a mask length range in the node to match the destination network segment addresses or next-hop addresses in routes. There must be at least one node in a filter, min-elements 1. An IPv6 address and its mask must strictly match.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="ipv6-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <mandatory value="true"/>
+              <description>
+                <text>IPv6 address.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength">
+              <type name="uint8">
+                <range value="0..128"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Mask length.</text>
+              </description>
+            </leaf>
+            <leaf name="match-network">
+              <type name="boolean"/>
+              <must condition="../match-network='false' or ../ipv6-address='::'"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable matching of network segment routes with the IPv6 prefix being ::.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength-lower">
+              <type name="uint8">
+                <range value="0..128"/>
+              </type>
+              <description>
+                <text>If both the IP address and mask length match, this parameter is used to specify the range lower of IP prefixes.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength-upper">
+              <type name="uint8">
+                <range value="1..128"/>
+              </type>
+              <description>
+                <text>If both the IP address and mask length match, this parameter is used to specify the range upper of IP prefixes.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ext-community-segmented-nexthop-filters">
+      <description>
+        <text>List of segmented next-hop extended community filters, which are used to filter routes based on segmented-nh attributes.</text>
+      </description>
+      <list name="ext-community-segmented-nexthop-filter">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure a segmented next-hop extended community filter, which is used to filter routes based on the segmented-nh attribute.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..51"/>
+          </type>
+          <description>
+            <text>Name of a segmented next-hop extended community filter.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-type">
+          <ext:operation-exclude value="update"/>
+          <type name="community-filter-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Type of a segmented next-hop extended community filter, which can be basic or advanced. Regular expressions can be used to configure matching rules for advanced extended community filters, but not for basic extended community filters.</text>
+          </description>
+        </leaf>
+        <container name="basic-nodes">
+          <when condition="../filter-type='basic'"/>
+          <description>
+            <text>List of nodes in a basic segmented next-hop extended community filter, with segmented-nh attributes used as matching rules.</text>
+          </description>
+          <list name="basic-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in a basic segmented next-hop extended community filter, with a segmented-nh attribute used as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node in a basic segmented next-hop extended community filter.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of a node in a basic segmented next-hop extended community filter.</text>
+              </description>
+            </leaf>
+            <container name="ext-community-segmented-nexthop-members">
+              <description>
+                <text>List of values of segmented-nh attributes.</text>
+              </description>
+              <list name="ext-community-segmented-nexthop-member">
+                <key value="value"/>
+                <min-elements value="1"/>
+                <max-elements value="16"/>
+                <description>
+                  <text>Configure a value for a segmented next-hop extended community filter.</text>
+                </description>
+                <leaf name="value">
+                  <type name="ext-community-type"/>
+                  <description>
+                    <text>Attribute value of a segmented next-hop extended community filter, which can be in any of the following formats:
+(1) as-number:nn
+(2) IPv4-address: nn
+(3) as-number.as-number:nn
+(4) as-number:nn.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+        <container name="advanced-nodes">
+          <when condition="../filter-type='advanced'"/>
+          <description>
+            <text>List of nodes of an advanced segmented next-hop extended community filter. Regular expressions are used as matching rules.</text>
+          </description>
+          <list name="advanced-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in an advanced segmented next-hop extended community filter, with a regular expression specified as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node in an advanced segmented next-hop extended community filter.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of a node in an advanced segmented next-hop extended community filter.</text>
+              </description>
+            </leaf>
+            <leaf name="regular">
+              <type name="string">
+                <length value="1..1024"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Regular expression used to match the extended community attribute.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="as-path-filters">
+      <description>
+        <text>List of AS_Path filters. Routes are filtered based on the AS_Path attributes of routes.</text>
+      </description>
+      <list name="as-path-filter">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure an AS_Path filter, which filters routes based on their AS_Path attributes. Different nodes of an AS_Path filter cannot be configured with the same filtering rules.</text>
+        </description>
+        <leaf name="name">
+          <type name="as-path-filter-name-type"/>
+          <description>
+            <text>Name of a AS_Path filter, which can be a numeral or a string. The ID of an as-path attribute filter is an integer ranging from 1 to 256. The name of a as-path attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+          </description>
+        </leaf>
+        <container name="nodes">
+          <description>
+            <text>List of AS_Path filter nodes.</text>
+          </description>
+          <list name="node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in an AS_Path filter.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="regular">
+              <type name="string">
+                <length value="1..1024"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Regular expression that is used for filtering. The AS number in regular expression of AS-path should be the same with 4-byte as-notation format of BGP, otherwise match will fail.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="community-lists">
+      <description>
+        <text>List of community attributes.</text>
+      </description>
+      <list name="community-list">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure a BGP community list.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Community list name.</text>
+          </description>
+        </leaf>
+        <leaf-list name="community-member">
+          <type name="community-type"/>
+          <max-elements value="100"/>
+          <description>
+            <text>Configure a community attribute in a BGP community list. There must be at least one community in a list, min-elements 1.</text>
+          </description>
+        </leaf-list>
+      </list>
+    </container>
+    <container name="rd-filters">
+      <description>
+        <text>List of RD filters. You can use the RD as a matching condition.</text>
+      </description>
+      <list name="rd-filter">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure a list of nodes in an RD filter. Different nodes of an RD filter cannot be configured with the same filtering rules.</text>
+        </description>
+        <leaf name="name">
+          <type name="rd-filter-name-type"/>
+          <description>
+            <text>Name of an RD filter.</text>
+          </description>
+        </leaf>
+        <container name="nodes">
+          <description>
+            <text>List of RD filter nodes.</text>
+          </description>
+          <list name="node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in an RD filter.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <container name="rd-strings">
+              <description>
+                <text>List of RD attribute values.</text>
+              </description>
+              <list name="rd-string">
+                <key value="value"/>
+                <min-elements value="1"/>
+                <max-elements value="10"/>
+                <description>
+                  <text>Configure RD values.</text>
+                </description>
+                <leaf name="value">
+                  <type name="ext-community-type"/>
+                  <description>
+                    <text>RD attribute value, which can be in the format of IPv4-address:nn (for example, x.x.x.x:200), the format of aa:nn (for example, 100:1), the format of IPv4-address:* (for example, x.x.x.x:*), or the format of aa:* (for example, 100:*). The example 'x.x.x.x:*' indicates that all the RDs starting with x.x.x.x are matched, and the example '100:*' indicates that all the RDs starting with 100 are matched.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="vni-filters">
+      <description>
+        <text>List of VNI filters.</text>
+      </description>
+      <list name="vni-filter">
+        <key value="name"/>
+        <max-elements value="100"/>
+        <description>
+          <text>Configure a VNI filter.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Configure a VNI filter name.</text>
+          </description>
+        </leaf>
+        <container name="vni-members">
+          <description>
+            <text>List of VNI values.</text>
+          </description>
+          <list name="vni-member">
+            <key value="value"/>
+            <max-elements value="100"/>
+            <description>
+              <text>Configure a VNI node.</text>
+            </description>
+            <leaf name="value">
+              <type name="uint32">
+                <range value="1..16777215"/>
+              </type>
+              <description>
+                <text>Configure a VNI value.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="mac-filters">
+      <description>
+        <text>List of MAC filters.</text>
+      </description>
+      <list name="mac-filter">
+        <key value="name"/>
+        <max-elements value="100"/>
+        <description>
+          <text>Configure a MAC filter.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Configure a MAC filter name.</text>
+          </description>
+        </leaf>
+        <container name="mac-members">
+          <description>
+            <text>List of MAC addresses.</text>
+          </description>
+          <list name="mac-member">
+            <key value="value"/>
+            <max-elements value="100"/>
+            <description>
+              <text>Configure a MAC node.</text>
+            </description>
+            <leaf name="value">
+              <type name="pub-type:mac-address"/>
+              <description>
+                <text>Configure a MAC value in format: H-H-H.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="eth-tag-filters">
+      <description>
+        <text>List of Ethernet tag ID filters.</text>
+      </description>
+      <list name="eth-tag-filter">
+        <key value="name"/>
+        <max-elements value="100"/>
+        <description>
+          <text>Configure an Ethernet tag ID filter.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Configure an Ethernet tag ID filter name.</text>
+          </description>
+        </leaf>
+        <container name="eth-tag-members">
+          <description>
+            <text>List of Ethernet tag IDs.</text>
+          </description>
+          <list name="eth-tag-member">
+            <key value="value"/>
+            <max-elements value="100"/>
+            <description>
+              <text>Configure an Ethernet tag ID node.</text>
+            </description>
+            <leaf name="value">
+              <type name="uint32"/>
+              <description>
+                <text>Configure an Ethernet tag ID value.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ipv4-prefix-lists">
+      <description>
+        <text>List of IPv4 prefix lists.</text>
+      </description>
+      <list name="ipv4-prefix-list">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure an IPv4 prefix list.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Configure an IPv4 prefix list name.</text>
+          </description>
+        </leaf>
+        <container name="prefix-members">
+          <description>
+            <text>List of IPv4 prefix address and mask.</text>
+          </description>
+          <list name="prefix-member">
+            <key value="ip-address masklength"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure an IPv4 address and masklength.</text>
+            </description>
+            <leaf name="ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>IPv4 address.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength">
+              <type name="uint8">
+                <range value="0..32"/>
+              </type>
+              <description>
+                <text>Mask length.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ipv6-prefix-lists">
+      <description>
+        <text>List of IPv6 prefix lists.</text>
+      </description>
+      <list name="ipv6-prefix-list">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure an IPv6 prefix list.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Configure an IPv6 prefix list name.</text>
+          </description>
+        </leaf>
+        <container name="prefix-members">
+          <description>
+            <text>List of IPv6 prefix address and mask.</text>
+          </description>
+          <list name="prefix-member">
+            <key value="ipv6-address masklength"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure an IPv6 address and masklength.</text>
+            </description>
+            <leaf name="ipv6-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address.</text>
+              </description>
+            </leaf>
+            <leaf name="masklength">
+              <type name="uint8">
+                <range value="0..128"/>
+              </type>
+              <description>
+                <text>Mask length.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="large-community-filters">
+      <description>
+        <text>List of large community attribute filters. Routes are filtered based on the large community attributes of routes.</text>
+      </description>
+      <list name="large-community-filter">
+        <key value="name"/>
+        <max-elements value="100"/>
+        <description>
+          <text>Configure a Large-Community filter, which filters routes based on Large-Community attributes.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..51"/>
+            <pattern value="([^?\s]*[^?\s0-9][^?\s]*)"/>
+          </type>
+          <description>
+            <text>Name of a large community filter.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-type">
+          <ext:operation-exclude value="update"/>
+          <type name="community-filter-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Type of a large community attribute filter, which can be basic or advanced.</text>
+          </description>
+        </leaf>
+        <container name="basic-nodes">
+          <when condition="../filter-type='basic'"/>
+          <description>
+            <text>List of basic large community filter nodes. You can use the large community attribute as a matching condition.</text>
+          </description>
+          <list name="basic-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="100"/>
+            <description>
+              <text>Configure a list of nodes in a basic Large-Community filter, with Large-Community attributes specified as matching rules.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Node number of a basic large community attribute filter.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of a node in the basic large community attribute filter.</text>
+              </description>
+            </leaf>
+            <container name="large-community-members">
+              <description>
+                <text>List of large community attribute values. A maximum of 16 values are supported.</text>
+              </description>
+              <list name="large-community-member">
+                <key value="value"/>
+                <min-elements value="1"/>
+                <max-elements value="16"/>
+                <description>
+                  <text>Configure a value for the Large-Community attribute in a Large-Community filter.</text>
+                </description>
+                <leaf name="value">
+                  <type name="large-community-type"/>
+                  <description>
+                    <text>Large community attribute value, which can be in the following formats: NN:NN:NN. ('NN' ranges from 0 to 4294967295).</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+        <container name="advanced-nodes">
+          <when condition="../filter-type='advanced'"/>
+          <description>
+            <text>List of advanced large community filter nodes. You can use a regular expression as a matching condition.</text>
+          </description>
+          <list name="advanced-node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="100"/>
+            <description>
+              <text>Configure a node in an advanced Large-Community filter, with a regular expression specified as a matching rule.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Node number of an advanced large community attribute filter.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of a node in the advanced large community attribute filter.</text>
+              </description>
+            </leaf>
+            <leaf name="regular">
+              <type name="string">
+                <length value="1..1024"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Regular expression that is used for matching.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="large-community-lists">
+      <description>
+        <text>List of Large-Community attributes.</text>
+      </description>
+      <list name="large-community-list">
+        <key value="name"/>
+        <max-elements value="100"/>
+        <description>
+          <text>Configure a BGP Large-Community list.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+            <pattern value="([a-zA-Z].*)"/>
+          </type>
+          <description>
+            <text>Large community list name.</text>
+          </description>
+        </leaf>
+        <container name="large-community-members">
+          <description>
+            <text>List of Large-Community values.</text>
+          </description>
+          <list name="large-community-member">
+            <key value="value"/>
+            <max-elements value="100"/>
+            <description>
+              <text>Configure a large community node.</text>
+            </description>
+            <leaf name="value">
+              <type name="large-community-type"/>
+              <description>
+                <text>Large community Value. There must be at least one community in a list, min-elements 1.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="ext-community-priority-color-filters">
+      <description>
+        <text>List of extended community attribute priority-color filters. Routes are filtered based on the priority-color extended community attributes of routes.</text>
+      </description>
+      <list name="ext-community-priority-color-filter">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure an priority-color extended community filter, which filters routes based on the priority-color extended community attribute.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..51"/>
+          </type>
+          <description>
+            <text>Name of an extended community priority-color filter. The name is a string and cannot contain spaces.</text>
+          </description>
+        </leaf>
+        <choice name="filter-type">
+          <mandatory value="true"/>
+          <description>
+            <text>Filter type.</text>
+          </description>
+          <case name="basic">
+            <description>
+              <text>Basic type.</text>
+            </description>
+            <container name="basic-nodes">
+              <description>
+                <text>List of basic extended community priority-color filter nodes. You can use the priority-color extended community ID as a matching condition.</text>
+              </description>
+              <list name="basic-node">
+                <key value="sequence"/>
+                <min-elements value="1"/>
+                <max-elements value="65535"/>
+                <description>
+                  <text>Configure a node for a basic priority-color extended community filter, with the priority-color extended community attribute specified as a matching rule.</text>
+                </description>
+                <leaf name="sequence">
+                  <type name="uint32">
+                    <range value="1..4294967295"/>
+                  </type>
+                  <description>
+                    <text>Sequence number of a node.</text>
+                  </description>
+                </leaf>
+                <leaf name="match-mode">
+                  <type name="match-mode-type"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Matching mode of nodes.</text>
+                  </description>
+                </leaf>
+                <leaf-list name="community-member">
+                  <type name="ext-community-priority-color-type"/>
+                  <min-elements value="1"/>
+                  <max-elements value="16"/>
+                  <description>
+                    <text>Configure a value for the priority-color attribute in an priority-color extended community filter. The value can be in the format of priority&lt;0-15&gt;:site-id&lt;1-4294967295&gt;.</text>
+                  </description>
+                </leaf-list>
+              </list>
+            </container>
+          </case>
+          <case name="advanced">
+            <description>
+              <text>Advanced type.</text>
+            </description>
+            <container name="advanced-nodes">
+              <description>
+                <text>List of advanced extended community priority-color filter nodes. You can use a regular expression as a matching condition.</text>
+              </description>
+              <list name="advanced-node">
+                <key value="sequence"/>
+                <min-elements value="1"/>
+                <max-elements value="65535"/>
+                <description>
+                  <text>Configure a node in an advanced extended community priority-color filter, with a regular expression specified as a matching rule.</text>
+                </description>
+                <leaf name="sequence">
+                  <type name="uint32">
+                    <range value="1..4294967295"/>
+                  </type>
+                  <description>
+                    <text>Sequence number of a node.</text>
+                  </description>
+                </leaf>
+                <leaf name="match-mode">
+                  <type name="match-mode-type"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Matching mode of nodes.</text>
+                  </description>
+                </leaf>
+                <leaf name="regular">
+                  <type name="string">
+                    <length value="1..1024"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Regular expression that is used for matching.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </case>
+        </choice>
+      </list>
+    </container>
+    <container name="policy-definitions">
+      <description>
+        <text>List of route-policies.</text>
+      </description>
+      <list name="policy-definition">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure a route-policy.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..200"/>
+          </type>
+          <description>
+            <text>Policy name in the format of a string.</text>
+          </description>
+        </leaf>
+        <leaf name="address-family-mismatch-deny">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the function of denying when address family mismatch.</text>
+          </description>
+        </leaf>
+        <container name="nodes">
+          <description>
+            <text>List of routing policy nodes.</text>
+          </description>
+          <list name="node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a node in a route-policy to filter routes.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="0..65535"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <leaf name="description">
+              <type name="string">
+                <length value="1..80"/>
+              </type>
+              <description>
+                <text>Description of a routing policy.</text>
+              </description>
+            </leaf>
+            <leaf name="match-count">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Match count of route policy node.</text>
+              </description>
+            </leaf>
+            <container name="conditions">
+              <description>
+                <text>Configure a list of matching types for a node in a route-policy.</text>
+              </description>
+              <container name="match-tag">
+                <description>
+                  <text>Configure a filtering rule that is based on the route tag.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Route tag, which is used for route classification.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-ext-community-soo">
+                <description>
+                  <text>Configure a filtering rule that is based on the SoO extended community filter.</text>
+                </description>
+                <leaf name="ext-community-soo-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:ext-community-soo-filters/rtp:ext-community-soo-filter/rtp:name"/>
+                  </type>
+                  <description>
+                    <text>Index of an extended community SoO filter.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-ext-community-filters">
+                <description>
+                  <text>List of VPN-Target extended community filters.</text>
+                </description>
+                <list name="match-ext-community-filter">
+                  <key value="ext-community-filter-ref"/>
+                  <max-elements value="16"/>
+                  <description>
+                    <text>Configure a filtering rule that is based on the VPN-Target extended community filter.</text>
+                  </description>
+                  <leaf name="ext-community-filter-ref">
+                    <type name="leafref">
+                      <path value="/rtp:routing-policy/rtp:ext-community-filters/rtp:ext-community-filter/rtp:name"/>
+                    </type>
+                    <description>
+                      <text>Index of an extended community filter.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+              <container name="match-community-filters">
+                <description>
+                  <text>List of community filters.</text>
+                </description>
+                <list name="match-community-filter">
+                  <key value="community-filter-ref"/>
+                  <max-elements value="32"/>
+                  <description>
+                    <text>Configure a filtering rule that is based on the community filter.</text>
+                  </description>
+                  <leaf name="community-filter-ref">
+                    <type name="leafref">
+                      <path value="/rtp:routing-policy/rtp:community-filters/rtp:community-filter/rtp:name"/>
+                    </type>
+                    <description>
+                      <text>Name or index of a community attribute filter. It can be a numeral or a string. The ID of a basic community attribute filter is an integer ranging from 1 to 99; the ID of an advanced community attribute filter is an integer ranging from 100 to 199. The name of a community attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+                    </description>
+                  </leaf>
+                  <choice name="match-type">
+                    <description>
+                      <text>Match type.</text>
+                    </description>
+                    <case name="whole-match">
+                      <description>
+                        <text>All the communities are matched. It is valid to only basic community attribute filters.</text>
+                      </description>
+                      <leaf name="whole-match">
+                        <type name="empty"/>
+                        <description>
+                          <text>All the communities are matched. It is valid to only basic community attribute filters.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="sort-match">
+                      <description>
+                        <text>Match all community attributes in sequence. It is valid to only Advanced community attribute filters.</text>
+                      </description>
+                      <leaf name="sort-match">
+                        <type name="empty"/>
+                        <description>
+                          <text>Match all community attributes in sequence. It is valid to only Advanced community attribute filters.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </list>
+              </container>
+              <container name="match-as-path-filters">
+                <description>
+                  <text>List of AS_Path filters.</text>
+                </description>
+                <list name="match-as-path-filter">
+                  <key value="filter-name"/>
+                  <max-elements value="32"/>
+                  <description>
+                    <text>Configure a list of AS_Path filters as filtering rules.</text>
+                  </description>
+                  <leaf name="filter-name">
+                    <type name="leafref">
+                      <path value="/rtp:routing-policy/rtp:as-path-filters/rtp:as-path-filter/rtp:name"/>
+                    </type>
+                    <description>
+                      <text>Name or index of a AS-Path filter, which can be a numeral or a string. The ID of a as-path attribute filter is an integer ranging from 1 to 256. The name of a as-path attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+              <container name="match-protocols">
+                <description>
+                  <text>List of protocol types that are used as filtering rules.</text>
+                </description>
+                <list name="match-protocol">
+                  <key value="protocol"/>
+                  <max-elements value="9"/>
+                  <description>
+                    <text>Configure a filtering rule that is based on the protocol type.</text>
+                  </description>
+                  <leaf name="protocol">
+                    <type name="protocol-type"/>
+                    <description>
+                      <text>Route protocol type.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+              <container name="match-cost">
+                <description>
+                  <text>Configure a filtering rule that is based on the route cost.</text>
+                </description>
+                <choice name="cost-set">
+                  <description>
+                    <text>Match cost.</text>
+                  </description>
+                  <case name="value">
+                    <description>
+                      <text>Value.</text>
+                    </description>
+                    <leaf name="value">
+                      <type name="uint32"/>
+                      <description>
+                        <text>Route cost value.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="range">
+                    <description>
+                      <text>Range.</text>
+                    </description>
+                    <leaf name="lower">
+                      <type name="uint32">
+                        <range value="0..4294967294"/>
+                      </type>
+                      <must condition="../lower &lt; ../upper"/>
+                      <description>
+                        <text>Lower limit of a route cost range.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="upper">
+                      <type name="uint32">
+                        <range value="1..4294967295"/>
+                      </type>
+                      <must condition="../lower &lt; ../upper"/>
+                      <description>
+                        <text>Upper limit of a route cost range.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="match-preference">
+                <description>
+                  <text>Configure a filtering rule that is based on the route priority.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint8"/>
+                  <description>
+                    <text>Priority of the matched protocol.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-ext-community-segmented-nexthop-filter">
+                <description>
+                  <text>Configure a filtering rule that is based on the segmented-nh attribute.</text>
+                </description>
+                <leaf name="ext-community-segmented-nexthop-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:ext-community-segmented-nexthop-filters/rtp:ext-community-segmented-nexthop-filter/rtp:name"/>
+                  </type>
+                  <description>
+                    <text>Name of a segmented next-hop extended community filter.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-interfaces">
+                <description>
+                  <text>List of outbound interfaces that are used for filtering rules.</text>
+                </description>
+                <list name="match-interface">
+                  <key value="interface-name"/>
+                  <max-elements value="256"/>
+                  <description>
+                    <text>Configure a filtering rule that is based on the outbound interface.</text>
+                  </description>
+                  <leaf name="interface-name">
+                    <type name="leafref">
+                      <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                    </type>
+                    <description>
+                      <text>Outbound interface name.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+              <container name="match-route-types">
+                <description>
+                  <text>List of route types that are used for filtering rules.</text>
+                </description>
+                <list name="match-route-type">
+                  <key value="route-type"/>
+                  <description>
+                    <text>Configure a filtering rule that is based on the route type.</text>
+                  </description>
+                  <leaf name="route-type">
+                    <type name="route-type"/>
+                    <description>
+                      <text>Route type.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+              <container name="match-mpls-label">
+                <description>
+                  <text>Configure a filtering rule that is based on the MPLS label.</text>
+                </description>
+                <leaf name="mpls-label">
+                  <type name="empty"/>
+                  <description>
+                    <text>Enabling mode that is specified during MPLS label matching.</text>
+                  </description>
+                </leaf>
+                <leaf name="mpls-label2">
+                  <type name="empty"/>
+                  <description>
+                    <text>Match MPLS label 2.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-rd-filter">
+                <presence value="Create rd filter attribute values."/>
+                <description>
+                  <text>Configure a filtering rule that is based on an RD filter.</text>
+                </description>
+                <leaf name="rd-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:rd-filters/rtp:rd-filter/rtp:name"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Name of an RD filter.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-mac-filter">
+                <presence value="Create mac filter attribute values."/>
+                <description>
+                  <text>Configure a filtering rule that is based on a MAC address list.</text>
+                </description>
+                <leaf name="mac-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:mac-filters/rtp:mac-filter/rtp:name"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>MAC filter Name.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-l3vni-filter">
+                <presence value="Create l3vni filter attribute value."/>
+                <description>
+                  <text>Configure a filtering rule that is based on a Layer 3 VNI list.</text>
+                </description>
+                <leaf name="match-type">
+                  <type name="enumeration">
+                    <enum name="match-special">
+                      <value value="0"/>
+                      <description>
+                        <text>Match Specified.</text>
+                      </description>
+                    </enum>
+                    <enum name="match-all">
+                      <value value="1"/>
+                      <description>
+                        <text>Match all.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Mode of matching an L3VNI filter.</text>
+                  </description>
+                </leaf>
+                <leaf name="l3vni-filter-ref">
+                  <when condition="../match-type='match-special'"/>
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:vni-filters/rtp:vni-filter/rtp:name"/>
+                  </type>
+                  <must condition="../match-type='match-special' or (../match-type='match-all' and not(../l3vni-filter-ref))"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Match an L3VNI name.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-l2vni-filter">
+                <presence value="Create l2vni filter attribute value."/>
+                <description>
+                  <text>Configure a filtering rule that is based on a Layer 2 VNI list.</text>
+                </description>
+                <leaf name="match-type">
+                  <type name="enumeration">
+                    <enum name="match-special">
+                      <value value="0"/>
+                      <description>
+                        <text>Match Specified.</text>
+                      </description>
+                    </enum>
+                    <enum name="match-all">
+                      <value value="1"/>
+                      <description>
+                        <text>Match all.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Mode of matching an L2VNI filter.</text>
+                  </description>
+                </leaf>
+                <leaf name="l2vni-filter-ref">
+                  <when condition="../match-type='match-special'"/>
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:vni-filters/rtp:vni-filter/rtp:name"/>
+                  </type>
+                  <must condition="../match-type='match-special' or (../match-type='match-all' and not(../l2vni-filter-ref))"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Match an L2VNI name.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-eth-tag-filter">
+                <presence value="Create eth tag filter attribute values."/>
+                <description>
+                  <text>Configure a filtering rule that is based on an Ethernet tag list.</text>
+                </description>
+                <leaf name="eth-tag-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:eth-tag-filters/rtp:eth-tag-filter/rtp:name"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Match a specified Ethernet tag ID name.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-large-community-filters">
+                <description>
+                  <text>List of Large-Community filters.</text>
+                </description>
+                <list name="match-large-community-filter">
+                  <key value="community-filter-ref"/>
+                  <max-elements value="32"/>
+                  <description>
+                    <text>Configure a filtering rule that is based on a Large-Community filter.</text>
+                  </description>
+                  <leaf name="community-filter-ref">
+                    <type name="leafref">
+                      <path value="/rtp:routing-policy/rtp:large-community-filters/rtp:large-community-filter/rtp:name"/>
+                    </type>
+                    <description>
+                      <text>Name a large community attribute filter.</text>
+                    </description>
+                  </leaf>
+                  <choice name="match-type">
+                    <description>
+                      <text>Match type.</text>
+                    </description>
+                    <case name="whole-match">
+                      <description>
+                        <text>All the communities are matched. It is valid to only basic community attribute filters.</text>
+                      </description>
+                      <leaf name="whole-match">
+                        <type name="empty"/>
+                        <description>
+                          <text>All the communities are matched. It is valid to only basic community attribute filters.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </list>
+              </container>
+              <container name="match-as-path-length">
+                <description>
+                  <text>Configure a filtering rule that is based on the AS_Path length.</text>
+                </description>
+                <choice name="as-path-length-set">
+                  <description>
+                    <text>Set AS path length.</text>
+                  </description>
+                  <case name="value">
+                    <description>
+                      <text>Value.</text>
+                    </description>
+                    <leaf name="value">
+                      <type name="uint32">
+                        <range value="0..2047"/>
+                      </type>
+                      <description>
+                        <text>AS path length, which is used to control length of AS path.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="range">
+                    <description>
+                      <text>Range.</text>
+                    </description>
+                    <leaf name="lower">
+                      <type name="uint32">
+                        <range value="0..2046"/>
+                      </type>
+                      <must condition="(../lower&lt;../upper and ../lower and ../upper) or (not(../lower) and not(../upper))"/>
+                      <description>
+                        <text>Lower limit of AS path length range.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="upper">
+                      <type name="uint32">
+                        <range value="1..2047"/>
+                      </type>
+                      <must condition="(../lower&lt;../upper and ../lower and ../upper) or (not(../lower) and not(../upper))"/>
+                      <description>
+                        <text>Upper limit of a AS path length range.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="match-prefix-mod">
+                <must condition="(mod-result&lt;mod-value)"/>
+                <presence value="Create prefix mod attribute values."/>
+                <description>
+                  <text>Configure a filtering rule that is based on the route prefix modulo operation result.</text>
+                </description>
+                <leaf name="mod-value">
+                  <type name="uint8">
+                    <range value="1..128"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specifies a route prefix modulus value.</text>
+                  </description>
+                </leaf>
+                <leaf name="mod-result">
+                  <type name="uint8">
+                    <range value="0..127"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specifies the route prefix modulo operation result.</text>
+                  </description>
+                </leaf>
+              </container>
+              <choice name="match-ipv4-destination">
+                <description>
+                  <text>References IPv4 prefix filter or IPv4 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>References IPv4 prefix filter.</text>
+                  </description>
+                  <container name="match-ipv4-prefix">
+                    <description>
+                      <text>Configure a filtering rule to filter routes with destination IPv4 addresses matching an IPv4 prefix list.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 destination addresses are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv6-destination">
+                <description>
+                  <text>Match IPv6 destination addresses.</text>
+                </description>
+                <case name="ipv6-prefix">
+                  <description>
+                    <text>References IPv6 prefix filter.</text>
+                  </description>
+                  <container name="match-ipv6-prefix">
+                    <description>
+                      <text>Configure a filtering rule to filter routes with destination IPv6 addresses matching an IPv6 prefix list.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv6-prefix-filters/rtp:ipv6-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv6 destination addresses are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv4-nexthop">
+                <description>
+                  <text>Match IPv4 next hops. References IPv4 prefix filter or IPv4 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>References IPv4 prefix filter.</text>
+                  </description>
+                  <container name="match-nexthop-ipv4-prefix">
+                    <description>
+                      <text>Configure a filtering rule to filter routes with IPv4 next hops matching an IPv4 prefix list.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 next hops are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv6-nexthop">
+                <description>
+                  <text>Match IPv6 next hops. References IPv6 prefix filter or IPv6 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv6-prefix">
+                  <description>
+                    <text>References IPv6 prefix filter.</text>
+                  </description>
+                  <container name="match-nexthop-ipv6-prefix">
+                    <description>
+                      <text>Configure a filtering rule that is based on the next-hop IPv6 address.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv6-prefix-filters/rtp:ipv6-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv6 next hops are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv4-route-source">
+                <description>
+                  <text>Match IPv4 route sources. References IPv4 prefix filter or IPv4 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>References IPv4 prefix filter.</text>
+                  </description>
+                  <container name="match-route-source-ipv4-prefix">
+                    <description>
+                      <text>Configure a filtering rule that is based on the IPv4 addresses of the originators that send these routes.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 route sources are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv6-route-source">
+                <description>
+                  <text>Match IPv6 route sources. References IPv6 prefix filter or IPv6 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv6-prefix">
+                  <description>
+                    <text>References IPv6 prefix filter.</text>
+                  </description>
+                  <container name="match-route-source-ipv6-prefix">
+                    <description>
+                      <text>Configure a filtering rule that is based on the IPv6 addresses of the originators that send these routes.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv6-prefix-filters/rtp:ipv6-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv6 route sources are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-route-originator">
+                <description>
+                  <text>Matches routes using the list of IP addresses of route senders.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>Set IPv4 prefix.</text>
+                  </description>
+                  <container name="match-originator-ipv4-prefix">
+                    <description>
+                      <text>Configure an NG MVPN route filtering rule that is based on the IP addresses of a multicast group.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 destination addresses are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-group-address">
+                <description>
+                  <text>Match IPv4 group address. References IPv4 prefix filter or IPv4 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>Set IPv4 prefix.</text>
+                  </description>
+                  <container name="match-group-address-ipv4-prefix">
+                    <description>
+                      <text>Configure a filtering rule that is based on the multicast group address.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 destination addresses are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <container name="match-ext-community-priority-color">
+                <presence value="create parameters of priority:site-id."/>
+                <description>
+                  <text>Configure a filtering rule that is based on the priority-color extended community filter.</text>
+                </description>
+                <leaf name="not-match-priority">
+                  <type name="boolean"/>
+                  <default value="false"/>
+                  <description>
+                    <text>Enable/disable the function of ignoring priority.</text>
+                  </description>
+                </leaf>
+                <leaf name="ext-community-priority-color-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:ext-community-priority-color-filters/rtp:ext-community-priority-color-filter/rtp:name"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Index of an extended community priority-color filter.</text>
+                  </description>
+                </leaf>
+              </container>
+            </container>
+            <container name="actions">
+              <description>
+                <text>Configure the type of a filtering rule.</text>
+              </description>
+              <container name="apply-local-preference">
+                <presence value="create parameters of local priority."/>
+                <description>
+                  <text>Configure a value for the local preference (Local-Pref) attribute in BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="replace">
+                      <value value="0"/>
+                      <description>
+                        <text>Replace the original route local priority with the configured route local priority.</text>
+                      </description>
+                    </enum>
+                    <enum name="add">
+                      <value value="1"/>
+                      <description>
+                        <text>Add the configured route local priority and the original local priority.</text>
+                      </description>
+                    </enum>
+                    <enum name="sub">
+                      <value value="2"/>
+                      <description>
+                        <text>Subtract the configured route local priority from the original local priority.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Mode of setting the local priority.</text>
+                  </description>
+                </leaf>
+                <leaf name="value">
+                  <type name="uint32"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Local priority of a route.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-cost">
+                <presence value="create parameters of route cost."/>
+                <description>
+                  <text>Configure an MED value for BGP routes or cost value for routes of another protocol.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="add">
+                      <value value="0"/>
+                      <description>
+                        <text>Add the configured route cost and the original cost.</text>
+                      </description>
+                    </enum>
+                    <enum name="sub">
+                      <value value="1"/>
+                      <description>
+                        <text>Subtract the configured route cost from the original cost.</text>
+                      </description>
+                    </enum>
+                    <enum name="replace">
+                      <value value="2"/>
+                      <description>
+                        <text>Replace the original route cost with the configured route cost.</text>
+                      </description>
+                    </enum>
+                    <enum name="none">
+                      <value value="3"/>
+                      <description>
+                        <text>Delete the MED value of BGP routes.</text>
+                      </description>
+                    </enum>
+                    <enum name="inherit">
+                      <value value="4"/>
+                      <description>
+                        <text>Inherit the original route cost.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Mode of setting the route cost.</text>
+                  </description>
+                </leaf>
+                <leaf name="value">
+                  <when condition="../operation!='inherit' and ../operation!='none'"/>
+                  <type name="uint32"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Route cost, which is used to control route selection.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-community">
+                <presence value="create parameters of community attribute value."/>
+                <description>
+                  <text>Configure community attributes for BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="delete">
+                      <value value="0"/>
+                      <description>
+                        <text>Delete all the original attributes.</text>
+                      </description>
+                    </enum>
+                    <enum name="replace">
+                      <value value="1"/>
+                      <description>
+                        <text>Replace the original attribute with the newly configured one.</text>
+                      </description>
+                    </enum>
+                    <enum name="add">
+                      <value value="2"/>
+                      <description>
+                        <text>Add the newly configured attribute to the original ones.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set the application mode of the community attribute. The available options are as follows:
+Append: Append the configured community attribute to the original community attribute of a route.
+Replace: To replace the original community attribute of a route with the configured community attribute.
+Delete: Delete all the original community attributes of a route.</text>
+                  </description>
+                </leaf>
+                <choice name="set-community">
+                  <when condition="operation!='delete'"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Option to set communities using an inline list or reference to an existing defined set.</text>
+                  </description>
+                  <case name="inline">
+                    <description>
+                      <text>Set the community values for the update inline with a list.</text>
+                    </description>
+                    <leaf-list name="communities">
+                      <type name="community-type"/>
+                      <min-elements value="1"/>
+                      <max-elements value="32"/>
+                      <description>
+                        <text>Configure BGP community values. The value can be in any of the following formats:
+(1) Integer
+(2) aa:nn
+(3) Well-known community attribute (internet, no-export-subconfed, no-advertise, or no-export).</text>
+                      </description>
+                    </leaf-list>
+                  </case>
+                  <case name="inline-string">
+                    <description>
+                      <text>Set community values using character strings.</text>
+                    </description>
+                    <leaf name="value">
+                      <type name="string">
+                        <length value="1..392"/>
+                        <pattern value="([0-9a-zA-Z\-: ]*)"/>
+                      </type>
+                      <description>
+                        <text>Community attributes. A maximum of 32 community attributes can be configured, which are separated by spaces. Each community attribute can be in any of the following formats: Integer ranging from 0 to 4294967295; x:y, in which x ranges from 0 to 65535, and y ranges from 0 to 65535; Well-known community attribute (internet, no-export-subconfed, no-advertise, or no-export).</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="reference">
+                    <description>
+                      <text>References a defined community set by name.</text>
+                    </description>
+                    <leaf name="community-list-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:community-lists/rtp:community-list/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>The communities are specified by referencing a defined community list name.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="apply-ext-community-soo">
+                <presence value="create parameters of SoO extended community attribute values."/>
+                <description>
+                  <text>Configure Source of Origin (SoO) extended community attributes for BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="add">
+                      <value value="2"/>
+                      <description>
+                        <text>Add the newly configured attribute to the original ones.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Apply the configured SoO value to the original SoO value of a route.</text>
+                  </description>
+                </leaf>
+                <leaf-list name="communities">
+                  <type name="ext-community-type"/>
+                  <min-elements value="1"/>
+                  <max-elements value="16"/>
+                  <description>
+                    <text>Configure a value for the SoO extended community attribute in routes. The value can be in any of the following formats:
+(1) as-number:nn (as-number is an integer ranging from 0 to 65535, and nn is an integer ranging from 0 to 4294967295)
+(2) IPv4-address:nn
+(3) as-number.as-number:nn
+(4) as-number:nn (as-number is an integer ranging from 65536 to 4294967295, and nn is an integer ranging from 0 to 65535.</text>
+                  </description>
+                </leaf-list>
+              </container>
+              <container name="apply-mpls-label">
+                <description>
+                  <text>Configure the allocation of MPLS labels to public network routes.</text>
+                </description>
+                <leaf name="mpls-label">
+                  <type name="empty"/>
+                  <description>
+                    <text>Enabling mode that is specified during MPLS label settings.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-preferred">
+                <description>
+                  <text>Configure a preferred value for BGP routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint32">
+                    <range value="0..65535"/>
+                  </type>
+                  <description>
+                    <text>Preferred value of a BGP route.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-aigp">
+                <presence value="create parameters of accumulated IGP metric."/>
+                <description>
+                  <text>Configure a value for the accumulated IGP (AIGP) metric attribute in BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="config">
+                      <value value="0"/>
+                      <description>
+                        <text>Mode of pecify metric value.</text>
+                      </description>
+                    </enum>
+                    <enum name="inherit-cost">
+                      <value value="1"/>
+                      <description>
+                        <text>Inherit the cost of the route.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Mode of setting route accumulated IGP metric.</text>
+                  </description>
+                </leaf>
+                <leaf name="value">
+                  <when condition="../operation!='inherit-cost'"/>
+                  <type name="uint32"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specify metric value.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-tag">
+                <description>
+                  <text>Configure a tag for filtered routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Tag value of a route.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-ipv4-nexthop">
+                <description>
+                  <text>Configure a next-hop IPv4 address for filtered routes.</text>
+                </description>
+                <choice name="ipv4-nexthop-set">
+                  <description>
+                    <text>Nexthop set.</text>
+                  </description>
+                  <case name="nexthop">
+                    <description>
+                      <text>Nexthop.</text>
+                    </description>
+                    <leaf name="nexthop">
+                      <type name="inet:ipv4-address-no-zone"/>
+                      <description>
+                        <text>Next-hop address.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="peer-address">
+                    <description>
+                      <text>Peer-address.</text>
+                    </description>
+                    <leaf name="peer-address">
+                      <type name="empty"/>
+                      <description>
+                        <text>BGP peer address.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="blackhole">
+                    <description>
+                      <text>Blackhole.</text>
+                    </description>
+                    <leaf name="blackhole">
+                      <type name="empty"/>
+                      <description>
+                        <text>Apply black hole.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="apply-ipv6-nexthop">
+                <description>
+                  <text>Configure a next-hop IPv6 address for filtered routes.</text>
+                </description>
+                <choice name="ipv6-nexthop-set">
+                  <description>
+                    <text>IPv6 nexthop set.</text>
+                  </description>
+                  <case name="ipv6-nexthop">
+                    <description>
+                      <text>IPv6-nexthop.</text>
+                    </description>
+                    <leaf name="ipv6-nexthop">
+                      <type name="inet:ipv6-address-no-zone"/>
+                      <description>
+                        <text>IPv6 next-hop address.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="peer-address">
+                    <description>
+                      <text>Peer-address.</text>
+                    </description>
+                    <leaf name="peer-address">
+                      <type name="empty"/>
+                      <description>
+                        <text>IPv6 BGP peer address.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="blackhole">
+                    <description>
+                      <text>Blackhole.</text>
+                    </description>
+                    <leaf name="blackhole">
+                      <type name="empty"/>
+                      <description>
+                        <text>Apply IPv6 black hole.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="apply-cost-type">
+                <description>
+                  <text>Configure a cost type for filtered routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="cost-type"/>
+                  <description>
+                    <text>Route cost type.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-origin">
+                <presence value="create parameters of routing information sources."/>
+                <description>
+                  <text>Configure a value for the Origin attribute in BGP routes.</text>
+                </description>
+                <leaf name="origin-type">
+                  <type name="enumeration">
+                    <enum name="egp">
+                      <value value="0"/>
+                      <description>
+                        <text>BGP routing information comes from the EGP route.</text>
+                      </description>
+                    </enum>
+                    <enum name="igp">
+                      <value value="1"/>
+                      <description>
+                        <text>BGP routing information comes from the IGP route.</text>
+                      </description>
+                    </enum>
+                    <enum name="incomplete">
+                      <value value="2"/>
+                      <description>
+                        <text>The source of BGP routing information is unknown.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Source of BGP routing information. The available options are as follows:egp: indicates that BGP routing information comes from the EGP route. The as-number parameter is required to specify the AS number of the EGP route.
+igp: indicates that BGP routing information comes from the IGP route.
+incomplete: The source of BGP routing information is unknown.</text>
+                  </description>
+                </leaf>
+                <leaf name="value">
+                  <when condition="../origin-type='egp'"/>
+                  <type name="as-number-validate"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set the AS_Path value for external routes, which can be an integer or in dotted decimal notation.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-preference">
+                <description>
+                  <text>Configure a priority for filtered routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint8">
+                    <range value="1..255"/>
+                  </type>
+                  <description>
+                    <text>Protocol priority.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-route-type">
+                <description>
+                  <text>Configure the level of routes imported to IS-IS.</text>
+                </description>
+                <leaf name="value">
+                  <type name="enumeration">
+                    <enum name="ospf-stub-area">
+                      <value value="1"/>
+                      <description>
+                        <text>Import a route to the NSSA area of OSPF.</text>
+                      </description>
+                    </enum>
+                    <enum name="ospf-backbone">
+                      <value value="2"/>
+                      <description>
+                        <text>Import a route to the backbone area of OSPF.</text>
+                      </description>
+                    </enum>
+                    <enum name="isis-level-1">
+                      <value value="3"/>
+                      <description>
+                        <text>Import a route to the level-1 area of IS-IS.</text>
+                      </description>
+                    </enum>
+                    <enum name="isis-level-2">
+                      <value value="4"/>
+                      <description>
+                        <text>Import a route to the level-2 area of IS-IS.</text>
+                      </description>
+                    </enum>
+                    <enum name="isis-level-12">
+                      <value value="5"/>
+                      <description>
+                        <text>Import routes to the level-1 and level-2 areas of IS-IS.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <description>
+                    <text>Route type.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-traffic">
+                <description>
+                  <text>Configure a BGP traffic index for statistics collection.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint32">
+                    <range value="1..64"/>
+                  </type>
+                  <description>
+                    <text>BGP traffic index.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-priority">
+                <description>
+                  <text>Configure a priority for imported routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint16">
+                    <range value="1..255"/>
+                  </type>
+                  <description>
+                    <text>Import route priority.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-ipv4-gateway">
+                <presence value="create parameters of GWIPs."/>
+                <description>
+                  <text>Configure a gateway IP address for routes.</text>
+                </description>
+                <leaf name="gateway-type">
+                  <type name="enumeration">
+                    <enum name="origin-nexthop">
+                      <value value="0"/>
+                      <description>
+                        <text>Origin-nexthop.</text>
+                      </description>
+                    </enum>
+                    <enum name="ip-address">
+                      <value value="1"/>
+                      <description>
+                        <text>IP-address.</text>
+                      </description>
+                    </enum>
+                    <enum name="none">
+                      <value value="2"/>
+                      <description>
+                        <text>None.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set the mode for configuring the GWIP for routes.</text>
+                  </description>
+                </leaf>
+                <leaf name="address">
+                  <when condition="../gateway-type='ip-address'"/>
+                  <type name="inet:ipv4-address-no-zone"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set a specified IP address as the GWIP.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-ipv6-gateway">
+                <presence value="create parameters of IPv6 GWIPs."/>
+                <description>
+                  <text>Configure a gateway IPv6 address for routes.</text>
+                </description>
+                <leaf name="gateway-type">
+                  <type name="enumeration">
+                    <enum name="origin-nexthop">
+                      <value value="0"/>
+                      <description>
+                        <text>Origin-nexthop.</text>
+                      </description>
+                    </enum>
+                    <enum name="ip-address">
+                      <value value="1"/>
+                      <description>
+                        <text>IP-address.</text>
+                      </description>
+                    </enum>
+                    <enum name="none">
+                      <value value="2"/>
+                      <description>
+                        <text>None.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set the mode for configuring the GWIP for IPv6 routes.</text>
+                  </description>
+                </leaf>
+                <leaf name="address">
+                  <when condition="../gateway-type='ip-address'"/>
+                  <type name="inet:ipv6-address-no-zone"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set a specified IPv6 address as the GWIP.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-ext-community">
+                <presence value="create parameters of extended community attribute values."/>
+                <description>
+                  <text>Configure VPN-Target extended community attributes for BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="add">
+                      <value value="2"/>
+                      <description>
+                        <text>The configured extended community attribute will be appended to the original extended community attribute of a route.</text>
+                      </description>
+                    </enum>
+                    <enum name="replace">
+                      <value value="1"/>
+                      <description>
+                        <text>The original extended community attribute of a route will be replaced by the configured extended community attribute.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Apply the configured rt value to the original rt value of a route.</text>
+                  </description>
+                </leaf>
+                <container name="ext-community-members">
+                  <description>
+                    <text>List of extend community attribute value.</text>
+                  </description>
+                  <list name="ext-community-member">
+                    <key value="value"/>
+                    <min-elements value="1"/>
+                    <max-elements value="16"/>
+                    <description>
+                      <text>Configure VPN-Target extended community attributes for BGP routes.</text>
+                    </description>
+                    <leaf name="value">
+                      <type name="ext-community-type"/>
+                      <description>
+                        <text>Extended community attribute value. The format are as follows:
+(1)as-number : nn ('as-number' ranges from 0 to 65535 and 'nn' ranges from 0 to 4294967295).
+(2)IPv4-address : nn ('IPv4-address' is an IPv4 address and 'nn' ranges from 0 to 65535).
+(3)as-number.as-number:nn ('as-number' ranges from 0 to 65535 and 'nn' ranges from 0 to 65535).</text>
+                      </description>
+                    </leaf>
+                  </list>
+                </container>
+              </container>
+              <container name="apply-community-filter-delete">
+                <description>
+                  <text>Configure the deletion of BGP community attributes based on a community filter.</text>
+                </description>
+                <leaf name="name">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:community-filters/rtp:community-filter/rtp:name"/>
+                  </type>
+                  <description>
+                    <text>Name or index of a community attribute filter. It can be a numeral or a string. The ID of a basic community attribute filter is an integer ranging from 1 to 99; the ID of an advanced community attribute filter is an integer ranging from 100 to 199. The name of a community attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-dampening">
+                <must condition="reuse-value&lt;suppress-value and suppress-value&lt;ceiling-value"/>
+                <presence value="create parameters of route penalty."/>
+                <description>
+                  <text>Configure dampening parameters for EBGP routes.</text>
+                </description>
+                <leaf name="half-life-value">
+                  <type name="uint32">
+                    <range value="1..45"/>
+                  </type>
+                  <units name="min"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Suppression half-life during route flapping.</text>
+                  </description>
+                </leaf>
+                <leaf name="reuse-value">
+                  <type name="uint32">
+                    <range value="1..20000"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Threshold for the route to be unsuppressed. When the penalty value falls below the threshold, the route is reused.</text>
+                  </description>
+                </leaf>
+                <leaf name="suppress-value">
+                  <type name="uint32">
+                    <range value="1..20000"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Threshold for the route to be suppressed. When the penalty value of a route exceeds the suppression threshold, the route is suppressed.</text>
+                  </description>
+                </leaf>
+                <leaf name="ceiling-value">
+                  <type name="uint32">
+                    <range value="1001..20000"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Penalty ceiling of the specified route.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-qos-parameter">
+                <description>
+                  <text>Configure QoS parameters for routes.</text>
+                </description>
+                <choice name="set-qos-parameter">
+                  <description>
+                    <text>Set QoS parameter.</text>
+                  </description>
+                  <case name="local-id-ip-precedence">
+                    <description>
+                      <text>Set QoS local ID or IP precedence.</text>
+                    </description>
+                    <leaf name="qos-local-id">
+                      <type name="uint32">
+                        <range value="1..4294967295"/>
+                      </type>
+                      <description>
+                        <text>QoS local ID.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="ip-precedence">
+                      <type name="uint32">
+                        <range value="0..7"/>
+                      </type>
+                      <description>
+                        <text>IP precedence value.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="apply-as-path">
+                <presence value="Set AS path attribute values."/>
+                <description>
+                  <text>Configure the AS_Path attribute in BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="delete">
+                      <value value="0"/>
+                      <description>
+                        <text>Delete all the original attributes.</text>
+                      </description>
+                    </enum>
+                    <enum name="replace">
+                      <value value="1"/>
+                      <description>
+                        <text>Replace the original attribute with the newly configured one.</text>
+                      </description>
+                    </enum>
+                    <enum name="additive">
+                      <value value="2"/>
+                      <description>
+                        <text>Add the newly configured attribute to the original ones.</text>
+                      </description>
+                    </enum>
+                    <enum name="delete-special">
+                      <value value="3"/>
+                      <description>
+                        <text>Delete the specified attribute.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Additive: apply the configured AS value to the original AS value of a route.
+Replace: replace the original AS value of a route with the configured AS value.
+Delete: delete all the original AS value of a route.
+Delete-special: delete the specified AS value of a route.</text>
+                  </description>
+                </leaf>
+                <choice name="as-path-string">
+                  <when condition="operation!='delete'"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>AS attribute values.</text>
+                  </description>
+                  <case name="as-string">
+                    <description>
+                      <text>AS attribute values.</text>
+                    </description>
+                    <leaf name="value">
+                      <type name="string">
+                        <length value="1..3071"/>
+                        <pattern value="([0-9\. ]*)"/>
+                      </type>
+                      <description>
+                        <text>The AS number in an AS_Path can be in asplain format ranging from 1 to 4294967295 or in asdot format, X.Y for example, in which X ranges from 1 to 65535, and Y ranges from 0 to 65535.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="apply-ext-community-redirect-ip">
+                <description>
+                  <text>Configure the application of an IP address-based redirection extended community attribute to routes matching a route-policy.</text>
+                </description>
+                <leaf name="value">
+                  <type name="ext-community-redirect-ip-type"/>
+                  <description>
+                    <text>Extended community attribute value, which can be in the format of IPv4-address : nn. ('IPv4-address' is an IPv4 address and 'nn' ranges from 0 to 1).</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-ext-community-redirect-vpn">
+                <description>
+                  <text>Configure the application of a VPN target-based redirection extended community attribute to routes matching a route-policy.</text>
+                </description>
+                <leaf name="value">
+                  <type name="ext-community-type"/>
+                  <description>
+                    <text>Extended community attribute value. The format are as follows:
+(1)as-number : nn ('as-number' ranges from 0 to 65535 and 'nn' ranges from 0 to 4294967295).
+(2)IPv4-address : nn ('IPv4-address' is an IPv4 address and 'nn' ranges from 0 to 65535).
+(3)as-number.as-number:nn ('as-number' ranges from 0 to 65535 and 'nn' ranges from 0 to 65535).
+(4)as-number : nn ('as-number' ranges from 65536 to 4294967295 and 'nn' ranges from 0 to 65535).</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-ext-community-color">
+                <presence value="Create color extcommunity attribute values."/>
+                <description>
+                  <text>Configure a value for the color extended community attribute in BGP routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="ext-community-color-type"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Extcommunity attribute value, in the format of FLAG&lt;0-0&gt;:nn&lt;1-4294967295&gt;.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-entropy-label-none">
+                <presence value="Enable or disable the drop entropy label."/>
+                <description>
+                  <text>Configure the discarding of the entropy label in BGP routes.</text>
+                </description>
+                <leaf name="entropy-label-none">
+                  <type name="boolean"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Enable/disable the function of discarding entropy labels of BGP routes.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-peer-id">
+                <presence value="Create peer group IDs."/>
+                <description>
+                  <text>Configure an ID for a BGP peer group.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint16">
+                    <range value="1..255"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set peer group ID.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="apply-large-community">
+                <presence value="create parameters of large community attribute value."/>
+                <description>
+                  <text>Configure values for the Large-Community attribute in BGP routes.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="delete">
+                      <value value="0"/>
+                      <description>
+                        <text>Delete all the original attributes.</text>
+                      </description>
+                    </enum>
+                    <enum name="replace">
+                      <value value="1"/>
+                      <description>
+                        <text>Replace the original attribute with the newly configured one.</text>
+                      </description>
+                    </enum>
+                    <enum name="add">
+                      <value value="2"/>
+                      <description>
+                        <text>Add the newly configured attribute to the original ones.</text>
+                      </description>
+                    </enum>
+                    <enum name="delete-special">
+                      <value value="3"/>
+                      <description>
+                        <text>Delete the specified attribute.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Set the application mode of the large community attribute. The available options are as follows:
+(1)add: Append the configured large community attribute to the original large community attribute of a route.
+(2)replace: To replace the original large community attribute of a route with the configured large community attribute.
+(3)delete: Delete all the original large community attributes of a route.
+(4)delete-special: Delete the specified large community attribute of a route.</text>
+                  </description>
+                </leaf>
+                <choice name="set-large-community">
+                  <when condition="operation!='delete'"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Large community set.</text>
+                  </description>
+                  <case name="inline">
+                    <description>
+                      <text>Large community attribute value.</text>
+                    </description>
+                    <container name="large-community-members">
+                      <description>
+                        <text>List of large community attribute value.</text>
+                      </description>
+                      <list name="large-community-member">
+                        <key value="value"/>
+                        <min-elements value="1"/>
+                        <max-elements value="16"/>
+                        <description>
+                          <text>Configure a value for the Large-Community attribute in a Large-Community filter.</text>
+                        </description>
+                        <leaf name="value">
+                          <type name="large-community-type"/>
+                          <description>
+                            <text>Large Community attribute value, in the format of NN:NN:NN ('NN' range from 0 to 4294967295).</text>
+                          </description>
+                        </leaf>
+                      </list>
+                    </container>
+                  </case>
+                  <case name="reference">
+                    <description>
+                      <text>Large community-list.</text>
+                    </description>
+                    <leaf name="large-community-list-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:large-community-lists/rtp:large-community-list/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Large community list name.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+              </container>
+              <container name="apply-ext-community-priority-color">
+                <presence value="create parameters of priority-color extended community attribute values."/>
+                <description>
+                  <text>Configure the application of an priority-color extended community attribute to routes matching a route-policy.</text>
+                </description>
+                <leaf name="operation">
+                  <type name="enumeration">
+                    <enum name="add">
+                      <value value="2"/>
+                      <description>
+                        <text>The configured priority-color extended community attribute will be appended to the original priority-color extended community attribute of a route.</text>
+                      </description>
+                    </enum>
+                    <enum name="replace">
+                      <value value="1"/>
+                      <description>
+                        <text>The original priority-color extended community attribute of a route will be replaced by the configured priority-color extended community attribute.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Apply the configured priority-color value to the original priority-color value of a route.</text>
+                  </description>
+                </leaf>
+                <leaf-list name="communities">
+                  <type name="ext-community-priority-color-type"/>
+                  <min-elements value="1"/>
+                  <max-elements value="16"/>
+                  <description>
+                    <text>Configure a priority-color extended community filter, which can be in the format of priority&lt;0-15&gt;:site-id&lt;1-4294967295&gt;.</text>
+                  </description>
+                </leaf-list>
+              </container>
+              <container name="apply-vn-id">
+                <description>
+                  <text>Configure a virtual network ID for filtered routes.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint32">
+                    <range value="1..16777215"/>
+                  </type>
+                  <description>
+                    <text>Virtual network ID value of a route.</text>
+                  </description>
+                </leaf>
+              </container>
+            </container>
+            <container name="next-node-choice">
+              <description>
+                <text>Configure further route matching against a specified node after the routes match the current node. By default, if a route matches the current node, it matches the route-policy and is no longer matched against the other nodes.</text>
+              </description>
+              <leaf name="is-goto-next-node">
+                <type name="boolean"/>
+                <default value="false"/>
+                <description>
+                  <text>Enable/disable further route matching against a specified node after the routes match the current node.</text>
+                </description>
+              </leaf>
+              <leaf name="next-node-sequence">
+                <when condition="../is-goto-next-node='true'"/>
+                <type name="int32">
+                  <range value="1..65535"/>
+                </type>
+                <must condition="../next-node-sequence&gt;../../sequence"/>
+                <description>
+                  <text>Matching node sequence number.</text>
+                </description>
+              </leaf>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="tunnel-selectors">
+      <description>
+        <text>List of tunnel selectors.</text>
+      </description>
+      <list name="tunnel-selector">
+        <key value="name"/>
+        <max-elements value="65535"/>
+        <description>
+          <text>Configure a tunnel selector, which is mainly used in BGP Option B and Option C scenarios. A tunnel policy is selected based on the matching rules set in the tunnel selector.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..40"/>
+          </type>
+          <description>
+            <text>Name of a tunnel selector. The name is a string case-sensitive characters without spaces.</text>
+          </description>
+        </leaf>
+        <container name="nodes">
+          <description>
+            <text>List of tunnel selector nodes.</text>
+          </description>
+          <list name="node">
+            <key value="sequence"/>
+            <min-elements value="1"/>
+            <max-elements value="65535"/>
+            <description>
+              <text>Configure a tunnel selector. You can specify rules in the tunnel selector to recurse routes to a desired tunnel.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32">
+                <range value="0..65535"/>
+              </type>
+              <description>
+                <text>Sequence number of a node.</text>
+              </description>
+            </leaf>
+            <leaf name="match-mode">
+              <type name="match-mode-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Matching mode of nodes.</text>
+              </description>
+            </leaf>
+            <container name="conditions">
+              <description>
+                <text>Configure a list of matching types.</text>
+              </description>
+              <container name="match-rd-filter">
+                <description>
+                  <text>Configure a filtering rule based on RD filters.</text>
+                </description>
+                <leaf name="rd-filter-ref">
+                  <type name="leafref">
+                    <path value="/rtp:routing-policy/rtp:rd-filters/rtp:rd-filter/rtp:name"/>
+                  </type>
+                  <description>
+                    <text>Name of an RD filter.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="match-community-filters">
+                <description>
+                  <text>List of community filters used to match routes.</text>
+                </description>
+                <list name="match-community-filter">
+                  <key value="community-filter-ref"/>
+                  <max-elements value="32"/>
+                  <description>
+                    <text>Configure a matching rule that is based on a community filter.</text>
+                  </description>
+                  <leaf name="community-filter-ref">
+                    <type name="leafref">
+                      <path value="/rtp:routing-policy/rtp:community-filters/rtp:community-filter/rtp:name"/>
+                    </type>
+                    <description>
+                      <text>Name or index of a community attribute filter. It can be a numeral or a string. The ID of a basic community attribute filter is an integer ranging from 1 to 99; the ID of an advanced community attribute filter is an integer ranging from 100 to 199. The name of a community attribute filter is a string of 1 to 51 characters. The string cannot contain only digits.</text>
+                    </description>
+                  </leaf>
+                  <choice name="match-type">
+                    <description>
+                      <text>Match type.</text>
+                    </description>
+                    <case name="whole-match">
+                      <description>
+                        <text>Whole match.</text>
+                      </description>
+                      <leaf name="whole-match">
+                        <type name="empty"/>
+                        <description>
+                          <text>All the communities are matched. It is valid to only basic community attribute filters.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="sort-match">
+                      <description>
+                        <text>Sort match.</text>
+                      </description>
+                      <leaf name="sort-match">
+                        <type name="empty"/>
+                        <description>
+                          <text>Match all community attributes in sequence. It is valid to only Advanced community attribute filters.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </list>
+              </container>
+              <choice name="match-ipv4-destination">
+                <description>
+                  <text>Set IPv4 prefix.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>IPv4 prefix.</text>
+                  </description>
+                  <container name="match-ipv4-prefix">
+                    <description>
+                      <text>Configure a matching rule that is based on an IP prefix list.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 destination addresses are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv4-nexthop">
+                <description>
+                  <text>Match IPv4 next hops. References IPv4 prefix filter or IPv4 destination addresses ACL rule.</text>
+                </description>
+                <case name="ipv4-prefix">
+                  <description>
+                    <text>References IPv4 prefix filter.</text>
+                  </description>
+                  <container name="match-nexthop-ipv4-prefix">
+                    <description>
+                      <text>Configure a filtering rule that is based on an IPv4 prefix list or ACL to match next hops of IPv4 routes.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv4 next hops are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+              <choice name="match-ipv6-nexthop">
+                <description>
+                  <text>Match IPv6 next hops. The configurations of matching IPv6 next hops based on ACL rules are mutually exclusive with the configurations of matching IPv6 next hops by the prefix filter.</text>
+                </description>
+                <case name="ipv6-prefix">
+                  <description>
+                    <text>IPv6 prefix.</text>
+                  </description>
+                  <container name="match-nexthop-ipv6-prefix">
+                    <description>
+                      <text>Configure a filtering rule that is based on an IPv6 prefix list to match next hops of IPv6 routes.</text>
+                    </description>
+                    <leaf name="prefix-filter-ref">
+                      <type name="leafref">
+                        <path value="/rtp:routing-policy/rtp:ipv6-prefix-filters/rtp:ipv6-prefix-filter/rtp:name"/>
+                      </type>
+                      <description>
+                        <text>Name of the specified prefix filter when IPv6 next hops are matched.</text>
+                      </description>
+                    </leaf>
+                  </container>
+                </case>
+              </choice>
+            </container>
+            <container name="actions">
+              <description>
+                <text>Configure a list of setting types in a tunnel selector.</text>
+              </description>
+              <container name="apply-tunnel-policy">
+                <description>
+                  <text>Configure the application of a tunnel policy to a tunnel selector. Tunnels are selected for services based on specified tunnel policies.</text>
+                </description>
+                <leaf name="tunnel-policy-ref">
+                  <type name="leafref">
+                    <path value="/tnlm:tunnel-management/tnlm:tunnel-policys/tnlm:tunnel-policy/tnlm:name"/>
+                  </type>
+                  <description>
+                    <text>Name of a tunnel policy. The name is a string case-sensitive characters, spaces not supported.</text>
+                  </description>
+                </leaf>
+              </container>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

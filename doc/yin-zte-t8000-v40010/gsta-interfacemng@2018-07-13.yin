@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="gsta-interfacemng"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ifm="http://www.gsta.com/netconf/gsta-interfacemng"
+        xmlns:ext="http://www.gsta.com/netconf/gsta-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="http://www.gsta.com/netconf/gsta-interfacemng"/>
+  <prefix value="ifm"/>
+  <import module="gsta-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <include module="gsta-interfacemng-type"/>
+  <organization>
+    <text>China Telecom Group - Guangdong Telecom Research Institute</text>
+  </organization>
+  <contact>
+    <text>China Telecom Corporation Guangdong Research Institute (hereinafter referred to as:Guangzhou Research Institute)</text>
+  </contact>
+  <description>
+    <text>Common interface management, which includes the public configuration of interfaces.</text>
+  </description>
+  <revision date="2018-07-13">
+    <description>
+      <text>Initial modeling.</text>
+    </description>
+    <reference>
+      <text>GSTA IP-RAN 5G Common Yang Model.</text>
+    </reference>
+  </revision>
+  <container name="ifm">
+    <description>
+      <text>Common interface management, which includes the public configuration of interfaces.</text>
+    </description>
+    <container name="interfaces">
+      <description>
+        <text>List of interfaces.</text>
+      </description>
+      <list name="interface">
+        <key value="ifName"/>
+        <description>
+          <text>Information about an interface.</text>
+        </description>
+        <leaf name="ifName">
+          <type name="InterfaceNameType"/>
+          <description>
+            <text>The textual name of the interface.  The value of this object should be the name of the interface as assigned by the local device and should be suitable for use in commands entered at the device's `console'.  This might be a text name, such as ` NULL0 ', depending on the interface naming syntax of the device.</text>
+          </description>
+        </leaf>
+        <leaf name="ifClass">
+          <type name="ifmcommIfClassType"/>
+          <default value="mainInterface"/>
+          <config value="false"/>
+          <description>
+            <text>Identify a main interface or a sub-interface.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="ifPhyType">
+          <type name="ifmcommPhyType"/>
+          <config value="false"/>
+          <description>
+            <text>Type of an interface. Port types include physical ports and logical ports.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="ifParentIfName">
+          <when condition="../ifClass='subInterface'"/>
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:ifName"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Name of the main interface. For example, ethernet0/1/0.</text>
+          </description>
+        </leaf>
+        <leaf name="ifNumber">
+          <type name="string">
+            <length value="1..63"/>
+            <pattern value="(\d+/\d+/\d+/\d+)|(\d+/\d+/\d+)|(\d+/\d+)|(\d+)|(\d+/\d+/\d+[:]\d+)|(\d+/\d+/\d+[:]\d+[:]\d+[:]\d+)|(\d+/\d+/\d+/\d+[:]\d+)|(\d+/\d+/\d+/\d+[:]\d+[:]\d+[:]\d+)|(\d+/\d+/\d+/\d+/\d+[:]\d+)|(\d+/\d+[:]\d+)"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Number of an interface. For example,1, 0/1/0, or 2:1.</text>
+          </description>
+        </leaf>
+        <leaf name="ifDescr">
+          <type name="string">
+            <length value="1..242"/>
+          </type>
+          <description>
+            <text>Description of an interface.</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="ifAdminStatus">
+          <type name="ifmcommAdminStaType"/>
+          <description>
+            <text>Administrative status of an interface.</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="ifDf">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Clear the Don't Fragment field of IP packets on an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="ifTrapEnable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable the trap function on an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="ifStatiEnable">
+          <type name="boolean"/>
+          <description>
+            <text>Enable the statistics function on an interface.</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="statMode">
+          <type name="ifmcommStatMode"/>
+          <description>
+            <text>Mode of statistics collection. statistics by interface or vlangroup</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="ifMtu">
+          <type name="uint32">
+            <range value="0..64000"/>
+          </type>
+          <description>
+            <text>IPV4 Maximum transmission unit of an interface.
+Special explanation:
+Range: The server may restrict the allowed values for this leaf, depending on the interface's type.</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="spreadMtuFlag">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Spread the MTU of main interface to subinterface(optional).</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="ifBandwidth">
+          <type name="uint32">
+            <range value="1..1000000"/>
+          </type>
+          <description>
+            <text>Specify MIB-referenced bandwidth of an interface. </text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="ifStatItvl">
+          <type name="uint32">
+            <range value="10..600"/>
+          </type>
+          <description>
+            <text>Interval at which flow statistics are collected on an interface. The value must be a multiple of 10. unit is second</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="downDelayTime">
+          <when condition="../ifPhyType='Eth-Trunk'"/>
+          <type name="uint32">
+            <range value="0..1000"/>
+          </type>
+          <description>
+            <text>Specify down-delay-time value in milliseconds. It must be a multiple of 100.</text>
+          </description>
+          <ext:allowDelete value="true"/>
+        </leaf>
+        <leaf name="ifCfgMac">
+          <type name="MacAddressType">
+            <length value="0..255"/>
+          </type>
+          <ext:allowDelete value="true"/>
+          <description>
+            <text>Config MAC Address, in the format of HH-HH-HH.</text>
+          </description>
+        </leaf>
+        <container name="ipv4Config">
+          <description>
+            <text>IPv4 configurations.</text>
+          </description>
+          <leaf name="addrCfgType">
+            <type name="ifmam4CfgType"/>
+            <default value="config"/>
+            <description>
+              <text>IPv4 address configuration type.</text>
+            </description>
+          </leaf>
+          <container name="am4CfgAddrs">
+            <description>
+              <text>List of IPv4 addresses.</text>
+            </description>
+            <list name="am4CfgAddr">
+              <when condition="not(../../addrCfgType='negotiation' or ../../addrCfgType='unnumbered')"/>
+              <key value="ifIpAddr"/>
+              <description>
+                <text>IPv4 address configurations.</text>
+              </description>
+              <leaf name="ifIpAddr">
+                <type name="inet:ipv4-address-no-zone"/>
+                <description>
+                  <text>IPv4 address.</text>
+                </description>
+              </leaf>
+              <leaf name="subnetMask">
+                <type name="ifmIpv4Mask">
+                  <length value="9..15"/>
+                  <pattern value="((([1-9]?[0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([1-9]?[0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>IPv4 address mask.</text>
+                </description>
+              </leaf>
+              <leaf name="addrType">
+                <type name="ifmam4IpAddrType"/>
+                <must condition="((../addrType='main' or ../addrType='sub') )"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>IPv4 address type.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+          <leaf name="unNumIfName">
+            <when condition="../addrCfgType='unnumbered'"/>
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:ifName"/>
+            </type>
+            <description>
+              <text>Name of an unnumbered interface. For example, ethernet0/1/0.</text>
+            </description>
+            <ext:allowDelete value="true"/>
+          </leaf>
+        </container>
+        <container name="ipv6Config">
+          <description>
+            <text>IPv6 configurations.</text>
+          </description>
+          <leaf name="enableFlag">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>It is used to control whether an interface is enabled with the IPv6 function.</text>
+            </description>
+          </leaf>
+          <leaf name="ifMtu6">
+            <when condition="../enableFlag!='false'"/>
+            <type name="uint32">
+              <range value="0..50000"/>
+            </type>
+            <description>
+              <text>IPv6 maximum transmission unit of an interface.
+Special explanation:
+Range: The server may restrict the allowed values for this leaf, depending on the interface's type.</text>
+            </description>
+            <ext:allowDelete value="true"/>
+          </leaf>
+          <leaf name="spreadMtu6Flag">
+            <type name="boolean"/>
+            <must condition="not(../enableFlag='false' and ../spreadMtu6Flag='true')"/>
+            <default value="false"/>
+            <description>
+              <text>Spread the IPv6 MTU of main interface to subinterface.</text>
+            </description>
+            <ext:allowDelete value="true"/>
+          </leaf>
+          <leaf name="autoLinkLocal">
+            <type name="boolean"/>
+            <must condition="not(../enableFlag='false' and ../autoLinkLocal='true')"/>
+            <default value="false"/>
+            <description>
+              <text>It is used to control whether an interface is enabled with the auto linklocal address function.</text>
+            </description>
+          </leaf>
+          <container name="am6CfgAddrs">
+            <when condition="../enableFlag!='false'"/>
+            <description>
+              <text>List of IPv6 addresses.</text>
+            </description>
+            <list name="am6CfgAddr">
+              <key value="ifIp6Addr"/>
+              <description>
+                <text>IPv6 address configurations.</text>
+              </description>
+              <leaf name="ifIp6Addr">
+                <type name="inet:ipv6-address-no-zone"/>
+                <description>
+                  <text>IPv6 address.</text>
+                </description>
+              </leaf>
+              <leaf name="addrPrefixLen">
+                <type name="uint32">
+                  <range value="1..128"/>
+                </type>
+                <must condition="not(../addrType6='linkLocal') or (../addrType6='linkLocal' and ../addrPrefixLen=10)"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Length of the IPv6 address prefix.</text>
+                </description>
+              </leaf>
+              <leaf name="addrType6">
+                <type name="ifmam6IpAddr6Type"/>
+                <must condition="((../addrType6='global' or ../addrType6='linkLocal' or ../addrType6='anycast') )"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>IPv6 address type.</text>
+                </description>
+              </leaf>
+              <leaf name="ifIDGenType">
+                <type name="ifmam6IDGenType"/>
+                <must condition="(../addrType6='global' and (../ifIDGenType='none' or ../ifIDGenType='cga' or ../ifIDGenType='eui64') ) or (../addrType6='linkLocal' and (../ifIDGenType='none' or ../ifIDGenType='cga') ) or (../addrType6='anycast' and ../ifIDGenType='none')"/>
+                <default value="none"/>
+                <description>
+                  <text>Address algorithm.</text>
+                </description>
+                <ext:allowDelete value="true"/>
+              </leaf>
+              <leaf name="collisionCount">
+                <type name="uint32">
+                  <range value="0..3"/>
+                </type>
+                <config value="false"/>
+                <description>
+                  <text>Number of IPv6 address collisions.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </container>
+        <container name="ifControlFlap">
+          <description>
+            <text>Interface status suppression.</text>
+          </description>
+          <leaf name="ifCtrlFlapEnbl">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable the control flap function on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="ifSuppress">
+            <when condition="../ifCtrlFlapEnbl='true'"/>
+            <type name="uint32">
+              <range value="1..20000"/>
+            </type>
+            <must condition="(../ifSuppress&gt;../ifReuse) and ((../ifSuppress&lt;../ifCeiling))"/>
+            <default value="2000"/>
+            <description>
+              <text>Suppression threshold on an interface. The value must be greater than the reusing threshold and smaller than the suppression upper limit.</text>
+            </description>
+          </leaf>
+          <leaf name="ifReuse">
+            <when condition="../ifCtrlFlapEnbl='true'"/>
+            <type name="uint32">
+              <range value="1..20000"/>
+            </type>
+            <must condition="(../ifReuse&lt;../ifSuppress)"/>
+            <default value="750"/>
+            <description>
+              <text>Reusing threshold of an interface. The value must be smaller than the suppression threshold.</text>
+            </description>
+          </leaf>
+          <leaf name="ifCeiling">
+            <when condition="../ifCtrlFlapEnbl='true'"/>
+            <type name="uint32">
+              <range value="1001..20000"/>
+            </type>
+            <must condition="(../ifCeiling&gt;../ifSuppress)"/>
+            <default value="6000"/>
+            <description>
+              <text>Maximum suppression value on an interface. The value should be greater than the Damping Suppression Threshold.</text>
+            </description>
+          </leaf>
+          <leaf name="ifDecayOk">
+            <when condition="../ifCtrlFlapEnbl='true'"/>
+            <type name="uint32">
+              <range value="1..900"/>
+            </type>
+            <units name="second"/>
+            <default value="54"/>
+            <description>
+              <text>The penalty value of an Up interface attenuates to 1/2. The value is expressed in seconds.</text>
+            </description>
+          </leaf>
+          <leaf name="ifDecayNg">
+            <when condition="../ifCtrlFlapEnbl='true'"/>
+            <type name="uint32">
+              <range value="1..900"/>
+            </type>
+            <units name="second"/>
+            <default value="54"/>
+            <description>
+              <text>The penalty value of a Down interface attenuates to 1/2. The value is expressed in seconds.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

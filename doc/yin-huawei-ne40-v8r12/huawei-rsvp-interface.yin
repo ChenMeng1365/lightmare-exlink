@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-rsvp-interface"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rsvp-interface="urn:huawei:yang:huawei-rsvp-interface"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:mpls="urn:huawei:yang:huawei-mpls"
+        xmlns:mpls-te="urn:huawei:yang:huawei-mpls-te"
+        xmlns:te-interface="urn:huawei:yang:huawei-te-interface"
+        xmlns:te="urn:huawei:yang:huawei-te">
+  <namespace uri="urn:huawei:yang:huawei-rsvp-interface"/>
+  <prefix value="rsvp-interface"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-mpls">
+    <prefix value="mpls"/>
+  </import>
+  <import module="huawei-mpls-te">
+    <prefix value="mpls-te"/>
+  </import>
+  <import module="huawei-te-interface">
+    <prefix value="te-interface"/>
+  </import>
+  <import module="huawei-te">
+    <prefix value="te"/>
+  </import>
+  <include module="huawei-rsvp-interface-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Specifies the traffic engineering configuration.</text>
+  </description>
+  <revision date="2020-07-11">
+    <description>
+      <text>Add private syntax to the keychain name.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-10">
+    <description>
+      <text>Fixed some nodes condition.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-07-29">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="mpls-te"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/mpls:mpls/mpls-te:te">
+    <when condition="/mpls:mpls/mpls-te:te/mpls-te:rsvp/mpls-te:enable='true'"/>
+    <description>
+      <text>TE Configuration information augment to network instance.</text>
+    </description>
+    <container name="rsvp-interfaces">
+      <description>
+        <text>List of RSVP interface configuration.</text>
+      </description>
+      <list name="rsvp-interface">
+        <must condition="../../../../te:te/te-interface:interfaces/te-interface:interface[te-interface:name=current()/name]/te-interface:mpls-te-enable='true'"/>
+        <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/name]/ifm:vrf-name='_public_'"/>
+        <key value="name"/>
+        <description>
+          <text>Configure RSVP interface.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Interface name. The name is case-insensitive.</text>
+          </description>
+        </leaf>
+        <leaf name="hello-enable">
+          <when condition="/mpls:mpls/mpls-te:te/mpls-te:rsvp/mpls-te:global/mpls-te:hello-enable='true'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable Hello function.</text>
+          </description>
+        </leaf>
+        <leaf name="graceful-shutdown-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable graceful shutdown for interface.</text>
+          </description>
+        </leaf>
+        <leaf name="srefresh-compatible-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable summary refresh feature for interface.</text>
+          </description>
+        </leaf>
+        <container name="authentication">
+          <description>
+            <text>Configure neighbor of RSVP TE authentication.</text>
+          </description>
+          <leaf name="enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable the state of RSVP TE interface authentication.</text>
+            </description>
+          </leaf>
+          <leaf name="type">
+            <when condition="../enable='true'"/>
+            <type name="rsvp-authentication-type"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Authentication type on an RSVP-TE interface.</text>
+            </description>
+          </leaf>
+          <leaf name="keychain-name">
+            <when condition="../enable='true' and ../type='keychain'"/>
+            <type name="string">
+              <length value="1..47"/>
+              <pattern value="[^A-Z]+"/>
+            </type>
+            <mandatory value="true"/>
+            <ext:case-sensitivity value="lower-only"/>
+            <description>
+              <text>Keychain name. The name is case insensitive.</text>
+            </description>
+          </leaf>
+          <leaf name="md5-key">
+            <when condition="../enable='true' and ../type!='keychain'"/>
+            <type name="pub-type:password-extend">
+              <pattern value="[^ ]+"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Authentication key of an RSVP TE interface. When the key is configured, the RSVP packets that the interface sends out carry the authentication information that are calculated based on the authentication key by using the MD5 algorithm. The packets the interface receives are also verified based on the authentication key. The two ends of a TE link must be configured with the same authentication key, otherwise, RSVP packets cannot pass through the link. The password is a string ranging from 1 to 255 characters for a simple text password and 20 to 432 characters for a ciphertext password.</text>
+            </description>
+          </leaf>
+          <leaf name="life-time">
+            <when condition="../enable='true'"/>
+            <type name="pub-type:time-tick">
+              <range value="1..86399"/>
+            </type>
+            <units name="s"/>
+            <default value="1800"/>
+            <description>
+              <text>Authentication lifetime. During authentication lifetime, RSVP authentication lifetime will be reset after a RSVP packet is received. If no RSVP packet is received when the authentication lifetime times out, the RSVP neighbor will delete the authentication relationship to prevent persistent authentication.</text>
+            </description>
+          </leaf>
+          <leaf name="handshake-enable">
+            <when condition="../enable='true'"/>
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable the handshake authentication. When RSVP packet authentication is out of order, a handshake will be initiated and authentication will be re-negotiated.</text>
+            </description>
+          </leaf>
+          <leaf name="window-size">
+            <when condition="../enable='true' and ../handshake-enable='true'"/>
+            <type name="uint32">
+              <range value="1..64"/>
+            </type>
+            <default value="1"/>
+            <description>
+              <text>Size of an authentication window that is set to prevent information loss caused by packet disorder. If the packet sequence number exceeds the window size, the packet is considered to be out of order.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+  </augment>
+</module>

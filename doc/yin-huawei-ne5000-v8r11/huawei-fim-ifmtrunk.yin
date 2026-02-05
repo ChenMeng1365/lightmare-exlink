@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-fim-ifmtrunk"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:fim-ifmtrunk="urn:huawei:yang:huawei-fim-ifmtrunk"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ifm-trunk="urn:huawei:yang:huawei-ifm-trunk"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-fim-ifmtrunk"/>
+  <prefix value="fim-ifmtrunk"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-ifm-trunk">
+    <prefix value="ifm-trunk"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Common interface management, which includes the public configuration of interfaces.</text>
+  </description>
+  <reference>
+    <text>Huawei private.</text>
+  </reference>
+  <revision date="2020-02-29">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="forwarding"/>
+  <typedef name="enable-type">
+    <type name="enumeration">
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>Disable.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Enable type.</text>
+    </description>
+  </typedef>
+  <typedef name="trunk-hash-type">
+    <type name="enumeration">
+      <enum name="CRC32-1">
+        <value value="0"/>
+        <description>
+          <text>CRC32-1.</text>
+        </description>
+      </enum>
+      <enum name="CRC32-2">
+        <value value="1"/>
+        <description>
+          <text>CRC32-2.</text>
+        </description>
+      </enum>
+      <enum name="XOR-16BIT">
+        <value value="2"/>
+        <description>
+          <text>16bit XOR.</text>
+        </description>
+      </enum>
+      <enum name="XOR-8BIT">
+        <value value="3"/>
+        <description>
+          <text>8bit XOR.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Trunk arith hash type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ifm-trunk:trunk">
+    <description>
+      <text>FIM configuration to the ifm module.</text>
+    </description>
+    <container name="fim-ifmtrunk">
+      <description>
+        <text>Configure the FIM configuration to Eth-Trunk interface.</text>
+      </description>
+      <leaf name="trunk-locality-flag">
+        <when condition="../../ifm-trunk:type='eth-trunk' or ../../ifm-trunk:type='ip-trunk'"/>
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable virtual-cluster trunk localization.</text>
+        </description>
+      </leaf>
+      <leaf name="trunk-hash-type">
+        <type name="trunk-hash-type"/>
+        <default value="CRC32-1"/>
+        <description>
+          <text>Configure the hash arithmetic type for a trunk interface.</text>
+        </description>
+      </leaf>
+      <leaf name="dual-receive-enable">
+        <when condition="../../ifm-trunk:type='eth-trunk' and ../../ifm-trunk:work-mode='backup'"/>
+        <type name="enable-type"/>
+        <default value="disable"/>
+        <description>
+          <text>Enable the backup-dual-receiving function of the Eth-trunk interface.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ifm-trunk:trunk/ifm-trunk:members/ifm-trunk:member">
+    <description>
+      <text>FIM configuration to the ifm module.</text>
+    </description>
+    <container name="fim-ifmtrunk-member">
+      <description>
+        <text>Configure the FIM configuration to trunk member interface.</text>
+      </description>
+      <leaf name="hash-index">
+        <when condition="../../../../ifm-trunk:hash-type='symmetric' or ../../../../ifm-trunk:hash-type ='symmetric-complement'"/>
+        <type name="uint16">
+          <range value="1..64"/>
+        </type>
+        <description>
+          <text>Hash index.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

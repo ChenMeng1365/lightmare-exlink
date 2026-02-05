@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-pf-forwarding-policies"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-pf="http://openconfig.net/yang/policy-forwarding"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-pmatch="http://openconfig.net/yang/header-fields"
+           xmlns:oc-yang="http://openconfig.net/yang/types/yang"
+           xmlns:oc-inet="http://openconfig.net/yang/types/inet">
+  <belongs-to module="openconfig-policy-forwarding">
+    <prefix value="oc-pf"/>
+  </belongs-to>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-packet-match">
+    <prefix value="oc-pmatch"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <include module="openconfig-pf-path-groups"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This submodule contains configuration and operational state
+relating to the definition of policy-forwarding policies.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.2.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.2.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-06-21">
+    <description>
+      <text>Amend policy forwarding model based on ACL changes.</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-28">
+    <description>
+      <text>Initial public release of policy forwarding.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-11-08">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>0.0.1</text>
+    </reference>
+  </revision>
+  <grouping name="pf-forwarding-policy-structural">
+    <description>
+      <text>Structural grouping defining forwarding policies under the
+policy- forwarding module.</text>
+    </description>
+    <container name="policies">
+      <description>
+        <text>Forwarding policies defined to enact policy-based forwarding
+on the local system.</text>
+      </description>
+      <list name="policy">
+        <key value="policy-id"/>
+        <description>
+          <text>A forwarding policy is defined to have a set of match
+criteria, allowing particular fields of a packet's header to
+be matched, and a set of forwarding actions which determines
+how the local system should forward the packet.</text>
+        </description>
+        <leaf name="policy-id">
+          <type name="leafref">
+            <path value="../config/policy-id"/>
+          </type>
+          <description>
+            <text>Reference to the identifier for the forwarding-policy.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration options relating to the forwarding
+policy.</text>
+          </description>
+          <uses name="pf-forwarding-policy-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state parameters relating to the forwarding
+policy.</text>
+          </description>
+          <uses name="pf-forwarding-policy-config"/>
+        </container>
+        <container name="rules">
+          <description>
+            <text>The criteria that should be matched for a packet to be
+forwarded according to the policy action.</text>
+          </description>
+          <list name="rule">
+            <key value="sequence-id"/>
+            <description>
+              <text>A match rule for the policy. In the case that multiple
+criteria are specified within a single rule, all criteria
+must be met for the rule to be applied to a packet.</text>
+            </description>
+            <leaf name="sequence-id">
+              <type name="leafref">
+                <path value="../config/sequence-id"/>
+              </type>
+              <description>
+                <text>A unique sequence identifier for the match rule.</text>
+              </description>
+            </leaf>
+            <container name="config">
+              <description>
+                <text>Configuration parameters relating to the match
+rule.</text>
+              </description>
+              <uses name="pf-forwarding-policy-rule-config"/>
+            </container>
+            <container name="state">
+              <config value="false"/>
+              <description>
+                <text>Operational state parameters relating to the match
+rule.</text>
+              </description>
+              <uses name="pf-forwarding-policy-rule-config"/>
+              <uses name="pf-forwarding-policy-rule-state"/>
+            </container>
+            <uses name="oc-pmatch:ethernet-header-top"/>
+            <uses name="oc-pmatch:ipv4-protocol-fields-top"/>
+            <uses name="oc-pmatch:ipv6-protocol-fields-top"/>
+            <uses name="oc-pmatch:transport-fields-top"/>
+            <container name="action">
+              <description>
+                <text>The forwarding policy action to be applied for
+packets matching the rule.</text>
+              </description>
+              <container name="config">
+                <description>
+                  <text>Configuration parameters relating to the forwarding
+rule's action.</text>
+                </description>
+                <uses name="pf-forwarding-policy-action-config"/>
+              </container>
+              <container name="state">
+                <config value="false"/>
+                <description>
+                  <text>Operational state parameters relating to the
+forwarding rule's action.</text>
+                </description>
+                <uses name="pf-forwarding-policy-action-config"/>
+              </container>
+              <uses name="pf-forwarding-policy-action-encapsulate-gre"/>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="pf-forwarding-policy-config">
+    <description>
+      <text>Configuration parameters relating to the forwarding policy.</text>
+    </description>
+    <leaf name="policy-id">
+      <type name="string"/>
+      <description>
+        <text>A unique name identifying the forwarding policy. This name is
+used when applying the policy to a particular interface.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pf-forwarding-policy-rule-config">
+    <description>
+      <text>Configuration parameters relating to a policy rule.</text>
+    </description>
+    <leaf name="sequence-id">
+      <type name="uint32"/>
+      <description>
+        <text>Unique sequence number for the policy rule.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pf-forwarding-policy-rule-state">
+    <description>
+      <text>Operational state parameters relating to a policy rule.</text>
+    </description>
+    <leaf name="matched-pkts">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of packets matched by the rule.</text>
+      </description>
+    </leaf>
+    <leaf name="matched-octets">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Bytes matched by the rule.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pf-forwarding-policy-action-config">
+    <description>
+      <text>Forwarding policy action configuration parameters.</text>
+    </description>
+    <leaf name="discard">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When this leaf is set to true, the local system should drop
+packets that match the rule.</text>
+      </description>
+    </leaf>
+    <leaf name="decapsulate-gre">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When this leaf is set to true, the local system should remove
+the GRE header from the packet matching the rule. Following
+the decapsulation it should subsequently forward the
+encapsulated packet according to the relevant lookup (e.g., if
+the encapsulated packet is IP, the packet should be routed
+according to the IP destination).</text>
+      </description>
+    </leaf>
+    <leaf name="network-instance">
+      <type name="leafref">
+        <path value="../../../../../../../../config/name"/>
+      </type>
+      <description>
+        <text>When this leaf is set, packets matching the match criteria
+for the forwarding rule should be looked up in the
+network-instance that is referenced rather than the
+network-instance with which the interface is associated.
+Such configuration allows policy-routing into multiple
+sub-topologies from a single ingress access interface, or
+different send and receive contexts for a particular
+interface (sometimes referred to as half-duplex VRF).</text>
+      </description>
+    </leaf>
+    <leaf name="path-selection-group">
+      <type name="leafref">
+        <path value="../../../../../../../path-selection-groups/path-selection-group/config/group-id"/>
+      </type>
+      <description>
+        <text>When path-selection-group is set, packets matching the
+match criteria for the forwarding rule should be forwarded
+only via one of the paths that is specified within the
+referenced path-selection-group. The next-hop of the packet
+within the routing context should be used to determine between
+multiple paths that are specified within the group.</text>
+      </description>
+    </leaf>
+    <leaf name="next-hop">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>When an IP next-hop is specified in the next-hop field,
+packets matching the match criteria for the forwarding rule
+should be forwarded to the next-hop IP address, bypassing any
+lookup on the local system.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pf-forwarding-policy-action-encapsulate-gre">
+    <description>
+      <text>Structural grouping covering the encapsulate-gre action of the
+policy forwarding rule.</text>
+    </description>
+    <container name="encapsulate-gre">
+      <description>
+        <text>Packets matching the policy rule should be GRE encapsulated
+towards the set of targets defined within the target list. Where
+more than one target is specified, or the target subnet expands
+to more than one endpoint, packets should be load-balanced across
+the destination addresses within the subnets.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for the GRE encapsulation rules action.</text>
+        </description>
+        <uses name="pf-forwarding-policy-action-gre-config"/>
+      </container>
+      <container name="state">
+        <description>
+          <text>Operational state parameters for the GRE encapsulation rule
+action.</text>
+        </description>
+        <config value="false"/>
+        <uses name="pf-forwarding-policy-action-gre-config"/>
+      </container>
+      <container name="targets">
+        <description>
+          <text>Surrounding container for the list of GRE tunnel targets that
+should be encapsulated towards.</text>
+        </description>
+        <list name="target">
+          <key value="id"/>
+          <leaf name="id">
+            <type name="leafref">
+              <path value="../config/id"/>
+            </type>
+            <description>
+              <text>Reference to the unique identifier for the target.</text>
+            </description>
+          </leaf>
+          <description>
+            <text>Each target specified within this list should be treated as a
+endpoint to which packets should be GRE encapsulated. Where the
+set of destinations described within a single entry expands to
+more than one destination IP address, packets should be load
+shared across the destination using the local system's ECMP hashing
+mechanisms.</text>
+          </description>
+          <container name="config">
+            <description>
+              <text>Configuration parameters for the GRE target.</text>
+            </description>
+            <uses name="pf-forwarding-policy-action-gre-target-config"/>
+          </container>
+          <container name="state">
+            <description>
+              <text>Operational state parameters for the GRE target.</text>
+            </description>
+            <config value="false"/>
+            <uses name="pf-forwarding-policy-action-gre-target-config"/>
+          </container>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="pf-forwarding-policy-action-gre-config">
+    <description>
+      <text>Configuration parameters for the encapsulate-gre forwarding
+policy action.</text>
+    </description>
+    <leaf name="identifying-prefix">
+      <type name="oc-inet:ip-prefix"/>
+      <description>
+        <text>An IP prefix that can be used to identify the group of
+GRE endpoints that are being encapsulated towards. Systems
+that require an IP identifier for the tunnel set
+should use this prefix as the next-hop identifier.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pf-forwarding-policy-action-gre-target-config">
+    <description>
+      <text>Configuration parameters for each target of a GRE Encapsulation
+rule</text>
+    </description>
+    <leaf name="id">
+      <type name="string"/>
+      <description>
+        <text>A unique identifier for the target.</text>
+      </description>
+    </leaf>
+    <leaf name="source">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>The source IP address that should be used when encapsulating
+packets from the local system.</text>
+      </description>
+    </leaf>
+    <leaf name="destination">
+      <type name="oc-inet:ip-prefix"/>
+      <description>
+        <text>The set of destination addresses that should be encapsulated towards.
+Where a subnet is specified, each address within the subnet should be
+treated as an independent destination for encapsulated traffic. Packets
+should be distributed with ECMP across the set of tunnel destination
+addresses.</text>
+      </description>
+    </leaf>
+    <leaf name="ip-ttl">
+      <type name="uint8"/>
+      <description>
+        <text>The TTL that should be specified in the IP header of the GRE packet
+encapsulating the packet matching the rule.</text>
+      </description>
+    </leaf>
+  </grouping>
+</submodule>

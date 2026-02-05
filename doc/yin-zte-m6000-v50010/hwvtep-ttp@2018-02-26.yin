@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="hwvtep-ttp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:hwvtep-ttp="urn:hwvtep:ttp:config:yang"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:hwvtep:ttp:config:yang"/>
+  <prefix value="hwvtep-ttp"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <description>
+    <text>hwvtep ttp netconf yang module,without vrf and vlan configuration</text>
+  </description>
+  <revision date="2018-02-26"/>
+  <typedef name="datapath-id-type">
+    <type name="string">
+      <pattern value="[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}"/>
+    </type>
+  </typedef>
+  <typedef name="OFUpDownStateType">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="0"/>
+      </enum>
+      <enum name="down">
+        <value value="1"/>
+      </enum>
+    </type>
+  </typedef>
+  <typedef name="OFOpenFlowVersionType">
+    <type name="enumeration">
+      <enum name="not-applicable">
+        <value value="0"/>
+      </enum>
+      <enum name="1.0">
+        <value value="1"/>
+      </enum>
+      <enum name="1.1">
+        <value value="2"/>
+      </enum>
+      <enum name="1.2">
+        <value value="3"/>
+      </enum>
+      <enum name="1.3">
+        <value value="4"/>
+      </enum>
+      <enum name="1.4">
+        <value value="5"/>
+      </enum>
+      <enum name="1.5">
+        <value value="6"/>
+      </enum>
+    </type>
+  </typedef>
+  <container name="capable-switch">
+    <leaf name="id">
+      <type name="inet:uri">
+        <length value="1..63"/>
+      </type>
+      <mandatory value="true"/>
+    </leaf>
+    <container name="logical-switches">
+      <list name="switch">
+        <key value="id"/>
+        <leaf name="id">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="datapath-id">
+          <type name="datapath-id-type">
+            <length value="23"/>
+          </type>
+        </leaf>
+        <leaf name="lost-connection-behavior">
+          <type name="enumeration">
+            <enum name="failSecureMode">
+              <value value="0"/>
+            </enum>
+            <enum name="failStandaloneMode">
+              <value value="1"/>
+            </enum>
+          </type>
+          <default value="failSecureMode"/>
+        </leaf>
+        <container name="controllers">
+          <list name="controller">
+            <key value="id"/>
+            <leaf name="id">
+              <type name="string">
+                <length value="1..63"/>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="role">
+              <type name="enumeration">
+                <enum name="master">
+                  <value value="0"/>
+                </enum>
+                <enum name="slave">
+                  <value value="1"/>
+                </enum>
+                <enum name="equal">
+                  <value value="2"/>
+                </enum>
+              </type>
+              <default value="equal"/>
+            </leaf>
+            <leaf name="ip-address">
+              <type name="inet:ipv4-address"/>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="port">
+              <type name="inet:port-number">
+                <range value="1..65535"/>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="local-ip-address">
+              <type name="inet:ipv4-address"/>
+            </leaf>
+            <leaf name="local-port">
+              <type name="inet:port-number">
+                <range value="0..65535"/>
+              </type>
+            </leaf>
+            <leaf name="protocol">
+              <type name="enumeration">
+                <enum name="tcp">
+                  <value value="0"/>
+                </enum>
+                <enum name="tls">
+                  <value value="1"/>
+                </enum>
+              </type>
+              <default value="tls"/>
+            </leaf>
+            <leaf name="vrf-name">
+              <type name="string">
+                <length value="1..32"/>
+              </type>
+            </leaf>
+            <leaf name="mng-flag">
+              <type name="boolean"/>
+              <default value="false"/>
+            </leaf>
+            <container name="state">
+              <config value="false"/>
+              <leaf name="connection-state">
+                <type name="OFUpDownStateType"/>
+              </leaf>
+              <leaf name="current-version">
+                <type name="OFOpenFlowVersionType"/>
+              </leaf>
+            </container>
+          </list>
+        </container>
+        <container name="resources">
+          <leaf-list name="port">
+            <type name="leafref">
+              <path value="/capable-switch/resources/port/resource-id"/>
+            </type>
+          </leaf-list>
+        </container>
+      </list>
+    </container>
+    <container name="resources">
+      <list name="port">
+        <key value="resource-id"/>
+        <leaf name="resource-id">
+          <type name="inet:uri">
+            <length value="1..31"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="number">
+          <config value="false"/>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="name">
+          <config value="false"/>
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+        </leaf>
+        <choice name="tunnel-type">
+          <case name="vxlan-tunnel">
+            <container name="vxlan-tunnel">
+              <presence value="vxlan-tunnel"/>
+              <choice name="endpoints">
+                <mandatory value="true"/>
+                <case name="v4-endpoints">
+                  <leaf name="local-endpoint-ipv4-adress">
+                    <type name="inet:ipv4-address"/>
+                  </leaf>
+                  <leaf name="remote-endpoint-ipv4-adress">
+                    <type name="inet:ipv4-address"/>
+                  </leaf>
+                </case>
+              </choice>
+            </container>
+          </case>
+        </choice>
+      </list>
+    </container>
+  </container>
+</module>

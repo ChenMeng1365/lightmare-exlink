@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-qos"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-qos="urn:huawei:yang:huawei-bras-qos"
+        xmlns:radius="urn:huawei:yang:huawei-radius"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access"
+        xmlns:qos="urn:huawei:yang:huawei-qos"
+        xmlns:timerange="urn:huawei:yang:huawei-time-range">
+  <namespace uri="urn:huawei:yang:huawei-bras-qos"/>
+  <prefix value="bras-qos"/>
+  <import module="huawei-radius">
+    <prefix value="radius"/>
+  </import>
+  <import module="huawei-aaa">
+    <prefix value="aaa"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <import module="huawei-qos">
+    <prefix value="qos"/>
+  </import>
+  <import module="huawei-time-range">
+    <prefix value="timerange"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras-qos.</text>
+  </description>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-03">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-radius"/>
+  <grouping name="trust-8021p">
+    <description>
+      <text>The command sets a BAS interface to trust the 802.1p priority of VLAN packets.</text>
+    </description>
+    <container name="trust-8021p-protocol">
+      <description>
+        <text>Configure a BAS interface to trust the 802.1p priority of VLAN packets.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable configuration of the 802.1p value.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="user-bandwidth-auto-adapt">
+    <description>
+      <text>The command enables the automatic peak information rate (PIR) bandwidth adjustment function for DHCPv4, DHCPv6 and PPPoE users.</text>
+    </description>
+    <container name="user-bandwidth-auto-adapt">
+      <description>
+        <text>Configure the automatic peak information rate (PIR) bandwidth adjustment function for DHCPv4, DHCPv6 and PPPoE users.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable automatic PIR bandwidth adjustment for DHCPv4, DHCPv6 and PPPoE users.</text>
+        </description>
+      </leaf>
+      <leaf name="type1">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the type of generating user-bandWidth to adapt. This element will not take effect independently unless the user's bandwidth adjusting function is enabled.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <container name="bras-qos">
+    <description>
+      <text>Bras qos.</text>
+    </description>
+    <container name="user-qos-cir-zero">
+      <must condition="not(cir-zero-unlimit='true' and user-cir) and not(cir-zero-unlimit='false' and not(user-cir))"/>
+      <description>
+        <text>Configure the CAR of user traffic when the CIR and PIR delivered by the RADIUS server are both 0s.</text>
+      </description>
+      <leaf name="cir-zero-unlimit">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable the CAR when the CIR and PIR delivered by the RADIUS server are both 0s.</text>
+        </description>
+      </leaf>
+      <leaf name="user-cir">
+        <when condition="../cir-zero-unlimit = 'false'"/>
+        <type name="uint32"/>
+        <units name="bit/s"/>
+        <description>
+          <text>Specifies the CAR when the CIR and PIR delivered by the RADIUS server are both 0s.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="user-queue-resource-policy">
+      <description>
+        <text>Configure a policy when user queue resources fail to be allocated.</text>
+      </description>
+      <leaf name="allocate-fail-policy">
+        <type name="enumeration">
+          <enum name="online">
+            <value value="0"/>
+            <description>
+              <text>Allows users to keep online.</text>
+            </description>
+          </enum>
+          <enum name="offline">
+            <value value="1"/>
+            <description>
+              <text>Users get offline.</text>
+            </description>
+          </enum>
+        </type>
+        <default value="online"/>
+        <description>
+          <text>Specifies the case that if the user queue resources fail to be allocated, the user then is no longer provided with the online service.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <augment target-node="/radius:radius/radius:radius-server-groups/radius:radius-server-group">
+    <description>
+      <text>Bras qos model in radius-server group.</text>
+    </description>
+    <container name="bras-qos">
+      <description>
+        <text>Configure the Bas-qos model in radius-server group.</text>
+      </description>
+      <container name="qos-profile-case-sensitive">
+        <description>
+          <text>Configure a RADIUS server to support case-sensitive RADIUS qos profile attribute.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable a RADIUS server to support case-sensitive RADIUS qos profile attribute.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="qos-profile-no-exist-policy">
+        <description>
+          <text>Configure a policy whether to allow users to keep online when the QoS profile delivered by the RADIUS server is not configured.</text>
+        </description>
+        <leaf name="user-online-policy">
+          <type name="enumeration">
+            <enum name="offline">
+              <value value="0"/>
+              <description>
+                <text>Users get offline.</text>
+              </description>
+            </enum>
+            <enum name="online">
+              <value value="1"/>
+              <description>
+                <text>Allows users to keep online.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="offline"/>
+          <description>
+            <text>Configures a policy whether to allow users to keep online when the QoS profile delivered by the RADIUS server is not configured.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="server-class">
+        <must condition="not(class-as-car='false' and pir-enable = 'true')"/>
+        <description>
+          <text>Configure a packet to carry the CAR value using class attribute.</text>
+        </description>
+        <leaf name="class-as-car">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable a packet to carry the CAR value using class attribute.</text>
+          </description>
+        </leaf>
+        <leaf name="pir-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable that the PIR is valid.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas">
+    <description>
+      <text>Bras qos model in domain.</text>
+    </description>
+    <container name="bras-qos">
+      <description>
+        <text>Configure the Bas-qos model in domain.</text>
+      </description>
+      <container name="time-range-qos-enable">
+        <description>
+          <text>Configure the time range during which a QoS profile takes effect.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable time range qos profile.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="time-range-qos-profiles">
+        <description>
+          <text>List of the QoS profile to take effect during a time range for users in the AAA domain.</text>
+        </description>
+        <list name="time-range-qos-profile">
+          <key value="range-name"/>
+          <description>
+            <text>Configure the QoS profile to take effect during a time range for users in the AAA domain.</text>
+          </description>
+          <leaf name="range-name">
+            <type name="leafref">
+              <path value="/timerange:time-range/timerange:time-range-instances/timerange:time-range-instance/timerange:name"/>
+            </type>
+            <description>
+              <text>Specifies the name of a time range.</text>
+            </description>
+          </leaf>
+          <leaf name="qos-profile-name">
+            <type name="leafref">
+              <path value="/qos:qos/qos:queue-scheduler-template/qos:profiles/qos:profile/qos:name"/>
+            </type>
+            <must condition="/qos:qos/qos:queue-scheduler-template/qos:profiles/qos:profile[qos:name=current()]/qos:mode='normal'"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Specifies the name of a QoS profile.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/bras-basic-access:bas/bras-basic-access:access-type/bras-basic-access:layer2-subscriber/bras-basic-access:layer2-subscriber">
+    <description>
+      <text>Bras qos in bas layer2-subscriber.</text>
+    </description>
+    <uses name="trust-8021p"/>
+    <uses name="user-bandwidth-auto-adapt"/>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/bras-basic-access:bas/bras-basic-access:access-type/bras-basic-access:layer2-leaseline/bras-basic-access:layer2-leaseline">
+    <description>
+      <text>Bras qos in bas layer2-leaseline.</text>
+    </description>
+    <uses name="trust-8021p"/>
+    <uses name="user-bandwidth-auto-adapt"/>
+  </augment>
+</module>

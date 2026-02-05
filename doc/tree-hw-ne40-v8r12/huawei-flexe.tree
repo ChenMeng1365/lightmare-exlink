@@ -1,0 +1,69 @@
+module: huawei-flexe
+  +--rw flexe
+     +--rw card-attributes
+     |  +--rw card-attribute* [card-position]
+     |     +--rw card-position           string
+     |     +--rw config-mode?            enumeration
+     |     +--rw sub-timeslot-granula?   flexe-sub-ts-granula-type
+     +--rw groups
+     |  +--rw group* [index]
+     |     +--rw index                          uint32
+     |     +--rw number?                        uint32
+     |     +--rw padding-enable?                boolean
+     |     +--rw timeslot-negotiation-enable?   boolean
+     |     +--ro total-bandwidth?               string
+     |     +--ro left-bandwidth?                string
+     |     +--rw physical-ports
+     |        +--rw physical-port* [port-position]
+     |           +--rw port-position    string
+     +--rw physical-ports
+     |  +--rw physical-port* [position]
+     |     +--rw position              -> /devm:devm/ports/port/position
+     |     +--rw mode-enable?          boolean
+     |     +--rw physical-attribute
+     |     |  +--rw number?                 uint32
+     |     |  +--rw dcn-auto-nego-enable?   boolean
+     |     |  +--rw mng-channel-mode?       enumeration
+     |     |  +--ro number-to-receive?      uint32
+     |     |  +--ro padding-enable?         boolean
+     |     |  +--ro idle-timeslot?          string
+     |     |  +--ro idle-sub-timeslot?      string
+     |     |  +--ro used-timeslot?          string
+     |     |  +--ro used-sub-timeslot?      string
+     |     |  +--ro sub-timeslot-scope?     string
+     |     |  +--ro physical-mode?          enumeration
+     |     +--ro flexe-relations
+     |        +--ro flexe-relation* [port-name]
+     |           +--ro port-name           string
+     |           +--ro binding-timeslot?   string
+     +--rw clients
+        +--rw client* [index group-index business-type port-id]
+           +--rw index                      uint32
+           +--rw group-index                -> /flexe/groups/group/index
+           +--rw business-type              enumeration
+           +--rw port-id                    uint32
+           +--rw id?                        uint32
+           +--rw min-avail-bandwidth?       uint32
+           +--ro port-name?                 string
+           +--ro bandwidth-value?           string
+           +--rw (binding-type)?
+              +--:(bandwidth)
+              |  +--rw binding-bandwidth
+              |     +--rw bandwidth?   string
+              +--:(timeslots)
+                 +--rw binding-timeslots
+                    +--rw binding-timeslot* [physical-port-name]
+                       +--rw physical-port-name          string
+                       +--rw (binding-timeslot)
+                          +--:(big-timeslot)
+                          |  +--rw timeslot?             string
+                          +--:(sub-timeslot)
+                             +--rw big-timeslot          uint32
+                             +--rw sub-timeslot          string
+                             +--ro sub-timeslot-scope?   string
+
+  rpcs:
+    +---x phy-mode-switch
+       +---w input
+          +---w position    string
+          +---w phy-mode?   enumeration

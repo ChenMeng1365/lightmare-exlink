@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-sflow"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sflow="urn:huawei:yang:huawei-sflow"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:devm="urn:huawei:yang:huawei-devm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-sflow"/>
+  <prefix value="sflow"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-devm">
+    <prefix value="devm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>The sFlow sample.</text>
+  </description>
+  <revision date="2020-03-11">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="sflow"/>
+  <typedef name="flow-direction">
+    <type name="enumeration">
+      <enum name="inbound">
+        <value value="0"/>
+        <description>
+          <text>Inbound.</text>
+        </description>
+      </enum>
+      <enum name="outbound">
+        <value value="1"/>
+        <description>
+          <text>Outbound.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Flow directions.</text>
+    </description>
+  </typedef>
+  <container name="sflow">
+    <description>
+      <text>The sFlow feature.</text>
+    </description>
+    <container name="sflow-enable">
+      <presence value="Enable sFlow."/>
+      <description>
+        <text>Enable/disable sFlow.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>Configure sFlow global attribute.</text>
+        </description>
+        <leaf name="agent-ipv4-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <must condition="../agent-ipv4-address!='0.0.0.0'"/>
+          <description>
+            <text>Agent IPv4 address.</text>
+          </description>
+        </leaf>
+        <leaf name="agent-ipv6-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <must condition="../agent-ipv6-address!='::'"/>
+          <description>
+            <text>Agent IPv6 address.</text>
+          </description>
+        </leaf>
+        <leaf name="extended-route-data">
+          <type name="enumeration">
+            <enum name="disable">
+              <value value="1"/>
+              <description>
+                <text>Disable.</text>
+              </description>
+            </enum>
+            <enum name="enable">
+              <value value="0"/>
+              <description>
+                <text>Enable.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="enable"/>
+          <description>
+            <text>Extend route data enable.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="collectors">
+        <description>
+          <text>List of sFlow collector.</text>
+        </description>
+        <list name="collector">
+          <key value="collector-id"/>
+          <description>
+            <text>Configure sFlow collector.</text>
+          </description>
+          <leaf name="collector-id">
+            <type name="uint8">
+              <range value="1..2"/>
+            </type>
+            <description>
+              <text>Collector id.</text>
+            </description>
+          </leaf>
+          <leaf name="max-packet-length">
+            <type name="uint16">
+              <range value="1024..8100"/>
+            </type>
+            <default value="1400"/>
+            <description>
+              <text>Maximum packet length.</text>
+            </description>
+          </leaf>
+          <container name="ip-server">
+            <presence value="Configure sFlow IP server."/>
+            <description>
+              <text>Configure sFlow IP server.</text>
+            </description>
+            <choice name="ip-type">
+              <mandatory value="true"/>
+              <description>
+                <text>IP address.</text>
+              </description>
+              <case name="ipv4-address">
+                <description>
+                  <text>IPv4 address.</text>
+                </description>
+                <leaf name="ipv4-address">
+                  <type name="inet:ipv4-address-no-zone"/>
+                  <must condition="../ipv4-address!='0.0.0.0'"/>
+                  <description>
+                    <text>IPv4 address.</text>
+                  </description>
+                </leaf>
+              </case>
+              <case name="ipv6-address">
+                <description>
+                  <text>IPv6 address.</text>
+                </description>
+                <leaf name="ipv6-address">
+                  <type name="inet:ipv6-address-no-zone"/>
+                  <must condition="../ipv6-address!='::'"/>
+                  <description>
+                    <text>IPv6 address.</text>
+                  </description>
+                </leaf>
+              </case>
+            </choice>
+            <leaf name="vpn-name">
+              <type name="leafref">
+                <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+              </type>
+              <must condition="(../ipv4-address and /ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']) or (../ipv6-address and /ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])"/>
+              <default value="_public_"/>
+              <description>
+                <text>VPN name.</text>
+              </description>
+            </leaf>
+            <leaf name="udp-port">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <default value="6343"/>
+              <description>
+                <text>UDP port.</text>
+              </description>
+            </leaf>
+          </container>
+        </list>
+      </container>
+    </container>
+    <container name="slot-statistics">
+      <config value="false"/>
+      <description>
+        <text>List of sFlow packet statistics in slot.</text>
+      </description>
+      <list name="slot-statistic">
+        <key value="slot-id collector-id"/>
+        <description>
+          <text>Statistics of sFlow packet in slot.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="leafref">
+            <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+          </type>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+        </leaf>
+        <leaf name="collector-id">
+          <type name="uint8">
+            <range value="1..2"/>
+          </type>
+          <description>
+            <text>Collector id.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-count">
+          <type name="uint64"/>
+          <description>
+            <text>Packet count.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-sample-count">
+          <type name="uint64"/>
+          <description>
+            <text>Flow sample count.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="interface-statistics">
+      <config value="false"/>
+      <description>
+        <text>List of sFlow packet statistics in interface.</text>
+      </description>
+      <list name="interface-statistic">
+        <key value="interface-name direction slot-id"/>
+        <description>
+          <text>Statistics of sFlow packet in interface.</text>
+        </description>
+        <leaf name="interface-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="direction">
+          <type name="flow-direction"/>
+          <description>
+            <text>Inbound or outbound.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="leafref">
+            <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+          </type>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-sample-count">
+          <type name="uint64"/>
+          <description>
+            <text>Flow sample count.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <rpc name="reset-interface-statistics">
+    <description>
+      <text>Reset sFlow packet statistics in interface.</text>
+    </description>
+    <ext:node-ref value="/sflow:sflow/sflow:interface-statistics/sflow:interface-statistic"/>
+    <input>
+      <leaf name="interface-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Interface name.</text>
+        </description>
+      </leaf>
+      <leaf name="slot-id">
+        <type name="leafref">
+          <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+        </type>
+        <description>
+          <text>Slot ID.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="reset-slot-statistics">
+    <description>
+      <text>Reset sFlow packet statistics in slot.</text>
+    </description>
+    <ext:node-ref value="/sflow:sflow/sflow:slot-statistics/sflow:slot-statistic"/>
+    <input>
+      <leaf name="slot-id">
+        <type name="leafref">
+          <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Slot ID.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/devm:devm/devm:lpu-boards/devm:lpu-board">
+    <description>
+      <text>Adds slot configuration to devm slot model.</text>
+    </description>
+    <container name="sflow">
+      <description>
+        <text>Configure sFlow feature.</text>
+      </description>
+      <container name="slot-sampling">
+        <description>
+          <text>Configure slot sFlow sampling function.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable sFlow function in slot.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/devm:devm/devm:mpu-boards/devm:mpu-board">
+    <description>
+      <text>Adds slot configuration to devm slot model.</text>
+    </description>
+    <container name="sflow">
+      <description>
+        <text>Configure sFlow feature.</text>
+      </description>
+      <container name="slot-sampling">
+        <description>
+          <text>Configure slot sFlow sampling function.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable sFlow function in slot.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Adds interface configuration to ifm interface model.</text>
+    </description>
+    <container name="sflow">
+      <description>
+        <text>Configure sFlow interface configuration.</text>
+      </description>
+      <container name="bind-collectors">
+        <description>
+          <text>List of sFlow interface bind collector.</text>
+        </description>
+        <list name="bind-collector">
+          <must condition="/sflow:sflow/sflow:sflow-enable"/>
+          <must condition="not(../../../ethernet:ethernet/ethernet:main-interface/ethernet:l2-attribute or ../../../ifm:l2-mode-enable = 'true' or ../../../ifm:type = 'Eth-Trunk')"/>
+          <key value="direction"/>
+          <description>
+            <text>Configure sFlow interface bind collector.</text>
+          </description>
+          <leaf name="direction">
+            <type name="flow-direction"/>
+            <description>
+              <text>Inbound or outbound.</text>
+            </description>
+          </leaf>
+          <leaf name="collector-id">
+            <type name="leafref">
+              <path value="/sflow:sflow/sflow:sflow-enable/sflow:collectors/sflow:collector/sflow:collector-id"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Collector id.</text>
+            </description>
+          </leaf>
+          <leaf name="secondary-collector-id">
+            <type name="leafref">
+              <path value="/sflow:sflow/sflow:sflow-enable/sflow:collectors/sflow:collector/sflow:collector-id"/>
+            </type>
+            <must condition="../secondary-collector-id != ../collector-id"/>
+            <description>
+              <text>Secondary collector id.</text>
+            </description>
+          </leaf>
+          <leaf name="flow-sampling-rate">
+            <type name="uint16">
+              <range value="1..65535"/>
+            </type>
+            <default value="8192"/>
+            <description>
+              <text>Every rate value sampling one packet.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-routing-policy-ext"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rtp-ext="urn:huawei:yang:huawei-routing-policy-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:qos="urn:huawei:yang:huawei-qos"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:mpls="urn:huawei:yang:huawei-mpls"
+        xmlns:mpls-te="urn:huawei:yang:huawei-mpls-te">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-routing-policy-ext"/>
+  <prefix value="rtp-ext"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-qos">
+    <prefix value="qos"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-mpls">
+    <prefix value="mpls"/>
+  </import>
+  <import module="huawei-mpls-te">
+    <prefix value="mpls-te"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Routing policies are used to filter routes and control the receiving and advertising of routes. By changing the route attributes, such as reachability, you can change the path through which the traffic passes.</text>
+  </description>
+  <revision date="2019-04-27">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="route-base"/>
+  <augment target-node="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:nodes/rtp:node/rtp:actions/rtp:apply-qos-parameter/rtp:set-qos-parameter">
+    <description>
+      <text>Augment the huawei-routing-policy model to add apply behavior configuration.</text>
+    </description>
+    <case name="behavior">
+      <description>
+        <text>Set behavior.</text>
+      </description>
+      <leaf name="name">
+        <type name="leafref">
+          <path value="/qos:qos/qos:classifier-template/qos:traffic-behaviors/qos:traffic-behavior/qos:name"/>
+        </type>
+        <description>
+          <text>Name of traffic behavior.</text>
+        </description>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:nodes/rtp:node/rtp:actions">
+    <description>
+      <text>Augment the huawei-routing-policy model to add actions configuration.</text>
+    </description>
+    <container name="apply-stitch-pmsi">
+      <must condition="(pmsi-type='incoming' and p2mp-template) or (pmsi-type='mldp' and not(p2mp-template)) or (pmsi-type='rsvp-te' and not(root-ip) and p2mp-template)"/>
+      <presence value="Create parameters of apply stitch-pmsi."/>
+      <description>
+        <text>Enable/disable the PMSI attribute.</text>
+      </description>
+      <leaf name="pmsi-type">
+        <type name="enumeration">
+          <enum name="mldp">
+            <value value="0"/>
+            <description>
+              <text>MLDP type.</text>
+            </description>
+          </enum>
+          <enum name="rsvp-te">
+            <value value="1"/>
+            <description>
+              <text>RSVP-TE type.</text>
+            </description>
+          </enum>
+          <enum name="incoming">
+            <value value="2"/>
+            <description>
+              <text>Incoming type.</text>
+            </description>
+          </enum>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>PMSI attribute type.</text>
+        </description>
+      </leaf>
+      <leaf name="root-ip">
+        <when condition="not(../pmsi-type='rsvp-te')"/>
+        <type name="inet:ipv4-address-no-zone"/>
+        <must condition="(../pmsi-type='incoming' and ../p2mp-template) or (../pmsi-type='mldp' and not(../p2mp-template))"/>
+        <description>
+          <text>MLDP root ip address.</text>
+        </description>
+      </leaf>
+      <leaf name="p2mp-template">
+        <when condition="not(../pmsi-type='mldp')"/>
+        <type name="leafref">
+          <path value="/mpls:mpls/mpls-te:te/mpls-te:p2mp-templates/mpls-te:p2mp-template/mpls-te:name"/>
+        </type>
+        <must condition="../pmsi-type='incoming' or (../pmsi-type='rsvp-te' and not(../root-ip))"/>
+        <description>
+          <text>P2MP TE template.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

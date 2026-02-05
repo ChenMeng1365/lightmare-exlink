@@ -1,0 +1,888 @@
+module: huawei-l2vpn
+  +--rw l2vpn!
+     +--rw common
+     |  +--rw global
+     |  |  +--rw ldp-default-mode?           ldp-signal-type
+     |  |  +--rw vpls-ignore-ac-state?       boolean
+     |  |  +--rw vpls-loop-detect-enable?    boolean
+     |  |  +--rw bfd-cv-type?                bfd-vccv-cv-type
+     |  |  +--rw ignore-te-oam-state?        boolean
+     |  |  +--rw auto-create-session?        boolean
+     |  |  +--rw grp-selective-ldp-enable?   boolean
+     |  |  +--rw label-block-size?           uint32
+     |  +--rw pw-templates
+     |  |  +--rw pw-template* [name]
+     |  |     +--rw name               l2vpn-pw-template-name
+     |  |     +--rw peer-address?      inet:ipv4-address-no-zone
+     |  |     +--rw mtu?               uint16
+     |  |     +--rw control-word?      enumeration
+     |  |     +--rw tunnel-policy?     string
+     |  |     +--ro vccv-capability?   string
+     |  |     +--ro total-pw-num?      uint32
+     |  |     +--ro static-pw-num?     uint32
+     |  |     +--ro ldp-pw-num?        uint32
+     |  |     +--rw tdm-parameter
+     |  |     |  +--rw tdm-encapsulate-number?   uint32
+     |  |     |  +--rw jitter-buffer?            uint32
+     |  |     |  +--rw jitter-buffer-cep?        uint32
+     |  |     |  +--rw rtp-header?               boolean
+     |  |     |  +--rw idle-code?                yang:hex-string
+     |  |     |  +--rw payload-compression?      l2vpn-payload-comp
+     |  |     +--rw atm-parameter
+     |  |     |  +--rw max-atm-cells?       uint32
+     |  |     |  +--rw atm-pack-overtime?   uint32
+     |  |     |  +--rw atm-transmit-cell?   uint32
+     |  |     |  +--rw sequence-number?     boolean
+     |  |     +--rw bfd-parameter!
+     |  |     |  +--rw min-rx-interval?     uint16
+     |  |     |  +--rw min-tx-interval?     uint16
+     |  |     |  +--rw detect-multiplier?   uint16
+     |  |     +--rw flow-label!
+     |  |        +--rw ability    flow-label-ability
+     |  |        +--rw static?    boolean
+     |  +--rw pw-apss
+     |  |  +--rw pw-aps* [aps-id]
+     |  |     +--rw aps-id                uint32
+     |  |     +--rw description?          string
+     |  |     +--rw protect-type?         l2vpn-pw-aps-type
+     |  |     +--rw role?                 l2vpn-pw-aps-role
+     |  |     +--rw remote-aps-id?        uint32
+     |  |     +--rw holdoff?              uint32
+     |  |     +--rw wtr?                  uint32
+     |  |     +--rw operation-type?       l2vpn-pw-aps-oper-type
+     |  |     +--ro protect-mode?         l2vpn-pw-aps-mode
+     |  |     +--ro pw-aps-info
+     |  |     |  +--ro aps-status?            l2vpn-aps-status
+     |  |     |  +--ro work-path-status?      l2vpn-aps-path-status
+     |  |     |  +--ro protect-path-status?   l2vpn-aps-path-status
+     |  |     |  +--ro far-end-status?        l2vpn-aps-status
+     |  |     |  +--ro request-result?        l2vpn-aps-result
+     |  |     |  +--ro alarm?                 string
+     |  |     |  +--ro total-vpn-num?         uint32
+     |  |     +--ro aps-vpws-instances
+     |  |        +--ro aps-vpws-instance* [client-interface]
+     |  |           +--ro client-interface      -> /ifm:ifm/interfaces/interface/name
+     |  |           +--ro instance-name?        l2vpn-instance-name
+     |  |           +--ro bind-type?            l2vpn-aps-bind-type
+     |  |           +--ro encapsulation-type?   encapsulation-type
+     |  |           +--ro description?          string
+     |  |           +--ro aps-vpws-pws
+     |  |              +--ro aps-vpws-pw* [role]
+     |  |                 +--ro role                  pw-role-type
+     |  |                 +--ro pw-id?                uint32
+     |  |                 +--ro encapsulation-type?   encapsulation-type
+     |  |                 +--ro peer-ip?              inet:ipv4-address-no-zone
+     |  |                 +--ro pw-state?             l2vpn-pw-state
+     |  +--rw service-peers
+     |  |  +--rw service-peer* [peer-ip]
+     |  |     +--rw peer-ip     inet:ipv4-address-no-zone
+     |  |     +--rw ldp-mode?   l2vpn-peer-ldp-signal-mode
+     |  +--rw peer-no-requests
+     |  |  +--rw peer-no-request* [peer-ip]
+     |  |     +--rw peer-ip    inet:ipv4-address-no-zone
+     |  +--rw peer-bfd-cv-stds
+     |  |  +--rw peer-bfd-cv-std* [peer-ip]
+     |  |     +--rw peer-ip    inet:ipv4-address-no-zone
+     |  |     +--rw enable?    l2vpn-common-enable-type
+     |  |     +--rw type?      bfd-vccv-cv-type
+     |  +--rw vpws-bgp-vpns
+     |  |  +--rw vpws-bgp-vpn* [name]
+     |  |     +--rw name                        string
+     |  |     +--rw encapsulation-type          vpws-bgp-vpn-encap
+     |  |     +--rw control-word?               enumeration
+     |  |     +--rw route-distinguisher?        string
+     |  |     +--rw mtu?                        uint16
+     |  |     +--rw ignore-mtu-match?           boolean
+     |  |     +--ro auto-route-distinguisher?   string
+     |  |     +--rw vpn-targets
+     |  |     |  +--rw vpn-target* [rt-value rt-type]
+     |  |     |     +--rw rt-value    string
+     |  |     |     +--rw rt-type     vpn-rt-type
+     |  |     +--rw sites
+     |  |     |  +--rw site* [name]
+     |  |     |     +--rw name              vpws-bgp-ce-name-type
+     |  |     |     +--rw id                uint16
+     |  |     |     +--rw range?            uint16
+     |  |     |     +--rw default-offset?   uint16
+     |  |     |     +--ro label-blocks
+     |  |     |        +--ro label-block* [label-offset]
+     |  |     |           +--ro label-offset    uint8
+     |  |     |           +--ro label-base?     uint32
+     |  |     |           +--ro ce-base?        uint32
+     |  |     |           +--ro label-range?    uint16
+     |  |     +--ro remote-sites
+     |  |        +--ro remote-site* [id]
+     |  |           +--ro id                     uint16
+     |  |           +--ro peer-ip?               inet:ipv4-address-no-zone
+     |  |           +--ro route-distinguisher?   string
+     |  |           +--ro labels
+     |  |              +--ro label* [label-offset]
+     |  |                 +--ro label-offset    uint8
+     |  |                 +--ro label-base?     uint32
+     |  |                 +--ro label-range?    uint16
+     |  +--ro not-match-remote-ldps
+     |  |  +--ro not-match-remote-ldp* [pw-id peer-ip encapsulation-type]
+     |  |     +--ro pw-id                 uint32
+     |  |     +--ro peer-ip               inet:ipv4-address-no-zone
+     |  |     +--ro encapsulation-type    encapsulation-type
+     |  |     +--ro remote-label?         uint32
+     |  |     +--ro remote-group-id?      uint32
+     |  |     +--ro remote-mtu?           uint32
+     |  |     +--ro remote-state-code?    l2vpn-vpls-ldp-pw-state-code
+     |  +--ro vpws-statistic
+     |  |  +--ro vpws-ldp-ac
+     |  |  |  +--ro total-num?   uint32
+     |  |  |  +--ro up-num?      uint32
+     |  |  |  +--ro down-num?    uint32
+     |  |  +--ro vpws-ldp-pw
+     |  |  |  +--ro total-num?   uint32
+     |  |  |  +--ro up-num?      uint32
+     |  |  |  +--ro down-num?    uint32
+     |  |  +--ro vpws-ldp-pw-remote
+     |  |  |  +--ro remote-num?   uint32
+     |  |  +--ro vpws-static-ac
+     |  |  |  +--ro total-num?   uint32
+     |  |  |  +--ro up-num?      uint32
+     |  |  |  +--ro down-num?    uint32
+     |  |  +--ro vpws-static-pw
+     |  |  |  +--ro total-num?   uint32
+     |  |  |  +--ro up-num?      uint32
+     |  |  |  +--ro down-num?    uint32
+     |  |  +--ro vpws-switch-instance
+     |  |  |  +--ro total-num?   uint32
+     |  |  |  +--ro up-num?      uint32
+     |  |  |  +--ro down-num?    uint32
+     |  |  +--ro vpws-vrrps
+     |  |  |  +--ro vpws-vrrp* [vrrp-interface-name vrrp-vrid]
+     |  |  |     +--ro vrrp-interface-name    -> /ifm:ifm/interfaces/interface/name
+     |  |  |     +--ro vrrp-vrid              uint32
+     |  |  |     +--ro vrrp-state?            l2vpn-vpws-vrrp-state
+     |  |  |     +--ro pw-number?             uint32
+     |  |  |     +--ro pw-infos
+     |  |  |        +--ro pw-info* [client-interface-name]
+     |  |  |           +--ro client-interface-name    -> /ifm:ifm/interfaces/interface/name
+     |  |  |           +--ro pw-state?                l2vpn-pw-state
+     |  |  |           +--ro pw-id?                   uint32
+     |  |  |           +--ro encapsulation-type?      encapsulation-type
+     |  |  |           +--ro link-state?              l2vpn-state
+     |  |  +--ro arp
+     |  |     +--ro total-ce-mac-num?     uint32
+     |  |     +--ro dynamic-ce-mac-num?   uint32
+     |  |     +--ro static-ce-mac-num?    uint32
+     |  |     +--ro brd-ce-mac-num?       uint32
+     |  +--ro vpls-statistic
+     |     +--ro vpls-instance
+     |     |  +--ro total-vsi-num?     uint32
+     |     |  +--ro vsi-up-num?        uint32
+     |     |  +--ro vsi-down-num?      uint32
+     |     |  +--ro ldp-mode-num?      uint32
+     |     |  +--ro bgp-vsi-num?       uint32
+     |     |  +--ro bgpad-vsi-num?     uint32
+     |     |  +--ro unspecified-num?   uint32
+     |     |  +--ro mix-vsi-num?       uint32
+     |     |  +--ro max-vsi-num?       uint32
+     |     +--ro vpls-pw
+     |     |  +--ro total-pw-num?   uint32
+     |     |  +--ro up-pw-num?      uint32
+     |     |  +--ro down-pw-num?    uint32
+     |     |  +--ro ldp-pw-num?     uint32
+     |     |  +--ro bgp-pw-num?     uint32
+     |     |  +--ro bgpad-pw-num?   uint32
+     |     +--ro ac
+     |     |  +--ro total-num?   uint32
+     |     |  +--ro up-num?      uint32
+     |     |  +--ro down-num?    uint32
+     |     +--ro vpls-tunnel-references
+     |     |  +--ro vpls-tunnel-reference* [tunnel-policy]
+     |     |     +--ro tunnel-policy    string
+     |     |     +--ro references
+     |     |        +--ro reference* [instance-name]
+     |     |           +--ro instance-name    string
+     |     +--ro vpls-loop-detect
+     |        +--ro total-num?   uint32
+     +--rw instances
+        +--rw instance* [name type]
+           +--rw name               string
+           +--rw type               l2vpn-instance-type
+           +--rw description?       string
+           +--ro state?             instance-state
+           +--ro last-up-time?      string
+           +--ro total-up-time?     string
+           +--rw vpws-local-ccc
+           |  +--rw encapsulation-type    encapsulation-type
+           |  +--rw acs
+           |     +--rw ac* [interface-name]
+           |        +--rw interface-name    -> /ifm:ifm/interfaces/interface/name
+           |        +--rw tagged?           boolean
+           |        +--ro state?            l2vpn-state
+           +--rw vpws-remote-ccc
+           |  +--rw encapsulation-type    encapsulation-type
+           |  +--rw acs
+           |  |  +--rw ac* [interface-name]
+           |  |     +--rw interface-name    -> /ifm:ifm/interfaces/interface/name
+           |  |     +--rw tagged?           boolean
+           |  |     +--ro state?            l2vpn-state
+           |  |     +--ro token-exceed?     boolean
+           |  |     +--rw arp-entry
+           |  |     |  +--rw local-ce-mac?         pub-type:mac-address
+           |  |     |  +--rw local-ce-ip?          inet:ipv4-address-no-zone
+           |  |     |  +--rw local-ce-broadcast?   boolean
+           |  |     |  +--rw remote-ce-ip?         inet:ipv4-address-no-zone
+           |  |     +--ro ac-arps
+           |  |        +--ro ac-arp* [mac-type]
+           |  |           +--ro mac-type       l2vpn-mac-type
+           |  |           +--ro mac-address?   pub-type:mac-address
+           |  |           +--ro expire-time?   uint32
+           |  |           +--ro vlan-id?       uint32
+           |  |           +--ro ip-address?    inet:ipv4-address-no-zone
+           |  +--rw pw
+           |     +--rw out-label             uint32
+           |     +--rw in-label              uint32
+           |     +--rw control-word?         l2vpn-control-word
+           |     +--rw out-interface-name?   -> /ifm:ifm/interfaces/interface/name
+           |     +--rw next-hop?             inet:ipv4-address-no-zone
+           +--rw vpws-ldp
+           |  +--rw encapsulation-type      encapsulation-type
+           |  +--rw mac-withdraw-disable?   boolean
+           |  +--rw load-balance?           l2vpn-load-balance-type
+           |  +--rw service-name?           string
+           |  +--rw bit-error-detection?    boolean
+           |  +--rw acs
+           |  |  +--rw ac* [interface-name]
+           |  |     +--rw interface-name            -> /ifm:ifm/interfaces/interface/name
+           |  |     +--rw tagged?                   boolean
+           |  |     +--rw access-port?              boolean
+           |  |     +--rw trigger-interface-down?   boolean
+           |  |     +--rw forward-mode?             boolean
+           |  |     +--rw performance-statistics?   boolean
+           |  |     +--ro state?                    l2vpn-state
+           |  |     +--ro token-exceed?             boolean
+           |  |     +--rw arp-entry
+           |  |     |  +--rw local-ce-mac?         pub-type:mac-address
+           |  |     |  +--rw local-ce-ip?          inet:ipv4-address-no-zone
+           |  |     |  +--rw local-ce-broadcast?   boolean
+           |  |     |  +--rw remote-ce-ip?         inet:ipv4-address-no-zone
+           |  |     +--ro ac-arps
+           |  |        +--ro ac-arp* [mac-type]
+           |  |           +--ro mac-type       l2vpn-mac-type
+           |  |           +--ro mac-address?   pub-type:mac-address
+           |  |           +--ro expire-time?   uint32
+           |  |           +--ro vlan-id?       uint32
+           |  |           +--ro ip-address?    inet:ipv4-address-no-zone
+           |  +--rw pws
+           |  |  +--rw pw* [role]
+           |  |     +--rw role                             pw-role-type
+           |  |     +--rw pw-id?                           uint32
+           |  |     +--rw peer-ip?                         l2vpn-peer-address-type
+           |  |     +--rw admin-pw?                        boolean
+           |  |     +--rw transmit-label?                  uint32
+           |  |     +--rw receive-label?                   uint32
+           |  |     +--rw control-word?                    l2vpn-control-word
+           |  |     +--rw vccv-ability?                    boolean
+           |  |     +--rw tunnel-policy?                   string
+           |  |     +--rw pw-template?                     -> /l2vpn/common/pw-templates/pw-template/name
+           |  |     +--rw ignore-standby?                  boolean
+           |  |     +--rw set-fault?                       boolean
+           |  |     +--rw pw-ttl?                          uint32
+           |  |     +--rw track-admin-pw?                  -> /ifm:ifm/interfaces/interface/name
+           |  |     +--rw traffic-statistics-collection?   boolean
+           |  |     +--rw ignore-ac-state?                 boolean
+           |  |     +--rw tdm-parameter
+           |  |     |  +--rw tdm-encapsulate-number?   uint32
+           |  |     |  +--rw jitter-buffer?            uint32
+           |  |     |  +--rw sequence-number?          boolean
+           |  |     |  +--rw rtp-header?               l2vpn-rtp-header-type
+           |  |     |  +--rw idle-code?                string
+           |  |     |  +--rw payload-compression?      l2vpn-payload-comp
+           |  |     +--rw atm-parameter
+           |  |     |  +--rw max-atm-cells?       uint32
+           |  |     |  +--rw atm-pack-overtime?   uint32
+           |  |     |  +--rw atm-transmit-cell?   uint32
+           |  |     |  +--rw sequence-number?     boolean
+           |  |     +--rw track-vrrp!
+           |  |     |  +--rw vrrp-interface-name    -> /ifm:ifm/interfaces/interface/name
+           |  |     |  +--rw vrrp-vrid              uint32
+           |  |     |  +--rw pw-redundancy?         boolean
+           |  |     +--rw flow-label!
+           |  |     |  +--rw ability    flow-label-ability
+           |  |     |  +--rw static?    boolean
+           |  |     +--rw track-vrf-routes
+           |  |     |  +--rw track-vrf-route* [vrf-name ip-address mask-length]
+           |  |     |     +--rw vrf-name       -> /ni:network-instance/instances/instance/name
+           |  |     |     +--rw ip-address     inet:ipv4-address-no-zone
+           |  |     |     +--rw mask-length    uint32
+           |  |     +--rw bfd!
+           |  |     |  +--rw min-rx-interval?     uint16
+           |  |     |  +--rw min-tx-interval?     uint16
+           |  |     |  +--rw detect-multiplier?   uint16
+           |  |     |  +--rw remote-vc-id?        uint32
+           |  |     +--ro pw-info
+           |  |     |  +--ro interface-name?               -> /ifm:ifm/interfaces/interface/name
+           |  |     |  +--ro if-state?                     ac-state
+           |  |     |  +--ro session-state?                l2vpn-state
+           |  |     |  +--ro integrative-ac-state?         ac-state
+           |  |     |  +--ro ac-state?                     ac-state
+           |  |     |  +--ro pw-state?                     l2vpn-pw-state
+           |  |     |  +--ro pw-id?                        uint32
+           |  |     |  +--ro encapsulation-type?           encapsulation-type
+           |  |     |  +--ro destination?                  inet:ipv4-address-no-zone
+           |  |     |  +--ro local-group-id?               uint32
+           |  |     |  +--ro remote-group-id?              uint32
+           |  |     |  +--ro local-vc-label?               uint32
+           |  |     |  +--ro remote-vc-label?              uint32
+           |  |     |  +--ro local-tdm-encapsulate-num?    uint32
+           |  |     |  +--ro remote-tdm-encapsulate-num?   uint32
+           |  |     |  +--ro jitter-buffer?                uint32
+           |  |     |  +--ro idle-code?                    string
+           |  |     |  +--ro local-rtp-header-enable?      l2vpn-rtp-header-type
+           |  |     |  +--ro remote-rtp-header-enable?     l2vpn-rtp-header-type
+           |  |     |  +--ro max-atm-cells?                uint32
+           |  |     |  +--ro remote-max-atm-cells?         uint32
+           |  |     |  +--ro atm-pack-overtime?            uint32
+           |  |     |  +--ro atm-transmit-cell?            uint32
+           |  |     |  +--ro sequence-number?              boolean
+           |  |     |  +--ro local-bit-rate?               uint32
+           |  |     |  +--ro remote-bit-rate?              uint32
+           |  |     |  +--ro local-ac-oam?                 l2vpn-state
+           |  |     |  +--ro local-psn-oam?                l2vpn-state
+           |  |     |  +--ro local-forward-state?          l2vpn-forward-state
+           |  |     |  +--ro local-state-code?             pub-type:hex-binary
+           |  |     |  +--ro remote-ac-oam?                l2vpn-state
+           |  |     |  +--ro remote-psn-oam?               l2vpn-state
+           |  |     |  +--ro remote-forward-state?         l2vpn-forward-state
+           |  |     |  +--ro remote-state-code?            pub-type:hex-binary
+           |  |     |  +--ro ignore-standby?               boolean
+           |  |     |  +--ro bfd-enable?                   boolean
+           |  |     |  +--ro bfd-state?                    l2vpn-vpws-bfd-state
+           |  |     |  +--ro bfd-session-index?            uint32
+           |  |     |  +--ro is-manual-fault?              boolean
+           |  |     |  +--ro is-active?                    boolean
+           |  |     |  +--ro is-forward-exist?             boolean
+           |  |     |  +--ro link-state?                   l2vpn-state
+           |  |     |  +--ro local-vc-mtu?                 uint32
+           |  |     |  +--ro remote-vc-mtu?                uint32
+           |  |     |  +--ro local-vccv?                   string
+           |  |     |  +--ro remote-vccv?                  string
+           |  |     |  +--ro local-control-word?           l2vpn-control-word
+           |  |     |  +--ro remote-control-word?          l2vpn-control-word
+           |  |     |  +--ro tunnel-policy?                string
+           |  |     |  +--ro template-name?                string
+           |  |     |  +--ro primary-or-second?            l2vpn-backup-mode
+           |  |     |  +--ro access-port?                  boolean
+           |  |     |  +--ro oam-protocol?                 oam-protocal
+           |  |     |  +--ro oam-status?                   oam-status
+           |  |     |  +--ro oam-fault-type?               string
+           |  |     |  +--ro aps-id?                       uint32
+           |  |     |  +--ro aps-status?                   l2vpn-aps-status
+           |  |     |  +--ro aps-ttl?                      uint32
+           |  |     |  +--ro tunnel-count?                 uint16
+           |  |     |  +--ro spe-count?                    uint32
+           |  |     |  +--ro create-time?                  string
+           |  |     |  +--ro up-time?                      string
+           |  |     |  +--ro last-change-time?             string
+           |  |     |  +--ro last-up-time?                 string
+           |  |     |  +--ro total-up-time?                string
+           |  |     |  +--ro c-key?                        uint32
+           |  |     |  +--ro n-key?                        uint32
+           |  |     |  +--ro support-notification?         boolean
+           |  |     |  +--ro route-state?                  l2vpn-route-status
+           |  |     |  +--ro received-flow-label?          flow-label-ability
+           |  |     |  +--ro negotiated-flow-label?        flow-label-ability
+           |  |     |  +--ro dynamic-bfd-session?          string
+           |  |     |  +--ro bfd-for-pw?                   string
+           |  |     |  +--ro remote-vccv-code?             pub-type:hex-binary
+           |  |     |  +--ro hard-pipe-bandwidth?          uint32
+           |  |     |  +--ro hard-pipe-expand-ratio?       string
+           |  |     |  +--ro hard-pipe-burst-time?         uint32
+           |  |     |  +--ro local-payload-compression?    l2vpn-payload-comp
+           |  |     |  +--ro remote-payload-compression?   l2vpn-payload-comp
+           |  |     |  +--ro send-receive-active?          send-receive-active-status
+           |  |     |  +--ro ac-block-state?               ac-block-status
+           |  |     |  +--ro pw-token-exceed?              boolean
+           |  |     |  +--ro tunnels
+           |  |     |  |  +--ro tunnel* [tunnel-key]
+           |  |     |  |     +--ro tunnel-key         string
+           |  |     |  |     +--ro tunnel-type?       l2vpn-tunnel-type
+           |  |     |  |     +--ro tunnel-name?       string
+           |  |     |  |     +--ro public-next-hop?   inet:ipv4-address-no-zone
+           |  |     |  +--ro spes
+           |  |     |  |  +--ro spe* [spe-pw-id spe-peer-ip]
+           |  |     |  |     +--ro spe-pw-id      uint32
+           |  |     |  |     +--ro spe-peer-ip    inet:ipv4-address-no-zone
+           |  |     |  +--ro label-stacks
+           |  |     |  |  +--ro label-stack* [label-stack level]
+           |  |     |  |     +--ro label-stack      uint32
+           |  |     |  |     +--ro level            uint32
+           |  |     |  |     +--ro type?            string
+           |  |     |  |     +--ro label?           string
+           |  |     |  |     +--ro out-interface?   -> /ifm:ifm/interfaces/interface/name
+           |  |     |  +--ro down-causes
+           |  |     |  |  +--ro down-cause* [down-cause-index]
+           |  |     |  |     +--ro down-cause-index    uint32
+           |  |     |  |     +--ro down-cause?         string
+           |  |     |  +--ro status-changes
+           |  |     |     +--ro status-change* [index]
+           |  |     |        +--ro index        uint32
+           |  |     |        +--ro timestamp?   string
+           |  |     |        +--ro reason?      string
+           |  |     +--ro traffic-statistics
+           |  |        +--ro interface-name?        -> /ifm:ifm/interfaces/interface/name
+           |  |        +--ro last-clear-time?       string
+           |  |        +--ro input-bytes-rate?      uint64
+           |  |        +--ro output-bytes-rate?     uint64
+           |  |        +--ro input-packets-rate?    uint64
+           |  |        +--ro output-packets-rate?   uint64
+           |  |        +--ro input-bytes?           uint64
+           |  |        +--ro output-bytes?          uint64
+           |  |        +--ro input-packets?         uint64
+           |  |        +--ro output-packets?        uint64
+           |  +--rw out-acs
+           |  |  +--rw out-ac* [interface-name]
+           |  |     +--rw interface-name    -> /ifm:ifm/interfaces/interface/name
+           |  |     +--rw role              pw-role-type
+           |  +--rw hard-pipe!
+           |  |  +--rw bandwidth       uint32
+           |  |  +--rw expand-ratio?   uint16
+           |  |  +--rw burst-time?     uint32
+           |  +--rw ac-oam-mapping!
+           |  |  +--rw type       ac-oam-mapping-type
+           |  |  +--rw md-name?   string
+           |  |  +--rw ma-name?   string
+           |  +--rw reliability
+           |     +--rw redundancy-mode?   pw-redundancy-mode
+           |     +--rw switchover?        boolean
+           |     +--rw dual-receive?      boolean
+           |     +--rw dual-send?         boolean
+           |     +--rw holdoff?           uint32
+           |     +--rw reroute
+           |     |  +--rw reroute-policy?           l2vpn-reroute-mode
+           |     |  +--rw delay-time?               uint32
+           |     |  +--rw resume-time?              uint32
+           |     |  +--ro last-switchback-reason?   string
+           |     |  +--ro last-switchback-time?     string
+           |     |  +--ro delay-residual?           uint32
+           |     |  +--ro resume-residual?          uint32
+           |     +--rw aps-parameter!
+           |        +--rw aps-id       -> /l2vpn/common/pw-apss/pw-aps/aps-id
+           |        +--rw bind-type?   l2vpn-aps-bind-type
+           +--rw vpws-switch
+           |  +--rw switch-type            l2vpn-switch-type
+           |  +--rw encapsulation-type     encapsulation-type
+           |  +--rw control-word-trans?    boolean
+           |  +--rw control-word?          l2vpn-control-word
+           |  +--rw mtu?                   uint16
+           |  +--rw bit-error-detection?   boolean
+           |  +--ro create-time?           string
+           |  +--ro up-time?               string
+           |  +--ro last-change-time?      string
+           |  +--rw pws
+           |  |  +--rw pw* [role]
+           |  |     +--rw role              ms-pw-role-type
+           |  |     +--rw pw-id?            uint32
+           |  |     +--rw peer-ip?          l2vpn-peer-address-type
+           |  |     +--rw transmit-label?   uint32
+           |  |     +--rw receive-label?    uint32
+           |  |     +--rw tunnel-policy?    string
+           |  |     +--rw flow-label!
+           |  |     |  +--rw ability?          flow-label-ability
+           |  |     |  +--rw oam-packet-pop?   boolean
+           |  |     +--rw hard-pipe!
+           |  |        +--rw bandwidth       uint32
+           |  |        +--rw expand-ratio?   uint16
+           |  +--rw reliability
+           |     +--rw redundancy-mode?   pw-redundancy-mode
+           |     +--rw switchover?        boolean
+           |     +--rw reroute
+           |        +--rw reroute-policy?           l2vpn-reroute-mode
+           |        +--rw delay-time?               uint32
+           |        +--ro last-switchback-reason?   string
+           |        +--ro last-switchback-time?     string
+           |        +--ro delay-residual?           uint32
+           +--rw vpws-bgp
+           |  +--rw vpn-instance    -> /l2vpn/common/vpws-bgp-vpns/vpws-bgp-vpn/name
+           |  +--rw local-site      -> /l2vpn/common/vpws-bgp-vpns/vpws-bgp-vpn/sites/site/name
+           |  +--rw acs
+           |  |  +--rw ac* [interface-name]
+           |  |     +--rw interface-name            -> /ifm:ifm/interfaces/interface/name
+           |  |     +--rw tagged?                   boolean
+           |  |     +--rw trigger-interface-down?   boolean
+           |  +--rw pws
+           |  |  +--rw pw* [remote-site-id]
+           |  |     +--rw remote-site-id                   uint16
+           |  |     +--rw role?                            pw-role-type
+           |  |     +--rw tunnel-policy?                   string
+           |  |     +--rw traffic-statistics-collection?   boolean
+           |  |     +--rw manual-set-fault?                boolean
+           |  |     +--rw bfd!
+           |  |        +--rw min-rx-interval?     uint16
+           |  |        +--rw min-tx-interval?     uint16
+           |  |        +--rw detect-multiplier?   uint16
+           |  +--rw reliability
+           |  |  +--rw redundancy-mode?   pw-redundancy-mode
+           |  |  +--rw dual-receive?      boolean
+           |  |  +--rw reroute
+           |  |     +--rw reroute-policy?   l2vpn-reroute-mode
+           |  |     +--rw delay-time?       uint32
+           |  |     +--rw resume-time?      uint32
+           |  +--rw oam-mapping!
+           |     +--rw type       ac-oam-mapping-type
+           |     +--rw md-name?   string
+           |     +--rw ma-name?   string
+           +--rw vpls
+              +--rw member-discovery-mode?                l2vpn-vpls-vsi-mem-disc-type
+              +--rw work-mode?                            vsi-work-mode
+              +--rw encapsulation-type?                   l2vpn-vpls-encap-type
+              +--rw mtu?                                  uint16
+              +--rw tunnel-policy?                        string
+              +--rw shutdown?                             boolean
+              +--rw isolate-spoken?                       boolean
+              +--rw isolate-spoken-include-multicast?     boolean
+              +--rw ignore-ac-state?                      boolean
+              +--rw response-ac-state?                    boolean
+              +--rw admin-vsi?                            boolean
+              +--rw track-admin-vsi?                      string
+              +--rw unknown-unicast-action?               l2vpn-vpls-unknow-frame-act
+              +--rw unknown-multicast-action?             l2vpn-vpls-unknow-frame-act
+              +--rw isolate-hub-ac-pw?                    boolean
+              +--rw p2p-vsi?                              boolean
+              +--rw traffic-statistics-collection?        boolean
+              +--rw mac-remove-mode?                      mac-remove-type
+              +--rw mac-learn?                            boolean
+              +--rw mac-learn-style?                      l2vpn-mac-learn-style
+              +--rw mac-age-time?                         uint32
+              +--rw local-mac-age-time?                   uint32
+              +--rw remote-mac-age-time?                  uint32
+              +--rw mac-withdraw?                         boolean
+              +--rw interface-change-mac-withdraw?        boolean
+              +--rw interface-change-mac-withdraw-type?   interface-change-withdraw-type
+              +--rw bd-pwtag-mac-withdraw?                boolean
+              +--rw bd-down-mac-withdraw?                 boolean
+              +--rw propagate-mac-withdraw?               boolean
+              +--rw mac-flush-rfc-compatible?             boolean
+              +--rw vrrp-mac-withdraw-retry?              uint16
+              +--rw ldp-signaling!
+              |  +--rw vsi-id?                               uint64
+              |  +--rw traffic-statistics-collection?        boolean
+              |  +--rw control-word?                         l2vpn-control-word
+              |  +--rw hard-pipe?                            boolean
+              |  +--rw mac-withdraw?                         boolean
+              |  +--rw interface-change-mac-withdraw?        boolean
+              |  +--rw interface-change-mac-withdraw-type?   interface-change-withdraw-type
+              |  +--rw upe-upe-mac-withdraw?                 boolean
+              |  +--rw upe-npe-mac-withdraw?                 boolean
+              |  +--rw npe-upe-mac-withdraw?                 boolean
+              |  +--rw flow-label!
+              |  |  +--rw ability    flow-label-ability
+              |  |  +--rw static?    boolean
+              |  +--rw pws
+              |  |  +--rw pw* [peer-ip negotiation-vc-id encapsulation-type]
+              |  |     +--rw peer-ip                                 inet:ipv4-address-no-zone
+              |  |     +--rw negotiation-vc-id                       uint32
+              |  |     +--rw encapsulation-type                      l2vpn-vpls-ldp-pw-encap-type
+              |  |     +--rw role?                                   vpls-pw-role-type
+              |  |     +--rw name?                                   string
+              |  |     +--rw signal-type?                            pw-signal-type
+              |  |     +--rw transmit-label?                         uint32
+              |  |     +--rw receive-label?                          uint32
+              |  |     +--rw control-word?                           l2vpn-control-word
+              |  |     +--rw vccv?                                   boolean
+              |  |     +--rw ignore-standby?                         boolean
+              |  |     +--rw upe?                                    boolean
+              |  |     +--rw tunnel-policy?                          string
+              |  |     +--rw traffic-statistics-collection?          l2vpn-vpls-traffic-statistics-enable-type
+              |  |     +--rw track-hub-pw?                           boolean
+              |  |     +--rw ignore-stp-loop-check?                  boolean
+              |  |     +--rw hard-pipe-bandwidth?                    uint32
+              |  |     +--rw hard-pipe-burst-time?                   uint32
+              |  |     +--rw status-code-change-flush-mac-disable?   boolean
+              |  |     +--rw ac-mode?                                boolean
+              |  |     +--rw flow-label!
+              |  |     |  +--rw ability    flow-label-ability
+              |  |     |  +--rw static?    boolean
+              |  |     +--rw bfd!
+              |  |        +--rw min-rx-interval?     uint16
+              |  |        +--rw min-tx-interval?     uint16
+              |  |        +--rw detect-multiplier?   uint16
+              |  |        +--rw option-tlv?          boolean
+              |  +--rw redundancy-protect-groups
+              |     +--rw redundancy-protect-group* [name]
+              |        +--rw name              l2vpn-protect-group-name
+              |        +--rw protect-mode?     pw-redundancy-mode
+              |        +--rw dual-receive?     boolean
+              |        +--rw holdoff?          uint16
+              |        +--rw reroute-policy
+              |        |  +--rw policy?       l2vpn-reroute-mode
+              |        |  +--rw delay-time?   uint32
+              |        +--rw pw-members
+              |           +--rw pw-member* [peer-ip negotiation-vc-id encapsulation-type]
+              |              +--rw peer-ip               inet:ipv4-address-no-zone
+              |              +--rw negotiation-vc-id     uint32
+              |              +--rw encapsulation-type    encapsulation-type
+              |              +--rw preference            uint32
+              |              +--ro role?                 l2vpn-backup-mode
+              |              +--ro active-state?         boolean
+              +--rw bgp-signaling!
+              |  +--rw route-distinguisher?                    string
+              |  +--rw encapsulation-rfc4761-compatible?       boolean
+              |  +--rw encapsulation-vpls-family-compatible?   boolean
+              |  +--rw mtu-negotiate-disable?                  boolean
+              |  +--rw control-word?                           l2vpn-control-word
+              |  +--ro auto-route-distinguisher?               string
+              |  +--rw sites
+              |  |  +--rw site* [site-id]
+              |  |     +--rw site-id           uint32
+              |  |     +--rw range?            uint32
+              |  |     +--rw default-offset?   uint16
+              |  +--rw vpn-targets
+              |  |  +--rw vpn-target* [rt-value rt-type]
+              |  |     +--rw rt-value    string
+              |  |     +--rw rt-type     vpn-rt-type
+              |  +--rw flow-label!
+              |  |  +--rw ability    flow-label-ability
+              |  |  +--rw static?    boolean
+              |  +--rw pws
+              |  |  +--rw pw* [peer-ip remote-site-id]
+              |  |     +--rw peer-ip                    inet:ipv4-address-no-zone
+              |  |     +--rw remote-site-id             uint32
+              |  |     +--rw name?                      string
+              |  |     +--ro suppression-statisticss
+              |  |        +--ro suppression-statistics* [suppression-type]
+              |  |           +--ro suppression-type       suppression-type
+              |  |           +--ro cir?                   uint32
+              |  |           +--ro pir?                   uint32
+              |  |           +--ro cbs?                   uint32
+              |  |           +--ro pbs?                   uint32
+              |  |           +--ro passed-packets?        uint64
+              |  |           +--ro passed-bytes?          uint64
+              |  |           +--ro discard-packets?       uint64
+              |  |           +--ro discard-bytes?         uint64
+              |  |           +--ro passed-packet-rate?    uint64
+              |  |           +--ro passed-bit-rate?       uint64
+              |  |           +--ro discard-packet-rate?   uint64
+              |  |           +--ro discard-bit-rate?      uint64
+              |  +--ro local-label-blocks
+              |  |  +--ro local-label-block* [offset]
+              |  |     +--ro offset         uint16
+              |  |     +--ro label-start?   uint32
+              |  |     +--ro add-range?     uint32
+              |  |     +--ro site-base?     uint32
+              |  +--ro pw-infos
+              |     +--ro pw-info* [site-id offset]
+              |        +--ro site-id                   uint32
+              |        +--ro offset                    uint16
+              |        +--ro peer-ip?                  inet:ipv4-address-no-zone
+              |        +--ro pw-type?                  l2vpn-vpls-pw-type
+              |        +--ro pw-state?                 l2vpn-pw-state
+              |        +--ro local-vc-label?           uint32
+              |        +--ro remote-vc-label?          uint32
+              |        +--ro last-up-time?             yang:date-and-time
+              |        +--ro total-up-time?            string
+              |        +--ro c-key?                    uint32
+              |        +--ro n-key?                    uint32
+              |        +--ro broadcast-tunnel-key?     string
+              |        +--ro stp-enable?               boolean
+              |        +--ro mac-flapping-enable?      pw-block-status
+              |        +--ro main-pw-token?            pub-type:hex-binary
+              |        +--ro backup-pw-token?          pub-type:hex-binary
+              |        +--ro receive-flow-label?       flow-label-ability
+              |        +--ro negotiate-flow-label?     flow-label-ability
+              |        +--ro remote-control-word?      l2vpn-control-word
+              |        +--ro negotiate-control-word?   l2vpn-control-word
+              |        +--ro tunnels
+              |        |  +--ro tunnel* [tunnel-key]
+              |        |     +--ro tunnel-key         string
+              |        |     +--ro tunnel-type?       l2vpn-tunnel-type
+              |        |     +--ro out-interface?     pub-type:if-name
+              |        |     +--ro tunnel-name?       string
+              |        |     +--ro public-next-hop?   inet:ipv4-address-no-zone
+              |        +--ro traffic-statistics
+              |           +--ro in-traffic-rate?        uint64
+              |           +--ro out-traffic-rate?       uint64
+              |           +--ro in-frame-rate?          uint64
+              |           +--ro out-frame-rate?         uint64
+              |           +--ro in-bytes?               uint64
+              |           +--ro out-bytes?              uint64
+              |           +--ro in-frames?              uint64
+              |           +--ro out-frames?             uint64
+              |           +--ro in-unicast-frames?      uint64
+              |           +--ro in-unicast-bytes?       uint64
+              |           +--ro in-multicast-frames?    uint64
+              |           +--ro in-multicast-bytes?     uint64
+              |           +--ro in-broadcast-frames?    uint64
+              |           +--ro in-broadcast-bytes?     uint64
+              |           +--ro out-unicast-frames?     uint64
+              |           +--ro out-unicast-bytes?      uint64
+              |           +--ro out-multicast-frames?   uint64
+              |           +--ro out-multicast-bytes?    uint64
+              |           +--ro out-broadcast-frames?   uint64
+              |           +--ro out-broadcast-bytes?    uint64
+              |           +--ro in-discard-frames?      uint64
+              |           +--ro reset-time?             yang:date-and-time
+              +--rw bgp-multi-homing-signaling!
+              |  +--rw route-distinguisher?                    string
+              |  +--rw encapsulation-rfc4761-compatible?       boolean
+              |  +--rw encapsulation-vpls-family-compatible?   boolean
+              |  +--rw mtu-negotiate-disable?                  boolean
+              |  +--rw site-range?                             uint32
+              |  +--rw default-offset?                         uint16
+              |  +--rw control-word?                           l2vpn-control-word
+              |  +--ro auto-route-distinguisher?               string
+              |  +--rw default-site
+              |  |  +--rw name?         vpls-multi-homing-site-name
+              |  |  +--rw site-id?      uint32
+              |  |  +--rw preference?   uint32
+              |  +--rw sites
+              |  |  +--rw site* [name]
+              |  |     +--rw name                  vpls-multi-homing-site-name
+              |  |     +--rw site-id?              uint32
+              |  |     +--rw preference?           uint32
+              |  |     +--rw active-delay-time?    uint16
+              |  |     +--rw recover-delay-time?   uint16
+              |  |     +--rw best-site?            empty
+              |  +--rw vpn-targets
+              |  |  +--rw vpn-target* [rt-value rt-type]
+              |  |     +--rw rt-value    string
+              |  |     +--rw rt-type     vpn-rt-type
+              |  +--ro pw-infos
+              |     +--ro pw-info* [site-id offset]
+              |        +--ro site-id                   uint32
+              |        +--ro offset                    uint16
+              |        +--ro peer-ip?                  inet:ipv4-address-no-zone
+              |        +--ro pw-type?                  l2vpn-vpls-pw-type
+              |        +--ro pw-state?                 l2vpn-pw-state
+              |        +--ro local-vc-label?           uint32
+              |        +--ro remote-vc-label?          uint32
+              |        +--ro last-up-time?             yang:date-and-time
+              |        +--ro total-up-time?            string
+              |        +--ro c-key?                    uint32
+              |        +--ro n-key?                    uint32
+              |        +--ro broadcast-tunnel-key?     string
+              |        +--ro stp-enable?               boolean
+              |        +--ro mac-flapping-enable?      pw-block-status
+              |        +--ro main-pw-token?            pub-type:hex-binary
+              |        +--ro backup-pw-token?          pub-type:hex-binary
+              |        +--ro remote-control-word?      l2vpn-control-word
+              |        +--ro negotiate-control-word?   l2vpn-control-word
+              |        +--ro tunnels
+              |        |  +--ro tunnel* [tunnel-key]
+              |        |     +--ro tunnel-key         string
+              |        |     +--ro tunnel-type?       l2vpn-tunnel-type
+              |        |     +--ro out-interface?     pub-type:if-name
+              |        |     +--ro tunnel-name?       string
+              |        |     +--ro public-next-hop?   inet:ipv4-address-no-zone
+              |        +--ro traffic-statistics
+              |           +--ro in-traffic-rate?        uint64
+              |           +--ro out-traffic-rate?       uint64
+              |           +--ro in-frame-rate?          uint64
+              |           +--ro out-frame-rate?         uint64
+              |           +--ro in-bytes?               uint64
+              |           +--ro out-bytes?              uint64
+              |           +--ro in-frames?              uint64
+              |           +--ro out-frames?             uint64
+              |           +--ro in-unicast-frames?      uint64
+              |           +--ro in-unicast-bytes?       uint64
+              |           +--ro in-multicast-frames?    uint64
+              |           +--ro in-multicast-bytes?     uint64
+              |           +--ro in-broadcast-frames?    uint64
+              |           +--ro in-broadcast-bytes?     uint64
+              |           +--ro out-unicast-frames?     uint64
+              |           +--ro out-unicast-bytes?      uint64
+              |           +--ro out-multicast-frames?   uint64
+              |           +--ro out-multicast-bytes?    uint64
+              |           +--ro out-broadcast-frames?   uint64
+              |           +--ro out-broadcast-bytes?    uint64
+              |           +--ro in-discard-frames?      uint64
+              |           +--ro reset-time?             yang:date-and-time
+              +--rw bgpad-signaling!
+              |  +--rw vpls-id?                         string
+              |  +--rw split-horizon?                   vpls-split-horizon-mode-type
+              |  +--rw traffic-statistics-collection?   boolean
+              |  +--ro route-distinguisher?             string
+              |  +--ro vsi-id?                          inet:ipv4-address-no-zone
+              |  +--rw vpn-targets
+              |     +--rw vpn-target* [rt-value rt-type]
+              |        +--rw rt-value    string
+              |        +--rw rt-type     vpn-rt-type
+              +--rw acs
+              |  +--rw ac* [interface-name]
+              |     +--rw interface-name    -> /ifm:ifm/interfaces/interface/name
+              |     +--rw site-name?        vpls-multi-homing-site-name
+              |     +--rw hub-mode?         boolean
+              |     +--rw access-port?      boolean
+              |     +--ro state?            ac-state
+              |     +--ro block-state?      ac-block-status
+              |     +--ro last-up-time?     string
+              |     +--ro total-up-time?    string
+              |     +--ro token-exceed?     boolean
+              |     +--ro oam-state?        oam-state
+              +--rw bds
+              |  +--rw bd* [id]
+              |     +--rw id               -> /bd:bd/instances/instance/id
+              |     +--rw pw-tag?          uint16
+              |     +--ro state?           ac-state
+              |     +--ro last-up-time?    string
+              |     +--ro total-up-time?   string
+              +--rw ipmsi!
+                 +--rw root!
+                 |  +--rw data-switch-disable?   boolean
+                 |  +--rw mc-tunnel-type?        multicast-tunnel-type
+                 |  +--rw root-ip?               inet:ipv4-address-no-zone
+                 |  +--rw te-p2mp-dynamic?       boolean
+                 |  +--rw p2mp-template-name?    string
+                 |  +--rw bfd-track-if-name?     -> /ifm:ifm/interfaces/interface/name
+                 +--rw leaf!
+                    +--rw pw-protect-groups
+                       +--rw pw-protect-group* [primary-root-ip backup-root-ip]
+                          +--rw primary-root-ip      inet:ipv4-address-no-zone
+                          +--rw backup-root-ip       inet:ipv4-address-no-zone
+                          +--rw wtr?                 uint32
+                          +--rw primary-track-bfd?   boolean
+                          +--rw backup-track-bfd?    boolean
+
+  rpcs:
+    +---x switch-protect-aps
+    |  +---w input
+    |     +---w aps-id                 uint32
+    |     +---w protect-switch-type    l2vpn-pw-aps-ps-type
+    +---x reset-vpws-ldp-pw
+    |  +---w input
+    |     +---w name    l2vpn-instance-name
+    |     +---w type    l2vpn-instance-type
+    |     +---w role    pw-role-type
+    +---x reset-pw-template
+    |  +---w input
+    |     +---w name    string
+    +---x reset-vpws-ldp-ac
+    |  +---w input
+    |     +---w interface-name?   pub-type:if-name
+    +---x reset-vpws-ldp-traffic-statistics
+    |  +---w input
+    |     +---w name    l2vpn-instance-name
+    |     +---w type    l2vpn-instance-type
+    |     +---w role    pw-role-type
+    +---x reset-vpws-bgp-traffic-statistics
+    |  +---w input
+    |     +---w name              l2vpn-instance-name
+    |     +---w type              l2vpn-instance-type
+    |     +---w local-site        vpws-bgp-ce-name-type
+    |     +---w remote-site-id    uint16
+    +---x reset-vpls-traffic-statistics
+    |  +---w input
+    |     +---w name    l2vpn-instance-name
+    +---x reset-vpls-ldp-pw-traffic-statistics
+    |  +---w input
+    |     +---w name                 l2vpn-instance-name
+    |     +---w signal-type          pw-signal-type
+    |     +---w peer-ip              inet:ipv4-address-no-zone
+    |     +---w negotiation-vc-id    uint32
+    +---x switch-vpls-protect-group
+    |  +---w input
+    |     +---w instance-name          l2vpn-instance-name
+    |     +---w protect-group-name     string
+    |     +---w protect-switch-type    l2vpn-protect-group-ps-type
+    +---x reset-vpls-pw-suppression-statistics
+       +---w input
+          +---w name                 l2vpn-instance-name
+          +---w signal-type          pw-signal-type
+          +---w peer-ip              inet:ipv4-address-no-zone
+          +---w negotiation-vc-id    uint32

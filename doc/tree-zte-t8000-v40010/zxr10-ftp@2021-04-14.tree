@@ -1,0 +1,136 @@
+module: zxr10-ftp
+  +--rw configuration
+  |  +--rw ftp
+  |     +--rw ftp-server
+  |     |  +--rw max-login
+  |     |  |  +--rw max-user-number?   uint32
+  |     |  +--rw top-directory
+  |     |  |  +--rw directory-name?     string
+  |     |  |  +--rw (permission)?
+  |     |  |     +--:(read-only)
+  |     |  |     |  +--rw read-only?    empty
+  |     |  |     +--:(write-copy)
+  |     |  |        +--rw write-copy
+  |     |  |           +--rw read-write?   enumeration
+  |     |  |           +--rw copy?         enumeration
+  |     |  +--rw ftp-server-status
+  |     |  |  +--rw (status)?
+  |     |  |     +--:(disable)
+  |     |  |     |  +--rw disable?       empty
+  |     |  |     +--:(enable)
+  |     |  |        +--rw enable?        empty
+  |     |  |        +--rw listen-port?   uint16
+  |     |  +--rw acl
+  |     |  |  +--rw acl-ipv4
+  |     |  |  |  +--rw acl-name?   string
+  |     |  |  +--rw acl-ipv6
+  |     |  |     +--rw acl-name?   string
+  |     |  +--rw source-ip
+  |     |  |  +--rw source-ipv4!
+  |     |  |  |  +--rw ipv4-address    ncd:ipv4-address
+  |     |  |  +--rw source-ipv6!
+  |     |  |  |  +--rw ipv6-address    ncd:ipv6-address
+  |     |  |  +--rw source-vrf!
+  |     |  |     +--rw vrf-name    string
+  |     |  +--rw source-interface!
+  |     |  |  +--rw interface-name    ncd:ifname
+  |     |  +--rw idle-timeout?        uint32
+  |     +--rw ftp-client
+  |     |  +--rw source-ip
+  |     |  |  +--rw source-ipv4
+  |     |  |  |  +--rw ipv4-address?   ncd:ipv4-address
+  |     |  |  +--rw source-ipv6
+  |     |  |     +--rw (ipv6-addr)?
+  |     |  |        +--:(unlink-local-addr)
+  |     |  |        |  +--rw ipv6-address?         ncd:ipv6-address
+  |     |  |        +--:(link-local-addr)
+  |     |  |           +--rw link-local-address    ncd:ipv6-address
+  |     |  |           +--rw interface-name        ncd:ifname
+  |     |  +--rw source-interface!
+  |     |     +--rw interface-name    ncd:ifname
+  |     +--rw ftp-secure-server
+  |        +--rw ssl!
+  |        |  +--rw ssl-context-name    string
+  |        |  +--rw pki-name?           string
+  |        +--rw ftps-protocol-mode
+  |        |  +--rw (protocol-mode)?
+  |        |     +--:(all)
+  |        |     |  +--rw all?                    empty
+  |        |     |  +--rw implicit-port?          uint16
+  |        |     |  +--rw explicit-port?          uint16
+  |        |     +--:(explicit)
+  |        |     |  +--rw explicit                empty
+  |        |     |  +--rw explicit-listen-port?   uint16
+  |        |     +--:(implicit)
+  |        |        +--rw implicit                empty
+  |        |        +--rw implicit-listen-port?   uint16
+  |        +--rw ftps-server-status
+  |           +--rw (status)?
+  |              +--:(disable)
+  |              |  +--rw disable?   empty
+  |              +--:(enable)
+  |                 +--rw enable?    empty
+  +--ro state
+  |  +--ro ftp
+  |     +--ro ftp-server
+  |        +--ro user-state* [user-id]
+  |           +--ro user-id         uint16
+  |           +--ro user-name?      string
+  |           +--ro status?         enumeration
+  |           +--ro ip-type?        enumeration
+  |           +--ro ipv4-address?   ncd:ipv4-address
+  |           +--ro ipv6-address?   ncd:ipv6-address
+  |           +--ro port?           uint16
+  +--ro operation
+     +--ro ftp
+        +--ro ftp-client
+        |  +--ro copy!
+        |     +--ro (copy-mode)?
+        |     |  +--:(vrf)
+        |     |  |  +--ro vrf-name                             string
+        |     |  +--:(dcn)
+        |     |     +--ro dcn                                  empty
+        |     +--ro (trans-direction)
+        |     |  +--:(upload)
+        |     |  |  +--ro local-source-file                    string
+        |     |  |  +--ro (remote-dest-param)
+        |     |  |  |  +--:(spliced-remote-param)
+        |     |  |  |  |  +--ro remote-dest-file               string
+        |     |  |  |  +--:(splited-remote-param)
+        |     |  |  |     +--ro splited-remote-dest-param
+        |     |  |  |        +--ro (ip-addr)
+        |     |  |  |        |  +--:(ipv4)
+        |     |  |  |        |  |  +--ro remote-ipv4-address    ncd:ipv4-address
+        |     |  |  |        |  +--:(ipv6)
+        |     |  |  |        |     +--ro remote-ipv6-address    ncd:ipv6-address
+        |     |  |  |        +--ro username                     string
+        |     |  |  |        +--ro password                     string
+        |     |  |  |        +--ro path                         string
+        |     |  |  +--ro upload-cpu-node?                     ncd:cpu
+        |     |  +--:(download)
+        |     |     +--ro (remote-source-param)
+        |     |     |  +--:(spliced-remote-param)
+        |     |     |  |  +--ro remote-source-file             string
+        |     |     |  +--:(splited-remote-param)
+        |     |     |     +--ro splited-remote-source-param
+        |     |     |        +--ro (ip-addr)
+        |     |     |        |  +--:(ipv4)
+        |     |     |        |  |  +--ro remote-ipv4-address    ncd:ipv4-address
+        |     |     |        |  +--:(ipv6)
+        |     |     |        |     +--ro remote-ipv6-address    ncd:ipv6-address
+        |     |     |        +--ro username                     string
+        |     |     |        +--ro password                     string
+        |     |     |        +--ro path                         string
+        |     |     +--ro local-dest-file                      string
+        |     |     +--ro download-cpu-node?                   ncd:cpu
+        |     +--ro (source-addr)?
+        |     |  +--:(ipv4)
+        |     |  |  +--ro ipv4-address                         ncd:ipv4-address
+        |     |  +--:(ipv6)
+        |     |     +--ro ipv6-address                         ncd:ipv6-address
+        |     |     +--ro interface-name?                      ncd:ifname
+        |     +--ro server-port?                               uint16
+        |     +--ro policy-name?                               string
+        +--ro ftp-server
+           +--ro kick-user!
+              +--ro user-id    uint16

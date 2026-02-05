@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-isis-sr"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:isis-sr="urn:huawei:yang:huawei-isis-sr"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:isis="urn:huawei:yang:huawei-isis"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:sr="urn:huawei:yang:huawei-segment-routing"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-isis-sr"/>
+  <prefix value="isis-sr"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-isis">
+    <prefix value="isis"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-segment-routing">
+    <prefix value="sr"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>ISIS segment routing management.</text>
+  </description>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-04">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-04">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="isis"/>
+  <typedef name="lsp-trigger-type">
+    <type name="enumeration">
+      <enum name="host">
+        <value value="0"/>
+        <description>
+          <text>Trigger SR LSP establishment for 32 bit host routes.</text>
+        </description>
+      </enum>
+      <enum name="none">
+        <value value="2"/>
+        <description>
+          <text>Do not trigger SR LSP establishment.</text>
+        </description>
+      </enum>
+      <enum name="ip-prefix">
+        <value value="4"/>
+        <description>
+          <text>Trigger SR LSP establishment based on an IP prefix list.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>ISIS SR LSP trigger type.</text>
+    </description>
+  </typedef>
+  <typedef name="prefix-sid-type">
+    <type name="enumeration">
+      <enum name="absolute">
+        <value value="1"/>
+        <description>
+          <text>Absolute value.</text>
+        </description>
+      </enum>
+      <enum name="index">
+        <value value="2"/>
+        <description>
+          <text>Index.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>ISIS prefix sid type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/isis:isis/isis:sites/isis:site">
+    <description>
+      <text>ISIS SRGB augment to ISIS.</text>
+    </description>
+    <container name="srgbs">
+      <when condition="../../../../sr:segment-routing/sr:enable='true' and (../isis:cost-style='wide' or ../isis:cost-style='transition' or ../isis:cost-style='wtransition')"/>
+      <description>
+        <text>List of segment routing global block.</text>
+      </description>
+      <list name="srgb">
+        <key value="lower-bound upper-bound"/>
+        <max-elements value="1"/>
+        <description>
+          <text>Configure segment routing global block.</text>
+        </description>
+        <leaf name="lower-bound">
+          <type name="uint32">
+            <range value="16..1048575"/>
+          </type>
+          <must condition="../lower-bound&lt;../upper-bound"/>
+          <description>
+            <text>SRGB begin value.</text>
+          </description>
+        </leaf>
+        <leaf name="upper-bound">
+          <type name="uint32">
+            <range value="16..1048575"/>
+          </type>
+          <must condition="../lower-bound&lt;../upper-bound"/>
+          <description>
+            <text>SRGB end value.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/isis:isis/isis:sites/isis:site/isis:afs/isis:af">
+    <description>
+      <text>ISIS segment routing augment to ISIS.</text>
+    </description>
+    <container name="segment-routing">
+      <when condition="../isis:type='afipv4'"/>
+      <description>
+        <text>Configure ISIS segment routing.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <must condition="../enable='false' or ../../../../../../../ni:name='_public_' and ../../../../../../../sr:segment-routing/sr:enable='true' and (../../../../isis:cost-style='wide' or ../../../../isis:cost-style='transition' or ../../../../isis:cost-style='wtransition')"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable segment routing MPLS.</text>
+        </description>
+      </leaf>
+      <leaf name="auto-adj-sid">
+        <when condition="../enable='true'"/>
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable apply adj label when build adjency.</text>
+        </description>
+      </leaf>
+      <leaf name="adv-static-sid">
+        <when condition="../enable='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable ISIS to advertise static SID capabilities, support static adjacency SID distribution in LSP.</text>
+        </description>
+      </leaf>
+      <container name="binding">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure ISIS segment routing.</text>
+        </description>
+        <leaf name="receive">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable receive remote prefix SID mappings.</text>
+          </description>
+        </leaf>
+        <leaf name="advertise">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable advertise active local prefix SID mappings.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="lsp-trigger">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure the SR LSP trigger command.</text>
+        </description>
+        <leaf name="type">
+          <type name="lsp-trigger-type"/>
+          <must condition="../type!='ip-prefix' or ../ip-prefix"/>
+          <default value="host"/>
+          <description>
+            <text>Set the SR LSP trigger type.</text>
+          </description>
+        </leaf>
+        <leaf name="ip-prefix">
+          <when condition="../type='ip-prefix'"/>
+          <type name="leafref">
+            <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+          </type>
+          <description>
+            <text>Set the IP prefix name.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/isis:isis/isis:sites/isis:site/isis:avoid-micro-loop">
+    <description>
+      <text>ISIS avoid-microloop segment routing augment to ISIS.</text>
+    </description>
+    <leaf name="sr-enable-flag">
+      <type name="boolean"/>
+      <must condition="../sr-enable-flag='false' or ../../isis:afs/isis:af[isis:type='afipv4']/isis-sr:segment-routing/isis-sr:enable='true'"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable SR avoid microloop. Depend on segment routing MPLS.</text>
+      </description>
+    </leaf>
+    <leaf name="sr-new-update-delay">
+      <type name="uint16">
+        <range value="1000..60000"/>
+      </type>
+      <units name="ms"/>
+      <default value="5000"/>
+      <description>
+        <text>Set the route delivery delay for SR avoid microloop. Depend on segment routing MPLS.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/isis:isis/isis:sites/isis:site/isis:circuits/isis:circuit/isis:afs/isis:af">
+    <description>
+      <text>ISIS prefix sid augment to ISIS.</text>
+    </description>
+    <container name="prefix-sids">
+      <when condition="../../../../../isis:afs/isis:af[isis:type='afipv4']/isis-sr:segment-routing/isis-sr:enable='true' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/../../../isis:name]/ifm:type='LoopBack' and ../isis:type='afipv4'"/>
+      <description>
+        <text>List of prefix segment ID. Only on the Loopback interface.</text>
+      </description>
+      <list name="prefix-sid">
+        <key value="algorithm"/>
+        <description>
+          <text>Configure prefix segment ID.</text>
+        </description>
+        <leaf name="algorithm">
+          <type name="uint8">
+            <range value="0"/>
+          </type>
+          <description>
+            <text>Prefix sid algorithm.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="prefix-sid-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Set the type of prefix sid.</text>
+          </description>
+        </leaf>
+        <leaf name="label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Set the label of prefix sid.</text>
+          </description>
+        </leaf>
+        <leaf name="node-flag">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the node flag.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>

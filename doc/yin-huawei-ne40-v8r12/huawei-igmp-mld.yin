@@ -1,0 +1,1751 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-igmp-mld"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:igmp-mld="urn:huawei:yang:huawei-igmp-mld"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3mc="urn:huawei:yang:huawei-l3-multicast"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-igmp-mld"/>
+  <prefix value="igmp-mld"/>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3-multicast">
+    <prefix value="l3mc"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>The module defines the configuration and operational state for
+the Internet Group Management Protocol (IGMP) and Multicast
+Listener Discovery (MLD) protocols.</text>
+  </description>
+  <revision date="2021-02-24">
+    <description>
+      <text>Add mld access-limit node.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-06-21">
+    <description>
+      <text>Modify must restrictions for static-group configurations.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-04">
+    <description>
+      <text>Add units for some nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-01-08">
+    <description>
+      <text>Modify description; Add ssm-mapping-policy node; Add must for some nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="querier-local-or-not">
+    <type name="enumeration">
+      <enum name="reserved">
+        <value value="0"/>
+        <description>
+          <text>Reserved.</text>
+        </description>
+      </enum>
+      <enum name="no-querier">
+        <value value="1"/>
+        <description>
+          <text>Not a querier.</text>
+        </description>
+      </enum>
+      <enum name="this-router">
+        <value value="2"/>
+        <description>
+          <text>A local querier.</text>
+        </description>
+      </enum>
+      <enum name="other-router">
+        <value value="3"/>
+        <description>
+          <text>Any querier instead of a local querier.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Whether a query is a local query.</text>
+    </description>
+  </typedef>
+  <typedef name="timer-state-type">
+    <type name="enumeration">
+      <enum name="off">
+        <value value="0"/>
+        <description>
+          <text>The off state.</text>
+        </description>
+      </enum>
+      <enum name="on">
+        <value value="1"/>
+        <description>
+          <text>The on state.</text>
+        </description>
+      </enum>
+      <enum name="reserved">
+        <value value="255"/>
+        <description>
+          <text>Reserved.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The status of a timer.</text>
+    </description>
+  </typedef>
+  <typedef name="remote-backup-state-type">
+    <type name="enumeration">
+      <enum name="remote-backup-disabled">
+        <value value="0"/>
+        <description>
+          <text>Remote Backup is disabled.</text>
+        </description>
+      </enum>
+      <enum name="remote-backup-master">
+        <value value="1"/>
+        <description>
+          <text>Master state.</text>
+        </description>
+      </enum>
+      <enum name="remote-backup-slave">
+        <value value="2"/>
+        <description>
+          <text>Backup state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Remote backup state.</text>
+    </description>
+  </typedef>
+  <typedef name="filter-mode-type">
+    <type name="enumeration">
+      <enum name="include">
+        <value value="1"/>
+        <description>
+          <text>The Include mode.</text>
+        </description>
+      </enum>
+      <enum name="exclude">
+        <value value="2"/>
+        <description>
+          <text>The Exclude mode.</text>
+        </description>
+      </enum>
+      <enum name="reserved">
+        <value value="1610612735"/>
+        <description>
+          <text>Reserved.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Source filter mode.</text>
+    </description>
+  </typedef>
+  <typedef name="if-state">
+    <type name="enumeration">
+      <enum name="down">
+        <value value="1"/>
+        <description>
+          <text>The interface is Down.</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <value value="2"/>
+        <description>
+          <text>The interface is Up.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The status of an interface enabled with IGMP or MLD.</text>
+    </description>
+  </typedef>
+  <grouping name="interface-status">
+    <description>
+      <text>Display IGMP/MLD status information on interfaces.</text>
+    </description>
+    <container name="status">
+      <config value="false"/>
+      <description>
+        <text>Operational state of IGMP/MLD on interfaces.</text>
+      </description>
+      <leaf name="address">
+        <type name="inet:ip-address-no-zone"/>
+        <description>
+          <text>Specify the IP address of an interface.</text>
+        </description>
+      </leaf>
+      <leaf name="state">
+        <type name="if-state"/>
+        <description>
+          <text>Specify the status of an interface enabled with a protocol.</text>
+        </description>
+      </leaf>
+      <leaf name="negotiate-query-interval">
+        <type name="uint32">
+          <ext:value-meaning>
+            <ext:item value="1627389951">
+              <ext:meaning value="-"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Interval negotiated by non-queriers for sending query messages. The negotiated value is supported by IGMPv3 only.</text>
+        </description>
+      </leaf>
+      <leaf name="other-querier-timeout">
+        <type name="uint32">
+          <ext:value-meaning>
+            <ext:item value="1627389951">
+              <ext:meaning value="-"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Specify the timeout period of other queriers. The value is 0 on the interface that acts as the querier.</text>
+        </description>
+      </leaf>
+      <leaf name="maximum-response-time">
+        <type name="uint32"/>
+        <units name="s"/>
+        <description>
+          <text>Specify the maximum response time carried in a query message.</text>
+        </description>
+      </leaf>
+      <leaf name="last-member-query-time">
+        <type name="uint32"/>
+        <units name="s"/>
+        <description>
+          <text>Specify the timeout period for sending the last-member query message.</text>
+        </description>
+      </leaf>
+      <leaf name="startup-query-interval">
+        <type name="uint32">
+          <ext:value-meaning>
+            <ext:item value="1627389951">
+              <ext:meaning value="-"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Specify the interval at which an interface functioning as the querier sends query messages when it is started.</text>
+        </description>
+      </leaf>
+      <leaf name="startup-query-count">
+        <type name="uint32">
+          <ext:value-meaning>
+            <ext:item value="1627389951">
+              <ext:meaning value="-"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <description>
+          <text>Specify the number of times that an interface functioning as the querier sends query messages when it is started.</text>
+        </description>
+      </leaf>
+      <leaf name="querier-address">
+        <type name="inet:ip-address-no-zone"/>
+        <description>
+          <text>Specify the address of a querier.</text>
+        </description>
+      </leaf>
+      <leaf name="is-local-querier">
+        <type name="querier-local-or-not"/>
+        <description>
+          <text>Whether a query is a local query.</text>
+        </description>
+      </leaf>
+      <leaf name="joins">
+        <type name="uint32"/>
+        <description>
+          <text>Specify the number of groups that an interface has joined. When the interface joins a new group, the value increases by one; when the interface leaves a group, the value remains unchanged.</text>
+        </description>
+      </leaf>
+      <leaf name="leaves">
+        <type name="uint32"/>
+        <description>
+          <text>Specify the number of groups that the interface leaves. Each time when the interface leaves a group, the value increases by one.</text>
+        </description>
+      </leaf>
+      <leaf name="negotiated-robustness">
+        <type name="uint32">
+          <ext:value-meaning>
+            <ext:item value="1627389951">
+              <ext:meaning value="-"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <description>
+          <text>Specify the robustness variable negotiated by non-queriers. The value is supported by IGMPv3 only.</text>
+        </description>
+      </leaf>
+      <leaf name="startup-query-timer-state">
+        <type name="timer-state-type"/>
+        <description>
+          <text>Specify the status of the timer for the interface functioning as the querier after being started. off: The interface immediately sends a query message after being started. on: The interface does not send a query message after being started.</text>
+        </description>
+      </leaf>
+      <leaf name="other-querier-present-timer-state">
+        <type name="timer-state-type"/>
+        <description>
+          <text>Specify the status of the timer identifying whether another querier is present. Off: The interface considers itself as a querier and that no other queriers exist.</text>
+        </description>
+      </leaf>
+      <leaf name="total-group-reported">
+        <type name="uint32"/>
+        <description>
+          <text>Specify the number of groups that the interface dynamically joins. When an interface dynamically joins a new multicast group, the value increases by one.</text>
+        </description>
+      </leaf>
+      <leaf name="remote-backup-state">
+        <type name="remote-backup-state-type"/>
+        <description>
+          <text>Remote backup state.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="display-static-group">
+    <description>
+      <text>Display static multicast group information.</text>
+    </description>
+    <container name="display-static-groups">
+      <config value="false"/>
+      <description>
+        <text>List of static multicast group information.</text>
+      </description>
+      <list name="display-static-group">
+        <key value="interface group-address"/>
+        <description>
+          <text>Operational state of static multicast group.</text>
+        </description>
+        <leaf name="interface">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Specify the name of an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Specify a multicast group address. In the case of an IPv4, the value is in dotted decimal notation and ranges from 224.0.1.0 to 239.255.255.255; in the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx (x ranges from 0 to F and A can be 0, or in the range of 3 to F).</text>
+          </description>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Specify the address of a multicast source.</text>
+          </description>
+        </leaf>
+        <leaf name="is-configured-boundary">
+          <type name="boolean"/>
+          <description>
+            <text>Whether the multicast forwarding boundary is configured.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="display-group">
+    <description>
+      <text>Display multicast group information.</text>
+    </description>
+    <container name="groups">
+      <config value="false"/>
+      <description>
+        <text>List of dynamic multicast group.</text>
+      </description>
+      <list name="group">
+        <key value="interface group-address"/>
+        <description>
+          <text>Multicast group state.</text>
+        </description>
+        <leaf name="interface">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Specify the name of an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Specify a multicast group address. In the case of an IPv4 address, the value is in dotted decimal notation and ranges from 224.0.1.0 to 239.255.255.255; in the case of an IPv6 address, the value in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx (x ranges from 0 to F and A can be 0, or in the range of 3 to F).</text>
+          </description>
+        </leaf>
+        <leaf name="last-report-address">
+          <type name="inet:ip-address-no-zone">
+            <ext:value-meaning>
+              <ext:item value="0.0.0.0">
+                <ext:meaning value="--"/>
+              </ext:item>
+            </ext:value-meaning>
+          </type>
+          <description>
+            <text>Specify the host that sends the last report message.</text>
+          </description>
+        </leaf>
+        <leaf name="up-time">
+          <type name="pub-type:time-tick"/>
+          <description>
+            <text>Specify the time when a multicast group is discovered, in seconds.</text>
+          </description>
+        </leaf>
+        <leaf name="expire-time">
+          <type name="pub-type:time-tick">
+            <ext:value-meaning>
+              <ext:item value="1879048190">
+                <ext:meaning value="--"/>
+              </ext:item>
+              <ext:item value="1879048191">
+                <ext:meaning value="off"/>
+              </ext:item>
+              <ext:item value="2147483647">
+                <ext:meaning value="off (on-demand)"/>
+              </ext:item>
+            </ext:value-meaning>
+          </type>
+          <description>
+            <text>Specify the scheduled time to remove a group from the group table. The value is expressed in seconds.</text>
+          </description>
+        </leaf>
+        <leaf name="last-member-query-counter">
+          <type name="uint32"/>
+          <description>
+            <text>Specify the number of times that the last member query message is transmitted.</text>
+          </description>
+        </leaf>
+        <leaf name="last-member-query-timer">
+          <type name="pub-type:time-tick">
+            <ext:value-meaning>
+              <ext:item value="1879048191">
+                <ext:meaning value="off"/>
+              </ext:item>
+            </ext:value-meaning>
+          </type>
+          <description>
+            <text>Specify the timeout period for sending last member query messages.</text>
+          </description>
+        </leaf>
+        <leaf name="source-filter-mode">
+          <type name="filter-mode-type"/>
+          <description>
+            <text>Specify the group mode, exclude or include.</text>
+          </description>
+        </leaf>
+        <leaf name="v1-host-timer">
+          <type name="pub-type:time-tick">
+            <ext:value-meaning>
+              <ext:item value="1610612735">
+                <ext:meaning value="--"/>
+              </ext:item>
+              <ext:item value="1879048191">
+                <ext:meaning value="off"/>
+              </ext:item>
+            </ext:value-meaning>
+          </type>
+          <description>
+            <text>Specify the timeout period of an v1 host.</text>
+          </description>
+        </leaf>
+        <leaf name="v2-host-timer">
+          <type name="pub-type:time-tick">
+            <ext:value-meaning>
+              <ext:item value="1610612735">
+                <ext:meaning value="--"/>
+              </ext:item>
+              <ext:item value="1879048191">
+                <ext:meaning value="off"/>
+              </ext:item>
+            </ext:value-meaning>
+          </type>
+          <description>
+            <text>Specify the timeout period of an v2 host.</text>
+          </description>
+        </leaf>
+        <leaf name="is-ssm-mapping">
+          <type name="boolean"/>
+          <description>
+            <text>Identifies an SSM mapping-enabled group.</text>
+          </description>
+        </leaf>
+        <container name="sources">
+          <description>
+            <text>List of dynamic multicast source.</text>
+          </description>
+          <list name="source">
+            <key value="source-address"/>
+            <description>
+              <text>Dynamic multicast source state.</text>
+            </description>
+            <leaf name="source-address">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Specify the address of a multicast source.</text>
+              </description>
+            </leaf>
+            <leaf name="up-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Specify the time when a multicast source is discovered.</text>
+              </description>
+            </leaf>
+            <leaf name="expire-time">
+              <type name="pub-type:time-tick">
+                <ext:value-meaning>
+                  <ext:item value="1879048190">
+                    <ext:meaning value="--"/>
+                  </ext:item>
+                  <ext:item value="1879048191">
+                    <ext:meaning value="off"/>
+                  </ext:item>
+                  <ext:item value="2147483647">
+                    <ext:meaning value="off (on-demand)"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Specify the time left to delete records from the source table.</text>
+              </description>
+            </leaf>
+            <leaf name="last-member-query-counter">
+              <type name="uint32"/>
+              <description>
+                <text>Specify the number of times that the last member query message is transmitted.</text>
+              </description>
+            </leaf>
+            <leaf name="last-member-query-timer">
+              <type name="pub-type:time-tick">
+                <ext:value-meaning>
+                  <ext:item value="1879048191">
+                    <ext:meaning value="off"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Specify the timeout period for sending last member query messages.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Adds igmp/mld configuration to the l3vpn module.</text>
+    </description>
+    <container name="igmp">
+      <when condition="../l3mc:multicast/l3mc:ipv4"/>
+      <description>
+        <text>Configure IGMP configurations.</text>
+      </description>
+      <container name="global">
+        <presence value="Create IGMP."/>
+        <description>
+          <text>Enable/disable IGMP in an instance.</text>
+        </description>
+        <leaf name="query-interval">
+          <type name="uint32">
+            <range value="1..18000"/>
+          </type>
+          <units name="s"/>
+          <default value="60"/>
+          <description>
+            <text>Specify the interval at which the router sends general query messages.</text>
+          </description>
+        </leaf>
+        <leaf name="query-response-interval">
+          <type name="uint32">
+            <range value="1..125"/>
+          </type>
+          <units name="s"/>
+          <default value="10"/>
+          <description>
+            <text>Specify the maximum response time for a query message.</text>
+          </description>
+        </leaf>
+        <leaf name="robustness">
+          <type name="uint32">
+            <range value="2..5"/>
+          </type>
+          <default value="2"/>
+          <description>
+            <text>Specify the number of times for retransmitting a message to avoid the packet loss.</text>
+          </description>
+        </leaf>
+        <leaf name="last-member-query-interval">
+          <type name="uint32">
+            <range value="1..25"/>
+          </type>
+          <units name="s"/>
+          <default value="1"/>
+          <description>
+            <text>Specify the interval at which the querier sends last-member query messages. This parameter makes sense only when the current querier runs IGMPv2, IGMPv3 or MLD.</text>
+          </description>
+        </leaf>
+        <leaf name="require-router-alert">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the router to process the messages whose IP headers contain Router-Alert options globally.</text>
+          </description>
+        </leaf>
+        <leaf name="send-router-alert">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the router to send the messages with Router-Alert options in the IP headers globally.</text>
+          </description>
+        </leaf>
+        <leaf name="other-querier-present-time">
+          <type name="uint32">
+            <range value="60..300"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>Set the global Keepalive period for other queriers.</text>
+          </description>
+        </leaf>
+        <leaf name="ssm-mapping-dns-domain">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <default value="in-addr.arpa"/>
+          <description>
+            <text>Specify the name extension of DNS.</text>
+          </description>
+        </leaf>
+        <leaf name="ssm-mapping-query-dns">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable that whether SSM-mapping is based on DNS.</text>
+          </description>
+        </leaf>
+        <leaf name="ssm-mapping-query-dns-policy">
+          <when condition="../ssm-mapping-query-dns='true'"/>
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+          <description>
+            <text>Configure and filter the acl name of DNS ssm-mapping.</text>
+          </description>
+        </leaf>
+        <container name="ssm-mappings">
+          <description>
+            <text>List of SSM-mapping rules.</text>
+          </description>
+          <list name="ssm-mapping">
+            <key value="group-address mask-length source-address"/>
+            <description>
+              <text>Configure SSM-mapping rules.</text>
+            </description>
+            <leaf name="group-address">
+              <type name="inet:ipv4-address-no-zone">
+                <pattern value="(22[4-9]|23\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}"/>
+              </type>
+              <description>
+                <text>Specify the address of a multicast group. In the case of an IPv4 address, the value ranges from 224.0.1.0 to 239.255.255.255, in dotted decimal notation. In the case of an IPv6 address, the value ranges from FF00:: to FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF, in the hexadecimal format.</text>
+              </description>
+            </leaf>
+            <leaf name="mask-length">
+              <type name="uint32">
+                <range value="5..32"/>
+              </type>
+              <description>
+                <text>Specify the mask length of a multicast group address.</text>
+              </description>
+            </leaf>
+            <leaf name="source-address">
+              <type name="inet:ipv4-address-no-zone">
+                <pattern value="(12[0-6]|1[0-1]\d|[1-9]\d|[1-9])(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|(12[8-9]|1[3-9]\d|2[0-1]\d|22[0-3])(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}"/>
+              </type>
+              <description>
+                <text>Specify the address of a multicast source. In the case of an IPv4 address, the value is in dotted decimal notation; in the case of an IPv6 address, the value ranges from FF00:: to FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF, in hexadecimal notation.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="interfaces">
+        <description>
+          <text>List of MGMD configurations on interfaces.</text>
+        </description>
+        <list name="interface">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/name]/ifm:vrf-name"/>
+          <key value="name"/>
+          <description>
+            <text>Configure MGMD on an interface.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the type and number of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable protocols on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-source-policy-enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable a policy for filtering IGMP Report messages based on host addresses. By default, no policy is configured for filtering IGMP Report messages based on host addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-source-policy-name">
+            <when condition="../ip-source-policy-enable='true'"/>
+            <type name="leafref">
+              <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+            <description>
+              <text>Configure an ACL that defines a host addresses range. The value is an integer ranging from 2000 to 2999, or a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="query-interval">
+            <type name="uint32">
+              <range value="1..18000"/>
+            </type>
+            <units name="s"/>
+            <default value="60"/>
+            <description>
+              <text>Specify the interval at which the router sends general query messages.</text>
+            </description>
+          </leaf>
+          <leaf name="query-response-interval">
+            <type name="uint32">
+              <range value="1..125"/>
+            </type>
+            <units name="s"/>
+            <default value="10"/>
+            <description>
+              <text>Specify the maximum time for the response to a query message. This time is used to control the deadline of a host's group membership feedback.</text>
+            </description>
+          </leaf>
+          <leaf name="robustness">
+            <type name="uint32">
+              <range value="2..5"/>
+            </type>
+            <default value="2"/>
+            <description>
+              <text>Specify the number of times for retransmitting messages to avoid packet loss.</text>
+            </description>
+          </leaf>
+          <leaf name="version">
+            <ext:operation-exclude value="update">
+              <when condition="../on-demand-enable='true'"/>
+              <description>
+                <text>The version configuration cannot be changed when On-Demand is running on the interface.</text>
+              </description>
+            </ext:operation-exclude>
+            <type name="uint32">
+              <range value="1..3"/>
+            </type>
+            <default value="2"/>
+            <description>
+              <text>Specify the version of IGMP or MLD running on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="last-member-query-interval">
+            <type name="uint32">
+              <range value="1..25"/>
+            </type>
+            <units name="s"/>
+            <default value="1"/>
+            <description>
+              <text>Specify the interval at which the querier sends last-member query messages. This parameter makes sense only when the current querier runs IGMPv2, IGMPv3 or MLD.</text>
+            </description>
+          </leaf>
+          <leaf name="require-router-alert">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable an interface to process messages whose IP headers contain Router-Alert options.</text>
+            </description>
+          </leaf>
+          <leaf name="send-router-alert">
+            <type name="boolean"/>
+            <default value="true"/>
+            <description>
+              <text>Enable/disable an interface to send the messages with Router-Alert options in the IP headers.</text>
+            </description>
+          </leaf>
+          <leaf name="other-querier-present-time">
+            <type name="uint32">
+              <range value="60..300"/>
+            </type>
+            <units name="s"/>
+            <description>
+              <text>Set the Keepalive period for other queriers on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="immediately-leave">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable an interface that receives a leave message of a certain group to immediately delete the corresponding group records, without sending a last-member query message.</text>
+            </description>
+          </leaf>
+          <leaf name="immediately-leave-policy">
+            <when condition="../immediately-leave='true'"/>
+            <type name="leafref">
+              <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+            <description>
+              <text>Configure an ACL that defines a multicast group range. The basic ACL number ranges from 2000 to 2999, and the advanced ACL number ranges from 3000 to 3999. The name is a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="on-demand-enable">
+            <type name="boolean"/>
+            <must condition="../on-demand-enable='false' or ../version!='1'"/>
+            <must condition="../on-demand-enable='false' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/../name]/ifm:type!='Virtual-Template'"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable records about the groups that the interface joins never to age. By default, the group records age periodically. 1. This command is applicable to IGMPv2, IGMPv3, and MLD only. 2. This command can be used on the querier only.</text>
+            </description>
+          </leaf>
+          <leaf name="entry-limit">
+            <type name="uint32">
+              <range value="1..16384"/>
+            </type>
+            <description>
+              <text>Specify the maximum number of entries that the current interface can create.</text>
+            </description>
+          </leaf>
+          <leaf name="entry-limit-acl-name">
+            <when condition="../entry-limit&gt;0"/>
+            <type name="leafref">
+              <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+            <description>
+              <text>Specify the range of multicast groups, the number of IGMP entries corresponding to which needs not be limited. The basic ACL number ranges from 2000 to 2999. The basic ACL filters group addresses only, without distinguishing (*, G) entries and (S, G) entries; the advanced ACL number ranges from 3000 to 3999. The advanced ACL filters (S, G) entries of the interface only. The name is a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="ssm-mapping-enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable SSM mapping on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="ssm-mapping-policy">
+            <when condition="../ssm-mapping-enable='true'"/>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Configure a policy for SSM Mapping on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-acl-name">
+            <type name="leafref">
+              <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+            <description>
+              <text>Set a filter for multicast groups on an interface to control the range of multicast groups that hosts can join. The basic ACL number ranges from 2000 to 2999, and the advanced ACL number ranges from 3000 to 3999. The name is a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="group-acl-version">
+            <when condition="../group-acl-name"/>
+            <type name="uint32">
+              <range value="1..3"/>
+            </type>
+            <description>
+              <text>Forbids hosts that use a specified version to join the multicast group. The version can be specified in this command only after a multicast filtering policy is configured.</text>
+            </description>
+          </leaf>
+          <leaf name="query-acl-name">
+            <type name="leafref">
+              <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+            <description>
+              <text>Configure an ACL that defines a host addresses range. The value is an integer ranging from 2000 to 2999, or a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <uses name="interface-status"/>
+        </list>
+      </container>
+      <container name="static-groups">
+        <description>
+          <text>List of static multicast groups configurations.</text>
+        </description>
+        <list name="static-group">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ifm:vrf-name"/>
+          <key value="interface group-address is-source-address source-address is-inc-step-group-mask inc-step-group-mask is-source-dns-ssm-mapping"/>
+          <description>
+            <text>Configure a static multicast group.</text>
+          </description>
+          <leaf name="interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the name of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-address">
+            <type name="inet:ipv4-address-no-zone">
+              <pattern value="(22[5-9]|23\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|224(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[1-9]))(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){2}|224\.0(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[1-9]))(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d))"/>
+            </type>
+            <description>
+              <text>Specify the address of a multicast group. In batch configuration mode, this parameter specifies the start multicast group address. In the case of an IPv4 address, the value ranges from 224.0.1.0 to 239.255.255.255, in dotted decimal notation; in the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx, among which x ranges from 0 to F and A can be 0, or in the range of 3 to F.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-address">
+            <type name="boolean"/>
+            <must condition="../is-source-address='false' or (../is-source-dns-ssm-mapping='false' and ../source-address!='0.0.0.0')"/>
+            <description>
+              <text>Enable/disable a device to configure an address for the multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <must condition="../source-address='0.0.0.0' or ../is-source-address='true'"/>
+            <description>
+              <text>Specify the address of a multicast source. In the case of an IPv4 address, the value is in dotted decimal notation. In the case of an IPv6 address, the value is in hexadecimal notation.</text>
+            </description>
+          </leaf>
+          <leaf name="is-inc-step-group-mask">
+            <type name="boolean"/>
+            <must condition="../is-inc-step-group-mask='false' or (../is-source-dns-ssm-mapping='false' and ../inc-step-group-mask!='0.0.0.0')"/>
+            <description>
+              <text>Enable/disable a device to specify the step mask in batch configuration mode.</text>
+            </description>
+          </leaf>
+          <leaf name="inc-step-group-mask">
+            <type name="inet:ipv4-address-no-zone"/>
+            <must condition="../inc-step-group-mask='0.0.0.0' or ../is-inc-step-group-mask='true'"/>
+            <description>
+              <text>Specify the step mask of a group address in batch configuration mode. It refers to the step between two neighboring multicast group addresses. The value is expressed in wildcard-mask mode and in dotted decimal notation, ranging from 0.0.0.1 to 15.255.255.255.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-dns-ssm-mapping">
+            <type name="boolean"/>
+            <must condition="../is-source-dns-ssm-mapping='false' or (../is-source-address='false' and ../is-inc-step-group-mask='false')"/>
+            <description>
+              <text>Enable/disable an DNS based SSM mapping.</text>
+            </description>
+          </leaf>
+          <leaf name="group-number">
+            <when condition="../is-inc-step-group-mask='true'"/>
+            <type name="uint32">
+              <range value="2..512"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specify the number of multicast group addresses in batch configuration mode.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="dot1q-static-groups">
+        <description>
+          <text>List of static multicast groups in dot1q-termination interface.</text>
+        </description>
+        <list name="dot1q-static-group">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ifm:vrf-name"/>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination"/>
+          <must condition="begin-vid&lt;=end-vid"/>
+          <key value="interface group-address is-source-address source-address is-inc-step-group-mask inc-step-group-mask begin-vid end-vid"/>
+          <description>
+            <text>Configure a static multicast group in a dot1q-termination interface.</text>
+          </description>
+          <leaf name="interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the name of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-address">
+            <type name="inet:ipv4-address-no-zone">
+              <pattern value="(22[5-9]|23\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|224(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[1-9]))(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){2}|224\.0(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[1-9]))(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d))"/>
+            </type>
+            <description>
+              <text>Specify the address of a multicast group. In batch configuration mode, this parameter specifies the start multicast group address. In the case of an IPv4 address, the value ranges from 224.0.1.0 to 239.255.255.255, in dotted decimal notation; in the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx, among which x ranges from 0 to F and A can be 0, or in the range of 3 to F.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-address">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to configure an address for the multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <must condition="../source-address='0.0.0.0' or ../is-source-address='true'"/>
+            <must condition="../source-address!='0.0.0.0' or ../is-source-address='false'"/>
+            <description>
+              <text>Specify the address of a multicast source. In the case of an IPv4 address, the value is in dotted decimal notation. In the case of an IPv6 address, the value is in hexadecimal notation.</text>
+            </description>
+          </leaf>
+          <leaf name="is-inc-step-group-mask">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to specify the step mask in batch configuration mode.</text>
+            </description>
+          </leaf>
+          <leaf name="inc-step-group-mask">
+            <type name="inet:ipv4-address-no-zone"/>
+            <must condition="(../is-inc-step-group-mask='true' and ../inc-step-group-mask!='0.0.0.0') or (../is-inc-step-group-mask='false' and ../inc-step-group-mask='0.0.0.0')"/>
+            <description>
+              <text>Specify the step mask of a group address in batch configuration mode. It refers to the step between two neighboring multicast group addresses. The value is expressed in wildcard-mask mode and in dotted decimal notation, ranging from 0.0.0.1 to 15.255.255.255.</text>
+            </description>
+          </leaf>
+          <leaf name="begin-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the start DOT1Q tag.</text>
+            </description>
+          </leaf>
+          <leaf name="end-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the end DOT1Q tag.</text>
+            </description>
+          </leaf>
+          <leaf name="group-number">
+            <when condition="../is-inc-step-group-mask='true'"/>
+            <type name="uint32">
+              <range value="2..512"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specify the number of multicast group addresses configured in a batch.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="qinq-static-groups">
+        <description>
+          <text>List of static multicast groups configuration on qinq-termination interface.</text>
+        </description>
+        <list name="qinq-static-group">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ifm:vrf-name"/>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <must condition="ce-begin-vid&lt;=ce-end-vid"/>
+          <key value="interface group-address is-source-address source-address is-inc-step-group-mask inc-step-group-mask pe-vid ce-begin-vid ce-end-vid"/>
+          <description>
+            <text>Configure a static multicast group on a qinq-termination interface.</text>
+          </description>
+          <leaf name="interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the name of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-address">
+            <type name="inet:ipv4-address-no-zone">
+              <pattern value="(22[5-9]|23\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|224(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[1-9]))(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){2}|224\.0(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[1-9]))(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d))"/>
+            </type>
+            <description>
+              <text>Specify the address of a multicast group. In batch configuration mode, this parameter specifies the start multicast group address. In the case of an IPv4 address, the value ranges from 224.0.1.0 to 239.255.255.255, in dotted decimal notation; in the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx, among which x ranges from 0 to F and A can be 0, or in the range of 3 to F.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-address">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to configure an address for the multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <must condition="../source-address='0.0.0.0' or ../is-source-address='true'"/>
+            <must condition="../source-address!='0.0.0.0' or ../is-source-address='false'"/>
+            <description>
+              <text>Specify the address of a multicast source. In the case of an IPv4 address, the value is in dotted decimal notation. In the case of an IPv6 address, the value is in hexadecimal notation.</text>
+            </description>
+          </leaf>
+          <leaf name="is-inc-step-group-mask">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to specify the step mask in batch configuration mode.</text>
+            </description>
+          </leaf>
+          <leaf name="inc-step-group-mask">
+            <type name="inet:ipv4-address-no-zone"/>
+            <must condition="(../is-inc-step-group-mask='true' and ../inc-step-group-mask!='0.0.0.0')  or (../is-inc-step-group-mask='false' and ../inc-step-group-mask='0.0.0.0')"/>
+            <description>
+              <text>Specify the step mask of a group address in batch configuration mode. It refers to the step between two neighboring multicast group addresses. The value is expressed in wildcard-mask mode and in dotted decimal notation, ranging from 0.0.0.1 to 15.255.255.255.</text>
+            </description>
+          </leaf>
+          <leaf name="pe-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>QINQ PE ID in an outer VLAN tag.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-begin-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the start QINQ CE ID.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-end-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the end QINQ CE ID.</text>
+            </description>
+          </leaf>
+          <leaf name="group-number">
+            <when condition="../is-inc-step-group-mask='true'"/>
+            <type name="uint32">
+              <range value="2..512"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specify the number of multicast group addresses configured in a batch.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <uses name="display-static-group"/>
+      <uses name="display-group"/>
+    </container>
+    <container name="mld">
+      <when condition="../l3mc:multicast/l3mc:ipv6"/>
+      <description>
+        <text>Configure MLD configurations.</text>
+      </description>
+      <container name="global">
+        <presence value="Create MLD."/>
+        <description>
+          <text>Enable/disable MLD in an instance.</text>
+        </description>
+        <leaf name="query-interval">
+          <type name="uint32">
+            <range value="1..18000"/>
+          </type>
+          <units name="s"/>
+          <default value="125"/>
+          <description>
+            <text>Specify the interval at which the router sends general query messages.</text>
+          </description>
+        </leaf>
+        <leaf name="query-response-interval">
+          <type name="uint32">
+            <range value="1..125"/>
+          </type>
+          <units name="s"/>
+          <default value="10"/>
+          <description>
+            <text>Specify the maximum response time for a query message.</text>
+          </description>
+        </leaf>
+        <leaf name="robustness">
+          <type name="uint32">
+            <range value="2..5"/>
+          </type>
+          <default value="2"/>
+          <description>
+            <text>Specify the number of times for retransmitting a message to avoid the packet loss.</text>
+          </description>
+        </leaf>
+        <leaf name="last-member-query-interval">
+          <type name="uint32">
+            <range value="1..25"/>
+          </type>
+          <units name="s"/>
+          <default value="1"/>
+          <description>
+            <text>Specify the interval at which the querier sends last-member query messages. This parameter makes sense only when the current querier runs IGMPv2, IGMPv3 or MLD.</text>
+          </description>
+        </leaf>
+        <leaf name="require-router-alert">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the router to process the messages whose IP headers contain Router-Alert options globally.</text>
+          </description>
+        </leaf>
+        <leaf name="send-router-alert">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the router to send the messages with Router-Alert options in the IP headers globally.</text>
+          </description>
+        </leaf>
+        <leaf name="other-querier-present-time">
+          <type name="uint32">
+            <range value="60..300"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>Set the global Keepalive period for other queriers.</text>
+          </description>
+        </leaf>
+        <container name="ssm-mappings">
+          <description>
+            <text>List of SSM-mapping rules configurations.</text>
+          </description>
+          <list name="ssm-mapping">
+            <key value="group-address mask-length source-address"/>
+            <description>
+              <text>Configure a SSM-mapping rule.</text>
+            </description>
+            <leaf name="group-address">
+              <type name="inet:ipv6-address-no-zone">
+                <pattern value="([Ff]{2}[0-9a-fA-F]{2})[0-9a-fA-F:\.]*"/>
+              </type>
+              <description>
+                <text>Specify the address of a multicast group. In the case of an IPv6 address, the value ranges from FF00:: to FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF, in the hexadecimal format.</text>
+              </description>
+            </leaf>
+            <leaf name="mask-length">
+              <type name="uint32">
+                <range value="16 | 32 | 64 | 128"/>
+              </type>
+              <description>
+                <text>Specify the mask length of a multicast group address.</text>
+              </description>
+            </leaf>
+            <leaf name="source-address">
+              <type name="inet:ipv6-address-no-zone">
+                <pattern value="(([1-9A-Ea-e][0-9A-Fa-f]{3}:)|([Ff][0-9A-Da-d][0-9A-Fa-f]{2}:)|([Ff][Ee][0-7C-Fc-f][0-9A-Fa-f]:)|((0)?[1-9A-Fa-f][0-9A-Fa-f]{2}:)|((00)?[1-9A-Fa-f][0-9A-Fa-f]:)|((000)?[1-9A-Fa-f]:)).+"/>
+              </type>
+              <description>
+                <text>Specify the address of a multicast source. In the case of an IPv6 address, the value ranges from FF00:: to FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF, in hexadecimal notation.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="interfaces">
+        <description>
+          <text>List of MGMD configurations on all interfaces.</text>
+        </description>
+        <list name="interface">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/name]/ifm:vrf-name"/>
+          <key value="name"/>
+          <description>
+            <text>Configure MGMD on an interface.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the type and number of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable protocols on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-source-policy-enable">
+            <type name="boolean"/>
+            <must condition="../ip-source-policy-enable='false' or ../ip-source-policy-name"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable a policy for filtering IGMP Report messages based on host addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-source-policy-name">
+            <when condition="../ip-source-policy-enable='true'"/>
+            <type name="leafref">
+              <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic'"/>
+            <description>
+              <text>Configure an ACL that defines a host addresses range. The value is an integer ranging from 2000 to 2999, or a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="query-interval">
+            <type name="uint32">
+              <range value="1..18000"/>
+            </type>
+            <units name="s"/>
+            <default value="125"/>
+            <description>
+              <text>Specify the interval at which the router sends general query messages.</text>
+            </description>
+          </leaf>
+          <leaf name="query-response-interval">
+            <type name="uint32">
+              <range value="1..125"/>
+            </type>
+            <units name="s"/>
+            <default value="10"/>
+            <description>
+              <text>Specify the maximum time for the response to a query message. This time is used to control the deadline of a host's group membership feedback.</text>
+            </description>
+          </leaf>
+          <leaf name="robustness">
+            <type name="uint32">
+              <range value="2..5"/>
+            </type>
+            <default value="2"/>
+            <description>
+              <text>Specify the number of times for retransmitting messages to avoid packet loss.</text>
+            </description>
+          </leaf>
+          <leaf name="version">
+            <ext:operation-exclude value="update">
+              <when condition="../on-demand-enable='true'"/>
+              <description>
+                <text>The version configuration cannot be changed when On-Demand is running on the interface.</text>
+              </description>
+            </ext:operation-exclude>
+            <type name="uint32">
+              <range value="1..2"/>
+            </type>
+            <default value="2"/>
+            <description>
+              <text>Specify the version of IGMP or MLD running on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="last-member-query-interval">
+            <type name="uint32">
+              <range value="1..25"/>
+            </type>
+            <units name="s"/>
+            <default value="1"/>
+            <description>
+              <text>Specify the interval at which the querier sends last-member query messages. This parameter makes sense only when the current querier runs IGMPv2, IGMPv3 or MLD.</text>
+            </description>
+          </leaf>
+          <leaf name="require-router-alert">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable an interface to process messages whose IP headers contain Router-Alert options.</text>
+            </description>
+          </leaf>
+          <leaf name="send-router-alert">
+            <type name="boolean"/>
+            <default value="true"/>
+            <description>
+              <text>Enable/disable an interface to send the messages with Router-Alert options in the IP headers.</text>
+            </description>
+          </leaf>
+          <leaf name="other-querier-present-time">
+            <type name="uint32">
+              <range value="60..300"/>
+            </type>
+            <units name="s"/>
+            <description>
+              <text>Set the Keepalive period for other queriers on an interface. The value ranges from 60 to 300, in second.</text>
+            </description>
+          </leaf>
+          <leaf name="immediately-leave">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable an interface that receives a leave message of a certain group to immediately delete the corresponding group records, without sending a last-member query message.</text>
+            </description>
+          </leaf>
+          <leaf name="immediately-leave-policy">
+            <when condition="../immediately-leave='true'"/>
+            <type name="leafref">
+              <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+            <description>
+              <text>Configure an ACL that defines a multicast group range. The basic ACL number ranges from 2000 to 2999, and the advanced ACL number ranges from 3000 to 3999. The name is a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="on-demand-enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable records about the groups that the interface joins never to age. By default, the group records age periodically. 1. This command is applicable to IGMPv2, IGMPv3, and MLD only. 2. This command can be used on the querier only.</text>
+            </description>
+          </leaf>
+          <leaf name="entry-limit">
+            <type name="uint32">
+              <range value="1..16384"/>
+            </type>
+            <description>
+              <text>Specify the maximum number of entries that the current interface can create.</text>
+            </description>
+          </leaf>
+          <leaf name="entry-limit-acl-name">
+            <when condition="../entry-limit&gt;0"/>
+            <type name="leafref">
+              <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+            <description>
+              <text>Specify the range of multicast groups, the number of MLD entries corresponding to which needs not be limited. The basic ACL number ranges from 2000 to 2999. The basic ACL filters group addresses only, without distinguishing (*, G) entries and (S, G) entries; the advanced ACL number ranges from 3000 to 3999. The advanced ACL filters (S, G) entries of the interface only. The name is a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="ssm-mapping-enable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable SSM mapping on an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-acl-name">
+            <type name="leafref">
+              <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+            <description>
+              <text>Set a filter for multicast groups on an interface to control the range of multicast groups that hosts can join. The basic ACL number ranges from 2000 to 2999, and the advanced ACL number ranges from 3000 to 3999. The name is a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <leaf name="group-acl-version">
+            <when condition="../group-acl-name"/>
+            <type name="uint32">
+              <range value="1..2"/>
+            </type>
+            <description>
+              <text>Forbids hosts that use a specified version to join the multicast group. The version can be specified in this command only after a multicast filtering policy is configured.</text>
+            </description>
+          </leaf>
+          <leaf name="query-acl-name">
+            <type name="leafref">
+              <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+            </type>
+            <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic'"/>
+            <description>
+              <text>Configure an ACL that defines a host addresses range. The value is an integer ranging from 2000 to 2999, or a case-sensitive string.</text>
+            </description>
+          </leaf>
+          <uses name="interface-status"/>
+        </list>
+      </container>
+      <container name="static-groups">
+        <description>
+          <text>List of static multicast groups configurations on interfaces.</text>
+        </description>
+        <list name="static-group">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ifm:vrf-name"/>
+          <key value="interface group-address is-source-address source-address is-mask-length mask-length"/>
+          <description>
+            <text>Configure a static multicast group.</text>
+          </description>
+          <leaf name="interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the name of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-address">
+            <type name="inet:ipv6-address-no-zone">
+              <pattern value="[Ff]{2}[0-9A-Fa-f][03-9a-fA-F].+"/>
+            </type>
+            <description>
+              <text>Specify the address of a multicast group. In batch configuration mode, this parameter specifies the start multicast group address. In the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx, among which x ranges from 0 to F and A can be 0, or in the range of 3 to F.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-address">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to configure an address for the multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <must condition="../source-address='::' or ../is-source-address='true'"/>
+            <must condition="../source-address!='::' or ../is-source-address='false'"/>
+            <description>
+              <text>Specify the address of a multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="is-mask-length">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to specify the length for the step mask of a multicast group address in batch configuration mode.</text>
+            </description>
+          </leaf>
+          <leaf name="mask-length">
+            <type name="uint32">
+              <range value="0..128"/>
+            </type>
+            <must condition="../mask-length=0 or ../is-mask-length='true'"/>
+            <description>
+              <text>Specify the mask length of a multicast group address. In the case of an IPv6 address, the mask length is 16/32/64/128.</text>
+            </description>
+          </leaf>
+          <leaf name="total-number">
+            <when condition="../is-mask-length='true'"/>
+            <type name="uint32">
+              <range value="2..512"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specify the number of multicast group addresses in batch configuration mode.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="dot1q-static-groups">
+        <description>
+          <text>List of static multicast groups on dot1q-termination interfaces.</text>
+        </description>
+        <list name="dot1q-static-group">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ifm:vrf-name"/>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination"/>
+          <must condition="begin-vid&lt;=end-vid"/>
+          <key value="interface group-address is-source-address source-address is-mask-length mask-length begin-vid end-vid"/>
+          <description>
+            <text>Configure a static multicast group on a dot1q-termination interface.</text>
+          </description>
+          <leaf name="interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the name of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-address">
+            <type name="inet:ipv6-address-no-zone">
+              <pattern value="[Ff]{2}[0-9A-Fa-f][03-9a-fA-F].+"/>
+            </type>
+            <description>
+              <text>Specify the address of a multicast group. In batch configuration mode, this parameter specifies the start multicast group address. In the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx, among which x ranges from 0 to F and A can be 0, or in the range of 3 to F.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-address">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to configure an address for the multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <must condition="../source-address='::' or ../is-source-address='true'"/>
+            <must condition="../source-address!='::' or ../is-source-address='false'"/>
+            <description>
+              <text>Specify the address of a multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="is-mask-length">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to specify the length for the step mask of a multicast group address in batch configuration mode.</text>
+            </description>
+          </leaf>
+          <leaf name="mask-length">
+            <type name="uint32">
+              <range value="0..128"/>
+            </type>
+            <must condition="(../is-mask-length='true' and ../mask-length&gt;=9) or (../is-mask-length='false' and ../mask-length=0)"/>
+            <description>
+              <text>Specify the step mask length of a multicast group address. An IPv4 address uses a mask with a length from 4 to 32 bits. An IPv6 address uses a mask with a length of 16, 32, 64, or 128 bits.</text>
+            </description>
+          </leaf>
+          <leaf name="begin-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the start DOT1Q tag.</text>
+            </description>
+          </leaf>
+          <leaf name="end-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the end DOT1Q tag.</text>
+            </description>
+          </leaf>
+          <leaf name="group-number">
+            <when condition="../is-mask-length='true'"/>
+            <type name="uint32">
+              <range value="2..512"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specify the number of multicast group addresses configured in a batch.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="qinq-static-groups">
+        <description>
+          <text>List of static multicast groups configuration on qinq-termination interfaces.</text>
+        </description>
+        <list name="qinq-static-group">
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ifm:vrf-name"/>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/interface]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <must condition="ce-begin-vid&lt;=ce-end-vid"/>
+          <key value="interface group-address is-source-address source-address is-mask-length mask-length pe-vid ce-begin-vid ce-end-vid"/>
+          <description>
+            <text>Configure a static multicast group.</text>
+          </description>
+          <leaf name="interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Specify the name of an interface.</text>
+            </description>
+          </leaf>
+          <leaf name="group-address">
+            <type name="inet:ipv6-address-no-zone">
+              <pattern value="[Ff]{2}[0-9A-Fa-f][03-9a-fA-F].+"/>
+            </type>
+            <description>
+              <text>Specify the address of a multicast group. In batch configuration mode, this parameter specifies the start multicast group address. In the case of an IPv6 address, the value is in hexadecimal notation and in the format of FFxA:xxxx:xxxx::xxxx, among which x ranges from 0 to F and A can be 0, or in the range of 3 to F.</text>
+            </description>
+          </leaf>
+          <leaf name="is-source-address">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to configure an address for the multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <must condition="../source-address='::' or ../is-source-address='true'"/>
+            <must condition="../source-address!='::' or ../is-source-address='false'"/>
+            <description>
+              <text>Specify the address of a multicast source.</text>
+            </description>
+          </leaf>
+          <leaf name="is-mask-length">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable a device to specify the length for the step mask of a multicast group address in batch configuration mode.</text>
+            </description>
+          </leaf>
+          <leaf name="mask-length">
+            <type name="uint32">
+              <range value="0..128"/>
+            </type>
+            <must condition="(../is-mask-length='true' and ../mask-length&gt;=9) or (../is-mask-length='false' and ../mask-length=0)"/>
+            <description>
+              <text>Specify the step mask length of a multicast group address. An IPv4 address uses a mask with a length from 4 to 32 bits. An IPv6 address uses a mask with a length of 16, 32, 64, or 128 bits.</text>
+            </description>
+          </leaf>
+          <leaf name="pe-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>QINQ PE ID in an outer VLAN tag.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-begin-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the start QINQ CE ID.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-end-vid">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Specify the end QINQ CE ID.</text>
+            </description>
+          </leaf>
+          <leaf name="group-number">
+            <when condition="../is-mask-length='true'"/>
+            <type name="uint32">
+              <range value="2..512"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specify the number of multicast group addresses configured in a batch.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <uses name="display-static-group"/>
+      <uses name="display-group"/>
+    </container>
+  </augment>
+  <ext:task-name value="igmp"/>
+</module>

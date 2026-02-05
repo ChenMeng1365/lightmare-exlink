@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="huawei-dhcp-snooping"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:dhcp="urn:huawei:yang:huawei-dhcp"
+           xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <belongs-to module="huawei-dhcp">
+    <prefix value="dhcp"/>
+  </belongs-to>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for managing DHCP snooping.</text>
+  </description>
+  <revision date="2020-02-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="dhcp-snooping-port">
+    <type name="enumeration">
+      <enum name="bootps">
+        <value value="0"/>
+        <description>
+          <text>Bootps(67).</text>
+        </description>
+      </enum>
+      <enum name="bootpc">
+        <value value="1"/>
+        <description>
+          <text>Bootpc(68).</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of DHCP snooping port.</text>
+    </description>
+  </typedef>
+  <grouping name="dhcp-snooping-type">
+    <description>
+      <text>Configure DHCP snooping attributes.</text>
+    </description>
+    <container name="global">
+      <must condition="(not (user-bind-auto-save-enable='true') and not (user-bind-file-name)) or (user-bind-auto-save-enable='true' and user-bind-file-name)"/>
+      <description>
+        <text>Configure global attributes of DHCP snooping.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DHCP snooping globally.</text>
+        </description>
+      </leaf>
+      <leaf name="server-detect-enable">
+        <when condition="../enable='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the check on bogus DHCP servers.</text>
+        </description>
+      </leaf>
+      <leaf name="user-bind-auto-save-enable">
+        <when condition="../enable='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable automatic saving of DHCP snooping binding entries.</text>
+        </description>
+      </leaf>
+      <leaf name="user-bind-file-name">
+        <when condition="../enable='true' and ../user-bind-auto-save-enable='true'"/>
+        <type name="string">
+          <length value="1..56"/>
+          <pattern value="(cfcard:/dhcp/\S+\.tbl)"/>
+        </type>
+        <description>
+          <text>File name of saving the snooping binding table.</text>
+        </description>
+      </leaf>
+      <leaf name="alarm-threshold">
+        <when condition="../enable='true'"/>
+        <type name="uint16">
+          <range value="1..1000"/>
+        </type>
+        <default value="100"/>
+        <description>
+          <text>Global alarm threshold for DHCP packets.</text>
+        </description>
+      </leaf>
+      <leaf name="arp-detect-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable ARP detection for DHCP users based on DHCP snooping binding entries.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-strict-check-enable">
+        <when condition="../enable='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC strict check.</text>
+        </description>
+      </leaf>
+      <leaf name="unicast-cpu-forward-disable">
+        <when condition="../enable='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable CPU forwarding for DHCP snooping unicast packets.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="white-lists">
+      <description>
+        <text>List of whitelists.</text>
+      </description>
+      <list name="white-list">
+        <key value="white-list-name"/>
+        <max-elements value="8"/>
+        <description>
+          <text>Configure a whitelist.</text>
+        </description>
+        <leaf name="white-list-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Whitelist name.</text>
+          </description>
+        </leaf>
+        <leaf name="apply-flag">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable to determine whether to use whitelists.</text>
+          </description>
+        </leaf>
+        <container name="white-rules">
+          <description>
+            <text>List of whitelist rules.</text>
+          </description>
+          <list name="white-rule">
+            <must condition="(source-ip and source-mask and destination-address and destination-mask) or (not (source-ip) and not (source-mask) and destination-address and destination-mask) or (source-ip and source-mask and not (destination-address) and not (destination-mask))"/>
+            <key value="rule-id"/>
+            <unique tag="source-ip source-mask destination-address destination-mask source-port destination-port"/>
+            <max-elements value="1023"/>
+            <description>
+              <text>Configure a whitelist rule.</text>
+            </description>
+            <leaf name="rule-id">
+              <type name="uint16">
+                <range value="1..1023"/>
+              </type>
+              <description>
+                <text>Whitelist rule ID.</text>
+              </description>
+            </leaf>
+            <leaf name="source-ip">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source address.</text>
+              </description>
+            </leaf>
+            <leaf name="source-mask">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source address mask.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Destination address.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-mask">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Destination address mask.</text>
+              </description>
+            </leaf>
+            <leaf name="source-port">
+              <type name="dhcp-snooping-port"/>
+              <description>
+                <text>Source port.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-port">
+              <type name="dhcp-snooping-port"/>
+              <description>
+                <text>Destination port.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </grouping>
+</submodule>

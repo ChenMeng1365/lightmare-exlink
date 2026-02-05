@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-te"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:te="urn:huawei:yang:huawei-te"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance">
+  <namespace uri="urn:huawei:yang:huawei-te"/>
+  <prefix value="te"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <include module="huawei-te-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Specifies the traffic engineering configuration.</text>
+  </description>
+  <revision date="2020-04-02">
+    <description>
+      <text>Fixed the mode node condition for explicit path.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-28">
+    <description>
+      <text>Fixed some problems.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-10">
+    <description>
+      <text>Fixed some nodes description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-13">
+    <description>
+      <text>Add te attribute global configuration.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-06-14">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="mpls-te"/>
+  <container name="te">
+    <description>
+      <text>TE attribute.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure the global TE information.</text>
+      </description>
+      <leaf name="te-attribute-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable TE attribute.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv6-router-id">
+        <type name="inet:ipv6-address"/>
+        <description>
+          <text>TE IPv6 Router ID.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="explicit-paths">
+      <description>
+        <text>List of explicit path.</text>
+      </description>
+      <list name="explicit-path">
+        <key value="name"/>
+        <description>
+          <text>Configure explicit path. When a TE LSP is to be established, specify route hop constraints for the LSP.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..128"/>
+            <pattern value="[^ \?]*"/>
+          </type>
+          <description>
+            <text>Explicit path name.</text>
+          </description>
+        </leaf>
+        <container name="hops">
+          <description>
+            <text>List of Route hop.</text>
+          </description>
+          <list name="hop">
+            <key value="index"/>
+            <unique tag="address"/>
+            <max-elements value="96"/>
+            <description>
+              <text>Configure route hop. Operations such as CFG restart and mixed command configuration may cause the index value to change.</text>
+            </description>
+            <leaf name="index">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <description>
+                <text>Route hop index.</text>
+              </description>
+            </leaf>
+            <leaf name="mode">
+              <ext:operation-exclude value="update"/>
+              <type name="er-hop-mode"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Route hop mode, IPv4 or IPv6 address, segment label or SID IPv6 label.</text>
+              </description>
+            </leaf>
+            <leaf name="er-hop-type">
+              <when condition="../mode='ipv4-ipv6-address'"/>
+              <type name="er-hop-type"/>
+              <default value="include-strict"/>
+              <description>
+                <text>Route hop type. Stictly included: A route hop must be included in a LSP path. Loosely included: A route hop is included in a LSP path if the hop meets path constraints and excluded if the hop does not meet path constraints. Excluded: A route hop is excluded fron the LSP path.</text>
+              </description>
+              <ext:operation-exclude value="update">
+                <description>
+                  <text>The route hop type could not be updated.</text>
+                </description>
+              </ext:operation-exclude>
+            </leaf>
+            <leaf name="interface-type">
+              <when condition="../mode='ipv4-ipv6-address' and ../er-hop-type!='exclude'"/>
+              <type name="er-hop-interface-type"/>
+              <default value="default"/>
+              <description>
+                <text>Route hop interface type.</text>
+              </description>
+            </leaf>
+            <leaf name="address-type">
+              <when condition="../mode='ipv4-ipv6-address'"/>
+              <type name="te-hop-address-type"/>
+              <default value="ipv4"/>
+              <description>
+                <text>Address type. IPv4 is only supported.</text>
+              </description>
+            </leaf>
+            <leaf name="address">
+              <when condition="../mode='ipv4-ipv6-address'"/>
+              <type name="inet:ip-address"/>
+              <mandatory value="true"/>
+              <description>
+                <text>IP address of a route hop.</text>
+              </description>
+            </leaf>
+            <leaf name="sid-label-type">
+              <when condition="../mode='sid-label'"/>
+              <type name="er-sid-label-type"/>
+              <default value="adjacency"/>
+              <description>
+                <text>SID label type of the explicit route hop.</text>
+              </description>
+            </leaf>
+            <leaf name="sid-label">
+              <when condition="../sid-label-type"/>
+              <type name="uint32">
+                <range value="16..1048575"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>SID label of the explicit route hop.</text>
+              </description>
+            </leaf>
+            <leaf name="sid-ipv6">
+              <when condition="../mode='sid-ipv6'"/>
+              <type name="inet:ipv6-address-no-zone"/>
+              <mandatory value="true"/>
+              <description>
+                <text>SID IPv6 label of the explicit route hop.</text>
+              </description>
+            </leaf>
+            <leaf name="sid-ipv6-label-type">
+              <when condition="../mode='sid-ipv6'"/>
+              <type name="er-sid-ipv6-label-type"/>
+              <default value="none"/>
+              <description>
+                <text>SID IPv6 label type of the explicit route hop.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="affinity-define">
+      <presence value="Enter path-constraint affinity-mapping view."/>
+      <description>
+        <text>Configure affinity define function.</text>
+      </description>
+      <leaf name="description">
+        <type name="string">
+          <length value="1..80"/>
+        </type>
+        <description>
+          <text>Description the affinity mapping information.</text>
+        </description>
+      </leaf>
+      <container name="affinity-mappings">
+        <description>
+          <text>List of the affinity mappings configuration.</text>
+        </description>
+        <list name="affinity-mapping">
+          <key value="attribute-name"/>
+          <unique tag="bit-sequence"/>
+          <description>
+            <text>Configure the affinity mapping.</text>
+          </description>
+          <leaf name="attribute-name">
+            <type name="string">
+              <length value="1..31"/>
+              <pattern value="[^ ?]*"/>
+            </type>
+            <description>
+              <text>Configure the attribute name.</text>
+            </description>
+          </leaf>
+          <leaf name="bit-sequence">
+            <type name="uint32">
+              <range value="0..127"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Configure the bit sequence.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>TE Configuration information augment to network instance.</text>
+    </description>
+    <container name="te">
+      <description>
+        <text>Configure TE function information.</text>
+      </description>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,409 @@
+module: zxr10-mac
+  +--ro state
+  |  +--ro mac
+  |     +--ro mac-vpls-tables
+  |     |  +--ro mac-vpls-table* [instance-name vlan-id mac-address]
+  |     |     +--ro instance-name     string
+  |     |     +--ro vlan-id           uint16
+  |     |     +--ro mac-address       ncd:mac-address
+  |     |     +--ro if-name?          ncd:ifname
+  |     |     +--ro multiflag?        enumeration
+  |     |     +--ro evpn-tunnel-id?   uint32
+  |     |     +--ro vni?              uint32
+  |     |     +--ro out-label?        uint32
+  |     |     +--ro sid?              ncd:ipv6-address
+  |     |     +--ro next-hop
+  |     |     |  +--ro (next-hop-ip)?
+  |     |     |     +--:(ipv4)
+  |     |     |     |  +--ro ipv4-address?   ncd:ipv4-address
+  |     |     |     +--:(ipv6)
+  |     |     |        +--ro ipv6-address?   ncd:ipv6-address
+  |     |     +--ro esi?              string
+  |     +--ro mac-tables
+  |     |  +--ro mac-table* [vlan-id mac-address]
+  |     |     +--ro vlan-id        uint16
+  |     |     +--ro mac-address    ncd:mac-address
+  |     |     +--ro if-name?       ncd:ifname
+  |     |     +--ro multiflag?     enumeration
+  |     |     +--ro nickname?      uint16
+  |     +--ro vpls-port-states
+  |     |  +--ro vpls-port-state* [instance-name if-name]
+  |     |     +--ro instance-name    string
+  |     |     +--ro if-name          ncd:ifname
+  |     |     +--ro forward-state?   enumeration
+  |     |     +--ro recovery-time?   uint32
+  |     +--ro vpls-states
+  |     |  +--ro vpls-state* [instance-name]
+  |     |     +--ro instance-name    string
+  |     |     +--ro forward-state?   enumeration
+  |     |     +--ro mac-count?       uint32
+  |     +--ro global-status
+  |     |  +--ro vpls-mac-count?          uint32
+  |     |  +--ro vpls-ac-mac-count?       uint32
+  |     |  +--ro vpls-pw-mac-count?       uint32
+  |     |  +--ro vpls-evpn-mac-count?     uint32
+  |     |  +--ro vpls-filter-mac-count?   uint32
+  |     |  +--ro is-protected?            enumeration
+  |     |  +--ro history-max-num?         uint32
+  |     +--ro mac-count-tables
+  |     |  +--ro mac-count-table* [multiflag]
+  |     |     +--ro multiflag      enumeration
+  |     |     +--ro vlan-id?       uint16
+  |     |     +--ro mac-address?   ncd:mac-address
+  |     |     +--ro if-name?       ncd:ifname
+  |     |     +--ro nickname?      uint16
+  |     |     +--ro count?         uint32
+  |     o--ro mac-vxlan-tables-expand
+  |     |  +--ro mac-vxlan-table* [vlan-id mac-address vxlan-id]
+  |     |     +--ro vlan-id             uint16
+  |     |     +--ro mac-address         ncd:mac-address
+  |     |     +--ro vxlan-id            uint32
+  |     |     +--ro tunnel-id?          uint32
+  |     |     +--ro if-name?            ncd:ifname
+  |     |     +--ro multiflag?          enumeration
+  |     |     +--ro internal-vlan-id?   uint16
+  |     |     +--ro external-vlan-id?   uint16
+  |     |     +--ro ip-of-vxlan-mac
+  |     |     |  +--ro (remote-ip)?
+  |     |     |     +--:(ipv4)
+  |     |     |     |  +--ro ipv4-address?   ncd:ipv4-address
+  |     |     |     +--:(ipv6)
+  |     |     |        +--ro ipv6-address?   ncd:ipv6-address
+  |     |     +--ro esi?                string
+  |     o--ro mac-vxlan-tables
+  |        o--ro mac-vxlan-table* [vlan-id mac-address]
+  |           +--ro vlan-id               uint16
+  |           +--ro mac-address           ncd:mac-address
+  |           +--ro if-name?              ncd:ifname
+  |           +--ro multiflag?            enumeration
+  |           +--ro (remote-ip)?
+  |           |  +--:(ipv4)
+  |           |  |  +--ro ipv4-address?   ncd:ipv4-address
+  |           |  +--:(ipv6)
+  |           |     +--ro ipv6-address?   ncd:ipv6-address
+  |           +--ro vxlan-id?             uint32
+  +--rw configuration
+  |  +--rw mac
+  |     +--rw vpls-instance-config
+  |     |  +--rw vpls-config* [instance-name]
+  |     |     +--rw instance-name                       string
+  |     |     o--rw l2protocol-control-policy
+  |     |     |  +--rw global-policy?                         enumeration
+  |     |     |  +--rw zdp-ztp?                               enumeration
+  |     |     |  +--rw dot1x?                                 enumeration
+  |     |     |  +--rw lldp?                                  enumeration
+  |     |     |  +--rw vtp?                                   enumeration
+  |     |     |  +--rw cdp?                                   enumeration
+  |     |     |  +--rw all-bridge-multicast?                  enumeration
+  |     |     |  +--rw lacp?                                  enumeration
+  |     |     |  +--rw (stp)?
+  |     |     |  |  +--:(not-tunnelled)
+  |     |     |  |  |  +--rw stp-not-tunnelled-flag?          enumeration
+  |     |     |  |  +--:(tunnelled)
+  |     |     |  |  |  +--rw stp-tunnelled-flag?              enumeration
+  |     |     |  |  +--:(tunnelled-monitored)
+  |     |     |  |     +--rw stp-tunnelled-monitored-flag?    enumeration
+  |     |     |  +--rw (zesr)?
+  |     |     |  |  +--:(not-tunnelled)
+  |     |     |  |  |  +--rw zesr-not-tunnelled-flag?         enumeration
+  |     |     |  |  +--:(tunnelled)
+  |     |     |  |  |  +--rw zesr-tunnelled-flag?             enumeration
+  |     |     |  |  +--:(tunnelled-monitored)
+  |     |     |  |     +--rw zesr-tunnelled-monitored-flag?   enumeration
+  |     |     |  +--rw pvst-plus?                             enumeration
+  |     |     |  +--rw udld?                                  enumeration
+  |     |     |  +--rw mstp?                                  enumeration
+  |     |     |  +--rw rstp?                                  enumeration
+  |     |     |  +--rw gvrp?                                  enumeration
+  |     |     |  +--rw pbb-te?                                enumeration
+  |     |     |  +--rw mac-in-mac?                            enumeration
+  |     |     |  +--rw efm?                                   enumeration
+  |     |     |  +--rw cfm?                                   enumeration
+  |     |     |  +--rw y1731?                                 enumeration
+  |     |     |  +--rw user-protocol-name?                    string
+  |     |     |  +--rw garp?                                  enumeration
+  |     |     |  +--rw gmrp?                                  enumeration
+  |     |     |  +--rw dldp?                                  enumeration
+  |     |     +--rw mac-moving
+  |     |     |  +--rw suppressible?         enumeration
+  |     |     |  +--rw mac-moving-count!
+  |     |     |  |  +--rw max-count                uint32
+  |     |     |  |  +--rw suppress-by-max-count    empty
+  |     |     |  +--rw max-frequency?        uint32
+  |     |     |  +--rw auto-recovery-time?   uint32
+  |     |     |  +--rw sampling-period?      uint32
+  |     |     |  +--rw anti-move?            enumeration
+  |     |     |  +--rw black-hole
+  |     |     |     +--rw source-filter?        enumeration
+  |     |     |     +--rw destination-filter?   enumeration
+  |     |     +--rw mac-learning
+  |     |     |  +--rw learn?                        enumeration
+  |     |     |  +--rw remote-no-learning?           enumeration
+  |     |     |  +--rw rate-limited?                 enumeration
+  |     |     |  +--rw max-frequency?                uint32
+  |     |     |  +--rw sampling-period?              uint32
+  |     |     |  +--rw auto-recovery-time?           uint32
+  |     |     |  +--rw evpn-local-mac-advertising?   enumeration
+  |     |     |  +--rw evpn-remote-mac-receiving?    enumeration
+  |     |     +--rw mac-entries!
+  |     |     |  +--rw maximum-entries    uint32
+  |     |     |  +--rw maximum-action     enumeration
+  |     |     +--rw l2protocol-control-policy-expand
+  |     |     |  +--rw global-policy?            enumeration
+  |     |     |  +--rw zdp-ztp?                  enumeration
+  |     |     |  +--rw vtp?                      enumeration
+  |     |     |  +--rw cdp?                      enumeration
+  |     |     |  +--rw all-bridge-multicast?     enumeration
+  |     |     |  +--rw dot1x?                    enumeration
+  |     |     |  +--rw zesr?                     enumeration
+  |     |     |  +--rw lacp?                     enumeration
+  |     |     |  +--rw lldp?                     enumeration
+  |     |     |  +--rw stp?                      enumeration
+  |     |     |  +--rw pvst-plus?                enumeration
+  |     |     |  +--rw udld?                     enumeration
+  |     |     |  +--rw mstp?                     enumeration
+  |     |     |  +--rw rstp?                     enumeration
+  |     |     |  +--rw gvrp?                     enumeration
+  |     |     |  +--rw pbb-te?                   enumeration
+  |     |     |  +--rw mac-in-mac?               enumeration
+  |     |     |  +--rw efm?                      enumeration
+  |     |     |  +--rw cfm?                      enumeration
+  |     |     |  +--rw y1731?                    enumeration
+  |     |     |  +--rw garp?                     enumeration
+  |     |     |  +--rw gmrp?                     enumeration
+  |     |     |  +--rw dldp?                     enumeration
+  |     |     |  +--rw dot3x?                    enumeration
+  |     |     |  +--rw erps?                     enumeration
+  |     |     |  +--rw l2bfd?                    enumeration
+  |     |     |  +--rw user-protocol-template!
+  |     |     |     +--rw user-protocol-name      string
+  |     |     |     +--rw user-protocol-action    enumeration
+  |     |     +--rw mac-age
+  |     |        +--rw aging-time-local?    uint16
+  |     |        +--rw aging-time-remote?   uint16
+  |     +--rw vpls-port-config
+  |     |  +--rw mac-vfi-port-config* [if-name instance-name]
+  |     |     +--rw if-name                     ncd:ifname
+  |     |     +--rw instance-name               string
+  |     |     +--rw learn-priority?             enumeration
+  |     |     +--rw move-blockable?             enumeration
+  |     |     +--rw mac-entries!
+  |     |     |  +--rw maximum                   uint32
+  |     |     |  +--rw max-mac-entries-action    enumeration
+  |     |     +--rw black-hole-mac-max-count?   uint8
+  |     +--rw vpls-static-vxlan-tunnel-config
+  |     |  +--rw static-vxlan-tunnel-config* [if-name]
+  |     |     +--rw if-name        ncd:ifname
+  |     |     +--rw mac-entries!
+  |     |        +--rw maximum                   uint32
+  |     |        +--rw max-mac-entries-action    enumeration
+  |     +--rw vpls-pw-config
+  |     |  +--rw mac-vfi-pw-config* [pw-name instance-name]
+  |     |     +--rw pw-name               ncd:ifname
+  |     |     +--rw instance-name         string
+  |     |     +--rw traffic-rate-limit
+  |     |        +--rw traffic-maximum?             uint32
+  |     |        +--rw unicast-traffic
+  |     |        |  +--rw maximum?   uint32
+  |     |        |  +--rw action?    enumeration
+  |     |        +--rw unknown-unicast-traffic
+  |     |        |  +--rw maximum?   uint32
+  |     |        |  +--rw action?    enumeration
+  |     |        +--rw unknown-multicast-traffic
+  |     |        |  +--rw maximum?   uint32
+  |     |        |  +--rw action?    enumeration
+  |     |        +--rw broadcast-traffic
+  |     |        |  +--rw maximum?   uint32
+  |     |        |  +--rw action?    enumeration
+  |     |        +--rw multicast-traffic
+  |     |           +--rw maximum?   uint32
+  |     |           +--rw action?    enumeration
+  |     +--rw permanent-mac-address
+  |     |  +--rw mac-permanent-mac-address-vpn-vlan
+  |     |  |  +--rw permanent-mac-address-vpn-vlan* [vlan-id mac-address instance-name]
+  |     |  |     +--rw vlan-id              uint16
+  |     |  |     +--rw mac-address          ncd:mac-address
+  |     |  |     +--rw instance-name        string
+  |     |  |     +--rw (mac-type)
+  |     |  |        +--:(permanent)
+  |     |  |        |  +--rw flag           enumeration
+  |     |  |        |  +--rw interface
+  |     |  |        |     +--rw (iforvlanif)
+  |     |  |        |        +--:(if)
+  |     |  |        |        |  +--rw if-name              ncd:ifname
+  |     |  |        |        +--:(vlanif)
+  |     |  |        |        |  +--rw vlanif               ncd:ifname
+  |     |  |        |        |  +--rw phy-if-name          ncd:ifname
+  |     |  |        |        +--:(vxlan-tunnel)
+  |     |  |        |        |  +--rw vxlan-tunnel-name    ncd:ifname
+  |     |  |        |        |  +--rw vni                  uint32
+  |     |  |        |        +--:(esi)
+  |     |  |        |           +--rw type                 enumeration
+  |     |  |        |           +--rw octets               string
+  |     |  |        +--:(filter)
+  |     |  |           +--rw filter-flag    enumeration
+  |     |  +--rw mac-permanent-mac-address-no-vlan
+  |     |  |  +--rw permanent-mac-address-no-vlan* [mac-address instance-name]
+  |     |  |     +--rw mac-address          ncd:mac-address
+  |     |  |     +--rw instance-name        string
+  |     |  |     +--rw (mac-type)
+  |     |  |        +--:(permanent)
+  |     |  |        |  +--rw flag           enumeration
+  |     |  |        |  +--rw interface
+  |     |  |        |     +--rw (iforvlanif)
+  |     |  |        |        +--:(if)
+  |     |  |        |        |  +--rw if-name              ncd:ifname
+  |     |  |        |        +--:(vlanif)
+  |     |  |        |        |  +--rw vlanif               ncd:ifname
+  |     |  |        |        |  +--rw phy-if-name          ncd:ifname
+  |     |  |        |        +--:(vxlan-tunnel)
+  |     |  |        |        |  +--rw vxlan-tunnel-name    ncd:ifname
+  |     |  |        |        |  +--rw vni                  uint32
+  |     |  |        |        +--:(esi)
+  |     |  |        |           +--rw type                 enumeration
+  |     |  |        |           +--rw octets               string
+  |     |  |        +--:(filter)
+  |     |  |           +--rw filter-flag    enumeration
+  |     |  +--rw mac-permanent-address-no-vpn
+  |     |  |  +--rw permanent-mac-address-no-vpn* [vlan-id mac-address]
+  |     |  |     +--rw mac-address          ncd:mac-address
+  |     |  |     +--rw vlan-id              uint16
+  |     |  |     +--rw (mac-type)
+  |     |  |        +--:(permanent)
+  |     |  |        |  +--rw flag           enumeration
+  |     |  |        |  +--rw outgoing
+  |     |  |        |     +--rw (ifornickname)
+  |     |  |        |        +--:(if)
+  |     |  |        |        |  +--rw if-name     ncd:ifname
+  |     |  |        |        +--:(nickname)
+  |     |  |        |           +--rw nickname    uint16
+  |     |  |        +--:(filter)
+  |     |  |           +--rw filter-flag    enumeration
+  |     |  o--rw mac-permanent-vxlan-mac-address-no-vlan
+  |     |  |  +--rw permanent-vxlan-mac-address-no-vlan* [mac-address vxlan-id]
+  |     |  |     +--rw mac-address                        ncd:mac-address
+  |     |  |     +--rw vxlan-id                           uint32
+  |     |  |     +--rw internal-vlan-id?                  uint16
+  |     |  |     o--rw vtep-name                          ncd:ifname
+  |     |  |     +--rw multiflag                          enumeration
+  |     |  |     o--rw ip-of-vxlan-mac-address-no-vlan
+  |     |  |     |  +--rw (remote-ip)
+  |     |  |     |     +--:(ipv4)
+  |     |  |     |     |  +--rw ipv4-address    ncd:ipv4-address
+  |     |  |     |     +--:(ipv6)
+  |     |  |     |        +--rw ipv6-address    ncd:ipv6-address
+  |     |  |     +--rw vxlan-mac-outgoing
+  |     |  |        +--rw (outgoing)
+  |     |  |           +--:(local-if-name)
+  |     |  |           |  +--rw local-if-name                      ncd:ifname
+  |     |  |           +--:(vtep-name)
+  |     |  |              +--rw vtep-name                          ncd:ifname
+  |     |  |              +--rw ip-of-vxlan-mac-address-no-vlan
+  |     |  |                 +--rw (remote-ip)
+  |     |  |                    +--:(ipv4)
+  |     |  |                    |  +--rw ipv4-address    ncd:ipv4-address
+  |     |  |                    +--:(ipv6)
+  |     |  |                       +--rw ipv6-address    ncd:ipv6-address
+  |     |  o--rw mac-permanent-vxlan-mac-address-vlan
+  |     |  |  +--rw permanent-vxlan-mac-address-vlan* [mac-address vlan-id vxlan-id]
+  |     |  |     +--rw mac-address           ncd:mac-address
+  |     |  |     +--rw vlan-id               uint16
+  |     |  |     +--rw vxlan-id              uint32
+  |     |  |     +--rw multiflag             enumeration
+  |     |  |     +--rw vxlan-mac-outgoing
+  |     |  |        +--rw (outgoing)
+  |     |  |           +--:(local-if-name)
+  |     |  |           |  +--rw local-if-name                   ncd:ifname
+  |     |  |           +--:(vtep-name)
+  |     |  |              +--rw vtep-name                       ncd:ifname
+  |     |  |              +--rw ip-of-vxlan-mac-address-vlan
+  |     |  |                 +--rw (remote-ip)
+  |     |  |                    +--:(ipv4)
+  |     |  |                    |  +--rw ipv4-address    ncd:ipv4-address
+  |     |  |                    +--:(ipv6)
+  |     |  |                       +--rw ipv6-address    ncd:ipv6-address
+  |     |  o--rw mac-permanent-vxlan-mac-address
+  |     |     o--rw permanent-vxlan-mac-address* [mac-address vlan-id]
+  |     |        +--rw mac-address           ncd:mac-address
+  |     |        +--rw vlan-id               uint16
+  |     |        +--rw if-name               ncd:ifname
+  |     |        +--rw multiflag             enumeration
+  |     |        +--rw (remote-ip)
+  |     |        |  +--:(ipv4)
+  |     |        |  |  +--rw ipv4-address    ncd:ipv4-address
+  |     |        |  +--:(ipv6)
+  |     |        |     +--rw ipv6-address    ncd:ipv6-address
+  |     |        +--rw vxlan-id              uint32
+  |     +--rw global-config
+  |     |  +--rw learn-enable?                      enumeration
+  |     |  +--rw max-mac-num?                       uint32
+  |     |  +--rw higig-learn?                       enumeration
+  |     |  +--rw aging-time?                        uint32
+  |     |  +--rw alarm-threshold?                   uint8
+  |     |  +--rw default-priority-movable?          enumeration
+  |     |  +--rw lower-priority-movable?            enumeration
+  |     |  +--rw normal-priority-movable?           enumeration
+  |     |  +--rw higher-priority-movable?           enumeration
+  |     |  +--rw exceed-limit-action?               enumeration
+  |     |  +--rw safe-mode-policy?                  enumeration
+  |     |  +--rw auto-write-topermanent?            enumeration
+  |     |  +--rw auto-write-topermanent-interval?   uint32
+  |     |  +--rw forbidden-mac-reaction?            enumeration
+  |     |  +--rw learn-disable-action?              enumeration
+  |     |  +--rw mac-update-notify?                 enumeration
+  |     |  +--rw mac-notify-interval?               uint32
+  |     |  +--rw notify-max-mac-num?                uint32
+  |     +--rw port-config
+  |     |  +--rw mac-port-config* [if-name]
+  |     |     +--rw if-name                 ncd:ifname
+  |     |     +--rw learn-enable?           enumeration
+  |     |     +--rw max-mac-num?            uint32
+  |     |     +--rw learn-priority?         enumeration
+  |     |     +--rw exceed-limit-action?    enumeration
+  |     |     +--rw safe-mode-policy?       enumeration
+  |     |     +--rw to-permanent-enable?    enumeration
+  |     |     +--rw learn-disable-action?   enumeration
+  |     |     +--rw mac-update-notify?      enumeration
+  |     |     +--rw dampening-policy?       enumeration
+  |     |     +--rw dampening-timeout?      uint32
+  |     +--rw vlan-config
+  |     |  +--rw mac-vlan-config* [vlan-id]
+  |     |     +--rw vlan-id                 uint16
+  |     |     +--rw learn-enable?           enumeration
+  |     |     +--rw max-mac-num?            uint32
+  |     |     +--rw exceed-limit-action?    enumeration
+  |     |     +--rw learn-disable-action?   enumeration
+  |     +--rw forbidden-mac
+  |     |  +--rw mac-forbidden-mac* [session-id]
+  |     |     +--rw session-id     uint32
+  |     |     +--rw mac-address    ncd:mac-address
+  |     +--rw forbidden-bind-port
+  |        +--rw mac-forbidden-bind-port* [if-name session-id]
+  |           +--rw if-name       ncd:ifname
+  |           +--rw session-id    uint32
+  +--ro operation
+     +--ro mac
+        +--ro delete-vpls-dynamic-macs
+        |  +--ro delete-vpls-dynamic-mac* [instace-name]
+        |     +--ro instace-name    string
+        |     +--ro vlan-id?        uint16
+        |     +--ro mac-address?    ncd:mac-address
+        |     +--ro if-name?        ncd:ifname
+        +--ro to-statics
+        |  +--ro to-static* [to-static-flag]
+        |     +--ro to-static-flag    enumeration
+        |     +--ro if-name?          ncd:ifname
+        |     +--ro mac-address?      ncd:mac-address
+        +--ro delete-normal-no-config-mac
+        |  +--ro if-name?       ncd:ifname
+        |  +--ro vlan-id?       uint16
+        |  +--ro mac-address?   ncd:mac-address
+        |  +--ro nickname?      uint16
+        o--ro delete-vxlan-no-config-mac
+        |  +--ro mac-address?   ncd:mac-address
+        |  o--ro vlan-id?       uint16
+        |  +--ro if-name?       ncd:ifname
+        |  +--ro vxlan-id?      uint32
+        +--ro learn-priority-policy!
+           +--ro if-name        ncd:ifname
+           +--ro no-shutdown    empty

@@ -1,0 +1,2674 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-emdi"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:emdi="urn:huawei:yang:huawei-emdi"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l2vpn="urn:huawei:yang:huawei-l2vpn"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:bd="urn:huawei:yang:huawei-bd"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-emdi"/>
+  <prefix value="emdi"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l2vpn">
+    <prefix value="l2vpn"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-bd">
+    <prefix value="bd"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Enhanced Media Delivery Index.</text>
+  </description>
+  <reference>
+    <text>Huawei private.</text>
+  </reference>
+  <revision date="2019-06-27">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="emdi"/>
+  <typedef name="channel-ref">
+    <type name="leafref">
+      <path value="/emdi:emdi/emdi:emdi-channels/emdi:emdi-channel/emdi:channel-name"/>
+    </type>
+    <description>
+      <text>This type is used by data models that need to reference configured channels.</text>
+    </description>
+  </typedef>
+  <container name="emdi">
+    <description>
+      <text>On-board EMDI detection that obtains packet header information to sample multicast quality data.</text>
+    </description>
+    <container name="emdi-enable">
+      <presence value="Enable EMDI"/>
+      <description>
+        <text>Enable/disable EMDI detection.</text>
+      </description>
+      <container name="emdi-global">
+        <description>
+          <text>Configure global EMDI attribute information.</text>
+        </description>
+        <leaf name="age-periods">
+          <type name="uint8">
+            <range value="3..60"/>
+          </type>
+          <default value="10"/>
+          <description>
+            <text>Bier channel statistics age periods.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="emdi-channel-groups">
+        <description>
+          <text>List of configure channel group information. Multiple channels can be bound to a channel group.</text>
+        </description>
+        <list name="emdi-channel-group">
+          <key value="channel-group-name"/>
+          <max-elements value="32"/>
+          <description>
+            <text>Configure channel group information. Multiple channels can be bound to a channel group.</text>
+          </description>
+          <leaf name="channel-group-name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Channel group name.</text>
+            </description>
+          </leaf>
+          <choice name="channel-type">
+            <description>
+              <text>Configure EMDI channel information.</text>
+            </description>
+            <case name="emdi-channel">
+              <description>
+                <text>Configure channel information.</text>
+              </description>
+              <container name="emdi-channels">
+                <description>
+                  <text>List of configure channel information.</text>
+                </description>
+                <list name="emdi-channel">
+                  <key value="channel-name"/>
+                  <max-elements value="2100"/>
+                  <description>
+                    <text>Configure channel information. The group-address and source-address combination of different instances cannot overlap.</text>
+                  </description>
+                  <leaf name="channel-name">
+                    <type name="string">
+                      <length value="1..31"/>
+                    </type>
+                    <description>
+                      <text>Channel name.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="source-address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Multicast IP source address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="group-address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Multicast IP address.</text>
+                    </description>
+                  </leaf>
+                  <choice name="channel-group-parameters">
+                    <description>
+                      <text>EMDI channel group parameters.</text>
+                    </description>
+                    <case name="vpn-name">
+                      <description>
+                        <text>Specify the name of a VPN instance. Multicast traffic is bound to a VPN tunnel.</text>
+                      </description>
+                      <leaf name="vpn-name">
+                        <type name="leafref">
+                          <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+                        </type>
+                        <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'] and ../vpn-name!='_public_'"/>
+                        <description>
+                          <text>Specify the name of a VPN instance. Multicast traffic is bound to a VPN tunnel.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="vlan-id">
+                      <description>
+                        <text>VLAN information. Multicast traffic is bound to VLANs.</text>
+                      </description>
+                      <leaf name="vlan-id">
+                        <type name="uint16">
+                          <range value="1..4094"/>
+                        </type>
+                        <description>
+                          <text>VLAN information. Multicast traffic is bound to VLANs.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="vsi-name">
+                      <description>
+                        <text>Name of a VSI. Multicast traffic is bound to a VSI tunnel.</text>
+                      </description>
+                      <leaf name="vsi-name">
+                        <type name="leafref">
+                          <path value="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:name"/>
+                        </type>
+                        <must condition="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance[l2vpn:name=current()][l2vpn:type='vpls']"/>
+                        <description>
+                          <text>Name of a VSI. Multicast traffic is bound to a VSI tunnel.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="bd-id">
+                      <description>
+                        <text>DB information. Multicast traffic is bound to a BD.</text>
+                      </description>
+                      <leaf name="bd-id">
+                        <type name="leafref">
+                          <path value="/bd:bd/bd:instances/bd:instance/bd:id"/>
+                        </type>
+                        <description>
+                          <text>DB information. Multicast traffic is bound to a BD.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="transit">
+                      <description>
+                        <text>In the P node scenario, enable the transit detection function to ensure that the P node detection function is proper.</text>
+                      </description>
+                      <leaf name="transit">
+                        <type name="empty"/>
+                        <description>
+                          <text>In the P node scenario, enable the transit detection function to ensure that the P node detection function is proper.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                  <leaf name="pt-value">
+                    <type name="uint16">
+                      <range value="25..34 | 96..127"/>
+                    </type>
+                    <must condition="(../clock-rate='clock-90khz') or (../clock-rate!='clock-90khz' and ../pt-value &gt;= 96 and ../pt-value &lt;= 127)"/>
+                    <default value="33"/>
+                    <description>
+                      <text>Payload type. Only payload type (PT) videos are detected.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="clock-rate">
+                    <type name="enumeration">
+                      <enum name="clock-90khz">
+                        <value value="0"/>
+                        <description>
+                          <text>Clock rate 90kHz frequency.</text>
+                        </description>
+                      </enum>
+                      <enum name="clock-27000khz">
+                        <value value="1"/>
+                        <description>
+                          <text>Clock rate 27000kHz frequency.</text>
+                        </description>
+                      </enum>
+                      <enum name="clock-148500khz">
+                        <value value="2"/>
+                        <description>
+                          <text>Clock rate 148500kHz frequency.</text>
+                        </description>
+                      </enum>
+                      <enum name="clock-about-148mhz">
+                        <value value="3"/>
+                        <description>
+                          <text>Clock rate 148.5/1.001MHz frequency.</text>
+                        </description>
+                      </enum>
+                    </type>
+                    <must condition="(../clock-rate='clock-90khz') or (../clock-rate!='clock-90khz' and ../pt-value &gt;= 96 and ../pt-value &lt;= 127)"/>
+                    <default value="clock-90khz"/>
+                    <description>
+                      <text>Clock frequency information.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="uncompressed">
+                    <type name="empty"/>
+                    <description>
+                      <text>Whether non-compressed multicast traffic detection is enabled.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </case>
+            <case name="emdi-bier-channel">
+              <description>
+                <text>Configure bier channel information.</text>
+              </description>
+              <container name="emdi-bier-channels">
+                <description>
+                  <text>List of configure bier channel information.</text>
+                </description>
+                <list name="emdi-bier-channel">
+                  <key value="channel-name"/>
+                  <max-elements value="2100"/>
+                  <description>
+                    <text>Configure bier channel information.</text>
+                  </description>
+                  <leaf name="channel-name">
+                    <type name="string">
+                      <length value="1..31"/>
+                    </type>
+                    <description>
+                      <text>Channel name.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="source-address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Multicast IP source address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="group-address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Multicast IP address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="bier-vpn-name">
+                    <type name="leafref">
+                      <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+                    </type>
+                    <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'] and ../bier-vpn-name!='_public_'"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Specify the name of a VPN instance. Multicast traffic is bound to a VPN tunnel.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="sub-domain">
+                    <type name="uint16">
+                      <range value="0..255"/>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The bier sub-domain.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="bsl">
+                    <type name="enumeration">
+                      <enum name="bsl-64">
+                        <value value="64"/>
+                        <description>
+                          <text>The bit string length is 64.</text>
+                        </description>
+                      </enum>
+                      <enum name="bsl-128">
+                        <value value="128"/>
+                        <description>
+                          <text>The bit string length is 128.</text>
+                        </description>
+                      </enum>
+                      <enum name="bsl-256">
+                        <value value="256"/>
+                        <description>
+                          <text>The bit string length is 256.</text>
+                        </description>
+                      </enum>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The bit string length.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </case>
+          </choice>
+        </list>
+      </container>
+      <container name="emdi-lpu-groups">
+        <description>
+          <text>List of configure Board group information.</text>
+        </description>
+        <list name="emdi-lpu-group">
+          <key value="lpu-group-name"/>
+          <max-elements value="32"/>
+          <description>
+            <text>Configure board group information.</text>
+          </description>
+          <ext:generated-by value="system">
+            <ext:filter value="lpu-group-name='_default_'"/>
+            <description>
+              <text>The default board group named _default_ is automatically generated by the system.</text>
+            </description>
+          </ext:generated-by>
+          <ext:operation-exclude value="update">
+            <ext:filter value="lpu-group-name='_default_'"/>
+            <description>
+              <text>The default board group named _default_ cannot be updated.</text>
+            </description>
+          </ext:operation-exclude>
+          <leaf name="lpu-group-name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Board group name.</text>
+            </description>
+          </leaf>
+          <choice name="bind-lpu">
+            <description>
+              <text>Bind slot &lt;all&gt; or &lt;slot-number&gt;.</text>
+            </description>
+            <case name="bind-all">
+              <description>
+                <text>Bind slot &lt;all&gt;.</text>
+              </description>
+              <container name="bind-all">
+                <description>
+                  <text>Configure bind slot &lt;all&gt;.</text>
+                </description>
+                <leaf name="all">
+                  <type name="empty"/>
+                  <description>
+                    <text>Bind slot &lt;all&gt;.</text>
+                  </description>
+                </leaf>
+              </container>
+            </case>
+            <case name="bind-slots">
+              <description>
+                <text>Bind slot &lt;slot-number&gt;.</text>
+              </description>
+              <leaf-list name="slot">
+                <type name="string">
+                  <length value="1..15"/>
+                </type>
+                <max-elements value="128"/>
+                <description>
+                  <text>Configure slot number.</text>
+                </description>
+              </leaf-list>
+            </case>
+          </choice>
+        </list>
+      </container>
+      <container name="channel-group-bind-lpu-groups">
+        <description>
+          <text>List of configure binding between a channel group and a board.</text>
+        </description>
+        <list name="channel-group-bind-lpu-group">
+          <key value="lpu-group-name channel-group-name"/>
+          <unique tag="channel-group-name"/>
+          <max-elements value="32"/>
+          <description>
+            <text>Configure binding between a channel group and a board.</text>
+          </description>
+          <leaf name="lpu-group-name">
+            <type name="leafref">
+              <path value="../../../emdi-lpu-groups/emdi-lpu-group/lpu-group-name"/>
+            </type>
+            <description>
+              <text>Name of a bound board group.</text>
+            </description>
+          </leaf>
+          <leaf name="channel-group-name">
+            <type name="leafref">
+              <path value="../../../emdi-channel-groups/emdi-channel-group/channel-group-name"/>
+            </type>
+            <description>
+              <text>Name of a bound channel group.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="outbound-channel-group-bind-lpu-groups">
+        <description>
+          <text>List of configure outbound binding between a channel group and a board.</text>
+        </description>
+        <list name="outbound-channel-group-bind-lpu-group">
+          <key value="lpu-group-name channel-group-name"/>
+          <unique tag="channel-group-name"/>
+          <max-elements value="32"/>
+          <description>
+            <text>Configure outbound binding between a channel group and a board.</text>
+          </description>
+          <leaf name="lpu-group-name">
+            <type name="leafref">
+              <path value="../../../emdi-lpu-groups/emdi-lpu-group/lpu-group-name"/>
+            </type>
+            <description>
+              <text>Name of a bound board group.</text>
+            </description>
+          </leaf>
+          <leaf name="channel-group-name">
+            <type name="leafref">
+              <path value="../../../emdi-channel-groups/emdi-channel-group/channel-group-name"/>
+            </type>
+            <description>
+              <text>Name of a bound channel group.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="bier-enable">
+        <description>
+          <text>Configure bier lpu group.</text>
+        </description>
+        <leaf name="lpu-group-name">
+          <type name="leafref">
+            <path value="../../emdi-lpu-groups/emdi-lpu-group/lpu-group-name"/>
+          </type>
+          <description>
+            <text>Name of a bound board group.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+    <container name="emdi-history-records">
+      <config value="false"/>
+      <description>
+        <text>List of query historical EMDI detection state.</text>
+      </description>
+      <list name="emdi-history-record">
+        <key value="channel-name record-index direction"/>
+        <config value="false"/>
+        <description>
+          <text>Query historical EMDI detection state.</text>
+        </description>
+        <leaf name="channel-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Channel name.</text>
+          </description>
+        </leaf>
+        <leaf name="record-index">
+          <type name="uint16">
+            <range value="0..1000"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Index of each detection message. The value 0 indicates that no abnormal flow.</text>
+          </description>
+        </leaf>
+        <leaf name="direction">
+          <type name="enumeration">
+            <enum name="inbound">
+              <value value="0"/>
+              <description>
+                <text>Inbound.</text>
+              </description>
+            </enum>
+            <enum name="outbound">
+              <value value="1"/>
+              <description>
+                <text>Outbound.</text>
+              </description>
+            </enum>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Specify the direction of EMDI.</text>
+          </description>
+        </leaf>
+        <leaf name="record-time">
+          <type name="string">
+            <length value="1..19"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Time when each piece of information is detected.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Detection period of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-status">
+          <type name="enumeration">
+            <enum name="normal">
+              <value value="0"/>
+              <description>
+                <text>Status normal.</text>
+              </description>
+            </enum>
+            <enum name="car-drop">
+              <value value="1"/>
+              <description>
+                <text>Status abnormal, NP drop.</text>
+              </description>
+            </enum>
+            <enum name="rate-only">
+              <value value="2"/>
+              <description>
+                <text>Only the rate of video streams is detected.</text>
+              </description>
+            </enum>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Detection status of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="receive-packet">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-pps">
+          <type name="uint64"/>
+          <units name="pps"/>
+          <config value="false"/>
+          <description>
+            <text>Rate (pps) at which packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-bps">
+          <type name="uint64"/>
+          <units name="bit/s"/>
+          <config value="false"/>
+          <description>
+            <text>Rate (bit/s) at which packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="lost-packet">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Number of lost packets on a channel.</text>
+          </description>
+        </leaf>
+        <leaf name="disorder-packet">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Number of disordered packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-lr">
+          <type name="uint32"/>
+          <units name="0.001 %"/>
+          <config value="false"/>
+          <description>
+            <text>Packet loss rate of a channel.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-ser">
+          <type name="uint32"/>
+          <units name="0.001 %"/>
+          <config value="false"/>
+          <description>
+            <text>Check the channel disorder rate.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-jitter">
+          <type name="string">
+            <length value="1..9"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Check the jitter of the channel.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="interface-name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="latest-rate">
+          <type name="uint64"/>
+          <units name="pps"/>
+          <description>
+            <text>Latest rate.</text>
+          </description>
+        </leaf>
+        <leaf name="latest-detect-time">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>Latest detect time.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bier-history-records">
+      <config value="false"/>
+      <description>
+        <text>List of query historical BIER EMDI detection state.</text>
+      </description>
+      <list name="bier-history-record">
+        <key value="source-address group-address vpn-label bfir-id sub-domain bsl si record-index slot-id"/>
+        <description>
+          <text>Query historical BIER EMDI detection state.</text>
+        </description>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Multicast IP source address.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Multicast IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-label">
+          <type name="uint32"/>
+          <description>
+            <text>Vpn label of vpn in bier.</text>
+          </description>
+        </leaf>
+        <leaf name="bfir-id">
+          <type name="uint16"/>
+          <description>
+            <text>Bit forwarding router ID.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Bier sub domain.</text>
+          </description>
+        </leaf>
+        <leaf name="bsl">
+          <type name="enumeration">
+            <enum name="bsl-64">
+              <value value="64"/>
+              <description>
+                <text>The bit string length is 64.</text>
+              </description>
+            </enum>
+            <enum name="bsl-128">
+              <value value="128"/>
+              <description>
+                <text>The bit string length is 128.</text>
+              </description>
+            </enum>
+            <enum name="bsl-256">
+              <value value="256"/>
+              <description>
+                <text>The bit string length is 256.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Bit string length.</text>
+          </description>
+        </leaf>
+        <leaf name="si">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Set identifier.</text>
+          </description>
+        </leaf>
+        <leaf name="record-index">
+          <type name="uint16">
+            <range value="0..1000"/>
+          </type>
+          <description>
+            <text>Index of each detection message. The value 0 indicates that no abnormal flow.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+        </leaf>
+        <leaf name="record-time">
+          <type name="string">
+            <length value="1..19"/>
+          </type>
+          <description>
+            <text>Time when each piece of information is detected.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Detection period of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-status">
+          <type name="enumeration">
+            <enum name="normal">
+              <value value="0"/>
+              <description>
+                <text>Status normal.</text>
+              </description>
+            </enum>
+            <enum name="car-drop">
+              <value value="1"/>
+              <description>
+                <text>Status abnormal, NP drop.</text>
+              </description>
+            </enum>
+            <enum name="rate-only">
+              <value value="2"/>
+              <description>
+                <text>Only the rate of video streams is detected.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Detection status of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="receive-packet">
+          <type name="uint64"/>
+          <description>
+            <text>Number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-pps">
+          <type name="uint64"/>
+          <units name="pps"/>
+          <description>
+            <text>Rate (pps) at which packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-bps">
+          <type name="uint64"/>
+          <units name="bit/s"/>
+          <description>
+            <text>Rate (bit/s) at which packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="lost-packet">
+          <type name="uint64"/>
+          <description>
+            <text>Number of lost packets on a channel.</text>
+          </description>
+        </leaf>
+        <leaf name="disorder-packet">
+          <type name="uint64"/>
+          <description>
+            <text>Number of disordered packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-lr">
+          <type name="uint32"/>
+          <units name="0.001 %"/>
+          <description>
+            <text>Packet loss rate of a channel.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-ser">
+          <type name="uint32"/>
+          <units name="0.001 %"/>
+          <description>
+            <text>Check the channel disorder rate.</text>
+          </description>
+        </leaf>
+        <leaf name="latest-rate">
+          <type name="uint64"/>
+          <units name="pps"/>
+          <description>
+            <text>Latest rate.</text>
+          </description>
+        </leaf>
+        <leaf name="latest-detect-time">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>Latest detect time.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bier-out-history-records">
+      <config value="false"/>
+      <description>
+        <text>List of query historical BIER EMDI out detection state.</text>
+      </description>
+      <list name="bier-out-history-record">
+        <key value="source-address group-address vpn-label bfir-id sub-domain bsl si record-index slot-id interface-name token"/>
+        <description>
+          <text>Query historical BIER EMDI out detection state.</text>
+        </description>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Multicast IP source address.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Multicast IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-label">
+          <type name="uint32"/>
+          <description>
+            <text>Vpn label of vpn in bier.</text>
+          </description>
+        </leaf>
+        <leaf name="bfir-id">
+          <type name="uint16"/>
+          <description>
+            <text>Bit forwarding router ID.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Bier sub domain.</text>
+          </description>
+        </leaf>
+        <leaf name="bsl">
+          <type name="enumeration">
+            <enum name="bsl-64">
+              <value value="64"/>
+              <description>
+                <text>The bit string length is 64.</text>
+              </description>
+            </enum>
+            <enum name="bsl-128">
+              <value value="128"/>
+              <description>
+                <text>The bit string length is 128.</text>
+              </description>
+            </enum>
+            <enum name="bsl-256">
+              <value value="256"/>
+              <description>
+                <text>The bit string length is 256.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Bit string length.</text>
+          </description>
+        </leaf>
+        <leaf name="si">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Set identifier.</text>
+          </description>
+        </leaf>
+        <leaf name="record-index">
+          <type name="uint16">
+            <range value="0..1000"/>
+          </type>
+          <description>
+            <text>Index of each detection message. The value 0 indicates that no abnormal flow.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+        </leaf>
+        <leaf name="interface-name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="token">
+          <type name="uint32"/>
+          <description>
+            <text>Multicast leaf token.</text>
+          </description>
+        </leaf>
+        <leaf name="record-time">
+          <type name="string">
+            <length value="1..19"/>
+          </type>
+          <description>
+            <text>Time when each piece of information is detected.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Detection period of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-status">
+          <type name="enumeration">
+            <enum name="normal">
+              <value value="0"/>
+              <description>
+                <text>Status normal.</text>
+              </description>
+            </enum>
+            <enum name="car-drop">
+              <value value="1"/>
+              <description>
+                <text>Status abnormal, NP drop.</text>
+              </description>
+            </enum>
+            <enum name="rate-only">
+              <value value="2"/>
+              <description>
+                <text>Only the rate of video streams is detected.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Detection status of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="receive-packet">
+          <type name="uint64"/>
+          <description>
+            <text>Number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-pps">
+          <type name="uint64"/>
+          <units name="pps"/>
+          <description>
+            <text>Rate (pps) at which packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-bps">
+          <type name="uint64"/>
+          <units name="bit/s"/>
+          <description>
+            <text>Rate (bit/s) at which packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="lost-packet">
+          <type name="uint64"/>
+          <description>
+            <text>Number of lost packets on a channel.</text>
+          </description>
+        </leaf>
+        <leaf name="disorder-packet">
+          <type name="uint64"/>
+          <description>
+            <text>Number of disordered packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-lr">
+          <type name="uint32"/>
+          <units name="0.001 %"/>
+          <description>
+            <text>Packet loss rate of a channel.</text>
+          </description>
+        </leaf>
+        <leaf name="rtp-ser">
+          <type name="uint32"/>
+          <units name="0.001 %"/>
+          <description>
+            <text>Check the channel disorder rate.</text>
+          </description>
+        </leaf>
+        <leaf name="latest-rate">
+          <type name="uint64"/>
+          <units name="pps"/>
+          <description>
+            <text>Latest rate.</text>
+          </description>
+        </leaf>
+        <leaf name="latest-detect-time">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>Latest detect time.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="emdi-channels">
+      <config value="false"/>
+      <description>
+        <text>List of Channel state.</text>
+      </description>
+      <list name="emdi-channel">
+        <key value="channel-name"/>
+        <config value="false"/>
+        <description>
+          <text>Channel state.</text>
+        </description>
+        <leaf name="channel-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Channel name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="emdi-telem-reps">
+      <config value="false"/>
+      <description>
+        <text>List of EMDI Telemetry IPTV Report Yang Models state.</text>
+      </description>
+      <list name="emdi-telem-rep">
+        <key value="vr-id channel-name"/>
+        <config value="false"/>
+        <description>
+          <text>EMDI Telemetry IPTV Report Yang Model state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32">
+            <range value="0..32"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-name">
+          <type name="emdi:channel-ref"/>
+          <config value="false"/>
+          <description>
+            <text>Name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-vpn-type">
+          <type name="uint32">
+            <range value="0..4"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The VPN type that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vlan-id">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L2VPN VLAN Id of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vsi-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L2VPN VSI name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="bd-id">
+          <type name="uint32">
+            <range value="0..16777215"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L2VPN BD name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-recv-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The total received RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-loss-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The total lost RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-disorderd-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The total disordered RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-recv-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The received RTP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-loss-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The lost RTP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-disorderd-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The disordered RTP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="emdi-telem-rtps">
+      <config value="false"/>
+      <description>
+        <text>List of EMDI Telemetry RTP Report Yang Models state.</text>
+      </description>
+      <list name="emdi-telem-rtp">
+        <key value="vr-id channel-name"/>
+        <config value="false"/>
+        <description>
+          <text>EMDI Telemetry RTP Report Yang Model state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32">
+            <range value="0..32"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-name">
+          <type name="emdi:channel-ref"/>
+          <config value="false"/>
+          <description>
+            <text>Name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-vpn-type">
+          <type name="uint32">
+            <range value="0..4"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The VPN type that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vlan-id">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L2VPN VLAN Id of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vsi-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L2VPN VSI name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="bd-id">
+          <type name="uint32">
+            <range value="0..16777215"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L2VPN BD name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The received RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="loss-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The lost RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="disorderd-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The disordered RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="out-telem-reps">
+      <config value="false"/>
+      <description>
+        <text>List of outbound EMDI Telemetry IPTV Report Yang Models state.</text>
+      </description>
+      <list name="out-telem-rep">
+        <key value="vr-id channel-name slot-id"/>
+        <config value="false"/>
+        <description>
+          <text>Outbound EMDI Telemetry IPTV Report Yang Model state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32"/>
+          <config value="false"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-name">
+          <type name="emdi:channel-ref"/>
+          <config value="false"/>
+          <description>
+            <text>Name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Slot name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="channel-vpn-type">
+          <type name="uint32">
+            <range value="0..1"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The VPN type that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="interface-name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Interface name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-recv-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The total received REP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-loss-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The total lost REP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-disorderd-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The total disordered REP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-recv-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The received REP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-loss-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The lost REP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-disorderd-packets">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>The disordered REP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bier-telem-reps">
+      <config value="false"/>
+      <description>
+        <text>List of EMDI BIER telemetry IPTV report state.</text>
+      </description>
+      <list name="bier-telem-rep">
+        <key value="vr-id source-address group-address vpn-label sub-domain bsl si bfr-id slot-id"/>
+        <description>
+          <text>EMDI BIER telemetry IPTV report state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <description>
+            <text>The VPN label that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The sub domain of the bier multicast.</text>
+          </description>
+        </leaf>
+        <leaf name="bsl">
+          <type name="enumeration">
+            <enum name="bsl-64">
+              <value value="64"/>
+              <description>
+                <text>The bit string length is 64.</text>
+              </description>
+            </enum>
+            <enum name="bsl-128">
+              <value value="128"/>
+              <description>
+                <text>The bit string length is 128.</text>
+              </description>
+            </enum>
+            <enum name="bsl-256">
+              <value value="256"/>
+              <description>
+                <text>The bit string length is 256.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Bit string length.</text>
+          </description>
+        </leaf>
+        <leaf name="si">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Index of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-id">
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <description>
+            <text>Bit forwarding router (BFR) ID.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Slot name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-recv-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The total received RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-loss-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The total lost RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-disorderd-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The total disordered RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-recv-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The received RTP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-loss-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The lost RTP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-disorderd-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The disordered RTP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bier-telem-rtps">
+      <config value="false"/>
+      <description>
+        <text>List of EMDI telemetry RTP report state.</text>
+      </description>
+      <list name="bier-telem-rtp">
+        <key value="vr-id source-address group-address vpn-label sub-domain bsl si bfr-id slot-id"/>
+        <description>
+          <text>EMDI BIER telemetry RTP report state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <description>
+            <text>The VPN label that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The sub domain of the bier multicast.</text>
+          </description>
+        </leaf>
+        <leaf name="bsl">
+          <type name="enumeration">
+            <enum name="bsl-64">
+              <value value="64"/>
+              <description>
+                <text>The bit string length is 64.</text>
+              </description>
+            </enum>
+            <enum name="bsl-128">
+              <value value="128"/>
+              <description>
+                <text>The bit string length is 128.</text>
+              </description>
+            </enum>
+            <enum name="bsl-256">
+              <value value="256"/>
+              <description>
+                <text>The bit string length is 256.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Bit string length.</text>
+          </description>
+        </leaf>
+        <leaf name="si">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Index of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-id">
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <description>
+            <text>Bit forwarding router (BFR) ID.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Slot name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The received RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="loss-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The lost RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="disorderd-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The disordered RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bier-out-telem-reps">
+      <config value="false"/>
+      <description>
+        <text>List of outbound EMDI telemetry IPTV report state.</text>
+      </description>
+      <list name="bier-out-telem-rep">
+        <key value="vr-id source-address group-address vpn-label sub-domain bsl si bfr-id interface-name slot-id"/>
+        <description>
+          <text>Outbound EMDI BIER telemetry IPTV report state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <description>
+            <text>The VPN label that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The sub domain of the bier multicast.</text>
+          </description>
+        </leaf>
+        <leaf name="bsl">
+          <type name="enumeration">
+            <enum name="bsl-64">
+              <value value="64"/>
+              <description>
+                <text>The bit string length is 64.</text>
+              </description>
+            </enum>
+            <enum name="bsl-128">
+              <value value="128"/>
+              <description>
+                <text>The bit string length is 128.</text>
+              </description>
+            </enum>
+            <enum name="bsl-256">
+              <value value="256"/>
+              <description>
+                <text>The bit string length is 256.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Bit string length.</text>
+          </description>
+        </leaf>
+        <leaf name="si">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Index of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-id">
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <description>
+            <text>Bit forwarding router (BFR) ID.</text>
+          </description>
+        </leaf>
+        <leaf name="interface-name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Interface name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Slot name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-recv-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The total received REP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-loss-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The total lost REP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="total-disorderd-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The total disordered REP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-recv-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The received REP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-loss-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The lost REP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="worst-disorderd-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The disordered REP packets number in the worst monitor period in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bier-out-telem-rtps">
+      <config value="false"/>
+      <description>
+        <text>List of outbound EMDI telemetry RTP report state.</text>
+      </description>
+      <list name="bier-out-telem-rtp">
+        <key value="vr-id source-address group-address vpn-label sub-domain bsl si bfr-id interface-name slot-id"/>
+        <description>
+          <text>Outbound EMDI BIER telemetry RTP report state.</text>
+        </description>
+        <leaf name="vr-id">
+          <type name="uint32"/>
+          <description>
+            <text>Index of the VR that the channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 source adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 group adddress of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <description>
+            <text>The VPN label that the multicast channel belongs to.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The sub domain of the bier multicast.</text>
+          </description>
+        </leaf>
+        <leaf name="bsl">
+          <type name="enumeration">
+            <enum name="bsl-64">
+              <value value="64"/>
+              <description>
+                <text>The bit string length is 64.</text>
+              </description>
+            </enum>
+            <enum name="bsl-128">
+              <value value="128"/>
+              <description>
+                <text>The bit string length is 128.</text>
+              </description>
+            </enum>
+            <enum name="bsl-256">
+              <value value="256"/>
+              <description>
+                <text>The bit string length is 256.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Bit string length.</text>
+          </description>
+        </leaf>
+        <leaf name="si">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Index of each detection message.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-id">
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <description>
+            <text>Bit forwarding router (BFR) ID.</text>
+          </description>
+        </leaf>
+        <leaf name="interface-name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Interface name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Slot name of the multicast channel.</text>
+          </description>
+        </leaf>
+        <leaf name="report-period">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>The EMDI statistics data report period.</text>
+          </description>
+        </leaf>
+        <leaf name="report-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The report time of current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The received RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="loss-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The lost RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="disorderd-packets">
+          <type name="uint64"/>
+          <description>
+            <text>The disordered RTP packets number in current report period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-period">
+          <type name="enumeration">
+            <enum name="second-10s">
+              <value value="10"/>
+              <description>
+                <text>Monitor period is 10 second.</text>
+              </description>
+            </enum>
+            <enum name="second-30s">
+              <value value="30"/>
+              <description>
+                <text>Monitor period is 30 second.</text>
+              </description>
+            </enum>
+            <enum name="second-60s">
+              <value value="60"/>
+              <description>
+                <text>Monitor period is 60 second.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>The EMDI statistics data monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="monitor-time">
+          <type name="uint64"/>
+          <units name="s"/>
+          <description>
+            <text>The start time of current monitor period.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>The L3VPN name of the multicast channel.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <rpc name="reset-statistic-history">
+    <description>
+      <text>Reset channel statistics.</text>
+    </description>
+    <ext:node-ref value="/emdi/emdi-history-statistic-records/emdi-history-statistic-record"/>
+    <input>
+      <leaf name="channel-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>Channel name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="reset-outbound-history-statistic">
+    <description>
+      <text>Reset outbound channel statistics.</text>
+    </description>
+    <ext:node-ref value="/emdi/emdi-history-statistic-records/emdi-history-statistic-record"/>
+    <input>
+      <leaf name="slot-id">
+        <type name="string">
+          <length value="1..15"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Slot ID.</text>
+        </description>
+      </leaf>
+      <leaf name="channel-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>Channel name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="reset-bier-statistic-history">
+    <description>
+      <text>Reset BIER channel statistics.</text>
+    </description>
+    <ext:node-ref value="/emdi/bier-history-records/bier-history-record"/>
+    <input>
+      <leaf name="slot-id">
+        <type name="string">
+          <length value="1..15"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Slot ID.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="reset-bier-out-statistic-history">
+    <description>
+      <text>Reset outbound BIER channel statistics.</text>
+    </description>
+    <ext:node-ref value="/emdi/bier-out-history-records/bier-out-history-record"/>
+    <input>
+      <leaf name="slot-id">
+        <type name="string">
+          <length value="1..15"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Slot ID.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="filter-history-statistic">
+    <description>
+      <text>Filter EMDI history statistics.</text>
+    </description>
+    <ext:node-ref value="/emdi/emdi-history-statistic-records/emdi-history-statistic-record"/>
+    <input>
+      <leaf name="channel-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>Channel name.</text>
+        </description>
+      </leaf>
+      <leaf name="start-index">
+        <type name="uint16">
+          <range value="1..1000"/>
+        </type>
+        <description>
+          <text>Start index. This parameter is used only as a filter criterion and is not displayed.</text>
+        </description>
+      </leaf>
+      <leaf name="end-index">
+        <type name="uint16">
+          <range value="1..1000"/>
+        </type>
+        <description>
+          <text>End index. It is only used as a filter criterion and is not displayed.</text>
+        </description>
+      </leaf>
+      <leaf name="last-record-num">
+        <type name="uint8">
+          <range value="1..5"/>
+        </type>
+        <description>
+          <text>Query the latest specified number of detection records. This parameter is used only as a filter criterion and is not displayed.</text>
+        </description>
+      </leaf>
+      <leaf name="direction">
+        <type name="enumeration">
+          <enum name="inbound">
+            <value value="0"/>
+            <description>
+              <text>Inbound.</text>
+            </description>
+          </enum>
+          <enum name="outbound">
+            <value value="1"/>
+            <description>
+              <text>Outbound.</text>
+            </description>
+          </enum>
+        </type>
+        <description>
+          <text>Specify the direction of EMDI.</text>
+        </description>
+      </leaf>
+      <leaf name="slot-id">
+        <type name="string">
+          <length value="1..15"/>
+        </type>
+        <description>
+          <text>Slot ID.</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <container name="emdi-history-statistic-records">
+        <description>
+          <text>List of configure query historical EMDI detection information.</text>
+        </description>
+        <list name="emdi-history-statistic-record">
+          <key value="channel-name record-index direction"/>
+          <description>
+            <text>Configure query historical EMDI detection information.</text>
+          </description>
+          <leaf name="channel-name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Channel name.</text>
+            </description>
+          </leaf>
+          <leaf name="record-index">
+            <type name="uint16">
+              <range value="1..1000"/>
+            </type>
+            <description>
+              <text>Index of each detection message.</text>
+            </description>
+          </leaf>
+          <leaf name="direction">
+            <type name="enumeration">
+              <enum name="inbound">
+                <value value="0"/>
+                <description>
+                  <text>Inbound.</text>
+                </description>
+              </enum>
+              <enum name="outbound">
+                <value value="1"/>
+                <description>
+                  <text>Outbound.</text>
+                </description>
+              </enum>
+            </type>
+            <description>
+              <text>Specify the direction of EMDI.</text>
+            </description>
+          </leaf>
+          <leaf name="record-time">
+            <type name="string">
+              <length value="1..19"/>
+            </type>
+            <description>
+              <text>Time when each piece of information is detected.</text>
+            </description>
+          </leaf>
+          <leaf name="monitor-period">
+            <type name="enumeration">
+              <enum name="second-10s">
+                <value value="10"/>
+                <description>
+                  <text>Monitor period is 10 second.</text>
+                </description>
+              </enum>
+              <enum name="second-30s">
+                <value value="30"/>
+                <description>
+                  <text>Monitor period is 30 second.</text>
+                </description>
+              </enum>
+              <enum name="second-60s">
+                <value value="60"/>
+                <description>
+                  <text>Monitor period is 60 second.</text>
+                </description>
+              </enum>
+            </type>
+            <description>
+              <text>Detection period of each detection message.</text>
+            </description>
+          </leaf>
+          <leaf name="monitor-status">
+            <type name="enumeration">
+              <enum name="normal">
+                <value value="0"/>
+                <description>
+                  <text>Status normal.</text>
+                </description>
+              </enum>
+              <enum name="car-drop">
+                <value value="1"/>
+                <description>
+                  <text>Status abnormal, NP drop.</text>
+                </description>
+              </enum>
+              <enum name="rate-only">
+                <value value="2"/>
+                <description>
+                  <text>Only the rate of video streams is detected.</text>
+                </description>
+              </enum>
+            </type>
+            <description>
+              <text>Detection status of each detection message.</text>
+            </description>
+          </leaf>
+          <leaf name="receive-packet">
+            <type name="uint64"/>
+            <description>
+              <text>Number of received packets.</text>
+            </description>
+          </leaf>
+          <leaf name="rate-pps">
+            <type name="uint64"/>
+            <units name="pps"/>
+            <description>
+              <text>Rate (pps) at which packets are received.</text>
+            </description>
+          </leaf>
+          <leaf name="rate-bps">
+            <type name="uint64"/>
+            <units name="bit/s"/>
+            <description>
+              <text>Rate (bit/s) at which packets are received.</text>
+            </description>
+          </leaf>
+          <leaf name="lost-packet">
+            <type name="uint64"/>
+            <description>
+              <text>Number of lost packets on a channel.</text>
+            </description>
+          </leaf>
+          <leaf name="disorder-packet">
+            <type name="uint64"/>
+            <description>
+              <text>Number of disordered packets.</text>
+            </description>
+          </leaf>
+          <leaf name="rtp-lr">
+            <type name="uint32"/>
+            <units name="0.001 %"/>
+            <description>
+              <text>Packet loss rate of a channel.</text>
+            </description>
+          </leaf>
+          <leaf name="rtp-ser">
+            <type name="uint32"/>
+            <units name="0.001 %"/>
+            <description>
+              <text>Check the channel disorder rate.</text>
+            </description>
+          </leaf>
+          <leaf name="rtp-jitter">
+            <type name="string">
+              <length value="1..9"/>
+            </type>
+            <description>
+              <text>Check the jitter of the channel.</text>
+            </description>
+          </leaf>
+          <leaf name="slot-id">
+            <type name="string">
+              <length value="1..15"/>
+            </type>
+            <description>
+              <text>Slot ID.</text>
+            </description>
+          </leaf>
+          <leaf name="interface-name">
+            <type name="string">
+              <length value="1..63"/>
+            </type>
+            <description>
+              <text>Interface name.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </output>
+  </rpc>
+</module>

@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-hdlc"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:hdlc="http://www.zte.com.cn/zxr10/netconf/schema/rosng/hdlc"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/hdlc"/>
+  <prefix value="hdlc"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe HDLC</text>
+  </description>
+  <revision date="2018-10-25">
+    <description>
+      <text>Change the range of leaf node configuration/hdlc/mhdlc/posgroup-instance/posgroup/active-num from 1-16 to 1-128.
+Change the range of leaf node configuration/hdlc/mhdlc/port-instance/port/groupid from 1-64 to 1-256.</text>
+    </description>
+  </revision>
+  <revision date="2015-03-15">
+    <description>
+      <text>1. Change type of /state/hdlc/chdlc/bidirection-info-instance/bidirection-info/illegal-peerinfo from string to ncd:string-all
+2. Change node type of /state/hdlc/chdlc/clear/illegal-info from container to list</text>
+    </description>
+  </revision>
+  <revision date="2014-06-04">
+    <description>
+      <text>1)Remove the leaf node bidirection
+2)Remove the leaf node localinfo
+3)Remove the leaf node peerinfo
+4)Add the choise node bidirection-mode</text>
+    </description>
+  </revision>
+  <revision date="2014-05-06">
+    <description>
+      <text>1.Change the type of the following two Leaves from uint16 to uint32:
+1) configuration:hdlc:mhdlc:posgroup-instance:posgroup:active-num
+2) configuration:hdlc:mhdlc:port-instance:port:groupid
+2.Change some description:
+1) Modify description of leaf node if-name of list port in configuration container
+2) Modify description of leaf nodes bidirection,localinfo,peerinfo of list bidirection in configuration container
+3) Modify description of leaf nodes lb,active-num of list posgroup in configuration container
+4) Modify description of leaf node if-name of mhdlc configuration container
+5) Modify description of leaf node groupid of mhdlc configuration container
+6) Modify description of container node port-instance of mhdlc configuration container
+7) Modify description of leaf node if-name of hdlc state container
+8) Modify description of leaf node illegal-peerinfo of hdlc state container
+9) Modify description of list node bidirection-info of hdlc state container
+10) Modify description of container node bidirection-info of hdlc state container
+11) Modify description of leaf node groupid of mhdlc state container
+12) Modify description of leaf node activenum of mhdlc state container
+13) Modify description of leaf node lb of mhdlc state container
+14) Modify description of illegal-info operation container
+15) Modify description of leaf node if-name of hdlc operation container</text>
+    </description>
+  </revision>
+  <revision date="2013-11-15">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>Configuration</text>
+    </description>
+    <container name="hdlc">
+      <description>
+        <text>Describe the parameters to be configured</text>
+      </description>
+      <container name="chdlc">
+        <description>
+          <text>HDLC configuration</text>
+        </description>
+        <container name="port-instance">
+          <description>
+            <text>HDLC port configuration</text>
+          </description>
+          <list name="port">
+            <description>
+              <text>HDLC port configuration</text>
+            </description>
+            <max-elements value="4094"/>
+            <key value="if-name"/>
+            <leaf name="if-name">
+              <description>
+                <text>The pos interface name</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="keepalive">
+              <description>
+                <text>Use to specify the keepalive timeout value</text>
+              </description>
+              <type name="uint16">
+                <range value="0..32767"/>
+              </type>
+              <units name="second"/>
+              <default value="10"/>
+            </leaf>
+          </list>
+        </container>
+        <container name="bidirection-instance">
+          <description>
+            <text>The expand HDLC configuration</text>
+          </description>
+          <list name="bidirection">
+            <description>
+              <text>The expand HDLC configuration</text>
+            </description>
+            <key value="if-name"/>
+            <leaf name="if-name">
+              <description>
+                <text>The pos interface name</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <choice name="bidirection-mode">
+              <description>
+                <text>Set the bidirection mode:
+loose:loose mode-0
+strict:strict mode-1
+expand:expand mode-2</text>
+              </description>
+              <default value="loose-case"/>
+              <case name="loose-case">
+                <description>
+                  <text>Set the bidirection mode loose</text>
+                </description>
+                <leaf name="loose">
+                  <description>
+                    <text>bidirection mode loose</text>
+                  </description>
+                  <type name="empty"/>
+                </leaf>
+              </case>
+              <case name="strict-case">
+                <description>
+                  <text>Set the bidirection mode strict</text>
+                </description>
+                <leaf name="strict">
+                  <description>
+                    <text>bidirection mode strict</text>
+                  </description>
+                  <type name="empty"/>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="strict-type">
+                  <description>
+                    <text>bidirection mode strict type</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="short">
+                      <value value="4"/>
+                      <description>
+                        <text>strict type short</text>
+                      </description>
+                    </enum>
+                    <enum name="long">
+                      <value value="6"/>
+                      <description>
+                        <text>strict type long</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+              </case>
+              <case name="expand-case">
+                <description>
+                  <text>Set the bidirection mode expand</text>
+                </description>
+                <leaf name="expand">
+                  <description>
+                    <text>bidirection mode expand</text>
+                  </description>
+                  <type name="empty"/>
+                </leaf>
+                <leaf name="localinfo">
+                  <description>
+                    <text>Set the local information,strings:1-63</text>
+                  </description>
+                  <type name="string">
+                    <length value="0..63">
+                      <description>
+                        <text>local information</text>
+                      </description>
+                    </length>
+                  </type>
+                  <default value=""/>
+                </leaf>
+                <leaf name="peerinfo">
+                  <description>
+                    <text>Set the peer informations,strings:1-63</text>
+                  </description>
+                  <type name="string">
+                    <length value="0..63">
+                      <description>
+                        <text>peer informations</text>
+                      </description>
+                    </length>
+                  </type>
+                  <default value=""/>
+                </leaf>
+              </case>
+            </choice>
+          </list>
+        </container>
+      </container>
+      <container name="mhdlc">
+        <description>
+          <text>MHDLC configuration</text>
+        </description>
+        <container name="posgroup-instance">
+          <description>
+            <text>Set posgroup information</text>
+          </description>
+          <list name="posgroup">
+            <description>
+              <text>Set posgroup information</text>
+            </description>
+            <max-elements value="64"/>
+            <key value="pgname"/>
+            <leaf name="pgname">
+              <description>
+                <text>The posgroup interface name</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="lb">
+              <description>
+                <text>Set the MHDLC load-balance
+per-destination,MHDLC load balance by destination
+per-packet,MHDLC load balance by packet</text>
+              </description>
+              <type name="enumeration">
+                <enum name="per-destination">
+                  <value value="10"/>
+                  <description>
+                    <text>MHDLC load balance by destination</text>
+                  </description>
+                </enum>
+                <enum name="per-packet">
+                  <value value="11"/>
+                  <description>
+                    <text>MHDLC load balance by packet</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="per-destination"/>
+            </leaf>
+            <leaf name="active-num">
+              <description>
+                <text>Set the MHDLC active number. Its maximum value depends on the performance parameters.</text>
+              </description>
+              <type name="uint32">
+                <range value="1..128">
+                  <description>
+                    <text>Set MHDLC minimum-member. The maximum value depends on the performance parameters.</text>
+                  </description>
+                </range>
+              </type>
+              <default value="1"/>
+            </leaf>
+          </list>
+        </container>
+        <container name="port-instance">
+          <description>
+            <text>Set MHDLC member information</text>
+          </description>
+          <list name="port">
+            <description>
+              <text>Set MHDLC member information</text>
+            </description>
+            <max-elements value="4096"/>
+            <key value="if-name"/>
+            <leaf name="if-name">
+              <description>
+                <text>The pos interface name</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="groupid">
+              <description>
+                <text>The posgroup id, its maximum value depends on the performance parameters.</text>
+              </description>
+              <type name="uint32">
+                <range value="1..256">
+                  <description>
+                    <text>Set the groupid. The maximum value depends on the performance parameters.</text>
+                  </description>
+                </range>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State</text>
+    </description>
+    <container name="hdlc">
+      <description>
+        <text>HDLC state information</text>
+      </description>
+      <container name="chdlc">
+        <description>
+          <text>HDLC state</text>
+        </description>
+        <container name="bidirection-info-instance">
+          <description>
+            <text>Show expand HDLC information</text>
+          </description>
+          <list name="bidirection-info">
+            <description>
+              <text>Show expand HDLC information</text>
+            </description>
+            <key value="if-name"/>
+            <leaf name="if-name">
+              <description>
+                <text>The pos interface name</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="illegal-peerinfo">
+              <description>
+                <text>The peer illegal information</text>
+              </description>
+              <type name="ncd:string-all">
+                <length value="0..63"/>
+              </type>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="mhdlc">
+        <description>
+          <text>MHDLC state</text>
+        </description>
+        <container name="posgroup-info-instance">
+          <description>
+            <text>Show posgroup information</text>
+          </description>
+          <list name="posgroup-info">
+            <description>
+              <text>Show posgroup information</text>
+            </description>
+            <key value="groupid"/>
+            <leaf name="groupid">
+              <description>
+                <text>The posgroup id</text>
+              </description>
+              <type name="uint16"/>
+            </leaf>
+            <leaf name="activenum">
+              <description>
+                <text>The MHDLC active number</text>
+              </description>
+              <type name="uint16"/>
+              <default value="1"/>
+            </leaf>
+            <leaf name="lb">
+              <description>
+                <text>The MHDLC load-balance
+per-destination,MHDLC load balance by destination
+per-packet,MHDLC load balance by packet</text>
+              </description>
+              <type name="enumeration">
+                <enum name="per-destination">
+                  <value value="10"/>
+                  <description>
+                    <text>MHDLC load balance by destination</text>
+                  </description>
+                </enum>
+                <enum name="per-packet">
+                  <value value="11"/>
+                  <description>
+                    <text>MHDLC load balance by packet</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+            <leaf name="member-port">
+              <description>
+                <text>The number of MHDLC member port</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="active-state">
+              <description>
+                <text>The member port state</text>
+              </description>
+              <type name="enumeration">
+                <enum name="inactive">
+                  <value value="0"/>
+                  <description>
+                    <text>The member port state is inactive</text>
+                  </description>
+                </enum>
+                <enum name="active">
+                  <value value="1"/>
+                  <description>
+                    <text>The member port state is active</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>Operation</text>
+    </description>
+    <container name="hdlc">
+      <description>
+        <text>HDLC operation information</text>
+      </description>
+      <container name="chdlc">
+        <description>
+          <text>HDLC operation</text>
+        </description>
+        <container name="clear">
+          <description>
+            <text>Clear information</text>
+          </description>
+          <container name="illegal-info-instance">
+            <description>
+              <text>Clear the illegal peer information</text>
+            </description>
+            <list name="illegal-info">
+              <description>
+                <text>Clear the illegal peer information</text>
+              </description>
+              <key value="if-name"/>
+              <leaf name="if-name">
+                <description>
+                  <text>The pos interface name</text>
+                </description>
+                <type name="ncd:ifname"/>
+              </leaf>
+            </list>
+          </container>
+        </container>
+      </container>
+    </container>
+  </container>
+</module>

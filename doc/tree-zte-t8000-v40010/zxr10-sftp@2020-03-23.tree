@@ -1,0 +1,97 @@
+module: zxr10-sftp
+  +--rw configuration
+  |  +--rw sftp
+  |     +--rw sftp-server
+  |     |  +--rw top-directory
+  |     |  |  +--rw directory-name?     string
+  |     |  |  +--rw (permission)?
+  |     |  |     +--:(read-only)
+  |     |  |     |  +--rw read-only?    empty
+  |     |  |     +--:(write-copy)
+  |     |  |        +--rw write-copy
+  |     |  |           +--rw read-write?   enumeration
+  |     |  |           +--rw copy?         enumeration
+  |     |  +--rw acl
+  |     |  |  +--rw acl-ipv4
+  |     |  |  |  +--rw acl-name?   string
+  |     |  |  +--rw acl-ipv6
+  |     |  |     +--rw acl-name?   string
+  |     |  +--rw idle-timeout
+  |     |     +--rw idle-time?   uint16
+  |     +--rw sftp-client
+  |        +--rw source-interface!
+  |        |  +--rw interface-name    ncd:ifname
+  |        +--rw source-ip
+  |           +--rw source-ipv4!
+  |           |  +--rw ipv4-addr    ncd:ipv4-address
+  |           +--rw source-ipv6
+  |              +--rw (ipv6-addr)?
+  |                 +--:(unlink-local-addr)
+  |                 |  +--rw ipv6-address          ncd:ipv6-address
+  |                 +--:(link-local-addr)
+  |                    +--rw link-local-address    ncd:ipv6-address
+  |                    +--rw interface-name        ncd:ifname
+  +--ro state
+  |  +--ro sftp
+  |     +--ro sftp-server
+  |        +--ro user-state* [user-id]
+  |           +--ro user-id         uint16
+  |           +--ro user-name?      string
+  |           +--ro status?         enumeration
+  |           +--ro ip-type?        enumeration
+  |           +--ro ipv4-address?   ncd:ipv4-address
+  |           +--ro ipv6-address?   ncd:ipv6-address
+  |           +--ro port?           uint16
+  +--ro operation
+     +--ro sftp
+        +--ro sftp-client
+           +--ro copy!
+              o--ro vrf-name?                                  string
+              +--ro (copy-mode)?
+              |  +--:(vrf)
+              |  |  +--ro vrf?                                 string
+              |  +--:(dcn) {sftp-copy-dcn}?
+              |     +--ro dcn?                                 empty
+              +--ro (trans-direction)
+              |  +--:(upload)
+              |  |  +--ro local-source-file                    string
+              |  |  +--ro (remote-dest-param)
+              |  |  |  +--:(spliced-remote-param)
+              |  |  |  |  +--ro remote-dest-file               string
+              |  |  |  +--:(splited-remote-param)
+              |  |  |     +--ro splited-remote-dest-param
+              |  |  |        +--ro (ip-addr)
+              |  |  |        |  +--:(ipv4)
+              |  |  |        |  |  +--ro remote-ipv4-address    ncd:ipv4-address
+              |  |  |        |  +--:(ipv6)
+              |  |  |        |     +--ro remote-ipv6-address    ncd:ipv6-address
+              |  |  |        +--ro username                     string
+              |  |  |        +--ro password                     string
+              |  |  |        +--ro path                         string
+              |  |  +--ro upload-cpu-node?                     ncd:cpu
+              |  +--:(download)
+              |     +--ro (remote-source-param)
+              |     |  +--:(spliced-remote-param)
+              |     |  |  +--ro remote-source-file             string
+              |     |  +--:(splited-remote-param)
+              |     |     +--ro splited-remote-source-param
+              |     |        +--ro (ip-addr)
+              |     |        |  +--:(ipv4)
+              |     |        |  |  +--ro remote-ipv4-address    ncd:ipv4-address
+              |     |        |  +--:(ipv6)
+              |     |        |     +--ro remote-ipv6-address    ncd:ipv6-address
+              |     |        +--ro username                     string
+              |     |        +--ro password                     string
+              |     |        +--ro path                         string
+              |     +--ro local-dest-file                      string
+              |     +--ro download-cpu-node?                   ncd:cpu
+              +--ro (source-addr)?
+              |  +--:(ipv4)
+              |  |  +--ro ipv4-address                         ncd:ipv4-address
+              |  +--:(ipv6)
+              |     +--ro ipv6-address                         ncd:ipv6-address
+              |     +--ro interface-name?                      string
+              +--ro server-port?                               uint16
+              +--ro encrypt?                                   enumeration
+              +--ro compress?                                  enumeration
+              +--ro mac?                                       enumeration

@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-lacp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:lacp="urn:huawei:yang:huawei-lacp"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ifm-trunk="urn:huawei:yang:huawei-ifm-trunk"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:huawei:yang:huawei-lacp"/>
+  <prefix value="lacp"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-ifm-trunk">
+    <prefix value="ifm-trunk"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Link Aggregation Control Protocol (LACP) management, which includes static LACP configuration, dynamic LACP learning.</text>
+  </description>
+  <revision date="2020-02-18">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="trunk"/>
+  <typedef name="receive-timeout-type">
+    <type name="enumeration">
+      <enum name="slow">
+        <value value="0"/>
+        <description>
+          <text>Indicate that the timeout period of Eth-Trunk interfaces in static LACP mode to receive packets is 90 seconds and the peer end sends an LACP packet every 30 seconds. In this mode, the device responds to the LACP packets from the peer slowly but consumes fewer system resources.</text>
+        </description>
+      </enum>
+      <enum name="fast">
+        <value value="1"/>
+        <description>
+          <text>Indicate that the timeout period of Eth-Trunk interfaces in static LACP mode to receive packets is 3 seconds and the peer end sends an LACP packet every 1 second. In this mode, the device can quickly respond to the LACP packets from the peer but consume more system resources.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LACP receive timeout type.</text>
+    </description>
+  </typedef>
+  <typedef name="select-std">
+    <type name="enumeration">
+      <enum name="speed">
+        <value value="1"/>
+        <description>
+          <text>Indicate that the interface with a higher rate is selected as the active interface.</text>
+        </description>
+      </enum>
+      <enum name="priority">
+        <value value="3"/>
+        <description>
+          <text>Indicate that the interface with a higher priority is selected as the active interface.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LACP select standard.</text>
+    </description>
+  </typedef>
+  <typedef name="sysmac">
+    <type name="enumeration">
+      <enum name="local">
+        <value value="1"/>
+        <description>
+          <text>The operate system ID is obtained from local configure.</text>
+        </description>
+      </enum>
+      <enum name="remote">
+        <value value="2"/>
+        <description>
+          <text>The operate system ID is obtained from remote device.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LACP system MAC source.</text>
+    </description>
+  </typedef>
+  <typedef name="member-selected-state">
+    <type name="enumeration">
+      <enum name="selected">
+        <value value="1"/>
+        <description>
+          <text>The interface is in the selected state.</text>
+        </description>
+      </enum>
+      <enum name="unselected">
+        <value value="0"/>
+        <description>
+          <text>The interface is in the unselected state.</text>
+        </description>
+      </enum>
+      <enum name="indep">
+        <value value="2"/>
+        <description>
+          <text>The interface is in the independent state.</text>
+        </description>
+      </enum>
+      <enum name="force-up">
+        <value value="3"/>
+        <description>
+          <text>The interface is in the force up state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Trunk member selected state.</text>
+    </description>
+  </typedef>
+  <typedef name="port-type">
+    <type name="enumeration">
+      <enum name="null">
+        <value value="0"/>
+        <description>
+          <text>0M.</text>
+        </description>
+      </enum>
+      <enum name="10M">
+        <value value="1"/>
+        <description>
+          <text>10M.</text>
+        </description>
+      </enum>
+      <enum name="100M">
+        <value value="2"/>
+        <description>
+          <text>100M.</text>
+        </description>
+      </enum>
+      <enum name="1GE">
+        <value value="3"/>
+        <description>
+          <text>1GE.</text>
+        </description>
+      </enum>
+      <enum name="10GE">
+        <value value="4"/>
+        <description>
+          <text>10GE.</text>
+        </description>
+      </enum>
+      <enum name="100GE">
+        <value value="5"/>
+        <description>
+          <text>100GE.</text>
+        </description>
+      </enum>
+      <enum name="1TE">
+        <value value="6"/>
+        <description>
+          <text>1TE.</text>
+        </description>
+      </enum>
+      <enum name="10TE">
+        <value value="7"/>
+        <description>
+          <text>10TE.</text>
+        </description>
+      </enum>
+      <enum name="100TE">
+        <value value="8"/>
+        <description>
+          <text>100TE.</text>
+        </description>
+      </enum>
+      <enum name="1000TE">
+        <value value="9"/>
+        <description>
+          <text>1000TE.</text>
+        </description>
+      </enum>
+      <enum name="40GE">
+        <value value="10"/>
+        <description>
+          <text>40GE.</text>
+        </description>
+      </enum>
+      <enum name="400GE">
+        <value value="11"/>
+        <description>
+          <text>400GE.</text>
+        </description>
+      </enum>
+      <enum name="25GE">
+        <value value="12"/>
+        <description>
+          <text>25GE.</text>
+        </description>
+      </enum>
+      <enum name="200GE">
+        <value value="13"/>
+        <description>
+          <text>200GE.</text>
+        </description>
+      </enum>
+      <enum name="50GE">
+        <value value="14"/>
+        <description>
+          <text>50GE.</text>
+        </description>
+      </enum>
+      <enum name="flexe">
+        <value value="10002"/>
+        <description>
+          <text>FlexE.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LACP port type.</text>
+    </description>
+  </typedef>
+  <typedef name="port-role-type">
+    <type name="enumeration">
+      <enum name="none">
+        <value value="0"/>
+        <description>
+          <text>None role.</text>
+        </description>
+      </enum>
+      <enum name="master">
+        <value value="1"/>
+        <description>
+          <text>Master role.</text>
+        </description>
+      </enum>
+      <enum name="slave">
+        <value value="2"/>
+        <description>
+          <text>Slave role.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Lacp port role.</text>
+    </description>
+  </typedef>
+  <typedef name="ifmlag-member-selected-state">
+    <type name="enumeration">
+      <enum name="selected">
+        <value value="1"/>
+        <description>
+          <text>The interface is in the selected state.</text>
+        </description>
+      </enum>
+      <enum name="unselected">
+        <value value="0"/>
+        <description>
+          <text>The interface is in the unselected state.</text>
+        </description>
+      </enum>
+      <enum name="standby">
+        <value value="2"/>
+        <description>
+          <text>The interface is in the standby state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Lag member selected state.</text>
+    </description>
+  </typedef>
+  <container name="lacp">
+    <description>
+      <text>Link aggregation control protocol.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure global attributes.</text>
+      </description>
+      <leaf name="sys-priority">
+        <type name="uint16">
+          <range value="0..65535"/>
+        </type>
+        <default value="32768"/>
+        <description>
+          <text>The device with a higher system priority is selected as the actor, and then active member interfaces are selected based on the configuration of the Eth-Trunk interface on the actor. If the system priorities are the same, the actor is selected based on the system ID. The device with the smaller system ID becomes the actor.</text>
+        </description>
+      </leaf>
+      <container name="m-lag">
+        <description>
+          <text>Configure M-LAG global attributes.</text>
+        </description>
+        <leaf name="sys-priority">
+          <type name="uint16">
+            <range value="0..65535"/>
+          </type>
+          <default value="32768"/>
+          <description>
+            <text>M-LAG global LACP system priority.</text>
+          </description>
+        </leaf>
+        <leaf name="sys-mac">
+          <type name="pub-type:mac-address">
+            <length value="0..255"/>
+          </type>
+          <ext:dynamic-default/>
+          <description>
+            <text>M-LAG global LACP system MAC address. By default, the LACP M-LAG system ID in the system is the system bridge MAC address.</text>
+          </description>
+        </leaf>
+      </container>
+      <leaf name="adminkey-change2lagid">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable to control some mib modes in LAG-MIB, in LAG-MIB there are some nodes related to administrative key for an aggregator, i.e. dot3adAggActorSystemPriority in dot3adAggTable, the administrative key is equal to lag id plus one in default, if this element is set to true, the administrative key is equal to lag id.</text>
+        </description>
+      </leaf>
+      <leaf name="ignore-aggregation">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the device to ignore the value of the reserved field in LACP PDUs by configuring ignore aggregation delay.</text>
+        </description>
+      </leaf>
+      <leaf name="force-down">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the force-down function to eth-trunk which added to M-LAG.</text>
+        </description>
+      </leaf>
+      <leaf name="sys-mac">
+        <type name="pub-type:mac-address">
+          <length value="0..255"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Global LACP system MAC address.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="trouble-shoots">
+      <config value="false"/>
+      <description>
+        <text>List of LACP trouble shootings.</text>
+      </description>
+      <list name="trouble-shoot">
+        <key value="index"/>
+        <max-elements value="5"/>
+        <description>
+          <text>Statistics of LACP trouble shooting.</text>
+        </description>
+        <leaf name="index">
+          <type name="uint32">
+            <range value="1..5"/>
+          </type>
+          <description>
+            <text>Index of LACP trouble shooting.</text>
+          </description>
+        </leaf>
+        <leaf name="time">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>Time of LACP trouble shooting.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="0..600"/>
+          </type>
+          <description>
+            <text>Description of LACP trouble shooting.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ifm-trunk:trunk">
+    <when condition="(ifm-trunk:work-mode='static' or ifm-trunk:work-mode='dynamic') and ../ifm:type ='Eth-Trunk'"/>
+    <description>
+      <text>Configure LACP configurations on Eth-Trunk interface.</text>
+    </description>
+    <container name="lacp">
+      <description>
+        <text>Configure LACP configurations on Eth-Trunk interface.</text>
+      </description>
+      <leaf name="receive-timeout-type">
+        <type name="receive-timeout-type"/>
+        <default value="slow"/>
+        <description>
+          <text>Timeout period for an Eth-Trunk interface in static LACP mode to receive LACP packets. The fast mode indicates a short interval, and the slow mode indicates a long interval.</text>
+        </description>
+      </leaf>
+      <leaf name="fast-timeout-value">
+        <when condition="../receive-timeout-type='fast'"/>
+        <type name="uint32">
+          <range value="3..90"/>
+        </type>
+        <units name="s"/>
+        <default value="3"/>
+        <description>
+          <text>Set the value of fast timeout.</text>
+        </description>
+      </leaf>
+      <leaf name="support-preempt">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the preemption function and the high-priority link can replace the low-priority link and switch to active.</text>
+        </description>
+      </leaf>
+      <leaf name="select-port-std">
+        <type name="select-std"/>
+        <default value="priority"/>
+        <description>
+          <text>Indicate that active interfaces are selected based on the interface priority or rate.</text>
+        </description>
+      </leaf>
+      <leaf name="preempt-delay">
+        <type name="uint32">
+          <range value="0..180"/>
+        </type>
+        <units name="s"/>
+        <default value="30"/>
+        <description>
+          <text>When the preemption function is enabled, the high-priority link switches to active after the configured delay time.</text>
+        </description>
+      </leaf>
+      <leaf name="max-active-num">
+        <type name="uint32">
+          <range value="1..64"/>
+        </type>
+        <ext:dynamic-default/>
+        <description>
+          <text>After the number of up member links reaches the upper limit, the bandwidth of the Eth-Trunk interface does not increase even if more member links go up. Setting the maximum number of up member links improves network reliability on the basis of sufficient bandwidth. The maximum value of the leaf varies according to the device model. The default value is the maximum value. The maximum value is obtained using the PAF file.</text>
+        </description>
+      </leaf>
+      <leaf name="collect-max-delay">
+        <type name="uint16">
+          <range value="0..65535"/>
+        </type>
+        <units name="10 us"/>
+        <default value="0"/>
+        <description>
+          <text>The port receive the max delay time of collecting from parterner.</text>
+        </description>
+      </leaf>
+      <leaf name="mix-rate-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the mix-rate link function and LACP will select links with different rate at the same time.</text>
+        </description>
+      </leaf>
+      <leaf name="backup-enable">
+        <ext:operation-exclude value="update">
+          <when condition="../../ifm-trunk:members"/>
+          <description>
+            <text>The lacp backup mode cannot be updated, when the Eth-trunk has member ports.</text>
+          </description>
+        </ext:operation-exclude>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable port role negotiation function. The users can configure the port role. The primary role port is negotiated preferentially.</text>
+        </description>
+      </leaf>
+      <leaf name="damp-state-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the dampening state flaping function and LACP will dampen state flapping.</text>
+        </description>
+      </leaf>
+      <leaf name="damp-mac-enable">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable the dampening unexpeced MAC-PDU flaping function and LACP will dampen unexpected MAC-PDU flapping.</text>
+        </description>
+      </leaf>
+      <leaf name="sys-mac">
+        <type name="pub-type:mac-address">
+          <length value="0..255"/>
+        </type>
+        <description>
+          <text>Specify the LACP system ID of a trunk interface.</text>
+        </description>
+      </leaf>
+      <leaf name="sys-priority">
+        <type name="uint32">
+          <range value="0..65535"/>
+        </type>
+        <description>
+          <text>Specify the LACP system priority of a trunk interface.</text>
+        </description>
+      </leaf>
+      <container name="m-lag">
+        <description>
+          <text>Configure M-LAG interface.</text>
+        </description>
+        <leaf name="sys-priority">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>LACP system priority of the M-LAG.</text>
+          </description>
+        </leaf>
+        <leaf name="sys-mac">
+          <type name="pub-type:mac-address">
+            <length value="0..255"/>
+          </type>
+          <description>
+            <text>LACP system MAC of the M-LAG.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="track-vrrp">
+        <presence value="track vrrp"/>
+        <description>
+          <text>Enable/disable Eth-Trunk interface binding VRRP.</text>
+        </description>
+        <leaf name="vrrp-id">
+          <type name="uint8">
+            <range value="1..255"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>VRRP ID.</text>
+          </description>
+        </leaf>
+        <leaf name="if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specified interface.</text>
+          </description>
+        </leaf>
+        <leaf name="sys-priority">
+          <type name="uint16">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>LACP system priority of VRRP-bound Eth-Trunk interface.</text>
+          </description>
+        </leaf>
+        <leaf name="id-ext">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable status of LACP port number extension.</text>
+          </description>
+        </leaf>
+      </container>
+      <leaf name="portup-num">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Number of up LACP interfaces in this Eth-Trunk interface.</text>
+        </description>
+      </leaf>
+      <leaf name="oper-syspri">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Specify the operate LACP system priority of a trunk interface.</text>
+        </description>
+      </leaf>
+      <leaf name="oper-sysmac">
+        <type name="pub-type:mac-address">
+          <length value="0..255"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Specify the operate LACP system ID of a trunk interface.</text>
+        </description>
+      </leaf>
+      <leaf name="sysmac-source">
+        <type name="sysmac"/>
+        <config value="false"/>
+        <description>
+          <text>Specify the source of LACP operate system ID.</text>
+        </description>
+      </leaf>
+      <leaf name="portkey">
+        <type name="uint16">
+          <range value="1..65535"/>
+        </type>
+        <description>
+          <text>Set the portkey of a trunk interface.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ifm-trunk:trunk/ifm-trunk:members/ifm-trunk:member">
+    <description>
+      <text>Interface LACP attribute.</text>
+    </description>
+    <container name="lacp">
+      <description>
+        <text>Configure interface LACP attribute.</text>
+      </description>
+      <container name="port-attributes">
+        <when condition="../../../../../ifm:type='Eth-Trunk' and (../../../../ifm-trunk:work-mode='static' or ../../../../ifm-trunk:work-mode='dynamic')"/>
+        <description>
+          <text>Configure interface LACP configurable attributes.</text>
+        </description>
+        <leaf name="priority">
+          <type name="uint16">
+            <range value="0..65535"/>
+          </type>
+          <default value="32768"/>
+          <description>
+            <text>The interface with high LACP priority is selected as the active interface.</text>
+          </description>
+        </leaf>
+        <leaf name="role">
+          <when condition="../../../../../lacp:lacp/lacp:backup-enable='true'"/>
+          <type name="port-role-type"/>
+          <default value="none"/>
+          <description>
+            <text>The interface configured with the master role is preferentially negotiated. If the trunk up condition is not met, the trunk is switched to the backup interface for negotiation. If the port is not configured with a role, the port does not participate in the negotiation.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="port-negotiate-parameter">
+        <when condition="../../../../../ifm:type='Eth-Trunk' and (../../../../ifm-trunk:work-mode='static' or ../../../../ifm-trunk:work-mode='dynamic')"/>
+        <config value="false"/>
+        <description>
+          <text>Statistics of interface LACP negotiate information.</text>
+        </description>
+        <leaf name="status">
+          <type name="member-selected-state"/>
+          <description>
+            <text>Interface LACP selected status.</text>
+          </description>
+        </leaf>
+        <leaf name="port-type">
+          <type name="port-type"/>
+          <description>
+            <text>LACP interface type.</text>
+          </description>
+        </leaf>
+        <leaf name="actor-state">
+          <type name="string">
+            <length value="8"/>
+          </type>
+          <description>
+            <text>Actor select state.</text>
+          </description>
+        </leaf>
+        <leaf name="actor-portkey">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>Actor interface keyword.</text>
+          </description>
+        </leaf>
+        <leaf name="actor-sysid">
+          <type name="string">
+            <length value="0..255"/>
+          </type>
+          <description>
+            <text>LACP actor system priority and system MAC.</text>
+          </description>
+        </leaf>
+        <leaf name="actor-portno">
+          <type name="uint32"/>
+          <description>
+            <text>LACP actor interface number.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-sysprimac">
+          <type name="string">
+            <length value="0..255"/>
+          </type>
+          <description>
+            <text>LACP partner system priority and system MAC.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-syspri">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>Partner system priority.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-sysid">
+          <type name="pub-type:mac-address">
+            <length value="0..255"/>
+          </type>
+          <description>
+            <text>Partner system ID.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-portpri">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>Partner interface priority.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-id">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>Partner interface ID.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-portkey">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <description>
+            <text>Partner interface keyword.</text>
+          </description>
+        </leaf>
+        <leaf name="partner-state">
+          <type name="string">
+            <length value="8"/>
+          </type>
+          <description>
+            <text>Partner select state.</text>
+          </description>
+        </leaf>
+        <leaf name="reference-port">
+          <type name="boolean"/>
+          <description>
+            <text>LACP reference interface.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="pdu-statistic">
+        <when condition="../../../../../ifm:type='Eth-Trunk' and (../../../../ifm-trunk:work-mode='static' or ../../../../ifm-trunk:work-mode='dynamic')"/>
+        <config value="false"/>
+        <description>
+          <text>Statistics of LACP PDU information.</text>
+        </description>
+        <leaf name="recv-pdunum">
+          <type name="uint32"/>
+          <description>
+            <text>Number of received LACP PDUs.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-err-pdunum">
+          <type name="uint32"/>
+          <description>
+            <text>Number of received error LACP PDUs.</text>
+          </description>
+        </leaf>
+        <leaf name="send-pdunum">
+          <type name="uint32"/>
+          <description>
+            <text>Number of transmitted LACP PDUs.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-marker-pdunum">
+          <type name="uint32"/>
+          <description>
+            <text>Number of received marker LACP PDUs.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-err-makernum">
+          <type name="uint32"/>
+          <description>
+            <text>Number of received error marker LACP PDUs.</text>
+          </description>
+        </leaf>
+        <leaf name="send-makernum">
+          <type name="uint32"/>
+          <description>
+            <text>Number of transmitted marker LACP PDUs.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Force-up Interface LACP attribute.</text>
+    </description>
+    <container name="lacp-force-up">
+      <description>
+        <text>Configure force-up interface LACP attribute.</text>
+      </description>
+      <leaf name="force-up">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the force-up function.</text>
+        </description>
+      </leaf>
+      <leaf name="extension-enable">
+        <type name="boolean"/>
+        <must condition="((../force-up='true' and ../extension-enable='true') or (../extension-enable='false'))"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the extension function.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

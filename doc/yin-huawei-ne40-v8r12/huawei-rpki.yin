@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-rpki"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rpki="urn:huawei:yang:huawei-rpki"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-rpki"/>
+  <prefix value="rpki"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Resource Public Key Infrastructure.</text>
+  </description>
+  <revision date="2020-12-09">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <container name="rpki">
+    <description>
+      <text>Configure RPKI.</text>
+    </description>
+    <container name="rpki">
+      <presence value="Enable RPKI."/>
+      <description>
+        <text>Enable/disable RPKI globally.</text>
+      </description>
+    </container>
+  </container>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Rpki session configuration.</text>
+    </description>
+    <container name="rpki">
+      <when condition="/rpki:rpki/rpki:rpki"/>
+      <description>
+        <text>Configure RPKI.</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>List of rpki session.</text>
+        </description>
+        <list name="session">
+          <must condition="aging-time&gt;=2*(refresh-time)"/>
+          <key value="remote-address"/>
+          <max-elements value="2"/>
+          <description>
+            <text>Configure rpki session.</text>
+          </description>
+          <leaf name="remote-address">
+            <type name="inet:ip-address-no-zone"/>
+            <description>
+              <text>Specifies the address of a Resource Public Key Infrastructure (RPKI) server to establish a TCP connection between the router and the RPKI server.</text>
+            </description>
+          </leaf>
+          <leaf name="tcp-port">
+            <type name="uint16">
+              <range value="1..65535"/>
+            </type>
+            <description>
+              <text>TCP connection port.</text>
+            </description>
+          </leaf>
+          <leaf name="aging-time">
+            <type name="uint32">
+              <range value="60..604800"/>
+            </type>
+            <units name="s"/>
+            <default value="3600"/>
+            <description>
+              <text>Aging time.</text>
+            </description>
+          </leaf>
+          <leaf name="refresh-time">
+            <type name="uint32">
+              <range value="10..3600"/>
+            </type>
+            <units name="s"/>
+            <default value="1800"/>
+            <description>
+              <text>Refresh time.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="rpki"/>
+</module>

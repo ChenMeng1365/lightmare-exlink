@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-urpf"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:urpf="http://www.zte.com.cn/zxr10/netconf/schema/rosng/urpf"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/urpf"/>
+  <prefix value="urpf"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe URPF(Unicast Reverse Path Forwarding)</text>
+  </description>
+  <revision date="2019-09-07">
+    <description>
+      <text>Support ignore-multipath-default-route node.
+1 configuration/urpf/ipv4/ipv4-urpf/mode/strict/ignore-multipath-default-route;
+2 configuration/urpf/ipv6/ipv6-urpf/mode/strict/ignore-multipath-default-route.</text>
+    </description>
+  </revision>
+  <revision date="2017-12-11">
+    <description>
+      <text>Change optional urpf-id nodes into mandatory.
+1 configuration/urpf/ipv4/ipv4-urpf/mode/neighbour/neighbour/urpf-id;
+2 configuration/urpf/ipv6/ipv6-urpf/mode/neighbour/neighbour/urpf-id.</text>
+    </description>
+  </revision>
+  <revision date="2017-11-06">
+    <description>
+      <text>Support neighbour mode.
+1 configuration/urpf/ipv4/ipv4-urpf/mode/neighbour;
+2 configuration/urpf/ipv6/ipv6-urpf/mode/neighbour.</text>
+    </description>
+  </revision>
+  <revision date="2017-07-01">
+    <description>
+      <text>1.Support to configure URPF based on IP, add new nodes as followed,
+feature: ip-urpf
+containers:
+/configuration/urpf/ip-urpfs.</text>
+    </description>
+  </revision>
+  <revision date="2014-03-18">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <feature name="ipv4-urpf">
+    <description>
+      <text>Support to configure IPv4 Type URPF</text>
+    </description>
+  </feature>
+  <feature name="ipv6-urpf">
+    <description>
+      <text>Support to configure IPv6 Type URPF</text>
+    </description>
+  </feature>
+  <feature name="ipv4-urpf-acl">
+    <description>
+      <text>Support ACL option for IPv4 type URPF</text>
+    </description>
+  </feature>
+  <feature name="ip-urpf">
+    <description>
+      <text>Support to configure IP Type URPF.</text>
+    </description>
+  </feature>
+  <container name="configuration">
+    <description>
+      <text>Configuration model</text>
+    </description>
+    <container name="urpf">
+      <description>
+        <text>Configuration about URPF</text>
+      </description>
+      <container name="ipv4">
+        <description>
+          <text>Configuration IPv4 Type</text>
+        </description>
+        <list name="ipv4-urpf">
+          <description>
+            <text>Configuration IPv4 Type URPF</text>
+          </description>
+          <key value="interface"/>
+          <leaf name="interface">
+            <description>
+              <text>Interface name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <choice name="mode">
+            <description>
+              <text>Mode choice</text>
+            </description>
+            <mandatory value="true"/>
+            <case name="strict">
+              <description>
+                <text>Strict mode</text>
+              </description>
+              <leaf name="rx">
+                <description>
+                  <text>Match strict mode</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+              <leaf name="ignore-multipath-def-route">
+                <description>
+                  <text>Ignore multipath default route</text>
+                </description>
+                <type name="empty"/>
+                <ncd:revise-date date="2019-09-07"/>
+              </leaf>
+            </case>
+            <case name="loose">
+              <description>
+                <text>Loose mode</text>
+              </description>
+              <leaf name="any">
+                <description>
+                  <text>Match loose mode</text>
+                </description>
+                <type name="empty"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="ignore-def-route">
+                <description>
+                  <text>Ignore default route</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+            </case>
+            <case name="neighbour">
+              <description>
+                <text>Match neighbour mode</text>
+              </description>
+              <container name="neighbour">
+                <description>
+                  <text>Match neighbour mode</text>
+                </description>
+                <leaf name="neighbour">
+                  <description>
+                    <text>Match neighbour mode</text>
+                  </description>
+                  <type name="empty"/>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="urpf-id">
+                  <description>
+                    <text>Specify URPF ID</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..65534"/>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+              </container>
+              <ncd:revise-date date="2017-11-06"/>
+            </case>
+          </choice>
+          <leaf name="acl-name">
+            <description>
+              <text>Name of access-list</text>
+            </description>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+          </leaf>
+        </list>
+      </container>
+      <container name="ipv6">
+        <description>
+          <text>Configuration IPv6 Type</text>
+        </description>
+        <list name="ipv6-urpf">
+          <description>
+            <text>Configuration IPv6 Type URPF</text>
+          </description>
+          <key value="interface"/>
+          <leaf name="interface">
+            <description>
+              <text>Interface name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <choice name="mode">
+            <description>
+              <text>Mode choice</text>
+            </description>
+            <mandatory value="true"/>
+            <case name="strict">
+              <description>
+                <text>Strict mode</text>
+              </description>
+              <leaf name="rx">
+                <description>
+                  <text>Match strict mode</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+              <leaf name="ignore-multipath-def-route">
+                <description>
+                  <text>Ignore multipath default route</text>
+                </description>
+                <type name="empty"/>
+                <ncd:revise-date date="2019-09-07"/>
+              </leaf>
+            </case>
+            <case name="loose">
+              <description>
+                <text>Loose mode</text>
+              </description>
+              <leaf name="any">
+                <description>
+                  <text>Match loose mode</text>
+                </description>
+                <type name="empty"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="ignore-def-route">
+                <description>
+                  <text>Ignore default route</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+            </case>
+            <case name="neighbour">
+              <description>
+                <text>Match neighbour mode</text>
+              </description>
+              <container name="neighbour">
+                <description>
+                  <text>Match neighbour mode</text>
+                </description>
+                <leaf name="neighbour">
+                  <description>
+                    <text>Match neighbour mode</text>
+                  </description>
+                  <type name="empty"/>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="urpf-id">
+                  <description>
+                    <text>Specify URPF ID</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..65534"/>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+              </container>
+              <ncd:revise-date date="2017-11-06"/>
+            </case>
+          </choice>
+          <leaf name="acl-name">
+            <description>
+              <text>Name of access-list</text>
+            </description>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+          </leaf>
+        </list>
+      </container>
+      <container name="ip-urpfs">
+        <description>
+          <text>Configuration IP Type URPF.</text>
+        </description>
+        <list name="ip-urpf">
+          <description>
+            <text>Configuration IP Type URPF.</text>
+          </description>
+          <key value="interface"/>
+          <leaf name="interface">
+            <description>
+              <text>Interface name, support 1-31 characters.</text>
+            </description>
+            <type name="ncd:ifname">
+              <length value="1..31">
+                <description>
+                  <text>Interface name, support 1-31 characters.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+          <container name="modes">
+            <description>
+              <text>Mode choice.</text>
+            </description>
+            <choice name="mode">
+              <description>
+                <text>Mode choice.</text>
+              </description>
+              <mandatory value="true"/>
+              <case name="strict">
+                <description>
+                  <text>Strict mode.</text>
+                </description>
+                <leaf name="rx">
+                  <description>
+                    <text>Match strict mode.</text>
+                  </description>
+                  <type name="empty"/>
+                  <mandatory value="true"/>
+                </leaf>
+              </case>
+              <case name="loose">
+                <description>
+                  <text>Loose mode.</text>
+                </description>
+                <container name="loose">
+                  <description>
+                    <text>Loose mode.</text>
+                  </description>
+                  <leaf name="any">
+                    <description>
+                      <text>Match loose mode.</text>
+                    </description>
+                    <type name="empty"/>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="ignore-def-route">
+                    <description>
+                      <text>Ignore default route.</text>
+                    </description>
+                    <type name="empty"/>
+                  </leaf>
+                </container>
+              </case>
+            </choice>
+          </container>
+        </list>
+        <ncd:revise-date date="2017-07-01"/>
+      </container>
+    </container>
+  </container>
+</module>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-twamp-responder"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:twamp-responder="urn:huawei:yang:huawei-twamp-responder"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-twamp-responder"/>
+  <prefix value="twamp-responder"/>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Two Way Active Measurement Protocol.</text>
+  </description>
+  <revision date="2020-03-14">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-27">
+    <description>
+      <text>Solve some errors.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-05">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="twamp"/>
+  <container name="twamp-responder">
+    <description>
+      <text>Two Way Active Measurement Protocol.</text>
+    </description>
+    <container name="server">
+      <presence value="Server Enable."/>
+      <description>
+        <text>Configure server role.</text>
+      </description>
+      <leaf name="tcp-port">
+        <type name="uint16">
+          <range value="862|1024..65535"/>
+        </type>
+        <default value="862"/>
+        <description>
+          <text>The TCP port of server.</text>
+        </description>
+      </leaf>
+      <leaf name="ctrl-session-timeout">
+        <type name="uint32">
+          <range value="1..6000"/>
+        </type>
+        <units name="s"/>
+        <default value="900"/>
+        <description>
+          <text>The timeout of control session.</text>
+        </description>
+      </leaf>
+      <leaf name="acl-identity">
+        <type name="leafref">
+          <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+        </type>
+        <description>
+          <text>Configure TWAMP by specifying ACL name.</text>
+        </description>
+      </leaf>
+      <choice name="vpn">
+        <description>
+          <text>VPN instance of TWAMP.</text>
+        </description>
+        <case name="vpn-all">
+          <description>
+            <text>Specify all VPN instance.</text>
+          </description>
+          <leaf name="all-vpn">
+            <type name="empty"/>
+            <description>
+              <text>IP and all VPN instances.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="vpn-instance">
+          <description>
+            <text>Specify any VPN instance.</text>
+          </description>
+          <leaf name="vrf-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+            <description>
+              <text>VPN instance name.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <container name="mode">
+        <description>
+          <text>Configure listening range of TWAMP.</text>
+        </description>
+        <choice name="mode">
+          <description>
+            <text>Listening range of TWAMP.</text>
+          </description>
+          <case name="listening-all">
+            <description>
+              <text>All-zero listening.</text>
+            </description>
+            <leaf name="listening-all">
+              <type name="empty"/>
+              <description>
+                <text>All-zero listening.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="listening-address">
+            <description>
+              <text>Listen for the specified address.</text>
+            </description>
+            <container name="server-addresses">
+              <description>
+                <text>List of server IP addresses.</text>
+              </description>
+              <list name="server-address">
+                <key value="address"/>
+                <description>
+                  <text>Configure server IP address.</text>
+                </description>
+                <leaf name="address">
+                  <type name="inet:ipv4-address-no-zone"/>
+                  <description>
+                    <text>Server IP address.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </case>
+        </choice>
+      </container>
+    </container>
+    <container name="reflector">
+      <presence value="Reflector Enable."/>
+      <description>
+        <text>Configure the reflector of TWAMP.</text>
+      </description>
+      <leaf name="test-session-timeout">
+        <type name="uint32">
+          <range value="1..604800"/>
+        </type>
+        <units name="s"/>
+        <default value="900"/>
+        <description>
+          <text>The timeout of test session.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="responder">
+      <presence value="Enable responder of TWAMP."/>
+      <description>
+        <text>Configure the responder of TWAMP light.</text>
+      </description>
+      <container name="test-sessions">
+        <description>
+          <text>List of TWAMP light responder test session.</text>
+        </description>
+        <list name="test-session">
+          <key value="session-id"/>
+          <unique tag="source-ip dest-ip source-port dest-port vrf-name"/>
+          <description>
+            <text>Configure TWAMP light test session.</text>
+          </description>
+          <leaf name="session-id">
+            <type name="uint32">
+              <range value="1..65535"/>
+            </type>
+            <description>
+              <text>Test session ID.</text>
+            </description>
+          </leaf>
+          <leaf name="source-ip">
+            <type name="inet:ip-address-no-zone"/>
+            <must condition="((../source-ip) != (../dest-ip))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Source IP address.</text>
+            </description>
+          </leaf>
+          <leaf name="dest-ip">
+            <type name="inet:ip-address-no-zone"/>
+            <must condition="((../source-ip) != (../dest-ip))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Dest IP address.</text>
+            </description>
+          </leaf>
+          <leaf name="source-port">
+            <type name="uint16">
+              <range value="862..863|1025..65535"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Source UDP port, This UDP port cannot used by other protocol.</text>
+            </description>
+          </leaf>
+          <leaf name="dest-port">
+            <type name="uint16">
+              <range value="862..863|1025..65535"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Dest UDP Port, This UDP Port cannot used by other protocol.</text>
+            </description>
+          </leaf>
+          <leaf name="vrf-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="(contains(../source-ip,':') and /ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']) or (not(contains(../source-ip,':'))and /ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+            <description>
+              <text>VPN Instance name.</text>
+            </description>
+          </leaf>
+          <leaf name="anti-loop">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable anti loop.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+</module>

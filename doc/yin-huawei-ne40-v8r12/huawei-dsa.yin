@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-dsa"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dsa="urn:huawei:yang:huawei-dsa"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-dsa"/>
+  <prefix value="dsa"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>DSA.</text>
+  </description>
+  <revision date="2019-05-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="ssh-server"/>
+  <typedef name="dsa-key-type">
+    <type name="enumeration">
+      <enum name="2048">
+        <value value="2048"/>
+        <description>
+          <text>Modulus 2048.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>DSA key length.</text>
+    </description>
+  </typedef>
+  <typedef name="dsa-encode-type">
+    <type name="enumeration">
+      <enum name="der">
+        <value value="0"/>
+        <description>
+          <text>DER.</text>
+        </description>
+      </enum>
+      <enum name="pem">
+        <value value="1"/>
+        <description>
+          <text>PEM.</text>
+        </description>
+      </enum>
+      <enum name="openssh">
+        <value value="2"/>
+        <description>
+          <text>OpenSSH.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>DSA encodein type list.</text>
+    </description>
+  </typedef>
+  <container name="dsa">
+    <description>
+      <text>DSA.</text>
+    </description>
+    <container name="local-keys">
+      <description>
+        <text>Configure local key code.</text>
+      </description>
+      <container name="local-key">
+        <presence value="create dsaLocalKey."/>
+        <description>
+          <text>Enable/disable local key code.</text>
+        </description>
+        <leaf name="key-size">
+          <type name="dsa-key-type"/>
+          <default value="2048"/>
+          <description>
+            <text>Key size.</text>
+          </description>
+        </leaf>
+        <leaf name="host-key-name">
+          <type name="string">
+            <length value="0..264"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Hostkey name.</text>
+          </description>
+        </leaf>
+        <leaf name="host-key-code">
+          <type name="string">
+            <length value="0..2048"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Hostkey code.</text>
+          </description>
+        </leaf>
+        <leaf name="host-key-pem">
+          <type name="string">
+            <length value="0..2048"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Hostkey code in PEM format.</text>
+          </description>
+        </leaf>
+        <leaf name="host-key-openssh">
+          <type name="string">
+            <length value="0..2048"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Hostkey code in OpenSSH format.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+    <container name="peer-keys">
+      <description>
+        <text>List of peer key table.</text>
+      </description>
+      <list name="peer-key">
+        <key value="key-name"/>
+        <max-elements value="20"/>
+        <description>
+          <text>Configure peer key code. If the key code is bound, it cannot be deleted, you need to unbind and then delete.</text>
+        </description>
+        <leaf name="key-name">
+          <type name="string">
+            <length value="1..40"/>
+          </type>
+          <description>
+            <text>Key name.</text>
+          </description>
+        </leaf>
+        <leaf name="key-code">
+          <type name="string">
+            <length value="1..4096"/>
+          </type>
+          <mandatory value="true"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Key code conforming to PEM, OpenSSH or DER format.</text>
+          </description>
+        </leaf>
+        <leaf name="encoding-type">
+          <type name="dsa-encode-type"/>
+          <default value="der"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Encode type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="key-pairs">
+      <description>
+        <text>List of DSA keypair labels.</text>
+      </description>
+      <list name="key-pair">
+        <key value="key-pair-label"/>
+        <max-elements value="20"/>
+        <description>
+          <text>Configure DSA keypair label policy.</text>
+        </description>
+        <leaf name="key-pair-label">
+          <type name="string">
+            <length value="1..35"/>
+            <pattern value="[a-z0-9_]*"/>
+          </type>
+          <description>
+            <text>Keypair Label Name : It only contains underscores (_), lowercase letters and digits.</text>
+          </description>
+        </leaf>
+        <leaf name="key-size">
+          <type name="dsa-key-type"/>
+          <default value="2048"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Size of Keypair.</text>
+          </description>
+        </leaf>
+        <leaf name="host-key-code">
+          <type name="string">
+            <length value="0..2048"/>
+          </type>
+          <config value="false"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>DSA hostkey code.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="dsa-global">
+      <description>
+        <text>Configure global Configuration.</text>
+      </description>
+      <leaf name="max-key-pair">
+        <type name="int32">
+          <range value="1..20"/>
+        </type>
+        <default value="20"/>
+        <description>
+          <text>Maximum keypair value.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+</module>

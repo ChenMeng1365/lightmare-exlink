@@ -1,0 +1,151 @@
+module: zxr10-ip
+  +--rw configuration
+  |  +--rw ip
+  |     +--rw ip-option
+  |     |  +--rw fragment?              enumeration {fragment-reasm-feature}?
+  |     |  +--rw icmp-fast-reply?       enumeration
+  |     |  +--rw source-route?          enumeration
+  |     |  +--rw reassemble-time?       uint16 {fragment-reasm-feature}?
+  |     |  +--rw max-rsm-session?       uint16 {fragment-reasm-feature}?
+  |     |  +--rw pmtu-aging-timer?      uint16
+  |     |  +--rw min-fragment-size?     uint16 {fragment-reasm-feature}?
+  |     |  +--rw min-fragment-offset?   uint16 {fragment-reasm-feature}?
+  |     |  +--rw ttl?                   uint8 {ttl-feature}?
+  |     |  +--rw load-sharing?          enumeration {load-sharing-feature}?
+  |     +--rw control-protocol
+  |     |  +--rw proto-dscps
+  |     |  |  +--rw proto-dscp* [protocol]
+  |     |  |     +--rw protocol            enumeration
+  |     |  |     +--rw exp?                uint8
+  |     |  |     +--rw p8021?              uint8
+  |     |  |     +--rw (dscp-ipp)?
+  |     |  |        +--:(dscp-select)
+  |     |  |        |  +--rw dscp?         uint8
+  |     |  |        +--:(ipp-select)
+  |     |  |           +--rw precedence?   uint8
+  |     |  +--rw proto-dscp-8021ps
+  |     |     +--rw proto-dscp-8021p* [protocol]
+  |     |        +--rw protocol    enumeration
+  |     |        +--rw p8021?      uint8
+  |     +--rw ip-forwards
+  |     |  +--rw ip-forward* [if-name]
+  |     |     +--rw if-name            ncd:ifname
+  |     |     +--rw ip-fwd-unreach?    empty
+  |     |     +--rw ip6-fwd-unreach?   empty
+  |     +--rw nni-gateways
+  |     |  +--rw nni-gateway* [if-name] {nni-gateway-feature}?
+  |     |     +--rw if-name    ncd:ifname
+  |     |     +--rw ip-addr    ncd:ipv4-address
+  |     +--rw icmp-config
+  |     |  +--rw icmp-options
+  |     |  |  +--rw timestamp-reply?          enumeration
+  |     |  |  +--rw specify-src-interfaces
+  |     |  |  |  +--rw specify-src-interface* [if-name]
+  |     |  |  |     +--rw if-name    ncd:ifname
+  |     |  |  +--rw unreachable-rate-limit?   uint32
+  |     |  |  +--rw ip-global-unreach?        enumeration {global-unreach}?
+  |     |  |  +--rw ipv6-global-unreach?      enumeration {global-unreach}?
+  |     |  +--rw icmp-if-mode
+  |     |     +--rw icmp-if-options
+  |     |        +--rw icmp-if-option* [if-name]
+  |     |           +--rw if-name         ncd:ifname
+  |     |           +--rw ip-redirect?    empty
+  |     |           +--rw ip-unreach?     enumeration
+  |     |           +--rw ipv6-unreach?   enumeration
+  |     +--rw ip-fragment
+  |        +--rw clear-dont-fragment-bit* [cpu-info] {clear-dont-fragbit-feature}?
+  |        |  +--rw fragment?   enumeration
+  |        |  +--rw cpu-info    ncd:cpu
+  |        +--rw fragment-bit* [cpu-info]
+  |        |  +--rw cpu-info    ncd:cpu
+  |        |  +--rw fragment?   enumeration
+  |        +--rw clear-dont-frag-bit* [cpu-info] {clear-dont-fragmentbit-feature}?
+  |           +--rw cpu-info    ncd:cpu
+  |           +--rw fragment?   enumeration
+  +--ro state
+  |  +--ro ip
+  |  |  +--ro control-protocol-prioritys
+  |  |  |  +--ro control-protocol-priority* [protocol]
+  |  |  |     +--ro protocol      string
+  |  |  |     +--ro dscp?         uint8
+  |  |  |     +--ro precedence?   uint8
+  |  |  |     +--ro exp?          uint8
+  |  |  |     +--ro p8021?        uint8
+  |  |  +--ro ip-traffic
+  |  |  |  +--ro ip-statistics
+  |  |  |  |  +--ro total-rcvd?       uint32
+  |  |  |  |  +--ro local-dest?       uint32
+  |  |  |  |  +--ro format-error?     uint32
+  |  |  |  |  +--ro checksum-error?   uint32
+  |  |  |  |  +--ro unknown-proto?    uint32
+  |  |  |  |  +--ro bad-hop-count?    uint32
+  |  |  |  |  +--ro reasm-timeout?    uint32
+  |  |  |  |  +--ro reasm-ok?         uint32
+  |  |  |  |  +--ro reasm-failed?     uint32
+  |  |  |  |  +--ro frag-ok?          uint32
+  |  |  |  |  +--ro frag-fail?        uint32
+  |  |  |  |  +--ro bcast-rcvd?       uint32
+  |  |  |  |  +--ro bcast-send?       uint32
+  |  |  |  |  +--ro send-generated?   uint32
+  |  |  |  |  +--ro send-forward?     uint32
+  |  |  |  |  +--ro send-failed?      uint32
+  |  |  |  |  +--ro send-no-route?    uint32
+  |  |  |  +--ro icmp-statistics
+  |  |  |  |  +--ro icmp-rcvd-total?        uint32
+  |  |  |  |  +--ro rcvd-format-error?      uint32
+  |  |  |  |  +--ro rcvd-redirect?          uint32
+  |  |  |  |  +--ro rcvd-unreachable?       uint32
+  |  |  |  |  +--ro rcvd-echo?              uint32
+  |  |  |  |  +--ro rcvd-echo-reply?        uint32
+  |  |  |  |  +--ro rcvd-mask-request?      uint32
+  |  |  |  |  +--ro rcvd-mask-reply?        uint32
+  |  |  |  |  +--ro rcvd-quench?            uint32
+  |  |  |  |  +--ro rcvd-timestamp-req?     uint32
+  |  |  |  |  +--ro rcvd-timestamp-reply?   uint32
+  |  |  |  |  +--ro rcvd-time-exceeded?     uint32
+  |  |  |  |  +--ro rcvd-para-problem?      uint32
+  |  |  |  |  +--ro icmp-send-total?        uint32
+  |  |  |  |  +--ro send-format-error?      uint32
+  |  |  |  |  +--ro send-redirect?          uint32
+  |  |  |  |  +--ro send-unreachable?       uint32
+  |  |  |  |  +--ro send-echo?              uint32
+  |  |  |  |  +--ro send-echo-reply?        uint32
+  |  |  |  |  +--ro send-mask-request?      uint32
+  |  |  |  |  +--ro send-mask-reply?        uint32
+  |  |  |  |  +--ro send-quench?            uint32
+  |  |  |  |  +--ro send-timestamp-req?     uint32
+  |  |  |  |  +--ro send-timestamp-reply?   uint32
+  |  |  |  |  +--ro send-time-exceeded?     uint32
+  |  |  |  |  +--ro send-para-problem?      uint32
+  |  |  |  +--ro udp-statistics
+  |  |  |  |  +--ro rcvd-total?        uint32
+  |  |  |  |  +--ro rcvd-checkerror?   uint32
+  |  |  |  |  +--ro rcvd-no-port?      uint32
+  |  |  |  |  +--ro send-total?        uint32
+  |  |  |  +--ro tcp-statistics
+  |  |  |     +--ro rcvd-total?        uint32
+  |  |  |     +--ro rcvd-checkerror?   uint32
+  |  |  |     +--ro send-total?        uint32
+  |  |  +--ro icmp-pmtu
+  |  |     +--ro pmtu* [src-ip dst-ip vpn]
+  |  |        +--ro src-ip    ncd:ipv4-address
+  |  |        +--ro dst-ip    ncd:ipv4-address
+  |  |        +--ro vpn       string
+  |  |        +--ro mtu?      uint16
+  |  |        +--ro time?     uint16
+  |  +--ro socket-connect
+  |     +--ro sockets
+  |        +--ro socket* [instance index]
+  |           +--ro instance           uint32
+  |           +--ro index              uint32
+  |           +--ro domain?            enumeration
+  |           +--ro type?              enumeration
+  |           +--ro local-address?     string
+  |           +--ro foreign-address?   string
+  |           +--ro in-num?            uint32
+  |           +--ro out-num?           uint32
+  |           +--ro state?             string
+  +--ro operation
+     +--ro ip
+        +--ro traffic
+           +--ro clear-traffic?   empty

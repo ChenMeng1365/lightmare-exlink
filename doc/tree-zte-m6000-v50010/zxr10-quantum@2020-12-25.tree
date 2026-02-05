@@ -1,0 +1,96 @@
+module: zxr10-quantum
+  +--rw configuration
+     +--rw quantum
+        +--rw global
+        |  +--rw qss-device-id?     uint32
+        |  +--rw kms-device-id?     uint32
+        |  +--rw qss-device-id64?   ncd:uint64-8bytes
+        +--rw qss-algorithms
+        |  +--rw qss-algorithm* [algorithm-name]
+        |     +--rw algorithm-name    string
+        |     +--rw encryption?       enumeration
+        |     +--rw hash?             enumeration
+        +--rw qss-servers
+        |  +--rw qss-server* [qss-server-name]
+        |     +--rw qss-server-name    string
+        |     +--rw lifetime?          uint32
+        |     +--rw qss-server-type?   enumeration
+        |     +--rw key-server!
+        |     |  +--rw server-address    ncd:ipv4-address-none-zero
+        |     |  +--rw server-port       uint16
+        |     +--rw algorithms
+        |     |  +--rw algorithm* [bind-algorithm-name]
+        |     |     +--rw bind-algorithm-name    string
+        |     +--rw vrf!
+        |     |  +--rw (vrf)?
+        |     |     +--:(normal-vrf)
+        |     |     |  +--rw vrf-name    string
+        |     |     +--:(mng-vrf)
+        |     |        +--rw mngFlag     empty
+        |     +--rw version?           enumeration
+        |     +--rw keep-alive?        uint32
+        |     +--rw qss-device-id64?   ncd:uint64-8bytes
+        |     +--rw tcp-local
+        |        +--rw (local-type)?
+        |           +--:(ipv4)
+        |           |  +--rw ipv4-address?   ncd:ipv4-address-none-zero
+        |           +--:(interface)
+        |              +--rw if-name?        ncd:ifname
+        +--rw kms-servers
+        |  +--rw kms-server* [kms-server-name]
+        |     +--rw kms-server-name       string
+        |     +--rw version?              enumeration
+        |     +--rw key-server!
+        |     |  +--rw server-address    ncd:ipv4-address-none-zero
+        |     |  +--rw server-port?      uint16
+        |     +--rw vrf!
+        |     |  +--rw (vrf)?
+        |     |     +--:(normal-vrf)
+        |     |     |  +--rw vrf-name    string
+        |     |     +--:(mng-vrf)
+        |     |        +--rw mngFlag     empty
+        |     +--rw preset-v1!
+        |     |  +--rw (key)?
+        |     |     +--:(clear)
+        |     |     |  +--rw clear-key        string
+        |     |     +--:(encrypt)
+        |     |        +--rw encrypted-key    string
+        |     +--rw preset-v2-getkey!
+        |     |  +--rw (key)?
+        |     |     +--:(clear)
+        |     |     |  +--rw clear-key        string
+        |     |     +--:(encrypt)
+        |     |        +--rw encrypted-key    string
+        |     +--rw preset-v2-register!
+        |        +--rw (key)?
+        |           +--:(clear)
+        |           |  +--rw clear-key        string
+        |           +--:(encrypt)
+        |              +--rw encrypted-key    string
+        +--rw profiles
+           +--rw profile* [profile-name]
+              +--rw profile-name          string
+              +--rw auth-flag?            enumeration
+              +--rw type?                 enumeration
+              +--rw qss-server-name?      string
+              +--rw kms-server-name?      string
+              +--rw remote-device-id?     uint32
+              +--rw remote-id?            uint32
+              +--rw role?                 enumeration
+              +--rw remote-device-id64?   ncd:uint64-8bytes
+
+  rpcs:
+    +---x load
+    |  +---w input
+    |     +---w qss-key
+    |        +---w qss-server-name    string
+    |        +---w (load-type)
+    |           +--:(qkuc)
+    |           |  +---w user-pin     string
+    |           |  +---w admin-pin    string
+    |           +--:(qkud)
+    |              +---w filename     string
+    +---x unload
+       +---w input
+          +---w qss-key
+             +---w qss-server-name    string

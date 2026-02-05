@@ -1,0 +1,571 @@
+module: huawei-radius
+  +--rw radius
+     +--rw global-service
+     |  +--rw radius-enable?                 boolean
+     |  +--rw dead-count?                    uint32
+     |  +--rw dead-interval?                 uint32
+     |  +--rw dead-time?                     uint32
+     |  +--rw fail-rate?                     uint32
+     |  +--rw server-recovery-on-response?   boolean
+     |  +--ro authen-client-identifier?      string
+     +--rw radius-server-groups
+     |  +--rw radius-server-group* [name]
+     |     +--rw name                                        string
+     |     +--rw retransmission-count?                       int32
+     |     +--rw retransmission-interval?                    int32
+     |     +--rw auth-retransmission-count?                  int32
+     |     +--rw auth-retransmission-interval?               int32
+     |     +--rw acct-retransmission-count?                  int32
+     |     +--rw acct-retransmission-interval?               int32
+     |     +--rw shared-key?                                 pub-type:password-extend
+     |     +--rw attribute-translation-enable?               boolean
+     |     +--rw group-mode?                                 enumeration
+     |     +--rw nas-ip-address?                             inet:ipv4-address-no-zone
+     |     +--rw source-interface-name?                      -> /ifm:ifm/interfaces/interface/name
+     |     +--rw domain-mode?                                enumeration
+     |     +--rw alarm-enable?                               boolean
+     |     +--rw radius-server-ipv4s
+     |     |  +--rw radius-server-ipv4* [server-type server-ip-address server-port vpn-name]
+     |     |     +--rw server-type                    enumeration
+     |     |     +--rw server-ip-address              inet:ipv4-address-no-zone
+     |     |     +--rw server-port                    int32
+     |     |     +--rw vpn-name                       -> /ni:network-instance/instances/instance/name
+     |     |     +--rw shared-key?                    pub-type:password-extend
+     |     |     +--rw (source-ip)?
+     |     |     |  +--:(ip)
+     |     |     |  |  +--rw source-ip-address?       inet:ip-address-no-zone
+     |     |     |  +--:(interface)
+     |     |     |     +--rw source-interface-name?   -> /ifm:ifm/interfaces/interface/name
+     |     |     +--ro server-current-state?          enumeration
+     |     |     +--ro is-current-server?             boolean
+     |     |     +--rw weight?                        uint8
+     |     |     +--ro ip-account-packet-statistic
+     |     |        +--ro start-packet-number?     uint32
+     |     |        +--ro stop-packet-number?      uint32
+     |     |        +--ro interim-packet-number?   uint32
+     |     +--rw force-account-stop-packet
+     |     |  +--rw enable?   boolean
+     |     +--rw radius-hw-dhcp-options
+     |     |  +--rw radius-hw-dhcp-option* [number]
+     |     |     +--rw number    uint32
+     |     +--rw hw-dhcpv6-options
+     |     |  +--rw hw-dhcpv6-option* [number]
+     |     |     +--rw number    uint32
+     |     +--rw accounting-include-hw-dhcp-option
+     |     |  +--rw hw-dhcp-option-accounting-request*     uint32
+     |     |  +--rw hw-dhcpv6-option-accounting-request*   uint32
+     |     +--rw version-type
+     |     |  +--rw type?   enumeration
+     |     +--rw packet-control
+     |     |  +--rw interim-accout-resend-count?     uint16
+     |     |  +--rw start-accout-resend-count?       uint16
+     |     |  +--rw stop-accout-resend-count?        uint16
+     |     |  +--rw packet-priority?                 uint8
+     |     |  +--rw vas-account-packed-max-length?   uint32
+     |     +--rw common-attribute
+     |     |  +--rw ncp-up-send-start-account?           boolean
+     |     |  +--rw test-aaa-send-account-start?         boolean
+     |     |  +--rw encode-option61-to-attribute153?     boolean
+     |     |  +--rw decode-fail-ignore-hw-data-filter?   boolean
+     |     |  +--rw frame-ip-mask?                       boolean
+     |     +--rw attribute-format-called-station-id
+     |     |  +--rw include-type?   enumeration
+     |     |  +--rw user-defined!
+     |     |     +--rw head-delimiter?       string
+     |     |     +--rw include-attributes
+     |     |        +--rw include-attribute* [attribute-type]
+     |     |           +--rw attribute-type    enumeration
+     |     |           +--rw delimiter?        string
+     |     |           +--rw split-format?     enumeration
+     |     +--rw attribute-format-calling-station-id
+     |     |  +--rw (include-type)?
+     |     |     +--:(refer-option61)
+     |     |     |  +--rw refer-option61-enable?     empty
+     |     |     +--:(vlan-binding)
+     |     |     |  +--rw vlan-binding-enable?       empty
+     |     |     +--:(vlan-description)
+     |     |     |  +--rw vlan-description-enable?   empty
+     |     |     +--:(llid)
+     |     |     |  +--rw ppp?                       empty
+     |     |     |  +--rw lns?                       empty
+     |     |     +--:(pevlan-before-cevlan)
+     |     |     |  +--rw pevlan-delimiter?          string
+     |     |     |  +--rw cevlan?                    empty
+     |     |     +--:(cevlan-before-pevlan)
+     |     |     |  +--rw cevlan-delimiter?          string
+     |     |     |  +--rw pevlan?                    empty
+     |     |     +--:(line-id)
+     |     |     |  +--rw line-id-enable?            empty
+     |     |     +--:(user-defined)
+     |     |        +--rw head-delimiter?            string
+     |     |        +--rw include-attributes
+     |     |           +--rw include-attribute* [attribute-type]
+     |     |              +--rw attribute-type                     enumeration
+     |     |              +--rw delimiter?                         string
+     |     |              +--rw option82-or-access-line-id-type    enumeration
+     |     |              +--rw split-format?                      enumeration
+     |     +--rw attribute-calling-station-id-lns-default
+     |     |  +--rw lns-version?   enumeration
+     |     +--rw attribute-vendor-id!
+     |     |  +--rw vendor-number    uint32
+     |     +--rw nas-port-id-format
+     |     |  +--rw format?           enumeration
+     |     |  +--rw vendor-id         uint32
+     |     |  +--rw vendor-version?   enumeration
+     |     +--rw attribute-include-nas
+     |     |  +--rw nas-port-enable?                   boolean
+     |     |  +--rw with-user-id-accounting-request?   boolean
+     |     +--rw attribute-traffic-unit
+     |     |  +--rw traffic-unit?   enumeration
+     |     +--rw attribute-packet-format
+     |     |  +--rw packet-format?   enumeration
+     |     +--rw attribute-tunnel-password
+     |     |  +--rw password-type?   enumeration
+     |     +--rw attribute-connect
+     |     |  +--rw refer-option82?   boolean
+     |     +--rw attribute-sub-slot
+     |     |  +--rw sub-slot?   boolean
+     |     +--rw attribute-nas-port
+     |     |  +--rw nas-port-value?   string
+     |     +--rw attribute-access-policy
+     |     |  +--rw if-domain-blocked?   enumeration
+     |     +--rw attribute-user-name
+     |     |  +--rw author-reply-user-name-policy?   boolean
+     |     |  +--rw local-coa-enable?                boolean
+     |     |  +--rw local-dm-enable?                 boolean
+     |     |  +--rw update-domain-name?              boolean
+     |     +--rw attribute-action-hw-mng-ipv6
+     |     |  +--rw hw-mng-ipv6-motm-enable?          boolean
+     |     |  +--rw hw-mng-ipv6-encapsulating-name?   string
+     |     |  +--rw hw-mng-ipv6-delimiter             string
+     |     |  +--rw hw-mng-ipv6-exclude-local?        boolean
+     |     +--rw attribute-apply
+     |     |  +--rw ipoe-user-name-apply?                boolean
+     |     |  +--rw ipoe-priority-apply?                 boolean
+     |     |  +--rw pppoe-user-name-apply?               boolean
+     |     |  +--rw replace-ipv6-pools-with-same-type?   boolean
+     |     +--rw attribute-disable-account
+     |     |  +--rw flow-attributes?          boolean
+     |     |  +--rw hw-acct-update-address?   boolean
+     |     +--rw standard-attributes
+     |     |  +--rw standard-attribute* [attribute-name]
+     |     |     +--rw attribute-name       radius-attribute-table
+     |     |     +--rw operation-type?      enumeration
+     |     |     +--rw disable-attribute
+     |     |        +--rw disable-packet
+     |     |           +--rw type*   enumeration
+     |     +--rw radius-server-algorithm
+     |     |  +--rw radius-arithmetic?    enumeration
+     |     |  +--rw master-backup-rule?   enumeration
+     |     +--rw rollover-on-reject
+     |     |  +--rw enable?   boolean
+     |     +--rw llid-fail-disable-attribute
+     |     |  +--rw calling-station-id?   boolean
+     |     +--rw decode-hw-user-password-attribute
+     |     |  +--rw simple-coa-request?   boolean
+     |     +--rw assign-hw-pcp-server
+     |     |  +--rw dhcp-code-value?     uint32
+     |     |  +--rw dhcpv6-code-value?   uint32
+     |     +--rw vendor-attribute-multiple
+     |     |  +--rw huawei?           boolean
+     |     |  +--rw microsoft?        boolean
+     |     |  +--rw attribute3gpp2?   boolean
+     |     |  +--rw redback?          boolean
+     |     |  +--rw dslforum?         boolean
+     |     |  +--rw other?            boolean
+     |     +--rw calling-station-id-format!
+     |     |  +--rw (formats)?
+     |     |     +--:(vendor)
+     |     |     |  +--rw vendor-id           uint32
+     |     |     |  +--rw include-option82?   empty
+     |     |     |  +--rw version1?           empty
+     |     |     +--:(user-defined)
+     |     |        +--rw version3?           empty
+     |     +--rw authen-account-attribute
+     |     |  +--rw bb-caller-id?         boolean
+     |     |  +--rw hw-auth-type?         boolean
+     |     |  +--rw hw-product-id?        boolean
+     |     |  +--rw hw-version?           boolean
+     |     |  +--rw cmcc-nas-type?        boolean
+     |     |  +--rw cmcc-up-identifier?   boolean
+     |     |  +--rw cmcc-up-ip?           boolean
+     |     +--rw lns-authen-account-attribute
+     |     |  +--rw nas-port-id?   boolean
+     |     +--rw accounting-on-attribute
+     |     |  +--rw nas-ip-address?     boolean
+     |     |  +--rw event-time-stamp?   boolean
+     |     +--rw accounting-off-attribute
+     |     |  +--rw nas-ip-address?     boolean
+     |     |  +--rw event-time-stamp?   boolean
+     |     +--rw coa-nak-attribute
+     |     |  +--rw reply-message?   boolean
+     |     +--rw daa-account-attribute
+     |     |  +--rw class?   boolean
+     |     +--rw edsg-authen-account-attribute
+     |     |  +--rw hw-product-id?   boolean
+     |     |  +--rw hw-version?      boolean
+     |     +--rw edsg-account-attribute
+     |     |  +--rw class?                 boolean
+     |     |  +--rw user-offline-reason?   boolean
+     |     |  +--rw user-mac?              boolean
+     |     +--rw accounting-request-attribute
+     |     |  +--rw hw-dhcpv6-option37?           boolean
+     |     |  +--rw edsg-service-name?            boolean
+     |     |  +--rw hw-acct-terminate-subcause?   boolean
+     |     |  +--rw hw-avpair-nat-vpn?            boolean
+     |     |  +--rw hw-avpair-nat-extend-port?    boolean
+     |     |  +--rw hw-avpair-subscriber-fq?      boolean
+     |     |  +--rw hw-avpair-subscriber-vpnid?   boolean
+     |     |  +--rw hw-vpn-instance?              boolean
+     |     |  +--rw frame-route?                  boolean
+     |     |  +--rw hw-web-url?                   boolean
+     |     +--rw bod-account-attribute
+     |     |  +--rw hw-nat-ip-adress?    boolean
+     |     |  +--rw hw-nat-start-port?   boolean
+     |     |  +--rw hw-nat-end-port?     boolean
+     |     +--rw coa-query-ack-attribute
+     |     |  +--rw reply-message?       boolean
+     |     |  +--rw session-time-out?    boolean
+     |     |  +--rw acct-session-time?   boolean
+     |     |  +--rw filter-id?           boolean
+     |     +--rw access-request-attribute
+     |     |  +--rw hw-gateway-address?       boolean
+     |     |  +--rw hw-avpair-link-address?   boolean
+     |     +--rw coa-logon-ack-attribute
+     |     |  +--rw reply-message?   boolean
+     |     +--rw attribute-action-class!
+     |     |  +--rw class-partial-match         string
+     |     |  +--rw class-encode-format-name?   string
+     |     |  +--rw class-delimiter             string
+     |     |  +--rw class-exclude-local?        boolean
+     |     +--rw nas-port-id
+     |        +--rw include-attributes
+     |        |  +--rw include-attribute* [attribute-type]
+     |        |     +--rw attribute-type    enumeration
+     |        |     +--rw delimiter?        string
+     |        +--rw head-delimiter?       string
+     +--rw radius-server-authorizations
+     |  +--rw radius-server-authorization* [ipv4-address vpn-name]
+     |     +--rw ipv4-address              inet:ipv4-address-no-zone
+     |     +--rw vpn-name                  -> /ni:network-instance/instances/instance/name
+     |     +--rw shared-key                pub-type:password-extend
+     |     +--rw destination-ip-address?   inet:ipv4-address-no-zone
+     |     +--rw destination-port?         uint32
+     |     +--rw server-group-name?        -> ../../../radius-server-groups/radius-server-group/name
+     |     +--rw ack-reserved-interval?    uint32
+     +--rw account-cache-retransmit
+     |  +--rw user-number?   uint32
+     |  +--rw time-out?      uint32
+     +--rw account-cache-warning-threshold!
+     |  +--rw upper-limit    uint32
+     |  +--rw lower-limit    uint32
+     +--rw account-cache-memory-threshold
+     |  +--rw threshold?   uint32
+     +--rw account-cache-max-packet
+     |  +--rw number?   uint32
+     +--rw access-line-id-length-extend
+     |  +--rw enable?   boolean
+     +--rw account-stop-packet-optimize
+     |  +--rw enable?   boolean
+     +--rw send-packet-optimize
+     |  +--rw enable?   boolean
+     +--rw extended-source-port-number!
+     |  +--rw port-number    uint32
+     |  +--rw start-port?    uint32
+     +--ro authentication-packet-statistics
+     |  +--ro authentication-packet-statistic* [ipv4-address vpn-name server-port]
+     |     +--ro ipv4-address                         inet:ipv4-address-no-zone
+     |     +--ro vpn-name                             string
+     |     +--ro server-port                          uint16
+     |     +--ro authen-request-packets?              uint32
+     |     +--ro authen-retransmission-packets?       uint32
+     |     +--ro authen-accept-packets?               uint32
+     |     +--ro authen-reject-packets?               uint32
+     |     +--ro authen-challenge-packets?            uint32
+     |     +--ro malformed-response-authen-packets?   uint32
+     |     +--ro bad-authen-packets?                  uint32
+     |     +--ro pending-authen-packets?              uint32
+     |     +--ro timeout-authen-packets?              uint32
+     |     +--ro speed-limit-retrans-packets?         uint32
+     |     +--ro pending-limit-retrans-packets?       uint32
+     |     +--ro server-down-retrans-packets?         uint32
+     |     +--ro no-source-ip-retrans-packets?        uint32
+     |     +--ro radius-server-no-reply-packets?      uint32
+     |     +--ro unknown-type-authen-packets?         uint32
+     |     +--ro dropped-authen-packets?              uint32
+     |     +--ro cancelled-requests?                  uint32
+     |     +--ro access-requests-last30?              uint32
+     |     +--ro access-retransmissions-last30?       uint32
+     |     +--ro access-accepts-last30?               uint32
+     |     +--ro access-rejects-last30?               uint32
+     |     +--ro access-challenges-last30?            uint32
+     |     +--ro malformed-responses-last30?          uint32
+     |     +--ro bad-authenticators-last30?           uint32
+     |     +--ro pending-requests-last30?             uint32
+     |     +--ro timeouts-last30?                     uint32
+     |     +--ro speed-limit-block-last30?            uint32
+     |     +--ro pending-limit-block-last30?          uint32
+     |     +--ro server-down-block-last30?            uint32
+     |     +--ro no-source-ip-block-last30?           uint32
+     |     +--ro server-not-reply-last30?             uint32
+     |     +--ro unknown-types-last30?                uint32
+     |     +--ro packets-dropped-last30?              uint32
+     |     +--ro cancelled-requests-last30?           uint32
+     +--ro server-ports
+     |  +--ro server-port* [server-type ip-type port]
+     |     +--ro server-type     bras-radius-server-type
+     |     +--ro ip-type         enumeration
+     |     +--ro port            uint16
+     |     +--ro port-invalid?   boolean
+     +--ro server-parameters
+     |  +--ro server-parameter* [group-name server-type ip-address vpn-name port]
+     |     +--ro group-name               string
+     |     +--ro server-type              bras-radius-server-type
+     |     +--ro ip-address               inet:ip-address-no-zone
+     |     +--ro vpn-name                 string
+     |     +--ro port                     uint16
+     |     +--ro master-enable?           boolean
+     |     +--ro server-state?            string
+     |     +--ro server-status-changes
+     |        +--ro server-status-change* [record-index]
+     |           +--ro record-index    uint32
+     |           +--ro change-time?    string
+     |           +--ro change-state?   enumeration
+     +--rw global-pending-limit
+     |  +--rw authentication-pending-limit?   uint32
+     |  +--rw account-pending-limit?          uint32
+     +--rw server-pending-limits
+     |  +--rw server-pending-limit* [server-type server-ip-address server-port vpn-name]
+     |     +--rw server-type          enumeration
+     |     +--rw server-ip-address    -> ../../../radius-server-groups/radius-server-group/radius-server-ipv4s/radius-server-ipv4[server-type=current()/../server-type]/server-ip-address
+     |     +--rw server-port          -> ../../../radius-server-groups/radius-server-group/radius-server-ipv4s/radius-server-ipv4[server-type=current()/../server-type][server-ip-address=current()/../server-ip-address]/server-port
+     |     +--rw vpn-name             -> ../../../radius-server-groups/radius-server-group/radius-server-ipv4s/radius-server-ipv4[server-type=current()/../server-type][server-ip-address=current()/../server-ip-address][server-port=current()/../server-port]/vpn-name
+     |     +--rw limit-value          uint32
+     +--rw server-speed-limits
+     |  +--rw server-speed-limit* [server-type server-ip-address server-port vpn-name]
+     |     +--rw server-type          enumeration
+     |     +--rw server-ip-address    -> ../../../radius-server-groups/radius-server-group/radius-server-ipv4s/radius-server-ipv4[server-type=current()/../server-type]/server-ip-address
+     |     +--rw server-port          -> ../../../radius-server-groups/radius-server-group/radius-server-ipv4s/radius-server-ipv4[server-type=current()/../server-type][server-ip-address = current()/../server-ip-address]/server-port
+     |     +--rw vpn-name             -> ../../../radius-server-groups/radius-server-group/radius-server-ipv4s/radius-server-ipv4[server-type=current()/../server-type][server-ip-address = current()/../server-ip-address][server-port=current()/../server-port]/vpn-name
+     |     +--rw limit-value          uint32
+     |     +--rw limit-time           uint32
+     +--ro account-packet-statistics
+     |  +--ro account-packet-statistic* [ipv4-address vpn-name port]
+     |     +--ro ipv4-address                          inet:ipv4-address-no-zone
+     |     +--ro vpn-name                              string
+     |     +--ro port                                  uint32
+     |     +--ro account-request-packets?              uint32
+     |     +--ro account-retransmission-packets?       uint32
+     |     +--ro account-response-packets?             uint32
+     |     +--ro malformed-response-account-packets?   uint32
+     |     +--ro bad-account-packets?                  uint32
+     |     +--ro pending-account-packets?              uint32
+     |     +--ro timeout-account-packets?              uint32
+     |     +--ro speed-limit-retrans-packets?          uint32
+     |     +--ro pending-limit-retrans-packets?        uint32
+     |     +--ro server-down-retrans-packets?          uint32
+     |     +--ro no-source-ip-retrans-packets?         uint32
+     |     +--ro no-reply-packets?                     uint32
+     |     +--ro unknown-type-account-packets?         uint32
+     |     +--ro dropped-account-packets?              uint32
+     |     +--ro cancelled-requests?                   uint32
+     |     +--ro account-requests-last30?              uint32
+     |     +--ro account-retransmissions-last30?       uint32
+     |     +--ro account-responses-last30?             uint32
+     |     +--ro malformed-responses-last30?           uint32
+     |     +--ro bad-authenticators-last30?            uint32
+     |     +--ro pending-requests-last30?              uint32
+     |     +--ro timeouts-last30?                      uint32
+     |     +--ro speed-limit-block-last30?             uint32
+     |     +--ro pending-limit-block-last30?           uint32
+     |     +--ro server-down-block-last30?             uint32
+     |     +--ro no-source-ip-block-last30?            uint32
+     |     +--ro server-not-reply-last30?              uint32
+     |     +--ro unknown-types-last30?                 uint32
+     |     +--ro packets-dropped-last30?               uint32
+     |     +--ro cancelled-requests-last30?            uint32
+     +--rw packet-statistics-algorithm
+     |  +--rw algorithm?   enumeration
+     +--rw author-error-reply-method
+     |  +--rw method?   enumeration
+     +--rw radius-local-ips
+     |  +--rw radius-local-ip* [ip-address vpn-name]
+     |     +--rw ip-address    inet:ipv4-address-no-zone
+     |     +--rw vpn-name      -> /ni:network-instance/instances/instance/name
+     +--rw radius-local-ip-all
+     |  +--rw enable?   boolean
+     +--ro accounting-server-statistics
+     |  +--ro accounting-server-statistic* [server-address]
+     |     +--ro server-address                inet:ipv4-address-no-zone
+     |     +--ro server-index?                 uint32
+     |     +--ro client-server-port-number?    uint16
+     |     +--ro client-round-trip-time?       pub-type:time-tick
+     |     +--ro client-requests?              uint32
+     |     +--ro client-retransmissions?       uint32
+     |     +--ro client-responses?             uint32
+     |     +--ro client-malformed-responses?   uint32
+     |     +--ro invalid-authenticators?       uint32
+     |     +--ro client-pending-requests?      uint32
+     |     +--ro client-timeouts?              uint32
+     |     +--ro client-unknown-packets?       uint32
+     |     +--ro client-packets-dropped?       uint32
+     +--ro auth-server-statistics
+     |  +--ro auth-server-statistic* [server-address]
+     |     +--ro server-address                inet:ipv4-address-no-zone
+     |     +--ro server-index?                 uint32
+     |     +--ro client-access-requests?       uint32
+     |     +--ro access-retransmissions?       uint32
+     |     +--ro client-access-accepts?        uint32
+     |     +--ro client-access-rejects?        uint32
+     |     +--ro client-access-challenges?     uint32
+     |     +--ro malformed-access-responses?   uint32
+     |     +--ro invalid-authenticators?       uint32
+     |     +--ro client-pending-requests?      uint32
+     |     +--ro client-timeouts?              uint32
+     |     +--ro client-unknown-packets?       uint32
+     |     +--ro client-packets-dropped?       uint32
+     |     +--ro client-server-port-number?    uint16
+     |     +--ro client-round-trip-time?       pub-type:time-tick
+     +--ro author-packet-statistics
+     |  +--ro author-packet-statistic* [packet-type ipv4-address vpn-name]
+     |     +--ro packet-type                          enumeration
+     |     +--ro ipv4-address                         inet:ipv4-address-no-zone
+     |     +--ro vpn-name                             string
+     |     +--ro author-request-packets?              uint32
+     |     +--ro author-accept-packets?               uint32
+     |     +--ro author-reject-packets?               uint32
+     |     +--ro bad-author-packets?                  uint32
+     |     +--ro author-retransmission-packets?       uint32
+     |     +--ro malformed-response-author-packets?   uint32
+     |     +--ro timeout-author-packets?              uint32
+     |     +--ro unknown-type-author-packets?         uint32
+     |     +--ro dropped-author-packets?              uint32
+     |     +--ro invalid-ip-author-packets?           uint32
+     |     +--ro invalid-port-author-packets?         uint32
+     |     +--ro author-request-packets-last30?       uint32
+     |     +--ro author-accept-packets-last30?        uint32
+     |     +--ro author-reject-packets-last30?        uint32
+     |     +--ro bad-author-packets-last30?           uint32
+     |     +--ro retrans-packets-last30?              uint32
+     |     +--ro malformed-packets-last30?            uint32
+     |     +--ro timeout-author-packets-last30?       uint32
+     |     +--ro unknown-author-packets-last30?       uint32
+     |     +--ro dropped-author-packets-last30?       uint32
+     |     +--ro invalid-ip-packets-last30?           uint32
+     |     +--ro invalid-port-packets-last30?         uint32
+     +--ro packet-attribute-statistics
+     |  +--ro packet-attribute-statistic* [attribute-name]
+     |     +--ro attribute-name                       string
+     |     +--ro authen-request-attribute-number?     uint32
+     |     +--ro authen-accept-attribute-number?      uint32
+     |     +--ro authen-reject-attribute-number?      uint32
+     |     +--ro account-request-attribute-number?    uint32
+     |     +--ro account-response-attribute-number?   uint32
+     |     +--ro coa-request-attribute-number?        uint32
+     |     +--ro coa-acknowledge-attribute-number?    uint32
+     |     +--ro dm-request-attribute-number?         uint32
+     |     +--ro dm-acknowledge-attribute-number?     uint32
+     +--ro authen-packet-statistics-ipv6s
+     |  +--ro authen-packet-stat-ipv6* [ipv6-address port]
+     |     +--ro ipv6-address                         inet:ipv6-address-no-zone
+     |     +--ro port                                 uint16
+     |     +--ro authen-request-packets?              uint32
+     |     +--ro authen-retransmission-packets?       uint32
+     |     +--ro authen-accept-packets?               uint32
+     |     +--ro authen-reject-packets?               uint32
+     |     +--ro authen-challenge-packets?            uint32
+     |     +--ro malformed-response-authen-packets?   uint32
+     |     +--ro bad-authen-packets?                  uint32
+     |     +--ro pending-authen-packets?              uint32
+     |     +--ro timeout-authen-packets?              uint32
+     |     +--ro speed-limit-retrans-packets?         uint32
+     |     +--ro pending-limit-retrans-packets?       uint32
+     |     +--ro server-down-retrans-packets?         uint32
+     |     +--ro no-source-ip-retrans-packets?        uint32
+     |     +--ro radius-server-no-reply-packets?      uint32
+     |     +--ro unknown-type-authen-packets?         uint32
+     |     +--ro dropped-authen-packets?              uint32
+     |     +--ro cancelled-requests?                  uint32
+     |     +--ro access-requests-last30?              uint32
+     |     +--ro access-retransmissions-last30?       uint32
+     |     +--ro access-accepts-last30?               uint32
+     |     +--ro access-rejects-last30?               uint32
+     |     +--ro access-challenges-last30?            uint32
+     |     +--ro malformed-responses-last30?          uint32
+     |     +--ro bad-authenticators-last30?           uint32
+     |     +--ro pending-requests-last30?             uint32
+     |     +--ro timeouts-last30?                     uint32
+     |     +--ro speed-limit-block-last30?            uint32
+     |     +--ro pending-limit-block-last30?          uint32
+     |     +--ro server-down-block-last30?            uint32
+     |     +--ro no-source-ip-block-last30?           uint32
+     |     +--ro server-not-reply-last30?             uint32
+     |     +--ro unknown-types-last30?                uint32
+     |     +--ro packets-dropped-last30?              uint32
+     |     +--ro cancelled-requests-last30?           uint32
+     +--ro account-packet-statistics-ipv6s
+     |  +--ro account-packet-statistics-ipv6* [ipv6-address port]
+     |     +--ro ipv6-address                          inet:ipv6-address-no-zone
+     |     +--ro port                                  uint16
+     |     +--ro account-request-packets?              uint32
+     |     +--ro account-retransmission-packets?       uint32
+     |     +--ro account-response-packets?             uint32
+     |     +--ro malformed-response-account-packets?   uint32
+     |     +--ro bad-account-packets?                  uint32
+     |     +--ro pending-account-packets?              uint32
+     |     +--ro timeout-account-packets?              uint32
+     |     +--ro speed-limit-retrans-packets?          uint32
+     |     +--ro pending-limit-retrans-packets?        uint32
+     |     +--ro server-down-retrans-packets?          uint32
+     |     +--ro no-source-ip-retrans-packets?         uint32
+     |     +--ro no-reply-packets?                     uint32
+     |     +--ro unknown-type-account-packets?         uint32
+     |     +--ro dropped-account-packets?              uint32
+     |     +--ro cancelled-requests?                   uint32
+     |     +--ro account-requests-last30?              uint32
+     |     +--ro account-retransmissions-last30?       uint32
+     |     +--ro account-responses-last30?             uint32
+     |     +--ro malformed-responses-last30?           uint32
+     |     +--ro bad-authenticators-last30?            uint32
+     |     +--ro pending-requests-last30?              uint32
+     |     +--ro timeouts-last30?                      uint32
+     |     +--ro speed-limit-block-last30?             uint32
+     |     +--ro pending-limit-block-last30?           uint32
+     |     +--ro server-down-block-last30?             uint32
+     |     +--ro no-source-ip-block-last30?            uint32
+     |     +--ro server-not-reply-last30?              uint32
+     |     +--ro unknown-types-last30?                 uint32
+     |     +--ro packets-dropped-last30?               uint32
+     |     +--ro cancelled-requests-last30?            uint32
+     +--ro aaa-route-download-status
+     |  +--ro status?                       string
+     |  +--ro last-download-attempt?        string
+     |  +--ro last-download-success?        string
+     |  +--ro next-scheduled-download?      string
+     |  +--ro is-route-advertise-delay?     string
+     |  +--ro route-advertise-delay-time?   string
+     +--ro aaa-static-routes
+     |  +--ro aaa-static-route* [vpn-name ip-address]
+     |     +--ro vpn-name          string
+     |     +--ro ip-address        string
+     |     +--ro is-installed?     bras-radius-aaa-route-infos-type
+     |     +--ro next-hop?         string
+     |     +--ro cost?             uint32
+     |     +--ro interface-name?   string
+     |     +--ro tag?              uint32
+     |     +--ro is-advertised?    bras-radius-aaa-route-infos-type
+     |     +--ro is-rolled?        bras-radius-aaa-route-infos-type
+     +--ro auth-client
+     |  +--ro invalid-server-packets?   uint32
+     |  +--ro identifier?               string
+     +--ro accounting-client
+     |  +--ro response-packets?   uint32
+     |  +--ro identifier?         string
+     +--rw attribute-global
+     |  +--rw acct-term-sub-encap-type?   enumeration
+     +--rw session-car-bandwidth
+        +--rw enable?   boolean
+        +--rw cir?      uint32
+        +--rw pir?      uint32
+        +--rw cbs?      uint32
+        +--rw pbs?      uint32

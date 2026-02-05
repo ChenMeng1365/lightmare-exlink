@@ -1,0 +1,1225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-vrrp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vrrp="http://www.zte.com.cn/zxr10/netconf/schema/rosng/vrrp"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/vrrp"/>
+  <prefix value="vrrp"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe VRRP. Virtual Router Redundancy Protocol, specifies an election protocol that dynamically assigns responsibility for a virtual router to one of the VRRP routers on a LAN.</text>
+  </description>
+  <reference>
+    <text>RFC5798</text>
+  </reference>
+  <revision date="2021-03-08">
+    <description>
+      <text>1.Add choise zxr10-vrrp/configuration/vrrp/vrrp-intf/vrrp-groups/vrrp-group/authentication
+2.Add case zxr10-vrrp/configuration/vrrp/vrrp-intf/vrrp-groups/vrrp-group/authentication/text
+3.Add leaf zxr10-vrrp/configuration/vrrp/vrrp-intf/vrrp-groups/vrrp-group/authentication/text/text-string/plain-text/auth-string
+4.Add leaf zxr10-vrrp/configuration/vrrp/vrrp-intf/vrrp-groups/vrrp-group/authentication/text/text-string/cipher-text/encrypted-auth-string</text>
+    </description>
+  </revision>
+  <revision date="2019-07-29">
+    <description>
+      <text>Add leaf zxr10-vrrp/configuration/vrrp/vrrp-intf/vrrp-groups/vrrp-group/arp-na-interval</text>
+    </description>
+  </revision>
+  <revision date="2018-10-31">
+    <description>
+      <text>1.Add zxr10-vrrp/state/vrrp/vrrp-group/mac
+2.Add zxr10-vrrp/state/vrrp/vrrp-group/virtual-forwarder</text>
+    </description>
+  </revision>
+  <revision date="2016-10-27">
+    <description>
+      <text>1 Add feature balance-opt.
+2 Add feature backup-route.</text>
+    </description>
+  </revision>
+  <revision date="2015-04-01">
+    <description>
+      <text>1 Add zxr10-vrrp/state/vrrp/vrrp-group/last-change-systime.
+2 Set configuration attribute of zxr10-vrrp/state to false.</text>
+    </description>
+  </revision>
+  <revision date="2015-01-29">
+    <description>
+      <text>Modify auth-type leaf infomation.</text>
+    </description>
+  </revision>
+  <revision date="2013-12-20">
+    <description>
+      <text>1.Support interface filter
+2.Support performance definition
+3.Modify ipv4-address to vrrp-ipv4-address, ipv6-address to vrrp-ipv6-address</text>
+    </description>
+  </revision>
+  <revision date="2013-10-18">
+    <description>
+      <text>1.Modify adver-interval to choice
+2.Delete mandatory true for key nodes
+3.Add default for leaf forwarder-preempt-delay
+4.Add select intf-name for state</text>
+    </description>
+  </revision>
+  <revision date="2013-07-15">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <feature name="balance-opt">
+    <description>
+      <text>Load balance feature.</text>
+    </description>
+  </feature>
+  <feature name="backup-route">
+    <description>
+      <text>VRRP backup-route feature.</text>
+    </description>
+  </feature>
+  <container name="configuration">
+    <description>
+      <text>Configuration of VRRP</text>
+    </description>
+    <container name="vrrp">
+      <description>
+        <text>VRRP Configuration</text>
+      </description>
+      <list name="vrrp-intf">
+        <description>
+          <text>VRRP interface</text>
+        </description>
+        <key value="intf-name"/>
+        <leaf name="intf-name">
+          <description>
+            <text>VRRP interface name</text>
+          </description>
+          <type name="ncd:ifname"/>
+        </leaf>
+        <container name="vrrp-groups">
+          <description>
+            <text>VRRP groups of this interface, the max group number is 255 per interface.</text>
+          </description>
+          <list name="vrrp-group">
+            <description>
+              <text>VRRP group</text>
+            </description>
+            <key value="group-id"/>
+            <leaf name="group-id">
+              <description>
+                <text>Virtual Router ID which identifies the virtual router, range from 1 to 255</text>
+              </description>
+              <type name="uint8">
+                <range value="1..255">
+                  <description>
+                    <text>Virtual Router ID</text>
+                  </description>
+                </range>
+              </type>
+            </leaf>
+            <leaf name="learn-mode">
+              <description>
+                <text>Whether learn advertisement interval from packet, default is configure mode.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="configure">
+                  <value value="0"/>
+                  <description>
+                    <text>Configure mode, means backup decides Master-down-time according to the advertisement interval configued locally</text>
+                  </description>
+                </enum>
+                <enum name="learn">
+                  <value value="1"/>
+                  <description>
+                    <text>Learn mode, means backup decides Master-down-time according to the advertisement interval in packets from Master</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="configure"/>
+            </leaf>
+            <leaf name="priority">
+              <description>
+                <text>VRRP priority, configured from 1 to 254. Higher values equal higher priority, the default value is 100, 0 and 255 are reserved for special using. 0 means Master quit, 255 means IP address owner when VRRP IP is equal to IP on interface.</text>
+              </description>
+              <type name="uint8">
+                <range value="1..254">
+                  <description>
+                    <text>VRRP priority value</text>
+                  </description>
+                </range>
+              </type>
+              <default value="100"/>
+            </leaf>
+            <leaf name="auth-type">
+              <description>
+                <text>VRRP authentication type, default value is No Authentication. Simple text authentication is only supported when VRRP version is 2.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="none">
+                  <value value="0"/>
+                  <description>
+                    <text>No authentication</text>
+                  </description>
+                </enum>
+                <enum name="simple-text">
+                  <value value="1"/>
+                  <description>
+                    <text>Simple text authentication</text>
+                  </description>
+                </enum>
+                <enum name="md5">
+                  <value value="2"/>
+                  <description>
+                    <text>MD5 authentication</text>
+                  </description>
+                </enum>
+                <enum name="keychain">
+                  <value value="3"/>
+                  <description>
+                    <text>Keychain authentication</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="none"/>
+            </leaf>
+            <choice name="authentication">
+              <description>
+                <text>VRRP authentication</text>
+              </description>
+              <case name="text">
+                <description>
+                  <text>VRRP text authentication</text>
+                </description>
+                <choice name="text-string">
+                  <description>
+                    <text>VRRP text authentication string</text>
+                  </description>
+                  <case name="plain-text">
+                    <description>
+                      <text>Plaintext</text>
+                    </description>
+                    <leaf name="auth-string">
+                      <description>
+                        <text>VRRP authentication text when auth-type is simple-text, it must be the same within VRRP Routers.</text>
+                      </description>
+                      <type name="string">
+                        <length value="0..8">
+                          <description>
+                            <text>Authentication text</text>
+                          </description>
+                        </length>
+                      </type>
+                    </leaf>
+                  </case>
+                  <case name="cipher-text">
+                    <description>
+                      <text>Ciphertext</text>
+                    </description>
+                    <leaf name="encrypted-auth-string">
+                      <description>
+                        <text>VRRP encrypted authentication string of simple-text.</text>
+                      </description>
+                      <type name="string">
+                        <length value="64">
+                          <description>
+                            <text>Encrypted authentication string.</text>
+                          </description>
+                        </length>
+                      </type>
+                    </leaf>
+                  </case>
+                </choice>
+              </case>
+              <ncd:revise-date date="2021-03-08"/>
+            </choice>
+            <choice name="adver-interval">
+              <description>
+                <text>Time interval between sending ADVERTISEMENTS</text>
+              </description>
+              <default value="second"/>
+              <case name="second">
+                <description>
+                  <text>Time interval in second</text>
+                </description>
+                <leaf name="value-in-sec">
+                  <description>
+                    <text>Time interval between ADVERTISEMENTS, unit is second</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..40">
+                      <description>
+                        <text>Time value</text>
+                      </description>
+                    </range>
+                  </type>
+                  <units name="second"/>
+                  <default value="1"/>
+                </leaf>
+              </case>
+              <case name="msec">
+                <description>
+                  <text>Time interval in millisecond</text>
+                </description>
+                <leaf name="value-in-msec">
+                  <description>
+                    <text>Time interval between ADVERTISEMENTS, unit is millisecond</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="50..40000">
+                      <description>
+                        <text>Time value</text>
+                      </description>
+                    </range>
+                  </type>
+                  <units name="millisecond"/>
+                </leaf>
+              </case>
+            </choice>
+            <leaf name="out-intf-send-mode">
+              <description>
+                <text>Send mode of VRRP out-interface, send from all out interfaces by default.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="all">
+                  <value value="1"/>
+                  <description>
+                    <text>Send from all out-interfaces</text>
+                  </description>
+                </enum>
+                <enum name="rotation">
+                  <value value="2"/>
+                  <description>
+                    <text>Send from one of out-interfaces, selected by rotation</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="all"/>
+            </leaf>
+            <leaf name="admin-group-type">
+              <description>
+                <text>There are 3 group types: normal group - which state is determined by itself, member group - which state is determinedby it's owner and owner group - which determines members' state.
+
+This leaf value should be owner for owner group; it should be not-owner for normal and member group, if admin-group-intf-name and admin-group-id are not set, it is a normal group; if admin-group-intf-name and admin-group-id areset, it is a member group.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="not-owner">
+                  <value value="0"/>
+                  <description>
+                    <text>Not Administrator group owner, means member or normal goup.</text>
+                  </description>
+                </enum>
+                <enum name="owner">
+                  <value value="1"/>
+                  <description>
+                    <text>Administrator group owner</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="not-owner"/>
+            </leaf>
+            <leaf name="admin-group-intf-name">
+              <description>
+                <text>The interface of VRRP admin-owner</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="admin-group-id">
+              <description>
+                <text>The group ID of admin-owner</text>
+              </description>
+              <type name="uint8">
+                <range value="0..255">
+                  <description>
+                    <text>The group ID of admin-owner</text>
+                  </description>
+                </range>
+              </type>
+            </leaf>
+            <leaf name="version">
+              <description>
+                <text>VRRP version</text>
+              </description>
+              <type name="uint16">
+                <range value="2..3">
+                  <description>
+                    <text>VRRP Version</text>
+                  </description>
+                </range>
+              </type>
+              <default value="3"/>
+            </leaf>
+            <leaf name="accept">
+              <description>
+                <text>Controls whether a virtual router in Master state will accept packets addressed to the address owner's IPvX address as its own if it is not the IPvX address owner, the default value is accept.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="not-accept">
+                  <value value="0"/>
+                  <description>
+                    <text>Do not accept packets addressed to the address owner's IPvX address as its own if it is not the IPvX address owner</text>
+                  </description>
+                </enum>
+                <enum name="accept">
+                  <value value="1"/>
+                  <description>
+                    <text>Accept packets addressed to the address owner's IPvX address as its own if it is not the IPvX address owner</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="accept"/>
+            </leaf>
+            <leaf name="check-ttl">
+              <description>
+                <text>If check TTL is 255 in advertisement, the default value is check.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="not-check">
+                  <value value="0"/>
+                  <description>
+                    <text>Do not check TTL in advertisement</text>
+                  </description>
+                </enum>
+                <enum name="check">
+                  <value value="1"/>
+                  <description>
+                    <text>Check TTL is 255 in advertisement</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="check"/>
+            </leaf>
+            <leaf name="preempt">
+              <description>
+                <text>VRRP preempt mode. Controls whether a higher-priority Backup router preempts a lower-priority Master router. Values are Enable to allow preemption and Disable to prohibit preemption.  Default is Enable.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="disable">
+                  <value value="0"/>
+                  <description>
+                    <text>Do not preempt</text>
+                  </description>
+                </enum>
+                <enum name="enable">
+                  <value value="1"/>
+                  <description>
+                    <text>Preempt enabled</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="enable"/>
+            </leaf>
+            <leaf name="preempt-delay">
+              <description>
+                <text>Preempt delay time, range from 0 to 3600(s). If it's zero,higher-priority Backup preempt immediately, otherwise, it preempts after delayed this interval, the default value is 0.</text>
+              </description>
+              <type name="uint16">
+                <range value="0..3600">
+                  <description>
+                    <text>Preempt delay time</text>
+                  </description>
+                </range>
+              </type>
+              <units name="second"/>
+              <default value="0"/>
+            </leaf>
+            <leaf name="reload-delay">
+              <description>
+                <text>Reload delay time after interface is up and VRRP restart, if it's zero, VRRP restart immediately, otherwise VRRP restart after the delay time, the default value is 0.</text>
+              </description>
+              <type name="uint16">
+                <range value="0..65535">
+                  <description>
+                    <text>Reload delay after interface down</text>
+                  </description>
+                </range>
+              </type>
+              <units name="second"/>
+              <default value="0"/>
+            </leaf>
+            <leaf name="backup-route">
+              <description>
+                <text>If Backup router is enabled to forward, the default value is disable.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="disable">
+                  <value value="0"/>
+                  <description>
+                    <text>Backup forwarding is disabled</text>
+                  </description>
+                </enum>
+                <enum name="enable">
+                  <value value="1"/>
+                  <description>
+                    <text>Bakcup forwarding is enabled</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="disable"/>
+            </leaf>
+            <leaf name="work-mode">
+              <description>
+                <text>VRRP work mode. The default mode is Standard which works according to RFC, only one router is forwarding in one VRRP group. Load-balance mode is an extension, it provides traffic balancing in one VRRP group.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="standard">
+                  <value value="1"/>
+                  <description>
+                    <text>Standard mode</text>
+                  </description>
+                </enum>
+                <enum name="load-balance">
+                  <value value="2"/>
+                  <description>
+                    <text>Load balance mode</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="standard"/>
+            </leaf>
+            <leaf name="arp-na-interval">
+              <description>
+                <text>The interval of sending free ARP or NA packet periodically, range from 1 to 3600(s), default: 60 seconds.</text>
+              </description>
+              <type name="uint16">
+                <range value="1..3600">
+                  <description>
+                    <text>interval</text>
+                  </description>
+                </range>
+              </type>
+              <units name="second"/>
+              <default value="60"/>
+              <ncd:revise-date date="2019-07-29"/>
+            </leaf>
+            <container name="virtual-ips">
+              <description>
+                <text>VRRP IP addresses</text>
+              </description>
+              <choice name="ip">
+                <description>
+                  <text>Virtual IP</text>
+                </description>
+                <case name="v4">
+                  <description>
+                    <text>IPv4 address</text>
+                  </description>
+                  <list name="vrrp-ipv4-address">
+                    <description>
+                      <text>Virtual addresses, including primary and secondary addresses</text>
+                    </description>
+                    <key value="vip4 secondary-flag"/>
+                    <leaf name="vip4">
+                      <description>
+                        <text>IPv4 address</text>
+                      </description>
+                      <type name="ncd:ipv4-address"/>
+                    </leaf>
+                    <leaf name="secondary-flag">
+                      <description>
+                        <text>Primary or secondary address</text>
+                      </description>
+                      <type name="enumeration">
+                        <enum name="primary">
+                          <value value="0"/>
+                          <description>
+                            <text>Primary address</text>
+                          </description>
+                        </enum>
+                        <enum name="secondary">
+                          <value value="1"/>
+                          <description>
+                            <text>Secondary address</text>
+                          </description>
+                        </enum>
+                      </type>
+                    </leaf>
+                  </list>
+                </case>
+                <case name="v6">
+                  <description>
+                    <text>IPv6 address</text>
+                  </description>
+                  <list name="vrrp-ipv6-address">
+                    <description>
+                      <text>Virtual addresses, including primary and secondary addresses</text>
+                    </description>
+                    <key value="vip6 secondary-flag"/>
+                    <leaf name="vip6">
+                      <description>
+                        <text>IPv6 address</text>
+                      </description>
+                      <type name="ncd:ipv6-address"/>
+                    </leaf>
+                    <leaf name="secondary-flag">
+                      <description>
+                        <text>Primary or secondary address</text>
+                      </description>
+                      <type name="enumeration">
+                        <enum name="primary">
+                          <value value="0"/>
+                          <description>
+                            <text>Primary address</text>
+                          </description>
+                        </enum>
+                        <enum name="secondary">
+                          <value value="1"/>
+                          <description>
+                            <text>Secondary address</text>
+                          </description>
+                        </enum>
+                      </type>
+                    </leaf>
+                  </list>
+                </case>
+              </choice>
+            </container>
+            <container name="track-intfs">
+              <description>
+                <text>VRRP track interfaces, the max number is 64 per group.</text>
+              </description>
+              <list name="track-intf">
+                <description>
+                  <text>Track interface, adjusting priority and re-electing Master according to the interface state</text>
+                </description>
+                <key value="track-intf-name"/>
+                <leaf name="track-intf-name">
+                  <description>
+                    <text>Tracked interface name</text>
+                  </description>
+                  <type name="ncd:ifname"/>
+                </leaf>
+                <leaf name="policy">
+                  <description>
+                    <text>Track interface policy, 1:priority-down, 2:rapid-down, priority is down to 1, and Master send 0-priority advertisement</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="priority-down">
+                      <value value="1"/>
+                      <description>
+                        <text>Priority decrement</text>
+                      </description>
+                    </enum>
+                    <enum name="rapid-down">
+                      <value value="2"/>
+                      <description>
+                        <text>Priority rapid down to 1, and Master send 0-priority advertisement</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="priority-value">
+                  <description>
+                    <text>Decreased priority value, range from 1 to 254, the default value is 10</text>
+                  </description>
+                  <type name="uint8">
+                    <range value="1..254">
+                      <description>
+                        <text>Decrement value</text>
+                      </description>
+                    </range>
+                  </type>
+                  <default value="10"/>
+                </leaf>
+              </list>
+            </container>
+            <container name="track-samgrs">
+              <description>
+                <text>VRRP track samgr, the max number is 10 per group.</text>
+              </description>
+              <list name="track-samgr">
+                <description>
+                  <text>Track samgr object or group, re-elect Master according to other detection</text>
+                </description>
+                <key value="track-name"/>
+                <leaf name="track-name">
+                  <description>
+                    <text>Track name</text>
+                  </description>
+                  <type name="string">
+                    <length value="0..31">
+                      <description>
+                        <text>Track name</text>
+                      </description>
+                    </length>
+                  </type>
+                </leaf>
+                <leaf name="type">
+                  <description>
+                    <text>Track type, 1:object, 2:group</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="object">
+                      <value value="1"/>
+                      <description>
+                        <text>Track object</text>
+                      </description>
+                    </enum>
+                    <enum name="group">
+                      <value value="2"/>
+                      <description>
+                        <text>Track group</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="policy">
+                  <description>
+                    <text>Policy type, 1:decrease priority 2:link-type 3:peer-type</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="priority-down">
+                      <value value="1"/>
+                      <description>
+                        <text>Decrease priority</text>
+                      </description>
+                    </enum>
+                    <enum name="link">
+                      <value value="2"/>
+                      <description>
+                        <text>Link type</text>
+                      </description>
+                    </enum>
+                    <enum name="peer">
+                      <value value="3"/>
+                      <description>
+                        <text>Peer type</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="priority-value">
+                  <description>
+                    <text>Decreased priority value, range from 1 to 254, the default value is 10</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..254">
+                      <description>
+                        <text>Decrement value</text>
+                      </description>
+                    </range>
+                  </type>
+                  <default value="10"/>
+                </leaf>
+              </list>
+            </container>
+            <container name="out-interfaces">
+              <description>
+                <text>VRRP out interfaces for sending Advertisement, the max number is 3 per group.</text>
+              </description>
+              <list name="out-intf">
+                <description>
+                  <text>The out-interfaces sent advertisement, 3 interfaces can be configured.</text>
+                </description>
+                <key value="out-intf-name"/>
+                <leaf name="out-intf-name">
+                  <description>
+                    <text>The out-interface names, 3 interfaces can be configured.</text>
+                  </description>
+                  <type name="ncd:ifname"/>
+                </leaf>
+              </list>
+            </container>
+            <container name="load-balance">
+              <description>
+                <text>Configuration of VRRPE</text>
+              </description>
+              <leaf name="forwarder-id">
+                <description>
+                  <text>Forwarder owner ID represent one Virtual Forwarder which is in charge of the forwarding for one Virtual MAC</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..4">
+                    <description>
+                      <text>Forwarder owner ID</text>
+                    </description>
+                  </range>
+                </type>
+              </leaf>
+              <leaf name="weight">
+                <description>
+                  <text>Forwarder weight of this device, range from 1 to 255. Higher values equal higher ability, the default value is 100</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..255">
+                    <description>
+                      <text>Forwarder weight of this device</text>
+                    </description>
+                  </range>
+                </type>
+                <default value="100"/>
+              </leaf>
+              <leaf name="low-weight">
+                <description>
+                  <text>If forwarder weight is lower than this value, the router is not able to forward any longer, the default value is 1.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..254">
+                    <description>
+                      <text>The lowest value means router has the ability to forward</text>
+                    </description>
+                  </range>
+                </type>
+                <default value="1"/>
+              </leaf>
+              <leaf name="forwarder-preempt">
+                <description>
+                  <text>VRRPE forwarder preempt mode. Controls whether a higher-priority Virtual Forwrader preempts a lower-priority forwarder. Values are Enable to allow preemption and Disable to prohibit preemption.  Default is Enable.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="disable">
+                    <value value="0"/>
+                    <description>
+                      <text>Do not preempt</text>
+                    </description>
+                  </enum>
+                  <enum name="enable">
+                    <value value="1"/>
+                    <description>
+                      <text>Preempt enabled</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="enable"/>
+              </leaf>
+              <leaf name="forwarder-preempt-delay">
+                <description>
+                  <text>Preempt delay time, range from 0 to 3600(s). If it's zero, higher-priority Virtual Forwrader preempt immediately, otherwise, it preempts after delayed this interval.</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..3600">
+                    <description>
+                      <text>Preempt delay time</text>
+                    </description>
+                  </range>
+                </type>
+                <units name="second"/>
+                <default value="0"/>
+              </leaf>
+              <leaf name="redirect-time">
+                <description>
+                  <text>Redirect time, range from 1 to 3600(s). After the router corrupted which in charge of one Virtual Forwarder, other router take it over, and after redirect time interval, the Virtual MAC of this Virtual Forwarder is not dilivered an longer.</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..3600">
+                    <description>
+                      <text>Redirect time</text>
+                    </description>
+                  </range>
+                </type>
+                <units name="second"/>
+                <default value="600"/>
+              </leaf>
+              <leaf name="time-out-mode">
+                <description>
+                  <text>After the router corrupted which in charge of one VirtualForwarder, other router take it over, and after time out interval, the Virtual Forwarder will be deleted. If it's configured to be time-out-disbaled, Virtual Forwarder will never be deleted.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="time-out-enabled">
+                    <value value="0"/>
+                    <description>
+                      <text>Time out is enabled</text>
+                    </description>
+                  </enum>
+                  <enum name="time-out-disabled">
+                    <value value="1"/>
+                    <description>
+                      <text>Never time out</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="time-out-enabled"/>
+              </leaf>
+              <leaf name="time-out">
+                <description>
+                  <text>Time out interval before Virtual Forwarder is deleted, range from 600 to 64800(s), the default value is 14400s.</text>
+                </description>
+                <type name="uint16">
+                  <range value="600..64800">
+                    <description>
+                      <text>Time out interval before Virtual Forwarder is deleted</text>
+                    </description>
+                  </range>
+                </type>
+                <units name="second"/>
+                <default value="14400"/>
+              </leaf>
+              <leaf name="policy">
+                <description>
+                  <text>Load balance policy, 1:round-robin, 2:weighted, 3:host-dependent, the default value is round-robin.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="round-robin">
+                    <value value="1"/>
+                    <description>
+                      <text>Round robin policy</text>
+                    </description>
+                  </enum>
+                  <enum name="weighted">
+                    <value value="2"/>
+                    <description>
+                      <text>Weighted policy</text>
+                    </description>
+                  </enum>
+                  <enum name="host-dependent">
+                    <value value="3"/>
+                    <description>
+                      <text>Host dependent policy</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="round-robin"/>
+              </leaf>
+            </container>
+            <container name="vf-track-intfs">
+              <description>
+                <text>Virtural Forwarder track interfaces, the max number is 64 per forwarder.</text>
+              </description>
+              <list name="vf-track-intf">
+                <description>
+                  <text>Track interface, adjusting priority and re-electing Active forwarder according to the interface state</text>
+                </description>
+                <key value="track-intf-name"/>
+                <leaf name="track-intf-name">
+                  <description>
+                    <text>Tracked interface name</text>
+                  </description>
+                  <type name="ncd:ifname"/>
+                </leaf>
+                <leaf name="policy">
+                  <description>
+                    <text>Track interface policy, 1:priority-down</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="priority-down">
+                      <value value="1"/>
+                      <description>
+                        <text>Priority decrement</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="weight-value">
+                  <description>
+                    <text>Decrement weight value, range from 1 to 254, the default value is 10</text>
+                  </description>
+                  <type name="uint8">
+                    <range value="1..254">
+                      <description>
+                        <text>Decrement weight value</text>
+                      </description>
+                    </range>
+                  </type>
+                  <default value="10"/>
+                </leaf>
+              </list>
+            </container>
+            <container name="vf-track-samgrs">
+              <description>
+                <text>Virtural Forwarder track samgr, the max number is 10 per forwarder.</text>
+              </description>
+              <list name="vf-track-samgr">
+                <description>
+                  <text>Track samgr object or group, re-elect Active forwarder according to other detection</text>
+                </description>
+                <key value="track-name"/>
+                <leaf name="track-name">
+                  <description>
+                    <text>Track name</text>
+                  </description>
+                  <type name="string">
+                    <length value="0..31">
+                      <description>
+                        <text>Track name</text>
+                      </description>
+                    </length>
+                  </type>
+                </leaf>
+                <leaf name="type">
+                  <description>
+                    <text>Track type, 1:object, 2:group</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="object">
+                      <value value="1"/>
+                      <description>
+                        <text>Track object</text>
+                      </description>
+                    </enum>
+                    <enum name="group">
+                      <value value="2"/>
+                      <description>
+                        <text>Track group</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="policy">
+                  <description>
+                    <text>Policy type, 1:decrease priority 2:link-type 3:peer-type</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="decrease-weight">
+                      <value value="1"/>
+                      <description>
+                        <text>Decrease weight</text>
+                      </description>
+                    </enum>
+                    <enum name="link-type">
+                      <value value="2"/>
+                      <description>
+                        <text>Link type</text>
+                      </description>
+                    </enum>
+                    <enum name="peer-type">
+                      <value value="3"/>
+                      <description>
+                        <text>Peer type</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="weight-value">
+                  <description>
+                    <text>Decreased priority value, range from 1 to 254, the default value is 10</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..254">
+                      <description>
+                        <text>Decrement value</text>
+                      </description>
+                    </range>
+                  </type>
+                  <default value="10"/>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State of VRRP</text>
+    </description>
+    <container name="vrrp">
+      <description>
+        <text>State of VRRP</text>
+      </description>
+      <list name="vrrp-group">
+        <description>
+          <text>VRRP group information</text>
+        </description>
+        <key value="group-id intf-name"/>
+        <leaf name="group-id">
+          <description>
+            <text>Group ID</text>
+          </description>
+          <type name="uint8">
+            <range value="0..255">
+              <description>
+                <text>Group ID</text>
+              </description>
+            </range>
+          </type>
+        </leaf>
+        <leaf name="intf-name">
+          <description>
+            <text>VRRP interface name</text>
+          </description>
+          <type name="string">
+            <length value="0..31">
+              <description>
+                <text>VRRP interface name</text>
+              </description>
+            </length>
+          </type>
+        </leaf>
+        <leaf name="state">
+          <description>
+            <text>VRRP state, 1:initial, 2:backup, 3:master</text>
+          </description>
+          <type name="enumeration">
+            <enum name="initial">
+              <value value="1"/>
+              <description>
+                <text>Initial</text>
+              </description>
+            </enum>
+            <enum name="backup">
+              <value value="2"/>
+            </enum>
+            <enum name="master">
+              <value value="3"/>
+            </enum>
+          </type>
+        </leaf>
+        <leaf name="run-priority">
+          <description>
+            <text>Running priority</text>
+          </description>
+          <type name="uint8">
+            <range value="1..255">
+              <description>
+                <text>Running priority</text>
+              </description>
+            </range>
+          </type>
+        </leaf>
+        <leaf name="state-change-num">
+          <description>
+            <text>State change number</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="last-change-time">
+          <description>
+            <text>The last state change time</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="master-run-priority">
+          <description>
+            <text>Master priority</text>
+          </description>
+          <type name="uint8">
+            <range value="0..255">
+              <description>
+                <text>Master priority</text>
+              </description>
+            </range>
+          </type>
+        </leaf>
+        <leaf name="master-adver-interval">
+          <description>
+            <text>Master advertisement interval</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="master-down-interval">
+          <description>
+            <text>Master down time</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="master-ip-type">
+          <description>
+            <text>Interface IP type of Master, 1:IPv4, 2:IPv6</text>
+          </description>
+          <type name="enumeration">
+            <enum name="v4">
+              <value value="1"/>
+              <description>
+                <text>IPv4</text>
+              </description>
+            </enum>
+            <enum name="v6">
+              <value value="2"/>
+              <description>
+                <text>IPv6</text>
+              </description>
+            </enum>
+          </type>
+        </leaf>
+        <leaf name="master-ip">
+          <description>
+            <text>Interface IP of Master</text>
+          </description>
+          <type name="string">
+            <length value="0..255">
+              <description>
+                <text>IP address displayed in string</text>
+              </description>
+            </length>
+          </type>
+        </leaf>
+        <leaf name="last-change-systime">
+          <description>
+            <text>The recent time of state changing, eg:2015-04-07 13:26:35.</text>
+          </description>
+          <type name="ncd:string-with-blank">
+            <length value="0..19">
+              <description>
+                <text>Systime string</text>
+              </description>
+            </length>
+          </type>
+        </leaf>
+        <leaf name="mac">
+          <description>
+            <text>VRRP group virtual MAC.</text>
+          </description>
+          <type name="ncd:mac-address"/>
+        </leaf>
+        <list name="virtual-forwarder">
+          <key value="id"/>
+          <leaf name="id">
+            <description>
+              <text>Forwarder ID.</text>
+            </description>
+            <type name="uint8"/>
+          </leaf>
+          <leaf name="state">
+            <description>
+              <text>Forwarder state.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="initial">
+                <value value="1"/>
+                <description>
+                  <text>Initial</text>
+                </description>
+              </enum>
+              <enum name="active">
+                <value value="2"/>
+                <description>
+                  <text>Active</text>
+                </description>
+              </enum>
+              <enum name="takeover">
+                <value value="3"/>
+                <description>
+                  <text>Takeover</text>
+                </description>
+              </enum>
+              <enum name="listening">
+                <value value="4"/>
+                <description>
+                  <text>Listening</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="mac">
+            <description>
+              <text>Forwarder MAC.</text>
+            </description>
+            <type name="ncd:mac-address"/>
+          </leaf>
+        </list>
+        <ncd:select fields="group-id intf-name"/>
+        <ncd:select fields="intf-name"/>
+      </list>
+    </container>
+  </container>
+</module>

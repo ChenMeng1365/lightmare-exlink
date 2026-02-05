@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="huawei-dhcp-relay"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:dhcp="urn:huawei:yang:huawei-dhcp"
+           xmlns:ifm="urn:huawei:yang:huawei-ifm"
+           xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+           xmlns:ni="urn:huawei:yang:huawei-network-instance"
+           xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <yang-version value="1"/>
+  <belongs-to module="huawei-dhcp">
+    <prefix value="dhcp"/>
+  </belongs-to>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for managing DHCP relay.</text>
+  </description>
+  <revision date="2020-03-15">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-25">
+    <description>
+      <text>Add the node of link-selection-address.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="dhcp-relay-reply-type">
+    <type name="enumeration">
+      <enum name="broadcast-always">
+        <value value="1"/>
+        <description>
+          <text>Always broadcast the reply.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of relay reply.</text>
+    </description>
+  </typedef>
+  <typedef name="dhcp-opt82-sub6-format">
+    <type name="enumeration">
+      <enum name="self-define">
+        <value value="1"/>
+        <description>
+          <text>DHCP option82 self-define format.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of DHCP option82 suboption6 format.</text>
+    </description>
+  </typedef>
+  <typedef name="dhcp-opt82-vendor-sub-option-format">
+    <type name="enumeration">
+      <enum name="source-ip-address">
+        <value value="0"/>
+        <description>
+          <text>Source IP address.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of DHCP option82 vendor suboption format.</text>
+    </description>
+  </typedef>
+  <grouping name="dhcp-relay-type">
+    <description>
+      <text>DHCP relay.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure DHCP relay global attributes.</text>
+      </description>
+      <leaf name="user-detect-interval">
+        <type name="uint16">
+          <range value="0..60"/>
+        </type>
+        <units name="min"/>
+        <default value="20"/>
+        <description>
+          <text>DHCP relay ARP user-detect interval.</text>
+        </description>
+      </leaf>
+      <leaf name="user-autosave-flag">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable a DHCP relay agent to store user entries.</text>
+        </description>
+      </leaf>
+      <leaf name="user-store-interval">
+        <type name="uint32">
+          <range value="300..86400"/>
+        </type>
+        <units name="s"/>
+        <default value="300"/>
+        <description>
+          <text>DHCP relay unnumbered table write-delay.</text>
+        </description>
+      </leaf>
+      <leaf name="distribute-flag">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DHCP relay distribute flag.</text>
+        </description>
+      </leaf>
+      <leaf name="opt82-inner-vlan-insert-flag">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DHCP option82 inner-VLAN change flag.</text>
+        </description>
+      </leaf>
+      <container name="option">
+        <description>
+          <text>Configure the information instance of DHCP packet option code.</text>
+        </description>
+        <leaf name="option-code">
+          <type name="uint8">
+            <range value="1..255"/>
+          </type>
+          <description>
+            <text>Option code.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-option">
+          <when condition="../option-code"/>
+          <type name="uint8">
+            <range value="1..255"/>
+          </type>
+          <description>
+            <text>Sub-option code.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="source-ip">
+        <description>
+          <text>Configure DHCP relay global source IP attributes.</text>
+        </description>
+        <leaf name="source-ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Relay source address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <when condition="../source-ip-address"/>
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <default value="_public_"/>
+          <description>
+            <text>VPN name.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </grouping>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Extend interface attribute.</text>
+    </description>
+    <container name="dhcp-relay-attribute">
+      <description>
+        <text>Configure DHCP relay attributes on an interface.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DHCP relay.</text>
+        </description>
+      </leaf>
+      <leaf name="reply-packet-policy">
+        <type name="dhcp-relay-reply-type"/>
+        <description>
+          <text>Reply packets policy.</text>
+        </description>
+      </leaf>
+      <container name="option82">
+        <must condition="(subscriber-id-enable='true' and subscriber-id-mode='self-define' and subscriber-id-self-define-text) or (subscriber-id-enable='false')"/>
+        <description>
+          <text>Configure DHCP relay option82 on an interface.</text>
+        </description>
+        <leaf name="link-selection-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable to insert link selection information.</text>
+          </description>
+        </leaf>
+        <leaf name="link-selection-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Link selection sub-option IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="vendor-specific-enable">
+          <when condition="(../../../ifm:type='Vbdif') or (../../../ifm:type='Global-VE' and ../../../ifm:class='sub-interface') or (../../../ifm:type='Virtual-Ethernet' and ../../../ifm:class='sub-interface')"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable to insert suboption9 of option82.</text>
+          </description>
+        </leaf>
+        <leaf name="subscriber-id-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable to insert subscriber ID.</text>
+          </description>
+        </leaf>
+        <leaf name="subscriber-id-mode">
+          <when condition="../subscriber-id-enable='true'"/>
+          <type name="dhcp-opt82-sub6-format"/>
+          <default value="self-define"/>
+          <description>
+            <text>Subscriber ID mode.</text>
+          </description>
+        </leaf>
+        <leaf name="subscriber-id-self-define-text">
+          <when condition="../subscriber-id-enable='true' and ../subscriber-id-mode='self-define'"/>
+          <type name="string">
+            <length value="1..251"/>
+            <pattern value="([^\t]{0,})"/>
+          </type>
+          <description>
+            <text>Configure a DHCP option82 self-defined string for subscriber ID.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="server-addresses">
+        <description>
+          <text>List of configuring server addresses on interfaces.</text>
+        </description>
+        <list name="server-address">
+          <must condition="(vendor='false' and vendor-class='-') or (vendor='true' and option-code=60)"/>
+          <key value="address vendor option-code vendor-class"/>
+          <description>
+            <text>Configure a server address on an interface.</text>
+          </description>
+          <leaf name="address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <description>
+              <text>Server address.</text>
+            </description>
+          </leaf>
+          <leaf name="vendor">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable to carry a vendor identifier.</text>
+            </description>
+          </leaf>
+          <leaf name="option-code">
+            <type name="uint8">
+              <range value="0..254"/>
+            </type>
+            <description>
+              <text>Option code, 0 means NULL.</text>
+            </description>
+          </leaf>
+          <leaf name="vendor-class">
+            <type name="string">
+              <length value="1..128"/>
+              <pattern value="([^\t]{0,})"/>
+            </type>
+            <description>
+              <text>Vendor identifier.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="gateway-addresses">
+        <description>
+          <text>List of configuring a gateway address list on an interface.</text>
+        </description>
+        <list name="gateway-address">
+          <must condition="(vendor='false' and vendor-class='-') or (vendor='true' and option-code=60)"/>
+          <key value="vendor option-code vendor-class"/>
+          <description>
+            <text>Configure a gateway address instance on an interface.</text>
+          </description>
+          <leaf name="vendor">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable to carry vendor identifier.</text>
+            </description>
+          </leaf>
+          <leaf name="option-code">
+            <type name="uint8">
+              <range value="0..254"/>
+            </type>
+            <description>
+              <text>Option code, 0 means NULL.</text>
+            </description>
+          </leaf>
+          <leaf name="vendor-class">
+            <type name="string">
+              <length value="1..128"/>
+              <pattern value="([^\t]{0,})"/>
+            </type>
+            <description>
+              <text>Vendor identifier.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Gateway address.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="relay-source-address">
+        <must condition="not(../relay-source-option-addresses/relay-source-option-address)"/>
+        <presence value="Enable/disable the functions of DHCP relay source address."/>
+        <description>
+          <text>Configure DHCP relay source address.</text>
+        </description>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <mandatory value="true"/>
+          <description>
+            <text>VPN name specified in the source address of a relay interface, the '_public_' of vpn-name means public network.</text>
+          </description>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Source address.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="relay-source-option-addresses">
+        <description>
+          <text>List of configuring source IP addresses based on option.</text>
+        </description>
+        <list name="relay-source-option-address">
+          <must condition="not(../../relay-source-address)"/>
+          <must condition="(vendor='false' and vendor-class='-') or (vendor='true' and option-code=60)"/>
+          <key value="vendor option-code vendor-class"/>
+          <description>
+            <text>Configure a source IP address based on option.</text>
+          </description>
+          <leaf name="vendor">
+            <type name="boolean"/>
+            <description>
+              <text>Enable/disable to carry a vendor identifier.</text>
+            </description>
+          </leaf>
+          <leaf name="option-code">
+            <type name="uint8">
+              <range value="0..254"/>
+            </type>
+            <description>
+              <text>Option code, 0 means NULL.</text>
+            </description>
+          </leaf>
+          <leaf name="vendor-class">
+            <type name="string">
+              <length value="1..128"/>
+              <pattern value="([^\t]{0,})"/>
+            </type>
+            <description>
+              <text>Vendor identifier.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Source address.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="opt82-vendor-specifics">
+        <when condition="(../../ifm:type='Vbdif') or (../../ifm:type='Global-VE' and ../../ifm:class='sub-interface') or (../../ifm:type='Virtual-Ethernet' and ../../ifm:class='sub-interface')"/>
+        <description>
+          <text>List of option82 vendor-specific instance.</text>
+        </description>
+        <list name="opt82-vendor-specific">
+          <key value="sub-option-number"/>
+          <max-elements value="1"/>
+          <description>
+            <text>Configure an option82 vendor-specific instance. Only one record can be configured.</text>
+          </description>
+          <leaf name="sub-option-number">
+            <type name="uint32">
+              <range value="1..255"/>
+            </type>
+            <description>
+              <text>Suboption of option82.</text>
+            </description>
+          </leaf>
+          <leaf name="sub-option-format">
+            <type name="dhcp-opt82-vendor-sub-option-format"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Suboption format.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Source IPv4 address of forward package.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="dhcp-relay-if">
+      <presence value="Enable/disable DHCP relay functions on an interface."/>
+      <status value="deprecated"/>
+      <description>
+        <text>Configure DHCP relay attributes on an interface, it was replaced by a container named dhcp-relay-attribute.</text>
+      </description>
+      <leaf name="is-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <status value="deprecated"/>
+        <description>
+          <text>Enable/disable DHCP relay on an interface.</text>
+        </description>
+      </leaf>
+      <leaf name="reply-packet-policy">
+        <type name="dhcp-relay-reply-type"/>
+        <must condition="../reply-packet-policy='broadcast-always'"/>
+        <status value="deprecated"/>
+        <description>
+          <text>Reply packets policy.</text>
+        </description>
+      </leaf>
+      <container name="option82">
+        <must condition="(subscriber-id-enable='true' and subscriber-id-mode='self-define' and subscriber-id-self-define-text) or (subscriber-id-enable='false')"/>
+        <presence value="Enable/disable DHCP relay option82 functions on an interface."/>
+        <status value="deprecated"/>
+        <description>
+          <text>Configure DHCP relay option82 on an interface.</text>
+        </description>
+        <leaf name="subscriber-id-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Enable/disable to insert a subscriber ID.</text>
+          </description>
+        </leaf>
+        <leaf name="subscriber-id-mode">
+          <when condition="../subscriber-id-enable='true'"/>
+          <type name="dhcp-opt82-sub6-format"/>
+          <default value="self-define"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Subscriber ID mode.</text>
+          </description>
+        </leaf>
+        <leaf name="subscriber-id-self-define-text">
+          <when condition="../subscriber-id-enable='true' and ../subscriber-id-mode='self-define'"/>
+          <type name="string">
+            <length value="1..251"/>
+            <pattern value="([^\t]{0,})"/>
+          </type>
+          <status value="deprecated"/>
+          <description>
+            <text>Configure a DHCP option82 self-defined string for subscriber ID.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="server-addresses">
+        <status value="deprecated"/>
+        <description>
+          <text>List of configuring server addresses on interfaces.</text>
+        </description>
+        <list name="server-address">
+          <must condition="(is-vendor='false' and vendor-class='-') or (is-vendor='true' and option-code=60)"/>
+          <key value="address is-vendor option-code vendor-class"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Configure a server address on an interface.</text>
+          </description>
+          <leaf name="address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <status value="deprecated"/>
+            <description>
+              <text>Server address.</text>
+            </description>
+          </leaf>
+          <leaf name="is-vendor">
+            <type name="boolean"/>
+            <status value="deprecated"/>
+            <description>
+              <text>Enable/disable to carry a vendor identifier.</text>
+            </description>
+          </leaf>
+          <leaf name="option-code">
+            <type name="uint8">
+              <range value="0..254"/>
+            </type>
+            <status value="deprecated"/>
+            <description>
+              <text>Option code.</text>
+            </description>
+          </leaf>
+          <leaf name="vendor-class">
+            <type name="string">
+              <length value="1..128"/>
+              <pattern value="([^\t]{0,})"/>
+            </type>
+            <status value="deprecated"/>
+            <description>
+              <text>Vendor identifier.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</submodule>

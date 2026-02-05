@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bgp-epe"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgp-epe="urn:huawei:yang:huawei-bgp-epe"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp"
+        xmlns:srv6="urn:huawei:yang:huawei-srv6"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:te="urn:huawei:yang:huawei-te"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:twamp-controller="urn:huawei:yang:huawei-twamp-controller">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bgp-epe"/>
+  <prefix value="bgp-epe"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <import module="huawei-srv6">
+    <prefix value="srv6"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-te">
+    <prefix value="te"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-twamp-controller">
+    <prefix value="twamp-controller"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>BGP EPE configuration.</text>
+  </description>
+  <revision date="2020-03-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bgp"/>
+  <typedef name="sid-type">
+    <type name="enumeration">
+      <enum name="psp-usp-usd-sid">
+        <value value="2"/>
+        <description>
+          <text>Static End.X SID (psp, usp, usd) of a BGP peer.</text>
+        </description>
+      </enum>
+      <enum name="psp-usp-usd-coc-sid">
+        <value value="3"/>
+        <description>
+          <text>Static End.X SID (psp, usp, usd, coc) of a BGP peer.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SRv6 static SID type.</text>
+    </description>
+  </typedef>
+  <typedef name="sid-mode-type">
+    <type name="enumeration">
+      <enum name="common">
+        <value value="0"/>
+        <description>
+          <text>Common mode of SRv6 static SID type.</text>
+        </description>
+      </enum>
+      <enum name="compress">
+        <value value="1"/>
+        <description>
+          <text>Compress mode of SRv6 static SID type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Sid mode type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process">
+    <description>
+      <text>BGP egress engineering segment-routing IPv6 configuration.</text>
+    </description>
+    <container name="epe-srv6">
+      <when condition="../../../ni:name='_public_'"/>
+      <description>
+        <text>Configure BGP egress engineering segment-routing IPv6 information.</text>
+      </description>
+      <leaf name="locator-name">
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+        </type>
+        <description>
+          <text>Referenced locator name.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:peers/bgp:peer">
+    <description>
+      <text>BGP peer egress engineering segment-routing IPv6 configuration.</text>
+    </description>
+    <container name="epe-srv6">
+      <when condition="../../../../../ni:name='_public_' and ../bgp:egress-engineer='enable'"/>
+      <description>
+        <text>Configure BGP peer egress engineering segment-routing IPv6 information.</text>
+      </description>
+      <choice name="sid-option">
+        <description>
+          <text>Set automatic SID or static SID.</text>
+        </description>
+        <case name="auto-sid">
+          <description>
+            <text>Set automatic SID.</text>
+          </description>
+          <leaf name="locator-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+            </type>
+            <description>
+              <text>Name of the locator referenced by a BGP peer.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="static-sid">
+          <when condition="../../../bgp-epe:epe-srv6/bgp-epe:locator-name"/>
+          <description>
+            <text>Set static SID (PSP) value.</text>
+          </description>
+          <choice name="psp-sid-type">
+            <description>
+              <text>Set SID compress flag.</text>
+            </description>
+            <case name="uncompress">
+              <description>
+                <text>SID (PSP).</text>
+              </description>
+              <leaf name="psp-sid">
+                <type name="inet:ipv6-address-no-zone"/>
+                <must condition="not(../no-flavor-sid) or (.!=../no-flavor-sid)"/>
+                <must condition="not(../no-flavor-sid-compress) or (.!=../no-flavor-sid-compress)"/>
+                <must condition="not(../ext-static-sids/ext-static-sid[sid-value=current()])"/>
+                <description>
+                  <text>Static End.X SID (PSP) of a BGP peer.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="compress">
+              <description>
+                <text>Compress SID (PSP).</text>
+              </description>
+              <leaf name="psp-sid-compress">
+                <type name="inet:ipv6-address-no-zone"/>
+                <must condition="not(../no-flavor-sid) or (.!=../no-flavor-sid)"/>
+                <must condition="not(../no-flavor-sid-compress) or (.!=../no-flavor-sid-compress)"/>
+                <must condition="not(../ext-static-sids/ext-static-sid[sid-value=current()])"/>
+                <must condition="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()/../../../../bgp-epe:epe-srv6/bgp-epe:locator-name]/srv6:compress-block-length"/>
+                <must condition="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()/../../../../bgp-epe:epe-srv6/bgp-epe:locator-name]/srv6:compress-static-length"/>
+                <description>
+                  <text>Static End.X Compress SID (PSP) of a BGP peer.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <choice name="no-flavor-sid-type">
+            <description>
+              <text>Set static SID (no flavor) value.</text>
+            </description>
+            <case name="uncompress">
+              <description>
+                <text>SID (no flavor).</text>
+              </description>
+              <leaf name="no-flavor-sid">
+                <type name="inet:ipv6-address-no-zone"/>
+                <must condition="not(../psp-sid) or (.!=../psp-sid)"/>
+                <must condition="not(../psp-sid-compress) or (.!=../psp-sid-compress)"/>
+                <must condition="not(../ext-static-sids/ext-static-sid[sid-value=current()])"/>
+                <description>
+                  <text>Static End.X SID (no flavor) of a BGP peer.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="compress">
+              <description>
+                <text>Compress SID (no flavor).</text>
+              </description>
+              <leaf name="no-flavor-sid-compress">
+                <type name="inet:ipv6-address-no-zone"/>
+                <must condition="not(../psp-sid) or (.!=../psp-sid)"/>
+                <must condition="not(../psp-sid-compress) or (.!=../psp-sid-compress)"/>
+                <must condition="not(../ext-static-sids/ext-static-sid[sid-value=current()])"/>
+                <must condition="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()/../../../../bgp-epe:epe-srv6/bgp-epe:locator-name]/srv6:compress-block-length"/>
+                <must condition="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()/../../../../bgp-epe:epe-srv6/bgp-epe:locator-name]/srv6:compress-static-length"/>
+                <description>
+                  <text>Static End.X Compress SID (no flavor) of a BGP peer.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <container name="ext-static-sids">
+            <description>
+              <text>List of static SID.</text>
+            </description>
+            <list name="ext-static-sid">
+              <key value="type"/>
+              <unique tag="sid-value"/>
+              <description>
+                <text>Configure static SID.</text>
+              </description>
+              <leaf name="type">
+                <type name="sid-type"/>
+                <description>
+                  <text>The type of SRv6 static SID type.</text>
+                </description>
+              </leaf>
+              <leaf name="sid-mode">
+                <type name="sid-mode-type"/>
+                <must condition=".!='compress' or (.='compress' and /ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()/../../../../bgp-epe:epe-srv6/bgp-epe:locator-name]/srv6:compress-block-length and /ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()/../../../../bgp-epe:epe-srv6/bgp-epe:locator-name]/srv6:compress-static-length)"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>The mode of SRv6 static SID type.</text>
+                </description>
+              </leaf>
+              <leaf name="sid-value">
+                <type name="inet:ipv6-address-no-zone"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Sid value.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </case>
+      </choice>
+    </container>
+    <container name="epe">
+      <description>
+        <text>Configure BGP peer egress engineering information.</text>
+      </description>
+      <container name="virtual-link">
+        <when condition="../../../../../../ni:name='_public_'"/>
+        <must condition="../../bgp:egress-engineer='enable'"/>
+        <must condition="contains(../../bgp:address,':') and (substring(../../bgp:address,1,4) != 'FE80')"/>
+        <must condition="not(admin-groups-name) or not(admin-groups)"/>
+        <presence value="Create EPE virtual link."/>
+        <description>
+          <text>Configure BGP peer egress engineering segment-routing IPv6 virtual link information.</text>
+        </description>
+        <leaf name="metric">
+          <type name="uint32">
+            <range value="1..16777215"/>
+          </type>
+          <description>
+            <text>Specifies the Value of virtual link metric.</text>
+          </description>
+        </leaf>
+        <leaf name="admin-groups">
+          <type name="pub-type:hex-binary"/>
+          <description>
+            <text>Specifies virtual link management attributes. They are total 32 bits.</text>
+          </description>
+        </leaf>
+        <leaf-list name="srlg-group">
+          <type name="uint32">
+            <range value="0..4294967295"/>
+          </type>
+          <max-elements value="64"/>
+          <description>
+            <text>Configure a list of risk-shared link groups of virtual link.</text>
+          </description>
+        </leaf-list>
+        <leaf name="twamp-test-session-id">
+          <type name="leafref">
+            <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+          </type>
+          <must condition="contains(/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session[twamp-controller:id = current()]/twamp-controller:send-ip-addr, ':')"/>
+          <description>
+            <text>Specifies the Value of twamp test-session ID.</text>
+          </description>
+        </leaf>
+        <leaf-list name="admin-groups-name">
+          <type name="leafref">
+            <path value="/te:te/te:affinity-define/te:affinity-mappings/te:affinity-mapping/te:attribute-name"/>
+          </type>
+          <max-elements value="32"/>
+          <description>
+            <text>Configure the virtual link management attributes. They are total 32 bits.</text>
+          </description>
+        </leaf-list>
+      </container>
+    </container>
+  </augment>
+</module>

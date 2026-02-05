@@ -1,0 +1,1307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-tcp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tcp="http://www.zte.com.cn/zxr10/netconf/schema/rosng/tcp"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/tcp"/>
+  <prefix value="tcp"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>NETCONF of TCP module</text>
+  </description>
+  <revision date="2021-03-24">
+    <description>
+      <text>Add if-feature for /configuration/tcp/prevent-wl-attack</text>
+    </description>
+  </revision>
+  <revision date="2020-01-17">
+    <description>
+      <text>Remove "15K" from feature-send-rst's project-label-info.</text>
+    </description>
+  </revision>
+  <revision date="2019-09-03">
+    <description>
+      <text>Add send-rst switch to determine whether we should send RST packet when there is no listening port number. Add the leaf node of /configuration/tcp/config/send-rst.</text>
+    </description>
+  </revision>
+  <revision date="2016-06-01">
+    <description>
+      <text>Modify the description of node:/state/tcp/statistics/sent/dallyack-segs.</text>
+    </description>
+  </revision>
+  <revision date="2015-06-02">
+    <description>
+      <text>add state tcp resource list,for showing current tcp resource infomation.</text>
+    </description>
+  </revision>
+  <revision date="2015-05-20">
+    <description>
+      <text>Modify the node of ip-tcp-amss,add mandatory attribution. The path of the node is "/tcp:configuration/tcp:tcp/tcp:adjustmss/tcp:adjust-mss/tcp:ip-tcp-amss".</text>
+    </description>
+  </revision>
+  <revision date="2015-04-14">
+    <description>
+      <text>Modify the node of prevent-wl-attack. Cancel the presence attribution of node back-press and wl-attack,and add presence attribution of node prevent-wl-attack.</text>
+    </description>
+  </revision>
+  <revision date="2015-01-23">
+    <description>
+      <text>Modify the node of ack-seg_len to ack-seg-len.
+The path of the node is :"/tcp:state/tcp:tcp/tcp:statistics/tcp:received/tcp:ack-seg_len"</text>
+    </description>
+  </revision>
+  <revision date="2014-11-18">
+    <description>
+      <text>Modify the container of mss, change the leaf node of size to mandatory</text>
+    </description>
+  </revision>
+  <revision date="2014-09-01">
+    <description>
+      <text>Modify the node of passive-pens to passive-opens</text>
+    </description>
+  </revision>
+  <revision date="2014-04-24">
+    <description>
+      <text>Modify operation command.</text>
+    </description>
+  </revision>
+  <revision date="2014-04-09">
+    <description>
+      <text>Add tcp white list attack back press nodes</text>
+    </description>
+  </revision>
+  <revision date="2014-02-20">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <feature name="feature-send-rst">
+    <description>
+      <text>Feature of send-rst.</text>
+    </description>
+  </feature>
+  <feature name="feature-prevent-wl-attack">
+    <description>
+      <text>Feature of prevent-wl-attack</text>
+    </description>
+  </feature>
+  <container name="configuration">
+    <description>
+      <text>Command of tcp configuration</text>
+    </description>
+    <container name="tcp">
+      <description>
+        <text>Command of tcp configuration</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configure the basic parameter of tcp</text>
+        </description>
+        <leaf name="synwait-time">
+          <description>
+            <text>Wait time for establishing a tcp connection</text>
+          </description>
+          <type name="uint16">
+            <range value="30..80"/>
+          </type>
+          <units name="seconds"/>
+          <default value="30"/>
+        </leaf>
+        <leaf name="finwait-time">
+          <description>
+            <text>Wait time for closing a tcp connection</text>
+          </description>
+          <type name="uint16">
+            <range value="100..600"/>
+          </type>
+          <units name="seconds"/>
+          <default value="150"/>
+        </leaf>
+        <leaf name="window-size">
+          <description>
+            <text>Tcp window size</text>
+          </description>
+          <type name="uint32">
+            <range value="100..1048560"/>
+          </type>
+          <units name="bytes"/>
+          <default value="65535"/>
+        </leaf>
+        <leaf name="initial-window">
+          <description>
+            <text>TCP initial window size( number of MSS)</text>
+          </description>
+          <type name="uint8">
+            <range value="2..10"/>
+          </type>
+        </leaf>
+        <container name="retrans-time">
+          <description>
+            <text>Set TCP retransmission time</text>
+          </description>
+          <presence value="Set TCP retransmission time"/>
+          <leaf name="min">
+            <description>
+              <text>Set TCP min retransmission time</text>
+            </description>
+            <type name="uint32">
+              <range value="300..3000"/>
+            </type>
+            <units name="milliseconds"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="max">
+            <description>
+              <text>Set TCP max retransmission time</text>
+            </description>
+            <type name="uint32">
+              <range value="8000..120000"/>
+            </type>
+            <units name="milliseconds"/>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <leaf name="max-retries">
+          <description>
+            <text>Set TCP max retransmission number</text>
+          </description>
+          <type name="uint8">
+            <range value="5..20"/>
+          </type>
+        </leaf>
+        <leaf name="send-rst">
+          <description>
+            <text>Set TCP RST packet sending without listening port nummber</text>
+          </description>
+          <type name="enumeration">
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>Enable sending TCP RST packet</text>
+              </description>
+            </enum>
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>Disable sending TCP RST packet</text>
+              </description>
+            </enum>
+          </type>
+          <default value="enable"/>
+        </leaf>
+      </container>
+      <container name="mss">
+        <description>
+          <text>Set TCP initial maximum segment size</text>
+        </description>
+        <presence value="set tcp mss size"/>
+        <leaf name="size">
+          <description>
+            <text>Set TCP initial maximum segment size</text>
+          </description>
+          <type name="uint16">
+            <range value="68..10000"/>
+          </type>
+          <units name="bytes"/>
+          <mandatory value="true"/>
+        </leaf>
+      </container>
+      <container name="prevent-wl-attack">
+        <description>
+          <text>Set TCP prevent-white-list-attack</text>
+        </description>
+        <presence value="set TCP prevent white list attack"/>
+        <container name="back-press">
+          <description>
+            <text>Set TCP back press parameters</text>
+          </description>
+          <leaf name="rate">
+            <description>
+              <text>Allows the number of packets received in one second</text>
+            </description>
+            <type name="uint16">
+              <range value="1..1000"/>
+            </type>
+            <units name="pps"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="time">
+            <description>
+              <text>The time of back press</text>
+            </description>
+            <type name="uint32">
+              <range value="30..86400"/>
+            </type>
+            <units name="seconds"/>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <container name="wl-attack">
+          <description>
+            <text>Set TCP prevent-white-list-attack parameters</text>
+          </description>
+          <leaf name="attack-num">
+            <description>
+              <text>Received white-list-attack packets in one second</text>
+            </description>
+            <type name="uint16">
+              <range value="10..1000"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="attack-per-num">
+            <description>
+              <text>Continued to received white-list-attack packets over limited num</text>
+            </description>
+            <type name="uint8">
+              <range value="3..60"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+      </container>
+      <container name="adjustmss">
+        <description>
+          <text>Set adjust value of MSS</text>
+        </description>
+        <list name="adjust-mss">
+          <description>
+            <text>Set adjust value of MSS</text>
+          </description>
+          <key value="ifname"/>
+          <leaf name="ifname">
+            <description>
+              <text>Interface name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="ip-tcp-amss">
+            <description>
+              <text>Adjust value of MSS</text>
+            </description>
+            <type name="uint16">
+              <range value="500..1460"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>Command of tcp show</text>
+    </description>
+    <container name="tcp">
+      <description>
+        <text>Command of tcp show</text>
+      </description>
+      <list name="brief">
+        <description>
+          <text>Show brief information of tcp connections</text>
+        </description>
+        <key value="index"/>
+        <leaf name="index">
+          <description>
+            <text>Index of tcb</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="local-address">
+          <description>
+            <text>Local ip address and port</text>
+          </description>
+          <type name="string">
+            <length value="0..25"/>
+          </type>
+        </leaf>
+        <leaf name="remote-address">
+          <description>
+            <text>Remote ip address and port</text>
+          </description>
+          <type name="string">
+            <length value="0..25"/>
+          </type>
+        </leaf>
+        <leaf name="state">
+          <description>
+            <text>State of tcp connection</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+      </list>
+      <list name="tcb">
+        <description>
+          <text>Show the detail information of all tcp connections or a specific tcp connection</text>
+        </description>
+        <key value="index"/>
+        <leaf name="index">
+          <description>
+            <text>Index of tcb</text>
+          </description>
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+        </leaf>
+        <leaf name="local-ip">
+          <description>
+            <text>Local ip address</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="remote-ip">
+          <description>
+            <text>Remote ip address</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="local-port">
+          <description>
+            <text>Local port</text>
+          </description>
+          <type name="uint16"/>
+        </leaf>
+        <leaf name="remote-port">
+          <description>
+            <text>Remote port</text>
+          </description>
+          <type name="uint16"/>
+        </leaf>
+        <leaf name="state">
+          <description>
+            <text>State of tcp connection</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="current-time">
+          <description>
+            <text>Current time</text>
+          </description>
+          <type name="uint32"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="retrans-start">
+          <description>
+            <text>Retransmit timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="retrans-wakeup">
+          <description>
+            <text>Retransmit timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="timewait-start">
+          <description>
+            <text>Timewait timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="timewait-wakeup">
+          <description>
+            <text>Timewait timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="ackhold-start">
+          <description>
+            <text>Dally ack timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="ackhold-wakeup">
+          <description>
+            <text>Dally ack timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="keepalive-start">
+          <description>
+            <text>Keepalive timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="keepalive-wakeup">
+          <description>
+            <text>Keepalive timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="persist-start">
+          <description>
+            <text>Probe timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="persist-wakeup">
+          <description>
+            <text>Probe timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="synwait-start">
+          <description>
+            <text>Synwait timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="synwait-wakeup">
+          <description>
+            <text>Synwait timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="finwait-start">
+          <description>
+            <text>Finwait timer start counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="finwait-wakeup">
+          <description>
+            <text>Finwait timer wakeup counts</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="iss">
+          <description>
+            <text>Initial send sequence number</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="snduna">
+          <description>
+            <text>Sequence number of sent and not acked (SND.UNA)</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="sndnxt">
+          <description>
+            <text>Sequence number for sending new data</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="sndwnd">
+          <description>
+            <text>Size of foreign window</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="irs">
+          <description>
+            <text>Initial receive sequence number</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="rcvnxt">
+          <description>
+            <text>Sequence number for incoming (RCV.NXT)</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="rcvwnd">
+          <description>
+            <text>Size of local window</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="srtt">
+          <description>
+            <text>Smoothed (mean) round trip time</text>
+          </description>
+          <type name="uint32"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="rtto">
+          <description>
+            <text>Calculated retransmission timeout</text>
+          </description>
+          <type name="uint32"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="krtt">
+          <description>
+            <text>Backed-off RTO, per Karn</text>
+          </description>
+          <type name="uint32"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="min-rtt">
+          <description>
+            <text>Minimum trip time</text>
+          </description>
+          <type name="uint32"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="max-rtt">
+          <description>
+            <text>Maximum trip time</text>
+          </description>
+          <type name="uint32"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="ispassive">
+          <description>
+            <text>Connection method flag</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="sndmss">
+          <description>
+            <text>Maximum segment size, doesn't count hdr</text>
+          </description>
+          <type name="uint16"/>
+          <units name="bytes"/>
+        </leaf>
+        <leaf name="total-rcv">
+          <description>
+            <text>Total receive packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="total-rcv-misorder">
+          <description>
+            <text>Total receive out of order packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="total-rcv-data">
+          <description>
+            <text>Total receive data packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="total-rcv-datalen">
+          <description>
+            <text>Total receive data packet length</text>
+          </description>
+          <type name="uint32"/>
+          <units name="bytes"/>
+        </leaf>
+        <leaf name="total-send">
+          <description>
+            <text>Total send packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="total-send-retansmit">
+          <description>
+            <text>Total retransmit packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="total-send-data">
+          <description>
+            <text>Total send data packets</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="total-send-datalen">
+          <description>
+            <text>Total send data packet length</text>
+          </description>
+          <type name="uint32"/>
+          <units name="bytes"/>
+        </leaf>
+      </list>
+      <list name="idle">
+        <description>
+          <text>Show brief information of idle tcp connection</text>
+        </description>
+        <key value="index"/>
+        <leaf name="index">
+          <description>
+            <text>Index of tcb</text>
+          </description>
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+        </leaf>
+        <leaf name="local-ip">
+          <description>
+            <text>Local ip address</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="remote-ip">
+          <description>
+            <text>Remote ip address</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="local-port">
+          <description>
+            <text>Local port</text>
+          </description>
+          <type name="uint16"/>
+        </leaf>
+        <leaf name="remote-port">
+          <description>
+            <text>Remote port</text>
+          </description>
+          <type name="uint16"/>
+        </leaf>
+        <leaf name="state">
+          <description>
+            <text>State of tcp connection</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="idle-time">
+          <description>
+            <text>Idle time of tcp connection</text>
+          </description>
+          <type name="uint32">
+            <range value="10..10080"/>
+          </type>
+          <units name="minutes"/>
+        </leaf>
+        <ncd:select fields="idle-time"/>
+      </list>
+      <list name="resource">
+        <description>
+          <text>Show TCP resource.</text>
+        </description>
+        <key value="instance"/>
+        <leaf name="instance">
+          <description>
+            <text>Instance number.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="resource-limit">
+          <description>
+            <text>Resource limitation number.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="current-connections">
+          <description>
+            <text>Current connections number.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="listen">
+          <description>
+            <text>Number of TCP connections under the state of listen.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="synsent">
+          <description>
+            <text>Number of TCP connections under the state of synsent.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="synrcvd">
+          <description>
+            <text>Number of TCP connections under the state of synrcvd.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="estab">
+          <description>
+            <text>Number of TCP connections under the state of estab.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="finwait-1">
+          <description>
+            <text>Number of TCP connections under the state of finwait-1.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="finwait-2">
+          <description>
+            <text>Number of TCP connections under the state of finwait-2.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="closing">
+          <description>
+            <text>Number of TCP connections under the state of closing.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="closewait">
+          <description>
+            <text>Number of TCP connections under the state of closewait.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="last-ack">
+          <description>
+            <text>Number of TCP connections under the state of last-ack.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="timewait">
+          <description>
+            <text>Number of TCP connections under the state of timewait.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+      </list>
+      <container name="statistics">
+        <description>
+          <text>Show the statistics of tcp</text>
+        </description>
+        <container name="received">
+          <description>
+            <text>Information of receiving</text>
+          </description>
+          <presence value="information of receiving"/>
+          <leaf name="in-segs">
+            <description>
+              <text>Number of received segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="noport-errs">
+            <description>
+              <text>Error segments of no port</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="checksum-errs">
+            <description>
+              <text>Error segments of checksum</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="badoffset-errs">
+            <description>
+              <text>Error segments of bad offset</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="tooshort-errs">
+            <description>
+              <text>Error segments of too short length</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="inseq-segs">
+            <description>
+              <text>Number of received precedence segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="inseq-seg-len">
+            <description>
+              <text>Length of received precedence segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="outof-order-segs">
+            <description>
+              <text>Received segments that out of order</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="outof-order-seg-len">
+            <description>
+              <text>Received segment length that out of order</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="toobig-errs">
+            <description>
+              <text>Received segments that out of received window</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="toobig-err-len">
+            <description>
+              <text>Received segment length that out of received window</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="pktafterclose-errs">
+            <description>
+              <text>Received segments after tcp closed</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="wndprobe-insegs">
+            <description>
+              <text>Received window probe segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="wndupdate-insegs">
+            <description>
+              <text>Received window update segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="dupack-segs">
+            <description>
+              <text>Received duplicate ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="ackunsent-errs">
+            <description>
+              <text>Received ack that not send data</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="ack-segs">
+            <description>
+              <text>Number of received ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="ack-seg-len">
+            <description>
+              <text>Length of received ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <container name="sent">
+          <description>
+            <text>Information of sending</text>
+          </description>
+          <presence value="information of sending"/>
+          <leaf name="out-segs">
+            <description>
+              <text>Number of sent segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="urg-segs">
+            <description>
+              <text>Number of sent urgent segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="ctr-segs">
+            <description>
+              <text>Number of sent control segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="rtxmctr-segs">
+            <description>
+              <text>Number of control segments that being retransmitted</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="outdata-segs">
+            <description>
+              <text>Number of sent data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="outdata-seg-len">
+            <description>
+              <text>Total length of sent data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="rtxmdata-segs">
+            <description>
+              <text>Number of retransmitted data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="rtxmdata-seg-len">
+            <description>
+              <text>Length of retransmitted data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="ackonly-segs">
+            <description>
+              <text>Number of sent ack segments only</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="dallyack-segs">
+            <description>
+              <text>Number of delayed ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="wndprobe-out-segs">
+            <description>
+              <text>Number of sent window probe segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="wndupdate-out-segs">
+            <description>
+              <text>Number of sent window update segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <container name="common-info">
+          <description>
+            <text>Common information</text>
+          </description>
+          <presence value="common information"/>
+          <leaf name="active-opens">
+            <description>
+              <text>Number of active connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="passive-opens">
+            <description>
+              <text>Number of passive connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="connects">
+            <description>
+              <text>Number of tcp connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="conn-closes">
+            <description>
+              <text>Number of being closed connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="rxmt-tmos">
+            <description>
+              <text>Number of retransmitted segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="connclose-inrxmts">
+            <description>
+              <text>Number of closed connections that being retransmitted</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="keepalive-tmos">
+            <description>
+              <text>Number of keepalive segments that being out of interval of keepalive timer</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="keepalive-probes">
+            <description>
+              <text>Number of keepalive segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="connclose-in-keepalive">
+            <description>
+              <text>Number of closed connections because of not receiving keepalive segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>Command of tcp clear</text>
+    </description>
+    <container name="tcp">
+      <description>
+        <text>Commad of tcp clear</text>
+      </description>
+      <container name="clear">
+        <description>
+          <text>Closed a tcp connection or clear the statistics of all tcp connections</text>
+        </description>
+        <container name="tcbs">
+          <description>
+            <text>Closed a tcp connetion based on the index of tcb</text>
+          </description>
+          <presence value="Clear TCP connections based on index of tcb"/>
+          <leaf name="tcb">
+            <description>
+              <text>Closed a tcp connetion based on the index of tcb</text>
+            </description>
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <container name="statistics">
+          <description>
+            <text>Clear statistics data of tcp</text>
+          </description>
+          <leaf name="statistic">
+            <description>
+              <text>Clear statistics data of tcp</text>
+            </description>
+            <type name="empty"/>
+          </leaf>
+        </container>
+      </container>
+      <container name="clear-connect-address">
+        <description>
+          <text>Closed a tcp connection based on ip address and port</text>
+        </description>
+        <presence value="Clear TCP connections by address"/>
+        <leaf name="source-ip-address">
+          <description>
+            <text>Source ip address</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="source-port">
+          <description>
+            <text>Source port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-ip-address">
+          <description>
+            <text>Destination ip address</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-port">
+          <description>
+            <text>Destination port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+      </container>
+      <container name="clear-connect-mng">
+        <description>
+          <text>Closed a tcp connection based on ip address,port and vrf of mng</text>
+        </description>
+        <presence value="Clear TCP connections by mng and address"/>
+        <leaf name="source-ip-address">
+          <description>
+            <text>Source ip address</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="source-port">
+          <description>
+            <text>Source port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-ip-address">
+          <description>
+            <text>Destination ip address</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-port">
+          <description>
+            <text>Destination port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+      </container>
+      <container name="clear-connect-vrf">
+        <description>
+          <text>Closed a tcp connection based on ip address,port and vrf</text>
+        </description>
+        <presence value="Clear TCP connections by vrf and address"/>
+        <leaf name="vrf-name">
+          <description>
+            <text>Vrf name</text>
+          </description>
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="source-ip-address">
+          <description>
+            <text>Source ip address</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="source-port">
+          <description>
+            <text>Source port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-ip-address">
+          <description>
+            <text>Destination ip address</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-port">
+          <description>
+            <text>Destination port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+      </container>
+    </container>
+  </container>
+</module>

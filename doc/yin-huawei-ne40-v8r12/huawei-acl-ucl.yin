@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-acl-ucl"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:acl-ucl="urn:huawei:yang:huawei-acl-ucl"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:timerange="urn:huawei:yang:huawei-time-range"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:bras-vas="urn:huawei:yang:huawei-bras-vas"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access">
+  <namespace uri="urn:huawei:yang:huawei-acl-ucl"/>
+  <prefix value="acl-ucl"/>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-time-range">
+    <prefix value="timerange"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-bras-vas">
+    <prefix value="bras-vas"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Access Control List (ACL). An ACL is used to identify and select data packets through packet attributes. For example, applying an ACL in the firewall can either permit or discard data packets. Applying an ACL in IPsec can encrypt data packets that match ACL rules and forward those that do not match any ACL rule.</text>
+  </description>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-04">
+    <description>
+      <text>Add leaf must condition.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-17">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="acl"/>
+  <augment target-node="/acl:acl/acl:groups/acl:group">
+    <description>
+      <text>Extend UCL.</text>
+    </description>
+    <container name="rule-ucls">
+      <when condition="(../acl:type = 'UCL')"/>
+      <description>
+        <text>List of UCL rules. The UCL rule group where these rules reside is of the numeric type or name type. For the UCL rule group of the numeric type, the value ranges from 6000 to 9999.</text>
+      </description>
+      <list name="rule-ucl">
+        <key value="name"/>
+        <unique tag="id"/>
+        <description>
+          <text>Configure UCL rule, used to permit or deny packets. Other features can use the ACL control by referring to the rule group. When you create or modify a rule, ensure that parameters such as the action and source-ipaddr specified in the ACL rule are different from those specified in an existing ACL rule.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[^_\s][^\s]*"/>
+          </type>
+          <description>
+            <text>Name of an UCL rule. The rule name can be a number of character string without spaces, but cannot start with an underscore (_).</text>
+          </description>
+        </leaf>
+        <leaf name="id">
+          <when condition="../../../acl:match-order = 'config'"/>
+          <type name="uint32">
+            <range value="0..4294967294"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>ID of an UCL rule in configuration mode.</text>
+          </description>
+        </leaf>
+        <leaf name="action">
+          <type name="acl:rule-action"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Matching mode of UCL rules. The available options are permit and deny.</text>
+          </description>
+        </leaf>
+        <leaf name="active-status">
+          <type name="pub-type:row-status"/>
+          <default value="active"/>
+          <config value="false"/>
+          <description>
+            <text>Whether a rule is valid at the current time.</text>
+          </description>
+        </leaf>
+        <choice name="protocol-type">
+          <mandatory value="true"/>
+          <description>
+            <text>Protocol type value.</text>
+          </description>
+          <case name="single">
+            <description>
+              <text>Specify the specific protocol.</text>
+            </description>
+            <leaf name="protocol">
+              <type name="uint8">
+                <ext:value-meaning>
+                  <ext:item value="0">
+                    <ext:meaning value="IP"/>
+                  </ext:item>
+                  <ext:item value="1">
+                    <ext:meaning value="ICMP"/>
+                  </ext:item>
+                  <ext:item value="2">
+                    <ext:meaning value="IGMP"/>
+                  </ext:item>
+                  <ext:item value="4">
+                    <ext:meaning value="IPINIP"/>
+                  </ext:item>
+                  <ext:item value="6">
+                    <ext:meaning value="TCP"/>
+                  </ext:item>
+                  <ext:item value="17">
+                    <ext:meaning value="UDP"/>
+                  </ext:item>
+                  <ext:item value="47">
+                    <ext:meaning value="GRE"/>
+                  </ext:item>
+                  <ext:item value="89">
+                    <ext:meaning value="OSPF"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Protocol type value (0: any IPv4 protocol; 1: ICMP; 2: IGMP; 4: IPINIP; 6: TCP; 17: UDP; 47: GRE; 89: OSPF).</text>
+              </description>
+              <ext:support-filter value="true"/>
+            </leaf>
+          </case>
+          <case name="zero">
+            <description>
+              <text>Match zero protocol packet.</text>
+            </description>
+            <leaf name="protocol-zero">
+              <type name="empty"/>
+              <description>
+                <text>Match zero protocol packet.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="source">
+          <description>
+            <text>Specify source parameters.</text>
+          </description>
+          <case name="source-ip-any">
+            <description>
+              <text>Any source address.</text>
+            </description>
+            <leaf name="source-ip-any">
+              <type name="empty"/>
+              <description>
+                <text>Any source address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="source-ipaddr">
+            <description>
+              <text>Source IP address and mask.</text>
+            </description>
+            <leaf name="source-ipaddr">
+              <type name="inet:ipv4-address-no-zone"/>
+              <must condition="(../source-ipaddr and ../source-wild) or (not (../source-ipaddr) and not (../source-wild))"/>
+              <description>
+                <text>Source IP address. The value must equal to the AND calculation result of source-ipaddr and source-wild.</text>
+              </description>
+            </leaf>
+            <leaf name="source-wild">
+              <type name="inet:ipv4-address-no-zone"/>
+              <must condition="(../source-ipaddr and ../source-wild) or (not (../source-ipaddr) and not (../source-wild))"/>
+              <description>
+                <text>Wildcard mask of the source IP address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="source-pool">
+            <description>
+              <text>Source IP pool.</text>
+            </description>
+            <leaf name="source-pool-name">
+              <type name="leafref">
+                <path value="/acl:acl/acl:ip-pools/acl:ip-pool/acl:name"/>
+              </type>
+              <description>
+                <text>Name of a source pool.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-user-group-any">
+            <description>
+              <text>Any source user group.</text>
+            </description>
+            <leaf name="src-user-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any source user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-user-group">
+            <description>
+              <text>Specify source user group.</text>
+            </description>
+            <leaf name="src-user-group-name">
+              <type name="leafref">
+                <path value="/bras-basic-access:bras-basic-access/bras-basic-access:user-groups/bras-basic-access:user-group/bras-basic-access:name"/>
+              </type>
+              <description>
+                <text>Name of a source user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-srv-group-any">
+            <description>
+              <text>Any source service group.</text>
+            </description>
+            <leaf name="src-srv-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any source service group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-srv-group">
+            <description>
+              <text>Specify source service group.</text>
+            </description>
+            <leaf name="src-srv-group-name">
+              <type name="leafref">
+                <path value="/bras-vas:bras-vas/bras-vas:service-groups/bras-vas:service-group/bras-vas:name"/>
+              </type>
+              <description>
+                <text>Name of a source service group.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="dest">
+          <description>
+            <text>Specify destination parameters.</text>
+          </description>
+          <case name="dest-ip-any">
+            <description>
+              <text>Any destination address.</text>
+            </description>
+            <leaf name="dest-ip-any">
+              <type name="empty"/>
+              <description>
+                <text>Any destination address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-ipaddr">
+            <description>
+              <text>Destination IP address and mask.</text>
+            </description>
+            <leaf name="dest-ipaddr">
+              <type name="inet:ipv4-address-no-zone"/>
+              <must condition="(../dest-ipaddr and ../dest-wild) or (not (../dest-ipaddr) and not (../dest-wild))"/>
+              <description>
+                <text>Destination IP address. The value must equal to the and calculation result of dest-ipaddr and dest-wild.</text>
+              </description>
+            </leaf>
+            <leaf name="dest-wild">
+              <type name="inet:ipv4-address-no-zone"/>
+              <must condition="(../dest-ipaddr and ../dest-wild) or (not (../dest-ipaddr) and not (../dest-wild))"/>
+              <description>
+                <text>Wildcard mask of the destination IP address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-pool">
+            <description>
+              <text>Name of a dest pool.</text>
+            </description>
+            <leaf name="dest-pool-name">
+              <type name="leafref">
+                <path value="/acl:acl/acl:ip-pools/acl:ip-pool/acl:name"/>
+              </type>
+              <description>
+                <text>Name of a dest pool.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-user-group-any">
+            <description>
+              <text>Any destination user group.</text>
+            </description>
+            <leaf name="dest-user-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any destination user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-user-group">
+            <description>
+              <text>Specify destination user group.</text>
+            </description>
+            <leaf name="dest-user-group-name">
+              <type name="leafref">
+                <path value="/bras-basic-access:bras-basic-access/bras-basic-access:user-groups/bras-basic-access:user-group/bras-basic-access:name"/>
+              </type>
+              <description>
+                <text>Name of a destination user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-srv-group-any">
+            <description>
+              <text>Any destination service group.</text>
+            </description>
+            <leaf name="dest-srv-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any destination service group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-srv-group">
+            <description>
+              <text>Specify destination service group.</text>
+            </description>
+            <leaf name="dest-srv-group-name">
+              <type name="leafref">
+                <path value="/bras-vas:bras-vas/bras-vas:service-groups/bras-vas:service-group/bras-vas:name"/>
+              </type>
+              <description>
+                <text>Name of a destination service group.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="source-port">
+          <description>
+            <text>Specify source port.</text>
+          </description>
+          <case name="range">
+            <description>
+              <text>Specify source port number range.</text>
+            </description>
+            <leaf name="source-port-begin">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../source-port-begin and ../source-port-end) and (../source-port-begin&lt;=../source-port-end) and not(../source-port-begin=0 and ../source-port-end=65535)) or (not (../source-port-begin) and not (../source-port-end))"/>
+              <description>
+                <text>Start port number of the source port.</text>
+              </description>
+            </leaf>
+            <leaf name="source-port-end">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../source-port-begin and ../source-port-end) and (../source-port-begin&lt;=../source-port-end) and not(../source-port-begin=0 and ../source-port-end=65535)) or (not (../source-port-begin) and not (../source-port-end))"/>
+              <description>
+                <text>End port number of the source port.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="dest-port">
+          <description>
+            <text>Specify destination port.</text>
+          </description>
+          <case name="range">
+            <description>
+              <text>Specify destination port number range.</text>
+            </description>
+            <leaf name="dest-port-begin">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../dest-port-begin and ../dest-port-end) and (../dest-port-begin&lt;=../dest-port-end) and not(../dest-port-begin=0 and ../dest-port-end=65535)) or (not (../dest-port-begin) and  not (../dest-port-end))"/>
+              <description>
+                <text>Start port number of the destination port.</text>
+              </description>
+            </leaf>
+            <leaf name="dest-port-end">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../dest-port-begin and ../dest-port-end) and (../dest-port-begin&lt;=../dest-port-end) and not(../dest-port-begin=0 and ../dest-port-end=65535)) or (not (../dest-port-begin) and  not (../dest-port-end))"/>
+              <description>
+                <text>End port number of the destination port.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="fragment-type">
+          <type name="acl:fragment-type"/>
+          <description>
+            <text>Type of packet fragmentation.</text>
+          </description>
+        </leaf>
+        <choice name="packets-priority">
+          <description>
+            <text>Specify packets priority.</text>
+          </description>
+          <case name="tos">
+            <description>
+              <text>Specify packets priority.</text>
+            </description>
+            <leaf name="precedence">
+              <type name="uint8">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Data packets can be filtered based on the priority field.</text>
+              </description>
+            </leaf>
+            <leaf name="tos">
+              <type name="uint8">
+                <range value="0..15"/>
+              </type>
+              <description>
+                <text>Tos value on which data packet filtering is based.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dscp">
+            <description>
+              <text>Differentiated services code point.</text>
+            </description>
+            <leaf name="dscp">
+              <type name="uint8">
+                <range value="0..63"/>
+              </type>
+              <description>
+                <text>Differentiated services code point.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="icmp-type">
+          <when condition="../protocol=1"/>
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <must condition="(../icmp-type and ../icmp-code) or (not (../icmp-type) and not (../icmp-code))"/>
+          <description>
+            <text>ICMP type. This parameter is available only when the packet protocol is ICMP. If this parameter is not set, packets of all ICMP types are matched.</text>
+          </description>
+        </leaf>
+        <leaf name="icmp-code">
+          <when condition="../protocol=1"/>
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <must condition="(../icmp-type and ../icmp-code) or (not (../icmp-type) and not (../icmp-code))"/>
+          <description>
+            <text>ICMP message code. Data packets can be filtered based on the ICMP message code.</text>
+          </description>
+        </leaf>
+        <choice name="tcp-flag">
+          <description>
+            <text>Specify tcp-flag.</text>
+          </description>
+          <case name="mask">
+            <description>
+              <text>Specify tcp-flag and mask.</text>
+            </description>
+            <leaf name="tcp-flag-value">
+              <when condition="../protocol=6"/>
+              <type name="uint16">
+                <range value="0..511"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>TCP flag value.</text>
+              </description>
+            </leaf>
+            <leaf name="tcp-flag-mask">
+              <when condition="../protocol=6"/>
+              <type name="uint16">
+                <range value="0..511"/>
+              </type>
+              <default value="511"/>
+              <description>
+                <text>TCP flag mask value.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="flag-name">
+            <description>
+              <text>Specify tcp flag name.</text>
+            </description>
+            <leaf name="tcp-flag-name">
+              <when condition="../protocol=6"/>
+              <type name="acl:tcp-flag-name"/>
+              <description>
+                <text>Name of TCP flag.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="vlan-id">
+          <type name="uint16">
+            <range value="1..4094"/>
+          </type>
+          <description>
+            <text>VLAN ID.</text>
+          </description>
+        </leaf>
+        <leaf name="ce-vlan-id">
+          <type name="uint16">
+            <range value="1..4094"/>
+          </type>
+          <description>
+            <text>CE-VLAN ID.</text>
+          </description>
+        </leaf>
+        <leaf name="time-range-name">
+          <type name="leafref">
+            <path value="/timerange:time-range/timerange:time-range-instances/timerange:time-range-instance/timerange:name"/>
+          </type>
+          <description>
+            <text>Name of a time range in which an ACL rule takes effect. The value is a string of 1 to 32 characters and must start with an uppercase or lowercase letter.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..127"/>
+            <pattern value="[^\?\s](([^\?\s]*)|[^\t\?]*[^\?\s])"/>
+          </type>
+          <description>
+            <text>Description about an ACL rule. The value cannot begin or end with a space.</text>
+          </description>
+        </leaf>
+        <leaf name="priority">
+          <type name="uint32">
+            <range value="0..4294967294"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Priority of an UCL rule in configuration mode.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/acl:acl/acl:group6s/acl:group6">
+    <description>
+      <text>Extend UCL.</text>
+    </description>
+    <container name="rule-ucls">
+      <when condition="(../acl:type = 'UCL')"/>
+      <description>
+        <text>List of UCL6 rules. The UCL6 rule group where these rules reside is of the numeric type or name type. For the UCL6 rule group of the numeric type, the value ranges from 6000 to 9999.</text>
+      </description>
+      <list name="rule-ucl">
+        <key value="name"/>
+        <unique tag="id"/>
+        <description>
+          <text>Configure UCL6 rule, used to permit or deny packets. Other features can use the ACL control by referring to the rule group. When you create or modify a rule, ensure that parameters such as the action and src-user-group-name specified in the ACL rule are different from those specified in an existing ACL rule.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[^_\s][^\s]*"/>
+          </type>
+          <description>
+            <text>Name of an UCL6 rule. The rule name can be a number of character string without spaces, but cannot start with an underscore (_).</text>
+          </description>
+        </leaf>
+        <leaf name="id">
+          <when condition="../../../acl:match-order = 'config'"/>
+          <type name="uint32">
+            <range value="0..4294967294"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>ID of an UCL6 rule in configuration mode.</text>
+          </description>
+        </leaf>
+        <leaf name="action">
+          <type name="acl:rule-action"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Matching mode of UCL6 rules. The available options are permit and deny.</text>
+          </description>
+        </leaf>
+        <choice name="protocol-type">
+          <mandatory value="true"/>
+          <description>
+            <text>IPv6 Protocol value.</text>
+          </description>
+          <case name="single">
+            <description>
+              <text>Specify the specific protocol.</text>
+            </description>
+            <leaf name="protocol">
+              <type name="uint8">
+                <ext:value-meaning>
+                  <ext:item value="0">
+                    <ext:meaning value="IPV6"/>
+                  </ext:item>
+                  <ext:item value="6">
+                    <ext:meaning value="TCP"/>
+                  </ext:item>
+                  <ext:item value="17">
+                    <ext:meaning value="UDP"/>
+                  </ext:item>
+                  <ext:item value="47">
+                    <ext:meaning value="GRE"/>
+                  </ext:item>
+                  <ext:item value="50">
+                    <ext:meaning value="IPV6-ESP"/>
+                  </ext:item>
+                  <ext:item value="51">
+                    <ext:meaning value="IPV6-AH"/>
+                  </ext:item>
+                  <ext:item value="58">
+                    <ext:meaning value="ICMPV6"/>
+                  </ext:item>
+                  <ext:item value="89">
+                    <ext:meaning value="OSPF"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Protocol type value (0: any IPv6 protocol; 6: TCP; 17: UDP; 47: GRE; 50: IPv6-ESP; 51: IPv6-AH; 58: ICMPV6; 89: OSPF).</text>
+              </description>
+              <ext:support-filter value="true"/>
+            </leaf>
+          </case>
+          <case name="zero">
+            <description>
+              <text>Match zero protocol packet.</text>
+            </description>
+            <leaf name="hoport">
+              <type name="empty"/>
+              <description>
+                <text>Match zero protocol packet.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="source">
+          <description>
+            <text>Specify source parameters.</text>
+          </description>
+          <case name="src-user-group-any">
+            <description>
+              <text>Any source user group.</text>
+            </description>
+            <leaf name="src-user-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any source user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-user-group">
+            <description>
+              <text>Specify source user group.</text>
+            </description>
+            <leaf name="src-user-group-name">
+              <type name="leafref">
+                <path value="/bras-basic-access:bras-basic-access/bras-basic-access:user-groups/bras-basic-access:user-group/bras-basic-access:name"/>
+              </type>
+              <description>
+                <text>Name of a source user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-srv-group-any">
+            <description>
+              <text>Any source service group.</text>
+            </description>
+            <leaf name="src-srv-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any source service group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="src-srv-group">
+            <description>
+              <text>Specify source service group.</text>
+            </description>
+            <leaf name="src-srv-group-name">
+              <type name="leafref">
+                <path value="/bras-vas:bras-vas/bras-vas:service-groups/bras-vas:service-group/bras-vas:name"/>
+              </type>
+              <description>
+                <text>Name of a source service group.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="dest">
+          <description>
+            <text>Specify destination parameters.</text>
+          </description>
+          <case name="dest-user-group-any">
+            <description>
+              <text>Any destination user group.</text>
+            </description>
+            <leaf name="dest-user-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any destination user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-user-group">
+            <description>
+              <text>Specify destination user group.</text>
+            </description>
+            <leaf name="dest-user-group-name">
+              <type name="leafref">
+                <path value="/bras-basic-access:bras-basic-access/bras-basic-access:user-groups/bras-basic-access:user-group/bras-basic-access:name"/>
+              </type>
+              <description>
+                <text>Name of a destination user group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-srv-group-any">
+            <description>
+              <text>Any destination service group.</text>
+            </description>
+            <leaf name="dest-srv-group-any">
+              <type name="empty"/>
+              <description>
+                <text>Any destination service group.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dest-srv-group">
+            <description>
+              <text>Specify destination service group.</text>
+            </description>
+            <leaf name="dest-srv-group-name">
+              <type name="leafref">
+                <path value="/bras-vas:bras-vas/bras-vas:service-groups/bras-vas:service-group/bras-vas:name"/>
+              </type>
+              <description>
+                <text>Name of a destination service group.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="source-port">
+          <description>
+            <text>Specify source port.</text>
+          </description>
+          <case name="range">
+            <description>
+              <text>Specify source port number range.</text>
+            </description>
+            <leaf name="source-port-begin">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../source-port-begin and ../source-port-end) and (../source-port-begin&lt;=../source-port-end) and not(../source-port-begin=0 and ../source-port-end=65535)) or (not (../source-port-begin) and not (../source-port-end))"/>
+              <description>
+                <text>Start port number of the source port.</text>
+              </description>
+            </leaf>
+            <leaf name="source-port-end">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../source-port-begin and ../source-port-end) and (../source-port-begin&lt;=../source-port-end) and not(../source-port-begin=0 and ../source-port-end=65535)) or (not (../source-port-begin) and not (../source-port-end))"/>
+              <description>
+                <text>End port number of the source port.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="dest-port">
+          <description>
+            <text>Specify destination port.</text>
+          </description>
+          <case name="range">
+            <description>
+              <text>Specify destination port number range.</text>
+            </description>
+            <leaf name="dest-port-begin">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../dest-port-begin and ../dest-port-end) and (../dest-port-begin&lt;=../dest-port-end) and not(../dest-port-begin=0 and ../dest-port-end=65535)) or (not (../dest-port-begin) and  not (../dest-port-end))"/>
+              <description>
+                <text>Start port number of the destination port.</text>
+              </description>
+            </leaf>
+            <leaf name="dest-port-end">
+              <when condition="../protocol=17 or ../protocol=6"/>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <must condition="((../dest-port-begin and ../dest-port-end) and (../dest-port-begin&lt;=../dest-port-end) and not(../dest-port-begin=0 and ../dest-port-end=65535)) or (not (../dest-port-begin) and  not (../dest-port-end))"/>
+              <description>
+                <text>End port number of the destination port.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..127"/>
+            <pattern value="[^\?\s](([^\?\s]*)|[^\t\?]*[^\?\s])"/>
+          </type>
+          <description>
+            <text>Description about an ACL rule. The value cannot begin or end with a space.</text>
+          </description>
+        </leaf>
+        <leaf name="priority">
+          <type name="uint32">
+            <range value="0..4294967294"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Priority of an UCL6 rule in configuration mode.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>

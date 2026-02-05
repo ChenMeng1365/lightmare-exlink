@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-gre"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:gre="urn:huawei:yang:huawei-gre"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-gre"/>
+  <prefix value="gre"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-tunnel-management">
+    <prefix value="tnlm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Generic Routing Encapsulation (GRE) is a tunneling protocol that can encapsulate a
+wide variety of network layer protocols inside virtual point-to-point links or point-to-multipoint
+links over an Internet Protocol network.</text>
+  </description>
+  <revision date="2020-05-18">
+    <description>
+      <text>Add when/must condition.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-05-06">
+    <description>
+      <text>Remove GRE group.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-26">
+    <description>
+      <text>White-box errors are resolved.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-01-13">
+    <description>
+      <text>Add a leaf node mtu-check-enable.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-10-10">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="gre"/>
+  <rpc name="reset-keep-alive">
+    <description>
+      <text>Clear Keepalive packet statistics.</text>
+    </description>
+    <ext:node-ref value="/ifm:ifm/ifm:interfaces/ifm:interface/tnlm:tunnel-protocol/tnlm:type/gre:gre/gre:gre-tunnel/gre:keep-alive"/>
+    <input>
+      <leaf name="tnl-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Tunnel name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>GRE configuration on network instance.</text>
+    </description>
+    <container name="gre">
+      <description>
+        <text>Configure Generic Routing Encapsulation.</text>
+      </description>
+      <leaf-list name="bind-src-interface-names">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <must condition="../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+        <description>
+          <text>Specify the interface bound to a GRE tunnel.</text>
+        </description>
+      </leaf-list>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/tnlm:tunnel-protocol/tnlm:type">
+    <description>
+      <text>GRE configuration on interface.</text>
+    </description>
+    <case name="gre">
+      <description>
+        <text>Generic Routing Encapsulation.</text>
+      </description>
+      <container name="gre-tunnel">
+        <presence value="Specifies tunnel-protocol GRE."/>
+        <description>
+          <text>Configure GRE tunnel.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="ip-info">
+            <description>
+              <text>Source IPv4 address configuration.</text>
+            </description>
+            <leaf name="address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source IPv4 address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="if-info">
+            <description>
+              <text>Source interface name configuration.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="current()!=../../../ifm:name"/>
+              <must condition="not(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:l2-mode-enable='true')"/>
+              <description>
+                <text>Source interface name.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <container name="destination">
+          <description>
+            <text>Configure destination.</text>
+          </description>
+          <leaf name="vpn-name">
+            <when condition="../address"/>
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+            <description>
+              <text>Destination VPN name.</text>
+            </description>
+          </leaf>
+          <leaf name="address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <description>
+              <text>Destination IPv4 address.</text>
+            </description>
+          </leaf>
+        </container>
+        <leaf name="key">
+          <type name="pub-type:password-extend">
+            <length value="1..128"/>
+          </type>
+          <description>
+            <text>GRE tunnel key, an integer ranging from 0 to 4294967295.</text>
+          </description>
+        </leaf>
+        <container name="keep-alive-enable">
+          <presence value="Enable keep alive."/>
+          <description>
+            <text>Enable/disable GRE keep alive.</text>
+          </description>
+          <leaf name="period">
+            <type name="uint32">
+              <range value="1..32767"/>
+            </type>
+            <units name="s"/>
+            <default value="5"/>
+            <description>
+              <text>Interval at which Keepalive packets are sent.</text>
+            </description>
+          </leaf>
+          <leaf name="retry-cnt">
+            <type name="uint32">
+              <range value="1..255"/>
+            </type>
+            <default value="3"/>
+            <description>
+              <text>Number of retry times for Keepalive packets.</text>
+            </description>
+          </leaf>
+        </container>
+        <leaf name="path-mtu-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable tunnel PMTU learning.</text>
+          </description>
+        </leaf>
+        <leaf name="statistic-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the GRE tunnel statistic.</text>
+          </description>
+        </leaf>
+        <leaf name="checksum-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the GRE tunnel checksum.</text>
+          </description>
+        </leaf>
+        <leaf name="mtu-check-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the GRE tunnel mtu check.</text>
+          </description>
+        </leaf>
+        <container name="keep-alive">
+          <config value="false"/>
+          <description>
+            <text>Statistics of Keepalive packets.</text>
+          </description>
+          <leaf name="send-req-cnt">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Number of sent Keepalive packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-rsp-cnt">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Number of received Keepalive response packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-req-cnt">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Number of received Keepalive packets.</text>
+            </description>
+          </leaf>
+          <leaf name="send-rsp-cnt">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Number of sent Keepalive response packets.</text>
+            </description>
+          </leaf>
+        </container>
+      </container>
+    </case>
+    <case name="gre6">
+      <description>
+        <text>Generic Routing Encapsulation on IPv6.</text>
+      </description>
+      <container name="gre6-tunnel">
+        <when condition="../../ifm:type='Tunnel'"/>
+        <presence value="Specifies tunnel-protocol GRE IPv6."/>
+        <description>
+          <text>Configure GRE IPv6 tunnel.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="ip-info">
+            <description>
+              <text>Source IPv6 address configuration.</text>
+            </description>
+            <leaf name="address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Source IPv6 address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="if-info">
+            <description>
+              <text>Source interface name configuration.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="current()!=../../../ifm:name"/>
+              <must condition="not(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:l2-mode-enable='true')"/>
+              <description>
+                <text>Source interface name.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <container name="destination">
+          <description>
+            <text>Configure destination.</text>
+          </description>
+          <leaf name="vpn-name">
+            <when condition="../address"/>
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']"/>
+            <description>
+              <text>Destination vpn name.</text>
+            </description>
+          </leaf>
+          <leaf name="address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Destination IPv6 address.</text>
+            </description>
+          </leaf>
+        </container>
+      </container>
+    </case>
+    <case name="p2mp-gre">
+      <description>
+        <text>Multicast Generic Routing Encapsulation.</text>
+      </description>
+      <container name="mgre-tunnel">
+        <when condition="../../ifm:type='Tunnel'"/>
+        <presence value="Specifies tunnel-protocol GRE p2mp."/>
+        <description>
+          <text>Configure mGRE tunnel.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="ip-info">
+            <description>
+              <text>Source IPv4 address configuration.</text>
+            </description>
+            <leaf name="address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source IPv4 address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="if-info">
+            <description>
+              <text>Source interface name configuration.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="current()!=../../../ifm:name"/>
+              <must condition="not(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:l2-mode-enable='true')"/>
+              <description>
+                <text>Source interface name.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="key">
+          <type name="pub-type:password-extend">
+            <length value="1..128"/>
+          </type>
+          <description>
+            <text>GRE tunnel key, an integer ranging from 0 to 4294967295.</text>
+          </description>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+</module>

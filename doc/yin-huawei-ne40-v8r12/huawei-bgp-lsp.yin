@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bgp-lsp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgp-lsp="urn:huawei:yang:huawei-bgp-lsp"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:mpls="urn:huawei:yang:huawei-mpls"
+        xmlns:bfd="urn:huawei:yang:huawei-bfd"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bgp-lsp"/>
+  <prefix value="bgp-lsp"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-mpls">
+    <prefix value="mpls"/>
+  </import>
+  <import module="huawei-bfd">
+    <prefix value="bfd"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Inter-AS routing protocol that exchanges Network Layer Reachability Information (NLRI) with other BGP systems.</text>
+  </description>
+  <revision date="2020-02-25">
+    <description>
+      <text>The YANG descriptions are modified according to new standards.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="lsp-type">
+    <type name="enumeration">
+      <enum name="ingress">
+        <value value="1"/>
+        <description>
+          <text>Ingress of the BGP LSP.</text>
+        </description>
+      </enum>
+      <enum name="transit">
+        <value value="2"/>
+        <description>
+          <text>Transit node of the BGP LSP.</text>
+        </description>
+      </enum>
+      <enum name="egress">
+        <value value="4"/>
+        <description>
+          <text>Egress of the BGP LSP.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of the BGP LSP.</text>
+    </description>
+  </typedef>
+  <typedef name="lsp-frr-type">
+    <type name="enumeration">
+      <enum name="primary">
+        <value value="1"/>
+        <description>
+          <text>Primary LSP type.</text>
+        </description>
+      </enum>
+      <enum name="backup">
+        <value value="2"/>
+        <description>
+          <text>Backup LSP type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of the bgpLspFrr.</text>
+    </description>
+  </typedef>
+  <typedef name="label-operation-type">
+    <type name="enumeration">
+      <enum name="push">
+        <value value="0"/>
+        <description>
+          <text>Push a label.</text>
+        </description>
+      </enum>
+      <enum name="swap">
+        <value value="1"/>
+        <description>
+          <text>Swap a Label.</text>
+        </description>
+      </enum>
+      <enum name="pop">
+        <value value="2"/>
+        <description>
+          <text>Pop out a label.</text>
+        </description>
+      </enum>
+      <enum name="swappush">
+        <value value="3"/>
+        <description>
+          <text>Swap a label and push a label.</text>
+        </description>
+      </enum>
+      <enum name="popgo">
+        <value value="4"/>
+        <description>
+          <text>Packets are forwarded based on the next hop directly mapped to the
+label after label popping.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of the bgpLabelOperation.</text>
+    </description>
+  </typedef>
+  <typedef name="exp-mode-type">
+    <type name="enumeration">
+      <enum name="null">
+        <value value="0"/>
+        <description>
+          <text>Default value.</text>
+        </description>
+      </enum>
+      <enum name="pipe">
+        <value value="1"/>
+        <description>
+          <text>The priority of BGP labels is not modified, and the outer label is removed.</text>
+        </description>
+      </enum>
+      <enum name="uniform">
+        <value value="2"/>
+        <description>
+          <text>The label priority of intra-AS tunnels is copied to the BGP label.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of bgpcommExpMode.</text>
+    </description>
+  </typedef>
+  <typedef name="bgp-bfd-trigger-type">
+    <type name="enumeration">
+      <enum name="none">
+        <value value="0"/>
+        <description>
+          <text>No policy for establishing BGP BFD sessions is configured.</text>
+        </description>
+      </enum>
+      <enum name="host">
+        <value value="1"/>
+        <description>
+          <text>Use host addresses to dynamically establish BGP BFD sessions.</text>
+        </description>
+      </enum>
+      <enum name="ip-prefix">
+        <value value="2"/>
+        <description>
+          <text>IP prefix list used to dynamically establish a BFD session to monitor an LDP tunnel.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of BGP BFD trigger.</text>
+    </description>
+  </typedef>
+  <grouping name="bgp-pipe-type">
+    <description>
+      <text>BGP pipe type.</text>
+    </description>
+    <leaf name="ttl-mode">
+      <type name="enumeration">
+        <enum name="pipe">
+          <value value="2"/>
+          <description>
+            <text>The priority of BGP labels is not modified, and the outer label is removed.</text>
+          </description>
+        </enum>
+        <enum name="uniform">
+          <value value="1"/>
+          <description>
+            <text>The label priority of intra-AS tunnels is copied to the BGP label.</text>
+          </description>
+        </enum>
+      </type>
+      <default value="pipe"/>
+      <description>
+        <text>Specifies the TTL mode, The available options are Uniform and Pipe. By default, the mode is Pipe.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <container name="bgp-lsp">
+    <description>
+      <text>BGP LSP configuration and query items.</text>
+    </description>
+    <container name="bfd">
+      <description>
+        <text>Configure dynamic BFD for BGP LSP.</text>
+      </description>
+      <container name="parameters">
+        <description>
+          <text>Configure parameters of BFD for BGP LSP.</text>
+        </description>
+        <leaf name="enable">
+          <when condition="/mpls:mpls/mpls:common/mpls:global/mpls:mpls-enable='true' and /bfd:bfd"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable dynamic BFD for BGP LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="min-tx-interval">
+          <when condition="/mpls:mpls/mpls:common/mpls:global/mpls:mpls-enable='true'"/>
+          <type name="uint32">
+            <range value="3..20000"/>
+          </type>
+          <units name="ms"/>
+          <description>
+            <text>Interval at which BFD packets are sent.</text>
+          </description>
+        </leaf>
+        <leaf name="min-rx-interval">
+          <when condition="/mpls:mpls/mpls:common/mpls:global/mpls:mpls-enable='true'"/>
+          <type name="uint32">
+            <range value="3..20000"/>
+          </type>
+          <units name="ms"/>
+          <description>
+            <text>Interval at which BFD packets are received.</text>
+          </description>
+        </leaf>
+        <leaf name="detection-multiplier">
+          <when condition="/mpls:mpls/mpls:common/mpls:global/mpls:mpls-enable='true'"/>
+          <type name="uint32">
+            <range value="3..50"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>BFD detection multiplier.</text>
+          </description>
+        </leaf>
+        <leaf name="trigger">
+          <when condition="/mpls:mpls/mpls:common/mpls:global/mpls:mpls-enable='true' and /bfd:bfd"/>
+          <type name="bgp-bfd-trigger-type"/>
+          <must condition="( ../trigger='ip-prefix' and ../trigger-ip-prefix-name ) or not ( ../trigger='ip-prefix' or ../trigger-ip-prefix-name )"/>
+          <default value="none"/>
+          <description>
+            <text>Configure a policy for creating BGP LSP BFD sessions.</text>
+          </description>
+        </leaf>
+        <leaf name="trigger-ip-prefix-name">
+          <when condition="../trigger='ip-prefix'"/>
+          <type name="leafref">
+            <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+          </type>
+          <description>
+            <text>To use an IP prefix list to dynamically create BFD sessions, specify a name of the IP prefix list.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="sessions">
+        <config value="false"/>
+        <description>
+          <text>List of the sessions of dynamic BFD for BGP LSP.</text>
+        </description>
+        <list name="session">
+          <key value="fec-address out-if-name next-hop index"/>
+          <config value="false"/>
+          <description>
+            <text>Statistics of a session of dynamic BFD for BGP LSP.</text>
+          </description>
+          <leaf name="fec-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <config value="false"/>
+            <description>
+              <text>Display the FEC address of the session of dynamic BFD for BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="out-if-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <config value="false"/>
+            <description>
+              <text>Display the outbound interface of a BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="next-hop">
+            <type name="inet:ipv4-address-no-zone"/>
+            <config value="false"/>
+            <description>
+              <text>Display the next hop of a BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="index">
+            <type name="uint32"/>
+            <config value="false"/>
+            <description>
+              <text>Display the LSP index of a BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="discriminator">
+            <type name="uint32"/>
+            <config value="false"/>
+            <description>
+              <text>Display the BFD discriminator of the BFD session of dynamic BFD for BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="state">
+            <type name="enumeration">
+              <enum name="admin-down">
+                <value value="0"/>
+                <description>
+                  <text>The BGP LSP BFD session is administratively Down.</text>
+                </description>
+              </enum>
+              <enum name="down">
+                <value value="1"/>
+                <description>
+                  <text>The BGP LSP BFD session is Down.</text>
+                </description>
+              </enum>
+              <enum name="init">
+                <value value="2"/>
+                <description>
+                  <text>The BGP LSP BFD session is in initial state.</text>
+                </description>
+              </enum>
+              <enum name="up">
+                <value value="3"/>
+                <description>
+                  <text>The BGP LSP BFD session is Up.</text>
+                </description>
+              </enum>
+            </type>
+            <config value="false"/>
+            <description>
+              <text>Display the BFD session state of dynamic BFD for BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="min-tx-interval">
+            <type name="uint32"/>
+            <units name="ms"/>
+            <config value="false"/>
+            <description>
+              <text>Display the minimum interval at which BFD packets of the session of dynamic BFD for BGP LSP are sent.</text>
+            </description>
+          </leaf>
+          <leaf name="min-rx-interval">
+            <type name="uint32"/>
+            <units name="ms"/>
+            <config value="false"/>
+            <description>
+              <text>Display the minimum interval at which BFD packets of the session of dynamic BFD for BGP LSP are received.</text>
+            </description>
+          </leaf>
+          <leaf name="detection-multiplier">
+            <type name="uint32"/>
+            <config value="false"/>
+            <description>
+              <text>Display the BFD detection multiplier of the BFD session of dynamic BFD for BGP LSP.</text>
+            </description>
+          </leaf>
+          <leaf name="age">
+            <type name="uint32"/>
+            <units name="s"/>
+            <config value="false"/>
+            <description>
+              <text>Display the BFD session age of dynamic BFD for BGP LSP.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="states">
+      <config value="false"/>
+      <description>
+        <text>List of BGP LSPs.</text>
+      </description>
+      <list name="state">
+        <key value="vrf-name af destination-address prefix-length index type indirect-id frr-type"/>
+        <config value="false"/>
+        <description>
+          <text>Operational state of BGP LSP.</text>
+        </description>
+        <leaf name="vrf-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>VPN name of a BGP instance.</text>
+          </description>
+        </leaf>
+        <leaf name="af">
+          <type name="bgp:af-type"/>
+          <config value="false"/>
+          <description>
+            <text>Specifies the address family type of a BGP instance.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-address">
+          <type name="inet:ip-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>Destination address of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-length">
+          <type name="uint32">
+            <range value="0..128"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Prefix length of the destination address of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="index">
+          <type name="uint32"/>
+          <config value="false"/>
+          <description>
+            <text>LSP index.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="lsp-type"/>
+          <config value="false"/>
+          <description>
+            <text>LSP type.</text>
+          </description>
+        </leaf>
+        <leaf name="indirect-id">
+          <type name="string">
+            <length value="1..50"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>IndirectID.</text>
+          </description>
+        </leaf>
+        <leaf name="frr-type">
+          <type name="lsp-frr-type"/>
+          <config value="false"/>
+          <description>
+            <text>FRR role.</text>
+          </description>
+        </leaf>
+        <leaf name="nexthop">
+          <type name="inet:ip-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>Next hop of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="inbound-if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Inbound interface of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="outbound-if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Outbound interface of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="mtu">
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>LSP MTU.</text>
+          </description>
+        </leaf>
+        <leaf name="duration">
+          <type name="uint32"/>
+          <units name="s"/>
+          <config value="false"/>
+          <description>
+            <text>LSP duration.</text>
+          </description>
+        </leaf>
+        <leaf name="in-label">
+          <type name="uint32"/>
+          <config value="false"/>
+          <description>
+            <text>In-label of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="out-label">
+          <type name="uint32"/>
+          <config value="false"/>
+          <description>
+            <text>Out-label of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="out-tunnel-index">
+          <type name="string">
+            <length value="1..50"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Index of an outbound LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="label-operation">
+          <type name="label-operation-type"/>
+          <config value="false"/>
+          <description>
+            <text>Label operation type.</text>
+          </description>
+        </leaf>
+        <leaf name="qos-priority-mode">
+          <type name="exp-mode-type"/>
+          <config value="false"/>
+          <description>
+            <text>QoS priority mode of an LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="tunnel-id">
+          <type name="string">
+            <length value="1..50"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>ID of an outbound LSP.</text>
+          </description>
+        </leaf>
+        <leaf name="route-distinguisher">
+          <type name="string">
+            <length value="3..21"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>A VPN address family takes effect only after it is configured with an RD. The format of an RD is as follows:
+1. 16-bit AS number:32-bit user-defined number, for example, 101:3. An AS number ranges from 0 to 65535, and a user-defined number ranges from 0 to 4294967295. The AS number and user-defined number cannot be both 0s. This means that the RD value cannot be 0:0.
+2. 32-bit IP address:16-bit user-defined number, for example: 192.168.122.15:1. The IP address ranges from 0.0.0.0 to 255.255.255.255, and the user-defined number ranges from 0 to 65535.
+3. 32-bit AS number:16-bit user-defined number, for example, 10.11:3. An AS number ranges from 0.0 to 65535.65535 or from 0 to 4294967295, and a user-defined number ranges from 0 to 65535. The AS number and user-defined number cannot be both 0s. This means that the RD value cannot be 0.0:0.</text>
+          </description>
+        </leaf>
+        <container name="tunnels">
+          <config value="false"/>
+          <description>
+            <text>List of tunnel information.</text>
+          </description>
+          <list name="tunnel">
+            <key value="value"/>
+            <config value="false"/>
+            <description>
+              <text>Operational state of tunnel information.</text>
+            </description>
+            <leaf name="value">
+              <type name="string">
+                <length value="1..50"/>
+              </type>
+              <config value="false"/>
+              <description>
+                <text>The tunnel-key.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/mpls:mpls/mpls:common/mpls:global">
+    <description>
+      <text>MPLS BGP global configuration.</text>
+    </description>
+    <container name="bgp-ttl-mode">
+      <when condition="/mpls:mpls/mpls:common/mpls:global/mpls:mpls-enable='true'"/>
+      <description>
+        <text>Configure the TTL mode. The available options are uniform and pipe.</text>
+      </description>
+      <uses name="bgp-pipe-type"/>
+    </container>
+  </augment>
+  <ext:task-name value="bgp"/>
+</module>

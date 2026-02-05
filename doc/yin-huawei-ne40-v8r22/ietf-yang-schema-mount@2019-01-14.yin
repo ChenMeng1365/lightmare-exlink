@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-yang-schema-mount"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:yangmnt="urn:ietf:params:xml:ns:yang:ietf-yang-schema-mount"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-yang-schema-mount"/>
+  <prefix value="yangmnt"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <reference>
+      <text>RFC 6991: Common YANG Data Types</text>
+    </reference>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <reference>
+      <text>RFC 6991: Common YANG Data Types</text>
+    </reference>
+  </import>
+  <organization>
+    <text>IETF NETMOD (NETCONF Data Modeling Language) Working Group</text>
+  </organization>
+  <contact>
+    <text>WG Web:   &lt;https://datatracker.ietf.org/wg/netmod/&gt;
+WG List:  &lt;mailto:netmod@ietf.org&gt;
+
+Editor:   Martin Bjorklund
+          &lt;mailto:mbj@tail-f.com&gt;
+Editor:   Ladislav Lhotka
+          &lt;mailto:lhotka@nic.cz&gt;</text>
+  </contact>
+  <description>
+    <text>This module defines a YANG extension statement that can be used
+to incorporate data models defined in other YANG modules in a
+module. It also defines operational state data that specify the
+overall structure of the data model.
+
+The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+'MAY', and 'OPTIONAL' in this document are to be interpreted as
+described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+they appear in all capitals, as shown here.
+
+Copyright (c) 2019 IETF Trust and the persons identified as
+authors of the code. All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject to
+the license terms contained in, the Simplified BSD License set
+forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(https://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC 8528;
+see the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2019-01-14">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>RFC 8528: YANG Schema Mount</text>
+    </reference>
+  </revision>
+  <extension name="mount-point">
+    <argument name="label"/>
+    <description>
+      <text>The argument 'label' is a YANG identifier, i.e., it is of the
+type 'yang:yang-identifier'.
+
+The 'mount-point' statement MUST NOT be used in a YANG
+version 1 module, neither explicitly nor via a 'uses'
+statement.
+The 'mount-point' statement MAY be present as a substatement
+of 'container' and 'list' and MUST NOT be present elsewhere.
+There MUST NOT be more than one 'mount-point' statement in a
+given 'container' or 'list' statement.
+
+If a mount point is defined within a grouping, its label is
+bound to the module where the grouping is used.
+
+A mount point defines a place in the node hierarchy where
+other data models may be attached. A server that implements a
+module with a mount point populates the
+'/schema-mounts/mount-point' list with detailed information on
+which data models are mounted at each mount point.
+
+Note that the 'mount-point' statement does not define a new
+data node.</text>
+    </description>
+  </extension>
+  <container name="schema-mounts">
+    <config value="false"/>
+    <description>
+      <text>Contains information about the structure of the overall
+mounted data model implemented in the server.</text>
+    </description>
+    <list name="namespace">
+      <key value="prefix"/>
+      <description>
+        <text>This list provides a mapping of namespace prefixes that are
+used in XPath expressions of 'parent-reference' leafs to the
+corresponding namespace URI references.</text>
+      </description>
+      <leaf name="prefix">
+        <type name="yang:yang-identifier"/>
+        <description>
+          <text>Namespace prefix.</text>
+        </description>
+      </leaf>
+      <leaf name="uri">
+        <type name="inet:uri"/>
+        <description>
+          <text>Namespace URI reference.</text>
+        </description>
+      </leaf>
+    </list>
+    <list name="mount-point">
+      <key value="module label"/>
+      <description>
+        <text>Each entry of this list specifies a schema for a particular
+mount point.
+
+Each mount point MUST be defined using the 'mount-point'
+extension in one of the modules listed in the server's
+YANG library instance with conformance type 'implement'.</text>
+      </description>
+      <leaf name="module">
+        <type name="yang:yang-identifier"/>
+        <description>
+          <text>Name of a module containing the mount point.</text>
+        </description>
+      </leaf>
+      <leaf name="label">
+        <type name="yang:yang-identifier"/>
+        <description>
+          <text>Label of the mount point defined using the 'mount-point'
+extension.</text>
+        </description>
+      </leaf>
+      <leaf name="config">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>If this leaf is set to 'false', then all data nodes in the
+mounted schema are read-only ('config false'), regardless
+of their 'config' property.</text>
+        </description>
+      </leaf>
+      <choice name="schema-ref">
+        <mandatory value="true"/>
+        <description>
+          <text>Alternatives for specifying the schema.</text>
+        </description>
+        <container name="inline">
+          <presence value="A complete self-contained schema is mounted at the&#10;mount point."/>
+          <description>
+            <text>This node indicates that the server has mounted at least
+the module 'ietf-yang-library' at the mount point, and
+its instantiation provides the information about the
+mounted schema.
+
+Different instances of the mount point may have
+different schemas mounted.</text>
+          </description>
+        </container>
+        <container name="shared-schema">
+          <presence value="The mounted schema together with the 'parent-reference'&#10;make up the schema for this mount point."/>
+          <description>
+            <text>This node indicates that the server has mounted at least
+the module 'ietf-yang-library' at the mount point, and
+its instantiation provides the information about the
+mounted schema.  When XPath expressions in the mounted
+schema are evaluated, the 'parent-reference' leaf-list
+is taken into account.
+
+Different instances of the mount point MUST have the
+same schema mounted.</text>
+          </description>
+          <leaf-list name="parent-reference">
+            <type name="yang:xpath1.0"/>
+            <description>
+              <text>Entries of this leaf-list are XPath 1.0 expressions
+that are evaluated in the following context:
+
+- The context node is the node in the parent data tree
+  where the mount-point is defined.
+
+- The accessible tree is the parent data tree
+  *without* any nodes defined in modules that are
+  mounted inside the parent schema.
+
+- The context position and context size are both equal
+  to 1.
+
+- The set of variable bindings is empty.
+
+- The function library is the core function library
+  defined in the W3C XPath 1.0 document
+  (http://www.w3.org/TR/1999/REC-xpath-19991116) and
+  the functions defined in Section 10 of RFC 7950.
+
+- The set of namespace declarations is defined by the
+  'namespace' list under 'schema-mounts'.
+
+Each XPath expression MUST evaluate to a node-set
+(possibly empty).  For the purposes of evaluating
+XPath expressions whose context nodes are defined in
+the mounted schema, the union of all these node-sets
+together with ancestor nodes are added to the
+accessible data tree.
+
+Note that in the case 'ietf-yang-schema-mount' is
+itself mounted, a 'parent-reference' in the mounted
+module may refer to nodes that were brought into the
+accessible tree through a 'parent-reference' in the
+parent schema.</text>
+            </description>
+          </leaf-list>
+        </container>
+      </choice>
+    </list>
+  </container>
+</module>

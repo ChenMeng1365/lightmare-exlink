@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-atm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:atm="http://www.zte.com.cn/zxr10/netconf/schema/rosng/atm"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/atm"/>
+  <prefix value="atm"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe Asynchronous Transfer Mode(ATM)</text>
+  </description>
+  <revision date="2018-10-25">
+    <description>
+      <text>Change the range of leaf node configuration/atm/pvc-correlation/pvc-instance/pvc/pvcgroup/pvcgroup-id from 1-32 to 1-256.</text>
+    </description>
+  </revision>
+  <revision date="2018-05-01">
+    <description>
+      <text>Add select query criteria(key :ifname + pvcno + vpi + vci) for port list.</text>
+    </description>
+  </revision>
+  <revision date="2017-10-01">
+    <description>
+      <text>Add node "cc","multicast","pvcgroup" in /configuration/atm/pvc-correlation
+Add node "pvcgroup-correlation" in /configuration/atm/
+Add list "pvcgroup-status" in /state/atm/pvc-status-instance</text>
+    </description>
+  </revision>
+  <revision date="2015-04-23">
+    <description>
+      <text>1 Reconstruct ATM netconf. Such as Move the node "map","encapsulation","oam-manage","oam-retry","pvc-to-vlan","pvc-to-qinq","ulei","qos" to the below of the node pvc.
+2 Modify the structure of the node "qos".</text>
+    </description>
+  </revision>
+  <revision date="2013-11-05">
+    <description>
+      <text>The initial version</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>Describe the configuration of ATM</text>
+    </description>
+    <container name="atm">
+      <description>
+        <text>Configuration data of ATM</text>
+      </description>
+      <container name="pvc-correlation">
+        <description>
+          <text>PVC correlation configuration</text>
+        </description>
+        <container name="pvc-instance">
+          <description>
+            <text>Configure ATM PVC parameters</text>
+          </description>
+          <list name="pvc">
+            <description>
+              <text>Configure ATM PVC parameters</text>
+            </description>
+            <key value="ifname pvcno vpi vci"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the atm interface name.This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="pvcno">
+              <description>
+                <text>PVCNO. vlaue</text>
+              </description>
+              <type name="uint16">
+                <range value="1..4000">
+                  <description>
+                    <text>The range of PVCNO from 1 to 4000</text>
+                  </description>
+                </range>
+              </type>
+            </leaf>
+            <leaf name="vpi">
+              <description>
+                <text>Virtual Path Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..255">
+                  <description>
+                    <text>The range of VPI from 0 to 255</text>
+                  </description>
+                </range>
+              </type>
+            </leaf>
+            <leaf name="vci">
+              <description>
+                <text>Virtual Channel Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="32..65535">
+                  <description>
+                    <text>The range of VCI from 32 to 65535</text>
+                  </description>
+                </range>
+              </type>
+            </leaf>
+            <container name="map">
+              <description>
+                <text>Map IPv4 address to PVC</text>
+              </description>
+              <list name="map-list">
+                <description>
+                  <text>Map IPv4 address to PVC</text>
+                </description>
+                <key value="ipaddress"/>
+                <leaf name="ipaddress">
+                  <description>
+                    <text>IPv4 address</text>
+                  </description>
+                  <type name="ncd:ipv4-address"/>
+                </leaf>
+              </list>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="encapsulation">
+              <description>
+                <text>Set PVC enacpsulation</text>
+              </description>
+              <leaf name="encapsulation">
+                <description>
+                  <text>Select ATM encapsulation for PVC</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="aal5snap">
+                    <value value="0"/>
+                    <description>
+                      <text>AAL5+LLC/SNAP Encapsulation</text>
+                    </description>
+                  </enum>
+                  <enum name="aal5nlpid">
+                    <value value="1"/>
+                    <description>
+                      <text>AAL5+NLPID Encapsulation</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="aal5snap"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="oam-manage">
+              <description>
+                <text>Enable PVC loopback function</text>
+              </description>
+              <leaf name="frequency">
+                <description>
+                  <text>OAM loopback frequency</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..600"/>
+                </type>
+                <units name="sec"/>
+                <default value="5"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="oam-retry">
+              <description>
+                <text>Configure OAM retry parameters</text>
+              </description>
+              <leaf name="upcounts">
+                <description>
+                  <text>OAM retry count before declaring a PVC is up</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..600"/>
+                </type>
+                <default value="3"/>
+              </leaf>
+              <leaf name="downcounts">
+                <description>
+                  <text>OAM retry count before declaring a PVC is down</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..600"/>
+                </type>
+                <default value="5"/>
+              </leaf>
+              <leaf name="refrequency">
+                <description>
+                  <text>OAM retry polling frequency</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..1000"/>
+                </type>
+                <units name="sec"/>
+                <default value="1"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="pvc-to-vlan">
+              <description>
+                <text>Set PVC to VLAN for PVC</text>
+              </description>
+              <presence value="pvc-to-vlan"/>
+              <leaf name="vlanid">
+                <description>
+                  <text>IEEE 802.1Q VLAN ID</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="pvc-to-qinq">
+              <description>
+                <text>Set PVC to QinQ for PVC</text>
+              </description>
+              <presence value="pvc-to-qinq"/>
+              <leaf name="exvlanid">
+                <description>
+                  <text>QinQ external-VLAN ID</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="invlanid">
+                <description>
+                  <text>QinQ internal-VLAN ID</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="ulei">
+              <description>
+                <text>Map this interface to a ulei interface</text>
+              </description>
+              <presence value="ulei"/>
+              <leaf name="ulei-ifname">
+                <description>
+                  <text>Ulei interface</text>
+                </description>
+                <type name="ncd:ifname"/>
+                <mandatory value="true"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="qos">
+              <description>
+                <text>Set QoS policy for PVC</text>
+              </description>
+              <choice name="qos-type">
+                <description>
+                  <text>Set QoS type</text>
+                </description>
+                <default value="ubr"/>
+                <case name="ubr">
+                  <description>
+                    <text>Set UBR for PVC</text>
+                  </description>
+                  <leaf name="ubr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                  <leaf name="priority">
+                    <description>
+                      <text>Set QoS priority</text>
+                    </description>
+                    <type name="uint8">
+                      <range value="0..15"/>
+                    </type>
+                    <default value="0"/>
+                  </leaf>
+                </case>
+                <case name="cbr">
+                  <description>
+                    <text>Set CBR for PVC</text>
+                  </description>
+                  <leaf name="cbr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                </case>
+              </choice>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="cc">
+              <description>
+                <text>Set OAM CC function</text>
+              </description>
+              <leaf name="switch">
+                <description>
+                  <text>Enable or Disable OAM CC function</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="disable">
+                    <value value="0"/>
+                    <description>
+                      <text>Disable OAM CC function</text>
+                    </description>
+                  </enum>
+                  <enum name="enable">
+                    <value value="1"/>
+                    <description>
+                      <text>Enable OAM CC function</text>
+                    </description>
+                  </enum>
+                </type>
+                <default value="disable"/>
+              </leaf>
+              <leaf name="frequency">
+                <description>
+                  <text>Set OAM CC frequency</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..15"/>
+                </type>
+                <units name="sec"/>
+                <default value="1"/>
+              </leaf>
+              <leaf name="timeout">
+                <description>
+                  <text>Set OAM CC overtime period</text>
+                </description>
+                <type name="uint16">
+                  <range value="2..20"/>
+                </type>
+                <units name="sec"/>
+                <default value="3"/>
+              </leaf>
+              <ncd:revise-date date="2017-10-01"/>
+            </container>
+            <container name="multicast">
+              <description>
+                <text>Set multicast for PVC</text>
+              </description>
+              <leaf name="multicast-id">
+                <description>
+                  <text>Set multicast ID for PVC</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..128"/>
+                </type>
+              </leaf>
+              <ncd:revise-date date="2017-10-01"/>
+            </container>
+            <container name="pvcgroup">
+              <description>
+                <text>Bind PVC to pvcgroup</text>
+              </description>
+              <leaf name="pvcgroup-id">
+                <description>
+                  <text>Set ID for pvcgroup. Its maximum value depends on the performance parameters.</text>
+                </description>
+                <type name="uint32">
+                  <range value="1..256">
+                    <description>
+                      <text>The maximum value depends on the performance parameters.</text>
+                    </description>
+                  </range>
+                </type>
+              </leaf>
+              <ncd:revise-date date="2017-10-01"/>
+            </container>
+          </list>
+        </container>
+      </container>
+      <container name="cell-transport-correlation">
+        <description>
+          <text>Cell transport correlation configuration</text>
+        </description>
+        <container name="mode-instance">
+          <description>
+            <text>Set ATM cell transport mode</text>
+          </description>
+          <list name="mode">
+            <description>
+              <text>Set ATM cell transport mode</text>
+            </description>
+            <key value="ifname"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the ATM interface name.This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="mode">
+              <description>
+                <text>Set ATM cell transport mode</text>
+              </description>
+              <type name="enumeration">
+                <enum name="transparent">
+                  <value value="1"/>
+                  <description>
+                    <text>Transparent transport mode</text>
+                  </description>
+                </enum>
+                <enum name="vcc">
+                  <value value="2"/>
+                  <description>
+                    <text>1:1 PVC transport mode</text>
+                  </description>
+                </enum>
+                <enum name="vcc-group">
+                  <value value="3"/>
+                  <description>
+                    <text>N:1 PVC transport mode</text>
+                  </description>
+                </enum>
+                <enum name="vpc">
+                  <value value="4"/>
+                  <description>
+                    <text>1:1 PVP transport mode</text>
+                  </description>
+                </enum>
+                <enum name="vpc-group">
+                  <value value="5"/>
+                  <description>
+                    <text>N:1 PVP transport mode</text>
+                  </description>
+                </enum>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+          </list>
+        </container>
+        <container name="vcc-instance">
+          <description>
+            <text>Set 1:1 PVC transport mode parameters</text>
+          </description>
+          <list name="vcc">
+            <description>
+              <text>Set 1:1 PVC transport mode parameters</text>
+            </description>
+            <key value="ifname"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the ATM interface name. This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="pvcno">
+              <description>
+                <text>PVCNO. vlaue</text>
+              </description>
+              <type name="uint16">
+                <range value="1..4000"/>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="vpi">
+              <description>
+                <text>Virtual Path Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..255"/>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="vci">
+              <description>
+                <text>Virtual Channel Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <container name="translation">
+              <description>
+                <text>Set VPI/VCI translation parameters of 1:1 PVC transport mode</text>
+              </description>
+              <presence value="translation"/>
+              <leaf name="remote-vpi">
+                <description>
+                  <text>VPI translation value</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="remote-vci">
+                <description>
+                  <text>VCI translation value</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..65535"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="qos">
+              <description>
+                <text>Set PVC Qos parameters of 1:1 PVC transport mode</text>
+              </description>
+              <choice name="qos-type">
+                <description>
+                  <text>Set QoS type</text>
+                </description>
+                <default value="ubr"/>
+                <case name="ubr">
+                  <description>
+                    <text>Set UBR for PVC</text>
+                  </description>
+                  <leaf name="ubr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                  <leaf name="priority">
+                    <description>
+                      <text>Set QoS priority</text>
+                    </description>
+                    <type name="uint8">
+                      <range value="0..15"/>
+                    </type>
+                    <default value="0"/>
+                  </leaf>
+                </case>
+                <case name="cbr">
+                  <description>
+                    <text>Set CBR for PVC</text>
+                  </description>
+                  <leaf name="cbr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                </case>
+              </choice>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+          </list>
+        </container>
+        <container name="vpc-instance">
+          <description>
+            <text>Set 1:1 PVP transport mode parameters</text>
+          </description>
+          <list name="vpc">
+            <description>
+              <text>Set 1:1 PVP transport mode parameters</text>
+            </description>
+            <key value="ifname"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the ATM interface name. This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="vpi">
+              <description>
+                <text>Virtual Path Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..255"/>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <container name="translation">
+              <description>
+                <text>Set VPI translation parameters of 1:1 PVP transport mode</text>
+              </description>
+              <presence value="translation"/>
+              <leaf name="remote-vpi">
+                <description>
+                  <text>VPI translation value</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="qos">
+              <description>
+                <text>Set PVP Qos parameters of 1:1 PVP transport mode</text>
+              </description>
+              <choice name="qos-type">
+                <description>
+                  <text>Set QoS type</text>
+                </description>
+                <default value="ubr"/>
+                <case name="ubr">
+                  <description>
+                    <text>Set UBR for PVC</text>
+                  </description>
+                  <leaf name="ubr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                  <leaf name="priority">
+                    <description>
+                      <text>Set QoS priority</text>
+                    </description>
+                    <type name="uint8">
+                      <range value="0..15"/>
+                    </type>
+                    <default value="0"/>
+                  </leaf>
+                </case>
+                <case name="cbr">
+                  <description>
+                    <text>Set CBR for PVC</text>
+                  </description>
+                  <leaf name="cbr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                </case>
+              </choice>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+          </list>
+        </container>
+        <container name="vcc-group-instance">
+          <description>
+            <text>Set N:1 PVC transport mode parameters</text>
+          </description>
+          <list name="vcc-group">
+            <description>
+              <text>Set N:1 PVC transport mode parameters</text>
+            </description>
+            <key value="ifname pvcno vpi vci"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the ATM interface name. This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="pvcno">
+              <description>
+                <text>PVCNO. vlaue</text>
+              </description>
+              <type name="uint16">
+                <range value="1..4000"/>
+              </type>
+            </leaf>
+            <leaf name="vpi">
+              <description>
+                <text>Virtual Path Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..255"/>
+              </type>
+            </leaf>
+            <leaf name="vci">
+              <description>
+                <text>Virtual Channel Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+            </leaf>
+            <container name="translation">
+              <description>
+                <text>Set VPI translation parameters of N:1 PVC transport mode</text>
+              </description>
+              <presence value="translation"/>
+              <leaf name="remote-vpi">
+                <description>
+                  <text>VPI translation value</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="remote-vci">
+                <description>
+                  <text>VCI translation value</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..65535"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+            <container name="qos">
+              <description>
+                <text>Set PVC Qos parameters of N:1 PVC transport mode</text>
+              </description>
+              <choice name="qos-type">
+                <description>
+                  <text>Set QoS type</text>
+                </description>
+                <default value="ubr"/>
+                <case name="ubr">
+                  <description>
+                    <text>Set UBR for PVC</text>
+                  </description>
+                  <leaf name="ubr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                  <leaf name="priority">
+                    <description>
+                      <text>Set QoS priority</text>
+                    </description>
+                    <type name="uint8">
+                      <range value="0..15"/>
+                    </type>
+                    <default value="0"/>
+                  </leaf>
+                </case>
+                <case name="cbr">
+                  <description>
+                    <text>Set CBR for PVC</text>
+                  </description>
+                  <leaf name="cbr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                </case>
+              </choice>
+              <ncd:revise-date date="2015-04-23"/>
+            </container>
+          </list>
+        </container>
+        <container name="vpc-group-instance">
+          <description>
+            <text>Set N:1 PVP transport mode parameters</text>
+          </description>
+          <list name="vpc-group">
+            <description>
+              <text>Set N:1 PVP transport mode parameters</text>
+            </description>
+            <key value="ifname vpi"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the ATM interface name. This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="vpi">
+              <description>
+                <text>Virtual Path Identifier</text>
+              </description>
+              <type name="uint16">
+                <range value="0..255"/>
+              </type>
+            </leaf>
+            <container name="translation">
+              <description>
+                <text>Set VPI translation parameters of N:1 PVP transport mode</text>
+              </description>
+              <presence value="translation"/>
+              <leaf name="remote-vpi">
+                <description>
+                  <text>VPI translation value</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+            </container>
+            <container name="qos">
+              <description>
+                <text>Set PVP Qos parameters of N:1 PVP transport mode</text>
+              </description>
+              <choice name="qos-type">
+                <description>
+                  <text>Set QoS type</text>
+                </description>
+                <default value="ubr"/>
+                <case name="ubr">
+                  <description>
+                    <text>Set UBR for PVC</text>
+                  </description>
+                  <leaf name="ubr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                  <leaf name="priority">
+                    <description>
+                      <text>Set QoS priority</text>
+                    </description>
+                    <type name="uint8">
+                      <range value="0..15"/>
+                    </type>
+                    <default value="0"/>
+                  </leaf>
+                </case>
+                <case name="cbr">
+                  <description>
+                    <text>Set CBR for PVC</text>
+                  </description>
+                  <leaf name="cbr-bandwidth">
+                    <description>
+                      <text>Set QoS bandwidth</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..622000"/>
+                    </type>
+                    <units name="kbps"/>
+                    <default value="2000"/>
+                  </leaf>
+                </case>
+              </choice>
+            </container>
+            <ncd:revise-date date="2015-04-23"/>
+          </list>
+        </container>
+      </container>
+      <container name="pvcgroup-correlation">
+        <container name="pvcgroup-instance">
+          <list name="pvcgroup">
+            <key value="ifname"/>
+            <leaf name="ifname">
+              <description>
+                <text>This value identifies the PVC group interface name.This attribute is created by Interface Management</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="ipaddress">
+              <description>
+                <text>Set peer address</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+            </leaf>
+          </list>
+        </container>
+        <ncd:revise-date date="2017-10-01"/>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>Describe the state of ATM</text>
+    </description>
+    <container name="atm">
+      <description>
+        <text>State data of ATM</text>
+      </description>
+      <container name="pvc-status-instance">
+        <description>
+          <text>Describe PVC status</text>
+        </description>
+        <list name="pvc-status">
+          <description>
+            <text>Describe PVC status</text>
+          </description>
+          <key value="ifname pvcno vpi vci"/>
+          <leaf name="ifname">
+            <description>
+              <text>This value identifies the ATM interface name. This attribute is created by Interface Management</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="pvcno">
+            <description>
+              <text>PVCNO. vlaue</text>
+            </description>
+            <type name="uint16">
+              <range value="1..4000"/>
+            </type>
+          </leaf>
+          <leaf name="vpi">
+            <description>
+              <text>Virtual Path Identifier</text>
+            </description>
+            <type name="uint16">
+              <range value="0..255"/>
+            </type>
+          </leaf>
+          <leaf name="vci">
+            <description>
+              <text>Virtual Channel Identifier</text>
+            </description>
+            <type name="uint16">
+              <range value="32..65535"/>
+            </type>
+          </leaf>
+          <leaf name="status">
+            <description>
+              <text>PVC status</text>
+            </description>
+            <type name="enumeration">
+              <enum name="inactive">
+                <value value="0"/>
+              </enum>
+              <enum name="active">
+                <value value="1"/>
+              </enum>
+            </type>
+          </leaf>
+          <ncd:select fields="ifname"/>
+          <ncd:select fields="pvcno vpi vci"/>
+          <ncd:select fields="ifname pvcno vpi vci"/>
+        </list>
+        <list name="pvcgroup-status">
+          <description>
+            <text>Describe PVC group status</text>
+          </description>
+          <key value="pvcgroup-name"/>
+          <leaf name="pvcgroup-name">
+            <description>
+              <text>This value identifies the PVC group interface name.This attribute is created by Interface Management</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <container name="ports">
+            <description>
+              <text>Describe the information of member port.</text>
+            </description>
+            <list name="port">
+              <description>
+                <text>Describe the information of member port.</text>
+              </description>
+              <key value="ifname pvcno vpi vci"/>
+              <leaf name="ifname">
+                <description>
+                  <text>This value identifies the ATM interface name. This attribute is created by Interface Management</text>
+                </description>
+                <type name="ncd:ifname"/>
+              </leaf>
+              <leaf name="pvcno">
+                <description>
+                  <text>PVCNO. vlaue</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..4000"/>
+                </type>
+              </leaf>
+              <leaf name="vpi">
+                <description>
+                  <text>Virtual Path Identifier</text>
+                </description>
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+              </leaf>
+              <leaf name="vci">
+                <description>
+                  <text>Virtual Channel Identifier</text>
+                </description>
+                <type name="uint16">
+                  <range value="32..65535"/>
+                </type>
+              </leaf>
+              <leaf name="status">
+                <description>
+                  <text>PVC status</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="inactive">
+                    <value value="0"/>
+                  </enum>
+                  <enum name="active">
+                    <value value="1"/>
+                  </enum>
+                </type>
+              </leaf>
+              <ncd:select fields="ifname pvcno vpi vci"/>
+            </list>
+          </container>
+          <ncd:revise-date date="2017-10-01"/>
+        </list>
+      </container>
+    </container>
+  </container>
+</module>

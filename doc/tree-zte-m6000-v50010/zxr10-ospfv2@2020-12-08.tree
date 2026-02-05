@@ -1,0 +1,887 @@
+module: zxr10-ospfv2
+  +--rw configuration
+  |  +--rw ospfv2
+  |     +--rw processes
+  |        +--rw process* [pro-id]
+  |           +--rw pro-id                  uint32
+  |           +--rw vrf-name?               string
+  |           +--rw lsa-pacing?             uint32
+  |           +--rw timer-frr?              uint32
+  |           +--rw maximum-paths?          uint32
+  |           +--rw default-metric?         uint32
+  |           +--rw auto-cost?              uint32
+  |           +--rw debug-flag?             enumeration
+  |           +--rw cap-opaque?             enumeration
+  |           +--rw cap-vrflite?            enumeration
+  |           +--rw rfc1583-value?          enumeration
+  |           +--rw nsf?                    enumeration
+  |           +--rw local-mt?               enumeration
+  |           +--rw ttl-security?           int32
+  |           +--rw ldp-igp-sync?           empty
+  |           +--rw ldp-autoconfig?         empty
+  |           +--rw timer-spf?              uint32
+  |           +--rw grace-period?           uint32
+  |           +--rw vpn-id?                 uint32
+  |           o--rw ospf-bfd?               empty
+  |           +--rw te-link-delay?          enumeration
+  |           +--rw frr-policy!
+  |           |  +--rw (policy-type)
+  |           |     +--:(route-policy)
+  |           |        +--rw route-policy-name    string
+  |           +--rw bfd!
+  |           |  +--rw bfd              empty
+  |           |  +--rw bfd-parameter!
+  |           |     +--rw interval      uint32
+  |           |     +--rw min-rx        uint32
+  |           |     +--rw multiplier    uint32
+  |           +--rw bfd-template!
+  |           |  +--rw template    string
+  |           +--rw areas
+  |           |  +--rw area* [area-ip]
+  |           |     +--rw area-ip                  ncd:ipv4-address
+  |           |     +--rw networks
+  |           |     |  +--rw network* [net-num wild-mask]
+  |           |     |     +--rw net-num      ncd:ipv4-address
+  |           |     |     +--rw wild-mask    ncd:ipv4-imask
+  |           |     +--rw ldp-igp-sync
+  |           |     |  +--rw sync-flag?   enumeration
+  |           |     |  +--rw auto-flag?   enumeration
+  |           |     +--rw range
+  |           |     |  +--rw summarys
+  |           |     |  |  +--rw summary* [ip-addr netmask summary-link]
+  |           |     |  |     +--rw ip-addr         ncd:ipv4-address
+  |           |     |  |     +--rw netmask         ncd:ipv4-mask
+  |           |     |  |     +--rw summary-link    uint8
+  |           |     |  |     +--rw adv-flag?       enumeration
+  |           |     |  |     +--rw cost-value?     uint32
+  |           |     |  +--rw nssas
+  |           |     |     +--rw nssa* [ip-addr netmask nssa-external-link]
+  |           |     |        +--rw ip-addr               ncd:ipv4-address
+  |           |     |        +--rw netmask               ncd:ipv4-mask
+  |           |     |        +--rw nssa-external-link    uint8
+  |           |     |        +--rw adv-flag?             enumeration
+  |           |     |        +--rw cost-value?           uint32
+  |           |     |        +--rw nssa-tag?             uint32
+  |           |     +--rw authtype!
+  |           |     |  +--rw simple-authen!
+  |           |     |  |  +--rw simple-authen    enumeration
+  |           |     |  +--rw md5!
+  |           |     |  |  +--rw md5    enumeration
+  |           |     |  +--rw authen-keychain!
+  |           |     |     +--rw keychain    string
+  |           |     +--rw filters
+  |           |     |  +--rw filter* [direction]
+  |           |     |     +--rw direction      enumeration
+  |           |     |     +--rw prefix-name    string
+  |           |     +--rw stubhosts
+  |           |     |  +--rw stubhost* [ip-addr]
+  |           |     |     +--rw ip-addr    ncd:ipv4-address
+  |           |     |     +--rw cost       uint32
+  |           |     +--rw shamlinks
+  |           |     |  +--rw shamlink* [src-ipaddr dest-ipaddr]
+  |           |     |     +--rw src-ipaddr     ncd:ipv4-address
+  |           |     |     +--rw dest-ipaddr    ncd:ipv4-address
+  |           |     |     +--rw cost?          uint32
+  |           |     +--rw nssa-stub-virtual
+  |           |     |  +--rw nssa-stub-virtual
+  |           |     |     +--rw (nssa-stub-virtual)?
+  |           |     |        +--:(nssa)
+  |           |     |        |  +--rw nssa
+  |           |     |        |     +--rw default-im-on?       enumeration
+  |           |     |        |     +--rw metric?              uint32
+  |           |     |        |     +--rw metric-type?         enumeration
+  |           |     |        |     +--rw translator-role?     enumeration
+  |           |     |        |     +--rw trans-stab-intv?     uint32
+  |           |     |        |     +--rw no-summary?          enumeration
+  |           |     |        |     +--rw no-redistribution?   enumeration
+  |           |     |        |     +--rw transt7-supp-fa?     enumeration
+  |           |     |        +--:(stub)
+  |           |     |        |  +--rw stub
+  |           |     |        |     +--rw no-summary?       enumeration
+  |           |     |        |     +--rw default-cost?     uint32
+  |           |     |        |     +--rw default-origin?   empty
+  |           |     |        +--:(virtual)
+  |           |     |           +--rw virtuals
+  |           |     |              +--rw virtual* [neighbor-id]
+  |           |     |                 +--rw neighbor-id              ncd:ipv4-address
+  |           |     |                 +--rw hellointerval?           uint32
+  |           |     |                 +--rw retrainterval?           uint32
+  |           |     |                 +--rw transmitdelay?           uint32
+  |           |     |                 +--rw deadinterval?            uint32
+  |           |     |                 +--rw deaddelay?               uint32
+  |           |     |                 +--rw (auth-password-type)?
+  |           |     |                 |  +--:(unencrypted)
+  |           |     |                 |  |  +--rw authenkey          string
+  |           |     |                 |  +--:(encrypted)
+  |           |     |                 |     +--rw encry-authenkey    string
+  |           |     |                 +--rw md5s
+  |           |     |                 |  +--rw md5* [key-id]
+  |           |     |                 |     +--rw key-id        uint32
+  |           |     |                 |     +--rw secret-key!
+  |           |     |                 |        +--rw (md5-password-type)?
+  |           |     |                 |        |  +--:(unencrypted)
+  |           |     |                 |        |  |  +--rw secret-key          string
+  |           |     |                 |        |  +--:(encrypted)
+  |           |     |                 |        |     +--rw encry-secret-key    string
+  |           |     |                 |        +--rw delay-time?               uint32
+  |           |     |                 +--rw authtype
+  |           |     |                    +--rw authtype
+  |           |     |                    |  +--rw (authtype)?
+  |           |     |                    |     +--:(null)
+  |           |     |                    |     |  +--rw null!
+  |           |     |                    |     |     +--rw null    empty
+  |           |     |                    |     +--:(md5)
+  |           |     |                    |     |  +--rw md5!
+  |           |     |                    |     |     +--rw md5    empty
+  |           |     |                    |     +--:(simple)
+  |           |     |                    |        +--rw simple!
+  |           |     |                    |           +--rw simple    empty
+  |           |     |                    +--rw authen-keychain!
+  |           |     |                       +--rw keychain    string
+  |           |     +--rw bfd!
+  |           |     |  +--rw enable    empty
+  |           |     +--rw bfd-param!
+  |           |     |  +--rw interval      uint32
+  |           |     |  +--rw min-rx        uint32
+  |           |     |  +--rw multiplier    uint32
+  |           |     +--rw bfd-template!
+  |           |     |  +--rw template    string
+  |           |     +--rw intfs
+  |           |     |  +--rw intf* [intf-name]
+  |           |     |     +--rw intf-name              ncd:ifname
+  |           |     |     +--rw authentication-key?    string
+  |           |     |     +--rw cost?                  uint32
+  |           |     |     +--rw dead-interval?         uint32
+  |           |     |     +--rw hello-interval?        uint32
+  |           |     |     +--rw mtu-ignore?            enumeration
+  |           |     |     +--rw priority?              uint32
+  |           |     |     +--rw resync-timeout?        uint32
+  |           |     |     +--rw retransmit-interval?   uint32
+  |           |     |     +--rw transmit-delay?        uint32
+  |           |     |     +--rw ttl-security?          int32
+  |           |     |     +--rw authenkey-p?           string
+  |           |     |     +--rw ldp-igp-sync?          enumeration
+  |           |     |     +--rw ldp-autoconfig?        enumeration
+  |           |     |     +--rw link-damping!
+  |           |     |     |  +--rw cost
+  |           |     |     |  |  +--rw (cost-adjust-type)
+  |           |     |     |  |     +--:(maximum)
+  |           |     |     |  |     |  +--rw maximum           empty
+  |           |     |     |  |     +--:(increase-value)
+  |           |     |     |  |        +--rw increase-value    uint16
+  |           |     |     |  +--rw damping-time    uint32
+  |           |     |     +--rw fast-reroute!
+  |           |     |     |  +--rw disable    empty
+  |           |     |     +--rw md-keys
+  |           |     |     |  +--rw md-key* [key-id]
+  |           |     |     |     +--rw key-id        uint32
+  |           |     |     |     +--rw secret-key
+  |           |     |     |        +--rw (md5-password-type)?
+  |           |     |     |        |  +--:(unencrypted)
+  |           |     |     |        |  |  +--rw secret-key          string
+  |           |     |     |        |  +--:(encrypted)
+  |           |     |     |        |     +--rw encry-secret-key    string
+  |           |     |     |        +--rw delay?                    uint32
+  |           |     |     +--rw auth-type!
+  |           |     |     |  +--rw type    enumeration
+  |           |     |     +--rw authen-keychain!
+  |           |     |     |  +--rw keychain    string
+  |           |     |     +--rw bfd!
+  |           |     |     |  +--rw status    enumeration
+  |           |     |     +--rw bfd-param!
+  |           |     |     |  +--rw interval      uint32
+  |           |     |     |  +--rw min-rx        uint32
+  |           |     |     |  +--rw multiplier    uint32
+  |           |     |     +--rw bfd-template!
+  |           |     |     |  +--rw template    string
+  |           |     |     +--rw network-type
+  |           |     |     |  +--rw network-type
+  |           |     |     |     +--rw (network-type)?
+  |           |     |     |        +--:(broadcast)
+  |           |     |     |        |  +--rw broadcast!
+  |           |     |     |        |     +--rw broadcast    enumeration
+  |           |     |     |        +--:(nbma)
+  |           |     |     |        |  +--rw nbma!
+  |           |     |     |        |     +--rw nbma    enumeration
+  |           |     |     |        +--:(point-to-point)
+  |           |     |     |        |  +--rw point-to-point!
+  |           |     |     |        |     +--rw point-to-point         enumeration
+  |           |     |     |        |     +--rw ignore-subnet-check?   empty
+  |           |     |     |        +--:(point-to-multipoint)
+  |           |     |     |        |  +--rw point-to-multipoint!
+  |           |     |     |        |     +--rw point-to-multipoint    enumeration
+  |           |     |     |        +--:(ptmp-nb)
+  |           |     |     |           +--rw ptmp-nb!
+  |           |     |     |              +--rw ptmp-nb    enumeration
+  |           |     |     +--rw static-remote-lfa
+  |           |     |     |  +--rw next-hop!
+  |           |     |     |  |  +--rw next-hop           ncd:ipv4-address
+  |           |     |     |  |  +--rw specify-nexthop!
+  |           |     |     |  |     +--rw backup-intf    ncd:ifname
+  |           |     |     |  |     +--rw gateway        ncd:ipv4-address-none-zero
+  |           |     |     |  +--rw next-hop-prefixs
+  |           |     |     |     +--rw next-hop-prefix* [prefix-list]
+  |           |     |     |        +--rw prefix-list        string
+  |           |     |     |        +--rw next-hop           ncd:ipv4-address
+  |           |     |     |        +--rw specify-nexthop!
+  |           |     |     |           +--rw backup-intf    ncd:ifname
+  |           |     |     |           +--rw gateway        ncd:ipv4-address-none-zero
+  |           |     |     +--rw cost-link-sd
+  |           |     |     |  +--rw (cost-link-sd)?
+  |           |     |     |     +--:(increase-value)
+  |           |     |     |     |  +--rw increase-value?   uint16
+  |           |     |     |     +--:(maximum)
+  |           |     |     |        +--rw maximum?          empty
+  |           |     |     +--rw cost-lag-down
+  |           |     |     |  +--rw (cost-lag-down)?
+  |           |     |     |     +--:(increase-value)
+  |           |     |     |     |  +--rw increase-value?   uint16
+  |           |     |     |     +--:(maximum)
+  |           |     |     |        +--rw maximum?          empty
+  |           |     |     +--rw cost-bfd-down
+  |           |     |     |  +--rw (cost-bfd-down)?
+  |           |     |     |     +--:(increase-value)
+  |           |     |     |     |  +--rw increase-value?   uint16
+  |           |     |     |     +--:(maximum)
+  |           |     |     |        +--rw maximum?          empty
+  |           |     |     +--rw ti-lfa
+  |           |     |     |  +--rw srlg* [srlg-id]
+  |           |     |     |     +--rw srlg-id    uint32
+  |           |     |     +--rw suppress-flapping
+  |           |     |        +--rw adjacency
+  |           |     |           +--rw capability?         enumeration
+  |           |     |           +--rw detect-parameter!
+  |           |     |           |  +--rw detect-interval    uint16
+  |           |     |           |  +--rw threshold          uint16
+  |           |     |           |  +--rw resume-interval    uint16
+  |           |     |           +--rw hold-down!
+  |           |     |              +--rw hold-interval    uint16
+  |           |     +--rw multi-area-interfaces
+  |           |     |  +--rw multi-area-interface* [interface-name]
+  |           |     |     +--rw interface-name         ncd:ifname
+  |           |     |     +--rw hello-interval?        uint32
+  |           |     |     +--rw dead-interval?         uint32
+  |           |     |     +--rw cost?                  uint32
+  |           |     |     +--rw mtu-ignore?            empty
+  |           |     |     +--rw retransmit-interval?   uint32
+  |           |     |     +--rw transmit-delay?        uint32
+  |           |     |     +--rw authentication-key
+  |           |     |     |  +--rw (authentication-key)?
+  |           |     |     |     +--:(clear)
+  |           |     |     |     |  +--rw clear?       string
+  |           |     |     |     +--:(encrypted)
+  |           |     |     |        +--rw encrypted?   string
+  |           |     |     +--rw authentication
+  |           |     |        +--rw (authentication)?
+  |           |     |           +--:(null)
+  |           |     |           |  +--rw null?            empty
+  |           |     |           +--:(simple)
+  |           |     |           |  +--rw simple?          empty
+  |           |     |           +--:(keychain)
+  |           |     |              +--rw keychain-name?   string
+  |           |     +--rw mpls-te!
+  |           |     |  +--rw mple-te    empty
+  |           |     +--rw dynamic-remote-lfa
+  |           |        +--rw capability?     enumeration
+  |           |        +--rw maximum-cost?   uint32
+  |           o--rw networks
+  |           |  +--rw network* [net-num wild-mask]
+  |           |     +--rw net-num      ncd:ipv4-address
+  |           |     +--rw wild-mask    ncd:ipv4-imask
+  |           |     +--rw area-ip      ncd:ipv4-address
+  |           +--rw redistribute
+  |           |  +--rw redistribute-ospfs
+  |           |  |  +--rw redistribute-ospf* [protocol ospf-pro-id]
+  |           |  |     +--rw protocol            enumeration
+  |           |  |     +--rw ospf-pro-id         uint32
+  |           |  |     +--rw tag?                uint32
+  |           |  |     +--rw metric?             uint32
+  |           |  |     +--rw metric-type?        enumeration
+  |           |  |     +--rw route-map?          string
+  |           |  |     +--rw tag-flag?           enumeration
+  |           |  |     +--rw with-orig-metric?   empty
+  |           |  |     +--rw host-only?          empty
+  |           |  +--rw redistribute-isiss
+  |           |  |  +--rw redistribute-isis* [protocol isis-pro-id]
+  |           |  |     +--rw protocol            enumeration
+  |           |  |     +--rw isis-pro-id         uint32
+  |           |  |     +--rw tag?                uint32
+  |           |  |     +--rw metric?             uint32
+  |           |  |     +--rw metric-type?        enumeration
+  |           |  |     +--rw route-map?          string
+  |           |  |     +--rw tag-flag?           enumeration
+  |           |  |     +--rw with-orig-metric?   empty
+  |           |  |     +--rw host-only?          empty
+  |           |  +--rw redistribute-bgps
+  |           |  |  +--rw redistribute-bgp* [protocol]
+  |           |  |     +--rw protocol            enumeration
+  |           |  |     +--rw tag?                uint32
+  |           |  |     +--rw metric?             uint32
+  |           |  |     +--rw metric-type?        enumeration
+  |           |  |     +--rw route-map?          string
+  |           |  |     +--rw peer-addr?          ncd:ipv4-address
+  |           |  |     +--rw asno?               ncd:asn-dot
+  |           |  |     +--rw tag-flag?           enumeration
+  |           |  |     +--rw with-orig-metric?   empty
+  |           |  |     +--rw host-only?          empty
+  |           |  +--rw redistribute-pss
+  |           |  |  +--rw redistribute-ps* [protocol]
+  |           |  |     +--rw protocol            enumeration
+  |           |  |     +--rw tag?                uint32
+  |           |  |     +--rw metric?             uint32
+  |           |  |     +--rw metric-type?        enumeration
+  |           |  |     +--rw route-map?          string
+  |           |  |     +--rw with-orig-metric?   enumeration
+  |           |  |     +--rw tag-flag?           enumeration
+  |           |  |     +--rw host-only?          empty
+  |           |  +--rw redistributes
+  |           |     +--rw redistribute* [protocol]
+  |           |        +--rw protocol            enumeration
+  |           |        +--rw tag?                uint32
+  |           |        +--rw metric?             uint32
+  |           |        +--rw metric-type?        enumeration
+  |           |        +--rw route-map?          string
+  |           |        +--rw tag-flag?           enumeration
+  |           |        +--rw with-orig-metric?   empty
+  |           |        +--rw host-only?          empty
+  |           +--rw passive-intf
+  |           |  +--rw passive-intf-defaults
+  |           |  |  +--rw passive-intf-default* [default]
+  |           |  |     +--rw default    uint8
+  |           |  +--rw passive-intfs
+  |           |     +--rw passive-intf* [intf-name]
+  |           |        +--rw intf-name    ncd:ifname
+  |           |        +--rw status?      enumeration
+  |           +--rw neighbors
+  |           |  +--rw neighbor* [ip-addr]
+  |           |     +--rw ip-addr          ncd:ipv4-address
+  |           |     +--rw cost?            uint32
+  |           |     +--rw pri?             uint32
+  |           |     +--rw poll-interval?   uint32
+  |           +--rw distribute-list
+  |           |  +--rw distribute-list-in
+  |           |  |  +--rw distribute-list-name
+  |           |  |     +--rw (distribute-list-name)?
+  |           |  |        +--:(access-list)
+  |           |  |        |  +--rw access-list-name!
+  |           |  |        |     +--rw access-list-name    string
+  |           |  |        +--:(prefix-list)
+  |           |  |        |  +--rw name-ip-prefxi-list!
+  |           |  |        |     +--rw name-ip-prefxi-list    string
+  |           |  |        |     +--rw prefix-list-gateway?   string
+  |           |  |        +--:(gateway)
+  |           |  |        |  +--rw gateway!
+  |           |  |        |     +--rw gateway    string
+  |           |  |        +--:(route-map)
+  |           |  |           +--rw name-route-map!
+  |           |  |              +--rw name-route-map    string
+  |           |  |              +--rw local-mt?         empty
+  |           |  +--rw distribute-list-out
+  |           |     +--rw distribute-list-name
+  |           |        +--rw (distribute-list-name)?
+  |           |           +--:(access-list)
+  |           |           |  +--rw access-list-name!
+  |           |           |     +--rw access-list-name    string
+  |           |           +--:(prefix-list)
+  |           |              +--rw name-ip-prefix-list!
+  |           |                 +--rw name-ip-prefix-list    string
+  |           +--rw frr-type!
+  |           |  +--rw per-prefix    empty
+  |           +--rw filters
+  |           |  +--rw filter* [ip-addr ip-mask]
+  |           |     +--rw ip-addr     ncd:ipv4-address
+  |           |     +--rw ip-mask     ncd:ipv4-mask
+  |           |     +--rw exact?      empty
+  |           |     +--rw prefence    uint32
+  |           +--rw interfaces
+  |           |  +--rw interface* [intf-name]
+  |           |     +--rw intf-name              ncd:ifname
+  |           |     +--rw authentication-key?    string
+  |           |     +--rw cost?                  uint32
+  |           |     +--rw dead-interval?         uint32
+  |           |     +--rw hello-interval?        uint32
+  |           |     +--rw mtu-ignore?            enumeration
+  |           |     +--rw priority?              uint32
+  |           |     +--rw resync-timeout?        uint32
+  |           |     +--rw retransmit-interval?   uint32
+  |           |     +--rw transmit-delay?        uint32
+  |           |     +--rw ttl-security?          int32
+  |           |     +--rw authenkey-p?           string
+  |           |     +--rw ldp-igp-sync?          enumeration
+  |           |     +--rw ldp-autoconfig?        enumeration
+  |           |     +--rw fast-reroute!
+  |           |     |  +--rw disable    empty
+  |           |     +--rw md-keys
+  |           |     |  +--rw md-key* [key-id]
+  |           |     |     +--rw key-id        uint32
+  |           |     |     +--rw secret-key
+  |           |     |        +--rw (md5-password-type)?
+  |           |     |        |  +--:(unencrypted)
+  |           |     |        |  |  +--rw secret-key          string
+  |           |     |        |  +--:(encrypted)
+  |           |     |        |     +--rw encry-secret-key    string
+  |           |     |        +--rw delay?                    uint32
+  |           |     +--rw authtype
+  |           |     |  +--rw authtype
+  |           |     |     +--rw (authtype)?
+  |           |     |        +--:(null)
+  |           |     |        |  +--rw null!
+  |           |     |        |     +--rw null    empty
+  |           |     |        +--:(md5)
+  |           |     |        |  +--rw md5!
+  |           |     |        |     +--rw md5    empty
+  |           |     |        +--:(simple)
+  |           |     |           +--rw simple!
+  |           |     |              +--rw simple    empty
+  |           |     +--rw bfd!
+  |           |     |  +--rw status       enumeration
+  |           |     |  +--rw bfd-param!
+  |           |     |     +--rw interval      uint32
+  |           |     |     +--rw min-rx        uint32
+  |           |     |     +--rw multiplier    uint32
+  |           |     +--rw type!
+  |           |        +--rw type1!
+  |           |        |  +--rw network-type1    enumeration
+  |           |        +--rw type2!
+  |           |           +--rw ptmp-nb    enumeration
+  |           +--rw notify-default-route
+  |           |  +--rw always?        enumeration
+  |           |  +--rw metric?        uint32
+  |           |  +--rw route-map?     string
+  |           |  +--rw metric-type?   enumeration
+  |           +--rw summary-addrs
+  |           |  +--rw summary-addr* [ip-addr net-mask]
+  |           |     +--rw ip-addr       ncd:ipv4-address
+  |           |     +--rw net-mask      ncd:ipv4-mask
+  |           |     +--rw cost-value?   uint32
+  |           +--rw tracks
+  |           |  +--rw track* [name]
+  |           |     +--rw name    string
+  |           +--rw domain-tag!
+  |           |  +--rw domain-tag    uint32
+  |           +--rw router-id!
+  |           |  +--rw router-id    ncd:ipv4-address
+  |           +--rw domain-id!
+  |           |  +--rw domain-id    ncd:ipv4-address
+  |           +--rw max-metric!
+  |           |  +--rw on-startup
+  |           |  |  +--rw (on-startup)?
+  |           |  |     +--:(wait-for-bgp)
+  |           |  |     |  +--rw wait-for-bgp!
+  |           |  |     |     +--rw wait-for-bgp    enumeration
+  |           |  |     +--:(timeout)
+  |           |  |        +--rw timeout!
+  |           |  |           +--rw timeout    uint32
+  |           |  +--rw router-lsa    empty
+  |           +--rw distance
+  |           |  +--rw distance-inter?   uint32
+  |           |  +--rw distance-ext1?    uint32
+  |           |  +--rw distance-ext2?    uint32
+  |           +--rw lsa-limit!
+  |           |  +--rw lsa-num       uint32
+  |           |  +--rw threshold?    uint32
+  |           |  +--rw lsa-choice
+  |           |     +--rw (lsa-choice)?
+  |           |        +--:(warning)
+  |           |        |  +--rw warning
+  |           |        |     +--rw warning?   empty
+  |           |        +--:(limit-config)
+  |           |           +--rw limit-config
+  |           |              +--rw limit-time?     uint32
+  |           |              +--rw limit-cnt?      uint32
+  |           |              +--rw refresh-time?   uint32
+  |           +--rw thr-timer!
+  |           |  +--rw spf!
+  |           |  |  +--rw hold-time         uint32
+  |           |  |  +--rw delay-time        uint32
+  |           |  |  +--rw max-delay-time    uint32
+  |           |  +--rw lsa!
+  |           |  |  +--rw hold-time         uint32
+  |           |  |  +--rw delay-time        uint32
+  |           |  |  +--rw max-delay-time    uint32
+  |           |  +--rw lsa-arrival!
+  |           |     +--rw hold-time         uint32
+  |           |     +--rw delay-time        uint32
+  |           |     +--rw max-delay-time    uint32
+  |           +--rw prefix-priority
+  |           |  +--rw prefix-prioritys
+  |           |  |  +--rw prefix-priority* [priority]
+  |           |  |     +--rw priority       enumeration
+  |           |  |     +--rw prefix-list    string
+  |           |  +--rw prefix-priority-tags
+  |           |     +--rw prefix-priority-tag* [priority tag-value]
+  |           |        +--rw priority     enumeration
+  |           |        +--rw tag-value    uint32
+  |           +--rw adv-intf-to-stubs
+  |           |  +--rw adv-intf-to-stub* [intf-name]
+  |           |     +--rw intf-name    ncd:ifname
+  |           o--rw ospf-te-areas
+  |           |  +--rw ospf-te-area* [area-ip]
+  |           |     +--rw area-ip    ncd:ipv4-address
+  |           +--rw dynamic-remote-lfa
+  |           |  +--rw capability?     enumeration
+  |           |  +--rw maximum-cost?   uint32
+  |           +--rw frr-priority
+  |           |  +--rw lfa?                  uint8
+  |           |  +--rw dynamic-remote-lfa?   uint8
+  |           |  +--rw static-remote-lfa?    uint8
+  |           |  +--rw ti-lfa?               uint8
+  |           +--rw microloop-prevention
+  |           |  +--rw remote-lfa
+  |           |  |  +--rw capability?   enumeration
+  |           |  |  +--rw delay-time?   uint32
+  |           |  +--rw segment-routing
+  |           |     +--rw mpls
+  |           |        +--rw capability?   enumeration
+  |           |        +--rw delay-time?   uint32
+  |           +--rw bgp-ls!
+  |           |  +--rw instance-id?   uint32
+  |           +--rw segment-routing
+  |           |  +--rw mpls
+  |           |     +--rw capability?      enumeration
+  |           |     +--rw adj-sid
+  |           |     |  +--rw type?   enumeration
+  |           |     +--rw entropy-label
+  |           |        +--rw capability?   enumeration
+  |           +--rw ti-lfa
+  |           |  +--rw capability?                        enumeration
+  |           |  +--rw (protection-type)?
+  |           |     +--:(node-protecting)
+  |           |     |  +--rw node-protecting?             enumeration
+  |           |     +--:(node-protecting-choice-clear)
+  |           |        +--rw node-protecting-all-clear!
+  |           +--rw distance-policy
+  |           |  +--rw policy-type?   enumeration
+  |           |  +--rw policy-name?   string
+  |           +--rw suppress-flapping
+  |           |  +--rw adjacency
+  |           |     +--rw capability?   enumeration
+  |           +--rw flex-algorithms
+  |              +--rw flex-algorithm* [number]
+  |                 +--rw number    uint8
+  +--ro state
+  |  +--ro ospfv2
+  |     +--ro processes
+  |     |  +--ro process* [process-id]
+  |     |     +--ro process-id             uint32
+  |     |     +--ro router-id?             ncd:ipv4-address
+  |     |     +--ro vrf-name?              string
+  |     |     +--ro state?                 enumeration
+  |     |     +--ro domain-id-type?        uint8
+  |     |     +--ro domain-id?             ncd:ipv4-address
+  |     |     +--ro enable-time?           string
+  |     |     +--ro interface-count?       uint32
+  |     |     +--ro neighbor-count?        uint32
+  |     |     +--ro full-neighbor-count?   uint32
+  |     |     +--ro virtual-link-count?    uint32
+  |     |     +--ro ttl-security-state?    enumeration
+  |     |     +--ro ttl-security-hops?     uint8
+  |     |     +--ro area-count
+  |     |     |  +--ro total-count?    uint32
+  |     |     |  +--ro normal-count?   uint32
+  |     |     |  +--ro stub-count?     uint32
+  |     |     |  +--ro nssa-count?     uint32
+  |     |     +--ro lsa-count
+  |     |     |  +--ro total-count?                 uint32
+  |     |     |  +--ro ase-count?                   uint32
+  |     |     |  +--ro gr-count?                    uint32
+  |     |     |  +--ro received-new-count?          uint32
+  |     |     |  +--ro self-originated-count?       uint32
+  |     |     |  +--ro non-self-originated-count?   uint32
+  |     |     +--ro lsa-limit
+  |     |     |  +--ro max-lsa-count?                      uint32
+  |     |     |  +--ro current-lsa-count?                  uint32
+  |     |     |  +--ro warning-threshold?                  uint8
+  |     |     |  +--ro only-send-warning?                  empty
+  |     |     |  +--ro limit-time?                         uint32
+  |     |     |  +--ro refresh-time?                       uint32
+  |     |     |  +--ro limit-count?                        uint32
+  |     |     |  +--ro current-limit-count?                uint32
+  |     |     |  +--ro permanently-ignore-all-neighbors?   empty
+  |     |     |  +--ro time-remaining
+  |     |     |     +--ro enter-limit-state?      string
+  |     |     |     +--ro refresh-limit-count?    string
+  |     |     |     +--ro ignore-all-neighbors?   string
+  |     |     +--ro nsf
+  |     |     |  +--ro state?                       enumeration
+  |     |     |  +--ro last-nsf-restart-time?       string
+  |     |     |  +--ro last-nsf-restart-use-time?   uint32
+  |     |     +--ro max-metric
+  |     |     |  +--ro take-effect-time?                        string
+  |     |     |  +--ro disable-time?                            string
+  |     |     |  +--ro originate-router-lsas-with-max-metric?   empty
+  |     |     |  +--ro time-remaining?                          string
+  |     |     |  +--ro state?                                   enumeration
+  |     |     |  +--ro condition
+  |     |     |     +--ro (condition)?
+  |     |     |        +--:(always)
+  |     |     |        |  +--ro always?                        empty
+  |     |     |        +--:(on-startup-wait-for-bgp)
+  |     |     |        |  +--ro on-startup-wait-for-bgp?       empty
+  |     |     |        +--:(on-startup-wait-for-timeout)
+  |     |     |           +--ro on-startup-wait-for-timeout?   empty
+  |     |     |           +--ro timeout?                       uint32
+  |     |     +--ro areas
+  |     |        +--ro area* [area-id]
+  |     |           +--ro area-id                     ncd:ipv4-address
+  |     |           +--ro state?                      enumeration
+  |     |           +--ro demand-circuit-available?   empty
+  |     |           +--ro enable-time?                string
+  |     |           +--ro area-type?                  enumeration
+  |     |           +--ro stub-no-summary?            empty
+  |     |           +--ro stub-default-cost?          uint32
+  |     |           +--ro nssa-default-metric?        uint32
+  |     |           +--ro authentication-type?        enumeration
+  |     |           +--ro sending-sa
+  |     |           |  +--ro authen-keyid?       uint8
+  |     |           |  +--ro authen-algorithm?   enumeration
+  |     |           |  +--ro authen-keychain?    string
+  |     |           +--ro spf-calculation-times?      uint32
+  |     |           +--ro ispf-calculation-times?     uint32
+  |     |           +--ro interface-count?            uint32
+  |     |           +--ro up-interface-count?         uint32
+  |     |           +--ro intra-inter-lsa-count?      uint32
+  |     |           +--ro area-filter-out?            string
+  |     |           +--ro area-filter-in?             string
+  |     |           +--ro summary-range-count?        uint32
+  |     |           +--ro summary-ranges
+  |     |              +--ro summary-range* [ip-address subnet-mask]
+  |     |                 +--ro ip-address         ncd:ipv4-address
+  |     |                 +--ro subnet-mask        ncd:ipv4-mask
+  |     |                 +--ro advertise-state?   enumeration
+  |     +--ro interfaces
+  |     |  +--ro normal-interfaces
+  |     |  |  +--ro normal-interface* [process-id area-id interface-name]
+  |     |  |     +--ro process-id             uint32
+  |     |  |     +--ro area-id                ncd:ipv4-address
+  |     |  |     +--ro interface-name         ncd:ifname
+  |     |  |     +--ro admin-state?           enumeration
+  |     |  |     +--ro protocol-state?        enumeration
+  |     |  |     +--ro track-state?           enumeration
+  |     |  |     +--ro ip-address?            ncd:ipv4-address
+  |     |  |     +--ro ip-mask?               ncd:ipv4-mask
+  |     |  |     +--ro up-time?               string
+  |     |  |     +--ro demand-circuit?        empty
+  |     |  |     +--ro suppress-hello?        empty
+  |     |  |     +--ro interface-state?       enumeration
+  |     |  |     +--ro cost?                  uint32
+  |     |  |     +--ro priority?              uint32
+  |     |  |     +--ro network-type?          enumeration
+  |     |  |     +--ro transmit-delay?        uint32
+  |     |  |     +--ro authentication-type?   enumeration
+  |     |  |     +--ro sending-sa
+  |     |  |     |  +--ro authen-keyid?       uint8
+  |     |  |     |  +--ro authen-algorithm?   enumeration
+  |     |  |     |  +--ro authen-keychain?    string
+  |     |  |     +--ro ttl-security-state?    enumeration
+  |     |  |     +--ro ttl-security-hops?     uint8
+  |     |  |     +--ro ldp-sync?              enumeration
+  |     |  |     +--ro ldp-sync-state?        enumeration
+  |     |  |     +--ro ldp-autoconfig?        enumeration
+  |     |  |     +--ro ldp-link-state?        enumeration
+  |     |  |     +--ro no-cut-edge?           empty
+  |     |  |     +--ro sd-status?             enumeration
+  |     |  |     +--ro cost-link-sd?          uint16
+  |     |  |     +--ro damp-state?            enumeration
+  |     |  |     +--ro damp-remain?           uint32
+  |     |  |     +--ro hello-interval?        uint32
+  |     |  |     +--ro dead-interval?         uint32
+  |     |  |     +--ro retransmit-interval?   uint32
+  |     |  |     +--ro dr?                    ncd:ipv4-address
+  |     |  |     +--ro dr-ip-address?         ncd:ipv4-address
+  |     |  |     +--ro bdr?                   ncd:ipv4-address
+  |     |  |     +--ro bdr-ip-address?        ncd:ipv4-address
+  |     |  |     +--ro neighbor-count?        uint32
+  |     |  |     +--ro full-neighbor-count?   uint32
+  |     |  |     +--ro neighbors
+  |     |  |        +--ro neighbor* [neighbor-id]
+  |     |  |           +--ro neighbor-id      ncd:ipv4-address
+  |     |  |           +--ro neighbor-role?   enumeration
+  |     |  +--ro virtual-interfaces
+  |     |  |  +--ro virtual-interface* [process-id transmit-area-id neighbor-id]
+  |     |  |     +--ro process-id                  uint32
+  |     |  |     +--ro transmit-area-id            ncd:ipv4-address
+  |     |  |     +--ro neighbor-id                 ncd:ipv4-address
+  |     |  |     +--ro state?                      enumeration
+  |     |  |     +--ro up-time?                    string
+  |     |  |     +--ro demand-circuit?             empty
+  |     |  |     +--ro suppress-hello?             empty
+  |     |  |     +--ro out-interface-name?         ncd:ifname
+  |     |  |     +--ro out-interface-ip-address?   ncd:ipv4-address
+  |     |  |     +--ro interface-state?            enumeration
+  |     |  |     +--ro transit-delay?              uint32
+  |     |  |     +--ro cost?                       uint32
+  |     |  |     +--ro authentication-type?        enumeration
+  |     |  |     +--ro sending-sa
+  |     |  |     |  +--ro authen-keyid?       uint8
+  |     |  |     |  +--ro authen-algorithm?   enumeration
+  |     |  |     |  +--ro authen-keychain?    string
+  |     |  |     +--ro hello-interval?             uint32
+  |     |  |     +--ro dead-interval?              uint32
+  |     |  |     +--ro retransmit-interval?        uint32
+  |     |  |     +--ro neighbor-state?             enumeration
+  |     |  |     +--ro dead-time?                  string
+  |     |  |     +--ro full-time?                  string
+  |     |  |     +--ro options-field?              uint8
+  |     |  |     +--ro options
+  |     |  |        +--ro tos-bit?   empty
+  |     |  |        +--ro e-bit?     empty
+  |     |  |        +--ro mc-bit?    empty
+  |     |  |        +--ro n-bit?     empty
+  |     |  |        +--ro ea-bit?    empty
+  |     |  |        +--ro dc-bit?    empty
+  |     |  |        +--ro o-bit?     empty
+  |     |  |        +--ro dn-bit?    empty
+  |     |  +--ro shamlink-interfaces
+  |     |     +--ro shamlink-interface* [process-id area-id local-ip-addr neighbor-ip-address]
+  |     |        +--ro process-id             uint32
+  |     |        +--ro area-id                ncd:ipv4-address
+  |     |        +--ro local-ip-addr          ncd:ipv4-address
+  |     |        +--ro neighbor-ip-address    ncd:ipv4-address
+  |     |        +--ro demand-circuit?        empty
+  |     |        +--ro suppress-hello?        empty
+  |     |        +--ro interface-state?       enumeration
+  |     |        +--ro cost?                  uint32
+  |     |        +--ro priority?              uint32
+  |     |        +--ro transmit-delay?        uint32
+  |     |        +--ro authentication-type?   enumeration
+  |     |        +--ro ttl-security-state?    enumeration
+  |     |        +--ro ttl-security-hops?     uint8
+  |     |        +--ro ldp-sync?              enumeration
+  |     |        +--ro ldp-sync-state?        enumeration
+  |     |        +--ro ldp-autoconfig?        enumeration
+  |     |        +--ro hello-interval?        uint32
+  |     |        +--ro dead-interval?         uint32
+  |     |        +--ro retransmit-interval?   uint32
+  |     |        +--ro neighbor-count?        uint32
+  |     |        +--ro full-neighbor-count?   uint32
+  |     |        +--ro neighbor-id?           ncd:ipv4-address
+  |     |        +--ro neighbor-state?        enumeration
+  |     |        +--ro dead-time?             string
+  |     |        +--ro options-field?         uint8
+  |     |        +--ro options
+  |     |        |  +--ro tos-bit?   empty
+  |     |        |  +--ro e-bit?     empty
+  |     |        |  +--ro mc-bit?    empty
+  |     |        |  +--ro n-bit?     empty
+  |     |        |  +--ro ea-bit?    empty
+  |     |        |  +--ro dc-bit?    empty
+  |     |        |  +--ro o-bit?     empty
+  |     |        |  +--ro dn-bit?    empty
+  |     |        +--ro full-time?             string
+  |     +--ro neighbors
+  |     |  +--ro normal-neighbors
+  |     |  |  +--ro normal-neighbor* [process-id area-id interface-name neighbor-id]
+  |     |  |     +--ro process-id               uint32
+  |     |  |     +--ro area-id                  ncd:ipv4-address
+  |     |  |     +--ro interface-name           ncd:ifname
+  |     |  |     +--ro neighbor-id              ncd:ipv4-address
+  |     |  |     +--ro neighbor-ip-address?     ncd:ipv4-address
+  |     |  |     +--ro neighbor-role?           enumeration
+  |     |  |     +--ro neighbor-state?          enumeration
+  |     |  |     +--ro priority?                uint32
+  |     |  |     +--ro cost?                    uint32
+  |     |  |     +--ro retransmit-list-count?   uint32
+  |     |  |     +--ro dd-list-count?           uint32
+  |     |  |     +--ro request-list-count?      uint32
+  |     |  |     +--ro dead-time?               string
+  |     |  |     +--ro options-field?           uint8
+  |     |  |     +--ro options
+  |     |  |     |  +--ro tos-bit?   empty
+  |     |  |     |  +--ro e-bit?     empty
+  |     |  |     |  +--ro mc-bit?    empty
+  |     |  |     |  +--ro n-bit?     empty
+  |     |  |     |  +--ro ea-bit?    empty
+  |     |  |     |  +--ro dc-bit?    empty
+  |     |  |     |  +--ro o-bit?     empty
+  |     |  |     |  +--ro dn-bit?    empty
+  |     |  |     +--ro full-time?               string
+  |     |  |     +--ro poll-interval?           uint32
+  |     |  +--ro virtual-neighbors
+  |     |  |  +--ro virtual-neighbor* [process-id transit-area-id neighbor-id]
+  |     |  |     +--ro process-id               uint32
+  |     |  |     +--ro transit-area-id          ncd:ipv4-address
+  |     |  |     +--ro neighbor-id              ncd:ipv4-address
+  |     |  |     +--ro out-interface-name?      ncd:ifname
+  |     |  |     +--ro area-id?                 ncd:ipv4-address
+  |     |  |     +--ro neighbor-ip-address?     ncd:ipv4-address
+  |     |  |     +--ro neighbor-state?          enumeration
+  |     |  |     +--ro priority?                uint32
+  |     |  |     +--ro cost?                    uint32
+  |     |  |     +--ro retransmit-list-count?   uint32
+  |     |  |     +--ro dd-list-count?           uint32
+  |     |  |     +--ro request-list-count?      uint32
+  |     |  |     +--ro dead-time?               string
+  |     |  |     +--ro options-field?           uint8
+  |     |  |     +--ro options
+  |     |  |     |  +--ro tos-bit?   empty
+  |     |  |     |  +--ro e-bit?     empty
+  |     |  |     |  +--ro mc-bit?    empty
+  |     |  |     |  +--ro n-bit?     empty
+  |     |  |     |  +--ro ea-bit?    empty
+  |     |  |     |  +--ro dc-bit?    empty
+  |     |  |     |  +--ro o-bit?     empty
+  |     |  |     |  +--ro dn-bit?    empty
+  |     |  |     +--ro full-time?               string
+  |     |  +--ro shamlink-neighbors
+  |     |     +--ro shamlink-neighbor* [process-id area-id local-ip-address neighbor-ip-address]
+  |     |        +--ro process-id               uint32
+  |     |        +--ro area-id                  ncd:ipv4-address
+  |     |        +--ro local-ip-address         ncd:ipv4-address
+  |     |        +--ro neighbor-ip-address      ncd:ipv4-address
+  |     |        +--ro out-interface-name?      ncd:ifname
+  |     |        +--ro neighbor-id?             ncd:ipv4-address
+  |     |        +--ro neighbor-state?          enumeration
+  |     |        +--ro priority?                uint32
+  |     |        +--ro cost?                    uint32
+  |     |        +--ro retransmit-list-count?   uint32
+  |     |        +--ro dd-list-count?           uint32
+  |     |        +--ro request-list-count?      uint32
+  |     |        +--ro dead-time?               string
+  |     |        +--ro options-field?           uint8
+  |     |        +--ro options
+  |     |        |  +--ro tos-bit?   empty
+  |     |        |  +--ro e-bit?     empty
+  |     |        |  +--ro mc-bit?    empty
+  |     |        |  +--ro n-bit?     empty
+  |     |        |  +--ro ea-bit?    empty
+  |     |        |  +--ro dc-bit?    empty
+  |     |        |  +--ro o-bit?     empty
+  |     |        |  +--ro dn-bit?    empty
+  |     |        +--ro full-time?               string
+  |     +--ro vertexes
+  |        +--ro vertex* [process-id area-id vertex-type advertising-router link-state-id]
+  |           +--ro process-id            uint32
+  |           +--ro area-id               ncd:ipv4-address
+  |           +--ro vertex-type           enumeration
+  |           +--ro advertising-router    ncd:ipv4-address
+  |           +--ro link-state-id         ncd:ipv4-address
+  |           +--ro primary-nh-cost?      uint32
+  |           +--ro nexthops
+  |              +--ro nexthop* [primary-nh-if-index primary-nh-type primary-nh-ip]
+  |                 +--ro primary-nh-if-index    uint32
+  |                 +--ro primary-nh-type        enumeration
+  |                 +--ro primary-nh-ip          ncd:ipv4-address
+  |                 +--ro primary-nh-if-name?    ncd:ifname
+  |                 +--ro backup-nexthops
+  |                    +--ro dynamic-remote-lfas
+  |                       +--ro dynamic-remote-lfa* [nh-if-index nh-type nh-ip]
+  |                          +--ro nh-if-index          uint32
+  |                          +--ro nh-type              enumeration
+  |                          +--ro nh-ip                ncd:ipv4-address
+  |                          +--ro nh-if-name?          ncd:ifname
+  |                          +--ro nh-cost?             uint32
+  |                          +--ro session-type?        enumeration
+  |                          +--ro peer-session-id?     ncd:ipv4-address
+  |                          +--ro peer-metric?         uint32
+  |                          +--ro protect-type-s-pq?   enumeration
+  |                          +--ro protect-type-pq-d?   enumeration
+  |                          +--ro update-time?         string
+  |                          +--ro session-status?      enumeration
+  +--ro operation
+     +--ro ospfv2
+        +--ro clear
+           +--ro process
+           |  +--ro process-id?   uint32
+           +--ro redistribution
+              +--ro process-id?   uint32

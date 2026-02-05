@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-vpn"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:brasvpn="urn:huawei:yang:huawei-bras-vpn"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-bras-vpn"/>
+  <prefix value="brasvpn"/>
+  <import module="huawei-aaa">
+    <prefix value="aaa"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras vpn.</text>
+  </description>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-26">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-control"/>
+  <container name="bras-vpn">
+    <description>
+      <text>Bras vpn configurations.</text>
+    </description>
+    <container name="vpn-users">
+      <config value="false"/>
+      <description>
+        <text>List of vpn users.</text>
+      </description>
+      <list name="vpn-user">
+        <key value="user-type vpn-instance"/>
+        <description>
+          <text>Statistics of vpn users.</text>
+        </description>
+        <leaf name="user-type">
+          <type name="enumeration">
+            <enum name="pppoe">
+              <value value="1"/>
+              <description>
+                <text>PPPoE access users.</text>
+              </description>
+            </enum>
+            <enum name="pppoa">
+              <value value="2"/>
+              <description>
+                <text>PPPoA access users.</text>
+              </description>
+            </enum>
+            <enum name="ipoe">
+              <value value="3"/>
+              <description>
+                <text>IPOE access users.</text>
+              </description>
+            </enum>
+            <enum name="lns">
+              <value value="4"/>
+              <description>
+                <text>Lns access users.</text>
+              </description>
+            </enum>
+            <enum name="lac">
+              <value value="5"/>
+              <description>
+                <text>Lac access users.</text>
+              </description>
+            </enum>
+            <enum name="ipv4">
+              <value value="6"/>
+              <description>
+                <text>IPv4 access users.</text>
+              </description>
+            </enum>
+            <enum name="ipv6">
+              <value value="7"/>
+              <description>
+                <text>IPv6 access users.</text>
+              </description>
+            </enum>
+            <enum name="dual">
+              <value value="8"/>
+              <description>
+                <text>Dual-stack access users.</text>
+              </description>
+            </enum>
+            <enum name="all">
+              <value value="9"/>
+              <description>
+                <text>All type access users.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>User type.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-instance">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <description>
+            <text>Vpn name.</text>
+          </description>
+        </leaf>
+        <leaf name="user-number">
+          <type name="int32">
+            <range value="0..256000"/>
+          </type>
+          <description>
+            <text>The number of vpn access users.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/bras-basic-access:bas/bras-basic-access:access-type/bras-basic-access:layer2-subscriber/bras-basic-access:layer2-subscriber">
+    <description>
+      <text>Bras vpn of layer2 subscriber.</text>
+    </description>
+    <container name="bas-8021p-to-vpn">
+      <description>
+        <text>Configure a BAS interface to transmit packets to different VPNs based on 802.1p priorities of the packets.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable 802.1p to Vpn.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas">
+    <description>
+      <text>Adds vpn configuration to aaa domain model.</text>
+    </description>
+    <container name="vpn">
+      <description>
+        <text>Configure a VPN instance to aaa domain model.</text>
+      </description>
+      <container name="vpn-instance">
+        <description>
+          <text>Configure a VPN instance to a domain.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="(/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']) or (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])"/>
+          <description>
+            <text>Specifies the VPN instance name.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="bound-vrf">
+        <description>
+          <text>Configure an inbound VPN instance to an AAA domain.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="(/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']) or (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])"/>
+          <description>
+            <text>Specifies the VPN instance name.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="trust-enable">
+        <description>
+          <text>Configure a device to trust the VPN instance that is bound to IPv6 address pool delivered by the RADIUS server.</text>
+        </description>
+        <leaf name="trust-access-interface-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable a device to trust the VPN instance that is bound to IPv6 address pool delivered by the RADIUS server.</text>
+          </description>
+        </leaf>
+        <leaf name="trust-frame-pool-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable a device to trust the VPN instance that is bound to IPv4 address pool delivered by the RADIUS server.</text>
+          </description>
+        </leaf>
+        <leaf name="trust-frame-ipv6-pool-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable a device to trust the VPN instance that is bound to IPv6 address pool delivered by the RADIUS server.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

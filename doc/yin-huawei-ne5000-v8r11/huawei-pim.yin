@@ -1,0 +1,2440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-pim"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pim="urn:huawei:yang:huawei-pim"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:acl="urn:huawei:yang:huawei-acl">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-pim"/>
+  <prefix value="pim"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <include module="huawei-pim-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Protocol Independent Multicast.</text>
+  </description>
+  <revision date="2020-03-16">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify the submodule huawei-pim-type.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-11">
+    <description>
+      <text>Modify units.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-07">
+    <description>
+      <text>Modify c-bsr nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-01-19">
+    <description>
+      <text>Modify units.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-12">
+    <description>
+      <text>Modify protocol nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-05">
+    <description>
+      <text>Modify rp nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-06">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Adds PIM configuration to the L3VPN module.</text>
+    </description>
+    <container name="pim">
+      <description>
+        <text>Configure PIM (Protocol Independent Multicast) in the instance.</text>
+      </description>
+      <container name="rp">
+        <description>
+          <text>Configure PIM RP configurations.</text>
+        </description>
+        <container name="c-bsr-vpns">
+          <description>
+            <text>List of BSR configurations.</text>
+          </description>
+          <list name="c-bsr-vpn">
+            <key value="type"/>
+            <description>
+              <text>Configure BSR.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <must condition="../../../../pim:protocol/pim:instances/pim:instance[pim:type=current()]"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="if-name">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="../../../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+              <description>
+                <text>Interface name of a C-BSR. PIM-SM must be enabled on the interface to make the C-BSR take effect.</text>
+              </description>
+            </leaf>
+            <leaf name="if-addr">
+              <when condition="../type='ipv6unicast'"/>
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Global IPv6 unicast address of the C-BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="hold-time">
+              <type name="uint32">
+                <range value="1..214748364"/>
+              </type>
+              <units name="s"/>
+              <default value="130"/>
+              <description>
+                <text>Timeout period (called holdtime) during which C-BSRs wait to receive bootstrap messages from the BSR. To prevent frequent BSR elections, set the same holdtime for all C-BSRs in the same domain. If an interval (called BS_interval) at which bootstrap messages are sent has been set for C-BSRs, ensure that the specified holdtime is larger than the BS_interval.</text>
+              </description>
+            </leaf>
+            <leaf name="interval">
+              <type name="uint32">
+                <range value="1..107374177"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Interval (called BS_interval) at which a BSR continuously sends bootstrap messages. To prevent frequent BSR elections, set the same BS_interval for all C-BSRs in the same domain. If a timeout period (called holdtime) during which C-BSRs wait to receive bootstrap messages from the BSR has been set for C-BSRs, ensure that the specified BS_interval is smaller than the holdtime.</text>
+              </description>
+            </leaf>
+            <leaf name="hash-len">
+              <type name="uint32">
+                <range value="0..128"/>
+              </type>
+              <ext:dynamic-default>
+                <ext:default-value value="30">
+                  <when condition="../type='ipv4unicast'"/>
+                  <description>
+                    <text>In IPv4, the default value is 30.</text>
+                  </description>
+                </ext:default-value>
+                <ext:default-value value="126">
+                  <when condition="../type='ipv6unicast'"/>
+                  <description>
+                    <text>In IPv6, the default value is 126.</text>
+                  </description>
+                </ext:default-value>
+              </ext:dynamic-default>
+              <description>
+                <text>Global hash mask length for a C-BSR.
+In IPv4, the value is an integer ranging from 0 to 32, and the default value is 30. In IPv6, the value is an integer ranging from 0 to 128, and the default value is 126.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <default value="0"/>
+              <description>
+                <text>Globally specify a priority for all C-BSRs on the router. The greater the value, the higher the priority.</text>
+              </description>
+            </leaf>
+            <leaf name="policy-name">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for limiting the range of valid BSR addresses so that a router discards the messages received from the BSRs not in the specified address range.</text>
+              </description>
+            </leaf>
+            <leaf name="policy-name6">
+              <when condition="../type='ipv6unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for limiting the range of valid BSR addresses so that a router discards the messages received from the BSRs not in the specified address range.</text>
+              </description>
+            </leaf>
+            <leaf name="admin-scope">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable a device to divide one PIM-SM domain into multiple BSR administrative domains to implement RP-Set advertisement. By default, there is only one BSR in the entire PIM-SM domain.</text>
+              </description>
+            </leaf>
+            <leaf name="global-enable">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable C-BSR in the global domain. By default, no C-BSR is configured in the global domain.</text>
+              </description>
+            </leaf>
+            <leaf name="global-hash-len">
+              <when condition="../global-enable='true'"/>
+              <type name="uint32">
+                <range value="0..32"/>
+              </type>
+              <default value="30"/>
+              <description>
+                <text>Hash mask length for the C-BSR in the global domain.</text>
+              </description>
+            </leaf>
+            <leaf name="global-priority">
+              <when condition="../global-enable='true'"/>
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <default value="0"/>
+              <description>
+                <text>Priority for the C-BSR in the global domain. The greater the value, the higher the priority.</text>
+              </description>
+            </leaf>
+            <leaf name="c-rp-hold-time">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="150"/>
+              <description>
+                <text>Timeout period during which a BSR waits to receive Advertisement messages from a C-RP.</text>
+              </description>
+            </leaf>
+            <leaf name="c-rp-priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <ext:dynamic-default>
+                <ext:default-value value="0">
+                  <when condition="../type='ipv4unicast'"/>
+                  <description>
+                    <text>In IPv4, the default value is 0.</text>
+                  </description>
+                </ext:default-value>
+                <ext:default-value value="192">
+                  <when condition="../type='ipv6unicast'"/>
+                  <description>
+                    <text>In IPv6, the default value is 192.</text>
+                  </description>
+                </ext:default-value>
+              </ext:dynamic-default>
+              <description>
+                <text>Global priority for C-RPs. The greater the value, the lower the priority. In IPv4, the value is an integer ranging from 0 to 255, and the default value is 0. In IPv6, the value is an integer ranging from 0 to 255, and the default value is 192.</text>
+              </description>
+            </leaf>
+            <leaf name="c-rp-ad-interval">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Interval at which a C-RP periodically sends Advertisement messages.</text>
+              </description>
+            </leaf>
+            <leaf name="c-rp-policy">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Policy for limiting the range of valid C-RP addresses and the range of multicast groups that each C-RP serves. The BSR configured with a C-RP filter policy discards messages received from the C-RPs whose addresses are not in the specified address range, thus preventing C-RP spoofing.</text>
+              </description>
+            </leaf>
+            <leaf name="c-rp-policy6">
+              <when condition="../type='ipv6unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Policy for limiting the range of valid C-RP addresses and the range of multicast groups that each C-RP serves. The BSR configured with a C-RP filter policy discards messages received from the C-RPs whose addresses are not in the specified address range, thus preventing C-RP spoofing.</text>
+              </description>
+            </leaf>
+            <leaf name="is-fragable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the C-BSR message fragmentation function.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ipv4-c-bsr-groups">
+          <when condition="../../pim:protocol/pim:instances/pim:instance[type='ipv4unicast']"/>
+          <description>
+            <text>List of C-BSR group ranges.</text>
+          </description>
+          <list name="ipv4-c-bsr-group">
+            <key value="group-addr group-mask"/>
+            <max-elements value="64"/>
+            <description>
+              <text>Configure range of C-BSR groups. PIM-SM must be enabled on the interface to make the C-BSR take effect.</text>
+            </description>
+            <leaf name="group-addr">
+              <type name="inet:ipv4-address-no-zone">
+                <pattern value="(239)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}"/>
+              </type>
+              <description>
+                <text>Multicast group address. The value ranges from 239.0.0.0 to 239.255.255.255.</text>
+              </description>
+            </leaf>
+            <leaf name="group-mask">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Mask of a group address. The value is in dotted decimal notation.</text>
+              </description>
+            </leaf>
+            <leaf name="hash-length">
+              <type name="uint32">
+                <range value="0..32"/>
+              </type>
+              <default value="30"/>
+              <description>
+                <text>Hash length of a C-BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <default value="0"/>
+              <description>
+                <text>Priority of a C-BSR in the BSR administrative domain that serves a specific multicast group. The greater the value, the higher the priority.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ipv4-c-rp-ifs">
+          <when condition="../../pim:protocol/pim:instances/pim:instance[type='ipv4unicast']"/>
+          <description>
+            <text>List of C-RP IPv4 configurations.</text>
+          </description>
+          <list name="ipv4-c-rp-if">
+            <key value="if-name"/>
+            <description>
+              <text>Configure C-RP IPv4 configuration. PIM-SM must be enabled on the interface to make the C-RP take effect.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="../../../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+              <description>
+                <text>Name of a C-RP interface.</text>
+              </description>
+            </leaf>
+            <leaf name="group-policy">
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for limiting the range of valid group addresses. With this policy, a router discards messages received from the addresses not in the specified range.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <default value="0"/>
+              <description>
+                <text>Priority of a C-RP. The greater the value, the lower the priority.</text>
+              </description>
+            </leaf>
+            <leaf name="hold-time">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="150"/>
+              <description>
+                <text>Timeout period during which a BSR waits to receive Advertisement messages from a C-RP.</text>
+              </description>
+            </leaf>
+            <leaf name="ad-interval">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Interval at which a C-RP sends Advertisement messages.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ipv6-c-rps">
+          <when condition="../../pim:protocol/pim:instances/pim:instance[type='ipv6unicast']"/>
+          <description>
+            <text>List of C-RP IPv6 configurations.</text>
+          </description>
+          <list name="ipv6-c-rp">
+            <key value="address"/>
+            <description>
+              <text>Configure C-RP IPv6 configurations.</text>
+            </description>
+            <leaf name="address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Address of a C-RP. The value is a valid IPv6 unicast address, such as fc00::100.</text>
+              </description>
+            </leaf>
+            <leaf name="holdtime">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="150"/>
+              <description>
+                <text>Timeout period during which a BSR waits to receive Advertisement messages from a C-RP.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <default value="192"/>
+              <description>
+                <text>Priority of a C-RP. The greater the value, the lower the priority.</text>
+              </description>
+            </leaf>
+            <leaf name="ad-interval">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Interval at which a C-RP continuously sends Advertisement messages.</text>
+              </description>
+            </leaf>
+            <leaf name="group-policy">
+              <type name="leafref">
+                <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for limiting the range of valid group addresses. With this policy, a router discards the messages received from the addresses not in the specified range.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="auto-rps">
+          <when condition="../../pim:protocol/pim:instances/pim:instance[type='ipv4unicast']"/>
+          <presence value="Auto-RP configuration."/>
+          <description>
+            <text>Enable/disable Auto-RP.</text>
+          </description>
+        </container>
+        <container name="static-rps">
+          <description>
+            <text>List of static RPs.</text>
+          </description>
+          <list name="static-rp">
+            <key value="type"/>
+            <description>
+              <text>Configure static RP.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <must condition="../../../../pim:protocol/pim:instances/pim:instance[pim:type=current()]"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="address">
+              <type name="inet:ip-address-no-zone"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Address of a static RP. This address must be a valid unicast IP address.
+In IPv4, the value is in dotted decimal notation. This address cannot be an address on the network segment 127.0.0.0/8.
+In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+              </description>
+            </leaf>
+            <leaf name="policy">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Static RP policy.</text>
+              </description>
+            </leaf>
+            <leaf name="preference">
+              <type name="rp-prefer-type"/>
+              <default value="not-prefer"/>
+              <description>
+                <text>Whether the static RP is preferred. The value can be:
+0: the static RP is not preferred.
+1: the static RP is preferred.
+The default value is 0.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="elected-bsrs">
+          <config value="false"/>
+          <description>
+            <text>List of elected BSR states.</text>
+          </description>
+          <list name="elected-bsr">
+            <key value="type address"/>
+            <description>
+              <text>Operational state of elected BSRs.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="address">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Address of an elected BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="scope">
+              <type name="bsr-scope"/>
+              <description>
+                <text>Whether the BSR is a BSR in an administrative domain.</text>
+              </description>
+            </leaf>
+            <leaf name="group-addr">
+              <type name="inet:ip-address-no-zone">
+                <ext:value-meaning>
+                  <ext:item value="0.0.0.0">
+                    <ext:meaning value="--"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Multicast group address. In IPv4 address, the value ranges from 239.0.0.0 to 239.255.255.255. In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+              </description>
+            </leaf>
+            <leaf name="group-mask-length">
+              <type name="uint32">
+                <range value="0..32"/>
+                <ext:value-meaning>
+                  <ext:item value="0">
+                    <ext:meaning value="--"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Mask length of a group address. The value is an integer ranging from 8 to 32.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <description>
+                <text>Priority for a C-BSR to participate in BSR election. The greater the value, the higher the priority. The value is an integer ranging from 0 to 255. The default value is 0.</text>
+              </description>
+            </leaf>
+            <leaf name="hash-lenth">
+              <type name="uint32">
+                <range value="0..128"/>
+              </type>
+              <description>
+                <text>Hash length used by an elected BSR to perform RP calculation. The value is an integer ranging from 0 to 32.</text>
+              </description>
+            </leaf>
+            <leaf name="fsm-state">
+              <type name="bsr-state"/>
+              <description>
+                <text>Status of an elected BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="up-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Time since the C-BSR was elected as the BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="expire-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Period after which the elected BSR on the LAN sends the next bootstrap message.</text>
+              </description>
+            </leaf>
+            <leaf name="candidate-count">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <description>
+                <text>Number of candidate RPs.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="c-bsrs">
+          <config value="false"/>
+          <description>
+            <text>List of C-BSR states.</text>
+          </description>
+          <list name="c-bsr">
+            <key value="type address"/>
+            <description>
+              <text>Operational state of candidate bootstrap router.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="address">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Address of a C-BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="scope">
+              <type name="bsr-scope"/>
+              <description>
+                <text>Whether the BSR is a BSR in an administrative domain.</text>
+              </description>
+            </leaf>
+            <leaf name="group-addr">
+              <type name="inet:ip-address-no-zone">
+                <ext:value-meaning>
+                  <ext:item value="0.0.0.0">
+                    <ext:meaning value="--"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Multicast group address. In IPv4, the value ranges from 239.0.0.0 to 239.255.255.255. In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+              </description>
+            </leaf>
+            <leaf name="group-mask-length">
+              <type name="uint32">
+                <range value="0..32"/>
+                <ext:value-meaning>
+                  <ext:item value="0">
+                    <ext:meaning value="--"/>
+                  </ext:item>
+                </ext:value-meaning>
+              </type>
+              <description>
+                <text>Mask length of a group address. The value is an integer ranging from 8 to 32.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <description>
+                <text>Priority of a C-BSR. The greater the value, the higher the priority. The value is an integer ranging from 0 to 255. The default value is 0.</text>
+              </description>
+            </leaf>
+            <leaf name="hash-lenth">
+              <type name="uint32">
+                <range value="0..32"/>
+              </type>
+              <description>
+                <text>Mask length in RP hash calculation. The value is an integer ranging from 0 to 32.</text>
+              </description>
+            </leaf>
+            <leaf name="fsm-state">
+              <type name="bsr-state"/>
+              <description>
+                <text>Status of a C-BSR.</text>
+              </description>
+            </leaf>
+            <leaf name="valid-flag">
+              <type name="c-bsr-valid-type"/>
+              <description>
+                <text>Whether the current C-BSR is valid (0: valid; 1: invalid).</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="elected-bsr-rps">
+          <config value="false"/>
+          <description>
+            <text>List of RP information about elected BSRs.</text>
+          </description>
+          <list name="elected-bsr-rp">
+            <key value="type rp-addr"/>
+            <description>
+              <text>Elected BSR RP state.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="rp-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>RP address.</text>
+              </description>
+            </leaf>
+            <leaf name="is-local-addr">
+              <type name="boolean"/>
+              <description>
+                <text>Whether the RP address is a local address.</text>
+              </description>
+            </leaf>
+            <leaf name="group-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Multicast group address. In IPv4, the value ranges from 239.0.0.0 to 239.255.255.255. In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+              </description>
+            </leaf>
+            <leaf name="group-mask-length">
+              <type name="uint32">
+                <range value="0..32"/>
+              </type>
+              <description>
+                <text>Mask length. In IPv4, the value ranges from 4 to 32. In IPv6, the value ranges from 8 to 128.</text>
+              </description>
+            </leaf>
+            <leaf name="priority">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <description>
+                <text>Priority of an RP. The greater the value, the higher the priority. The value is an integer ranging from 0 to 255. The default value is 0.</text>
+              </description>
+            </leaf>
+            <leaf name="up-time">
+              <type name="pub-type:time-tick"/>
+              <units name="s"/>
+              <description>
+                <text>Time since the C-RP was elected as the RP.</text>
+              </description>
+            </leaf>
+            <leaf name="expiry-time">
+              <type name="pub-type:time-tick"/>
+              <units name="s"/>
+              <description>
+                <text>Time after which an RP will expire, in seconds.</text>
+              </description>
+            </leaf>
+            <leaf name="bidir-enable">
+              <type name="boolean"/>
+              <description>
+                <text>Whether BIDIR-PIM is enabled on the RP.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="protocol">
+        <description>
+          <text>Configure PIM.</text>
+        </description>
+        <container name="instances">
+          <description>
+            <text>List of PIM configurations in the instance.</text>
+          </description>
+          <list name="instance">
+            <key value="type"/>
+            <description>
+              <text>Configure PIM instance.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="assert-holdtime">
+              <type name="uint32">
+                <range value="7..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="180"/>
+              <description>
+                <text>Timeout period during which PIM interfaces wait to receive Assert messages from the forwarder.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-holdtime">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="210"/>
+              <description>
+                <text>Holdtime for a Join/Prune message sent by a PIM interface. Commonly, the holdtime is 3.5 times longer than the interval for all the interfaces to send Join/Prune messages.</text>
+              </description>
+            </leaf>
+            <leaf name="probe-interval">
+              <type name="uint32">
+                <range value="1..1799"/>
+              </type>
+              <units name="s"/>
+              <must condition="(../probe-interval&lt;../reg-suppress-interval*0.5)"/>
+              <default value="5"/>
+              <description>
+                <text>Interval at which Probe messages are sent to an RP.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-timer-interval">
+              <type name="uint32">
+                <range value="1..18000"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Interval at which Join/Prune messages are sent. It must be shorter than the holdtime of Join/Prune messages.</text>
+              </description>
+            </leaf>
+            <leaf name="dr-priority">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <default value="1"/>
+              <description>
+                <text>DR election priority for a router. The greater the value, the higher the priority. The value is an integer ranging from 0 to 4294967295. The default value is 1.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-holdtime">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="105"/>
+              <description>
+                <text>Timeout period during which a PIM interface waits to receive Hello messages from its neighbors. It must be longer than the interval for PIM neighbors to send Hello messages.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-landelay">
+              <type name="uint16">
+                <range value="1..32767"/>
+              </type>
+              <units name="ms"/>
+              <default value="500"/>
+              <description>
+                <text>Delay for transmitting Prune messages on a shared network segment.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-interval">
+              <type name="uint32">
+                <range value="1..18000"/>
+              </type>
+              <units name="s"/>
+              <default value="30"/>
+              <description>
+                <text>Specifies the interval at which Hello messages are sent. It must be shorter than the timeout period of PIM neighbors.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-override">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <units name="ms"/>
+              <default value="2500"/>
+              <description>
+                <text>Interval at which the prune action in a Hello message is overridden.</text>
+              </description>
+            </leaf>
+            <leaf name="reg-checksum">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable a router to calculate the checksum based on all contents of a Register message. By default, the checksum is calculated based on the header of a Register message only.</text>
+              </description>
+            </leaf>
+            <leaf name="reg-suppress-interval">
+              <type name="uint32">
+                <range value="11..3600"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Timeout period during which a router remains in the registration suppression state.</text>
+              </description>
+            </leaf>
+            <leaf name="nbr-check-when-recv">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the PIM neighbor check function to check whether received Join/Prune and Assert messages are sent from a PIM neighbor. If not, these messages are discarded.
+By default, the PIM neighbor check function is disabled.</text>
+              </description>
+            </leaf>
+            <leaf name="nbr-check-when-send">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the PIM neighbor check function to check whether Join/Prune and Assert messages are to be sent to an IPv4/v6 PIM neighbor. If not, these messages are not sent. By default, the PIM neighbor check function is disabled for Join/Prune and Assert messages to be sent.</text>
+              </description>
+            </leaf>
+            <leaf name="reg-policy-name">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Policy for filtering Register messages. The value is an integer ranging from 3000 to 3999, or a string.</text>
+              </description>
+            </leaf>
+            <leaf name="ssm-policy-name">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for limiting the range of valid SSM group addresses. The value is an integer ranging from 2000 to 2999, or a string.</text>
+              </description>
+            </leaf>
+            <leaf name="src-policy-name">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Policy for filtering multicast entries based on source addresses or based on both source and group addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="source-life-time">
+              <type name="uint32">
+                <range value="60..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="210"/>
+              <description>
+                <text>Timeout period for (S, G) entries on a router.</text>
+              </description>
+            </leaf>
+            <leaf name="spt-switch-check-interval">
+              <type name="uint32">
+                <range value="15..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="15"/>
+              <description>
+                <text>Interval for checking the multicast message rate is configured. When the multicast message rate reaches the specified threshold, a switchover from the RPT to the SPT is performed. The value is an integer ranging from 15 to 65535, in seconds.</text>
+              </description>
+            </leaf>
+            <leaf name="packaging-jp-disable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the Join/Prune message packaging function. The efficiency for sending PIM Join/Prune messages in a package is higher than that for separately sending a large number of PIM Join/Prune messages. By default, a device sends PIM Join/Prune messages in a package.</text>
+              </description>
+            </leaf>
+            <leaf name="register-source-interface">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="../../../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+              <description>
+                <text>Source address of register packets.</text>
+              </description>
+            </leaf>
+            <leaf name="state-refresh-interval">
+              <when condition="../../../../../ni:name='_public_' and ../type='ipv4unicast'"/>
+              <type name="uint32">
+                <range value="1..255"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>The state-refresh-interval command sets the interval for sending PIM State-Refresh messages.</text>
+              </description>
+            </leaf>
+            <leaf name="state-refresh-rate-limit">
+              <when condition="../../../../../ni:name='_public_' and ../type='ipv4unicast'"/>
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="30"/>
+              <description>
+                <text>The state-refresh-rate-limit command sets the minimum period to wait before receiving the next PIM State-Refresh message.</text>
+              </description>
+            </leaf>
+            <leaf name="state-refresh-ttl">
+              <when condition="../../../../../ni:name='_public_' and ../type='ipv4unicast'"/>
+              <type name="uint32">
+                <range value="1..255"/>
+              </type>
+              <default value="255"/>
+              <description>
+                <text>The state-refresh-ttl command sets the TTL value for sending PIM State-Refresh messages.</text>
+              </description>
+            </leaf>
+            <leaf name="fast-reroute">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable PIM fast reroute.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-join-attr-enable">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable all PIM interfaces to send PIM Hello messages that carry the join attribute.</text>
+              </description>
+            </leaf>
+            <leaf name="clone-inherit-enable">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <must condition="../clone-inherit-enable='false' or ../fast-reroute='true'"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable cloned PIM (S, G) entries to inherit the outbound interfaces of (*, G) entries.</text>
+              </description>
+            </leaf>
+            <leaf name="gen-id-chang-enable">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable hello nsr genid-change.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-prune-holdtime">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="uint16">
+                <range value="1..300"/>
+              </type>
+              <units name="s"/>
+              <description>
+                <text>Set a delay in sending Prune messages to upstream devices.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-prune-policy-ipv4">
+              <when condition="../rpf-prune-holdtime"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Indicate a matching policy for multicast entries to be pruned.</text>
+              </description>
+            </leaf>
+            <leaf name="is-backup-rpf-switch-flow-based">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the function of allowing new interfaces connected to backup upstream devices to generate forwarding entries only after they receive multicast traffic from the backup upstream devices.</text>
+              </description>
+            </leaf>
+            <container name="spt-switchs">
+              <when condition="../type='ipv4unicast'"/>
+              <description>
+                <text>List of SPT switchover configurations.</text>
+              </description>
+              <container name="spt-switch-no-acl">
+                <description>
+                  <text>Configure SPT switchover configuration.</text>
+                </description>
+                <leaf name="spt-threshold-no-acl">
+                  <type name="uint32">
+                    <range value="1..4194304 | 4294967295"/>
+                    <ext:value-meaning>
+                      <ext:item value="4294967295">
+                        <ext:meaning value="infinity"/>
+                      </ext:item>
+                    </ext:value-meaning>
+                  </type>
+                  <units name="kbit/s"/>
+                  <description>
+                    <text>Multicast packet rate threshold that triggers the switchover from the RPT to the SPT. this threshold for all group that doesn't match any group policy.</text>
+                  </description>
+                </leaf>
+              </container>
+              <list name="spt-switch">
+                <key value="group-policy"/>
+                <ordered-by value="user"/>
+                <description>
+                  <text>Configure SPT switchover configuration.</text>
+                </description>
+                <leaf name="group-policy">
+                  <type name="leafref">
+                    <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+                  </type>
+                  <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+                  <description>
+                    <text>Name of a named ACL. If the parameter is not set, the threshold is applied to all multicast groups.</text>
+                  </description>
+                </leaf>
+                <leaf name="spt-threshold">
+                  <type name="uint32">
+                    <range value="1..4194304 | 4294967295"/>
+                    <ext:value-meaning>
+                      <ext:item value="4294967295">
+                        <ext:meaning value="infinity"/>
+                      </ext:item>
+                    </ext:value-meaning>
+                  </type>
+                  <units name="kbit/s"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Multicast packet rate threshold that triggers the switchover from the RPT to the SPT.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="anycast-rps">
+              <description>
+                <text>List of Anycast-RPs.</text>
+              </description>
+              <list name="anycast-rp">
+                <key value="rp-addr"/>
+                <max-elements value="4"/>
+                <description>
+                  <text>Configure Anycast-RP.</text>
+                </description>
+                <leaf name="rp-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Address of an Anycast-RP. This address must be a valid unicast IP address.
+In IPv4, the value is in dotted decimal notation. This address cannot be an address on the network segment 127.0.0.0/8.
+In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+                  </description>
+                </leaf>
+                <leaf name="local-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>The Anycast-RP address is a local Address. This address must be a valid unicast IP address.
+In IPv4, the value is in dotted decimal notation. This address cannot be an address on the network segment 127.0.0.0/8.
+In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+                  </description>
+                </leaf>
+                <container name="rp-peers">
+                  <description>
+                    <text>List of Anycast-RP peers.</text>
+                  </description>
+                  <list name="rp-peer">
+                    <key value="peer-ip-addr"/>
+                    <max-elements value="16"/>
+                    <description>
+                      <text>Configure Anycast-RP peer.</text>
+                    </description>
+                    <leaf name="peer-ip-addr">
+                      <type name="inet:ip-address-no-zone"/>
+                      <description>
+                        <text>Address of an Anycast-RP peer. This address must be a valid unicast IP address.
+In IPv4, the value is in dotted decimal notation. This address cannot be an address on the network segment 127.0.0.0/8.
+In IPv6, the value is in hexadecimal notation and in the format of FFxx:xxxx:xxxx::xxxx.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="forward-sa-msg">
+                      <when condition="../../../../../type='ipv4unicast'"/>
+                      <type name="boolean"/>
+                      <default value="false"/>
+                      <description>
+                        <text>Enable/disable the function of forwarding to Anycast-RP peers source information learned through SA messages.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="forward-policy">
+                      <when condition="../forward-sa-msg='true'"/>
+                      <type name="leafref">
+                        <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+                      </type>
+                      <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+                      <description>
+                        <text>Policy for filtering SA messages to be forwarded to Anycast-RP peers.</text>
+                      </description>
+                    </leaf>
+                  </list>
+                </container>
+              </list>
+            </container>
+            <container name="p2mp">
+              <when condition="../type='ipv4unicast'"/>
+              <description>
+                <text>Configure P2MP configuration.</text>
+              </description>
+              <leaf name="rpf-disable">
+                <type name="boolean"/>
+                <default value="false"/>
+                <description>
+                  <text>Enable/disable the RPF check for multicast entries. A policy can be configured to limit the range of multicast entries for which the RPF check is disabled. If a policy is not configured, the RPF check is disabled for all multicast entries. By default, the RPF check is enabled for all multicast entries.</text>
+                </description>
+              </leaf>
+              <leaf name="rpf-disable-policy">
+                <when condition="../rpf-disable='true'"/>
+                <type name="leafref">
+                  <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+                </type>
+                <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+                <description>
+                  <text>Policy for limiting the range of multicast entries for which the RPF check is disabled.</text>
+                </description>
+              </leaf>
+              <leaf name="source-proxy-enable">
+                <type name="boolean"/>
+                <default value="false"/>
+                <description>
+                  <text>Enable/disable multicast source proxy.</text>
+                </description>
+              </leaf>
+              <leaf name="source-proxy-policy">
+                <when condition="../source-proxy-enable='true'"/>
+                <type name="leafref">
+                  <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+                </type>
+                <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+                <description>
+                  <text>Policy for limiting the range of multicast entries for which multicast source proxy is enabled.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="vector">
+              <when condition="../type='ipv4unicast'"/>
+              <description>
+                <text>Configure Vector configuration.</text>
+              </description>
+              <leaf name="compatible-standard-enable">
+                <type name="boolean"/>
+                <default value="false"/>
+                <description>
+                  <text>Enable/disable a device to use the standard format defined in a relevant RFC to encapsulate Hello or Join/Prune messages carrying vector attributes. By default, a private format is used to encapsulate Hello or Join/Prune messages carrying vector attributes.</text>
+                </description>
+              </leaf>
+            </container>
+          </list>
+        </container>
+        <container name="interfaces">
+          <description>
+            <text>List of interface configurations.</text>
+          </description>
+          <list name="interface">
+            <key value="type if-name"/>
+            <description>
+              <text>Configure PIM configuration on the interface.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="../../../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+              <description>
+                <text>Interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="sm-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable PIM on an interface.</text>
+              </description>
+            </leaf>
+            <leaf name="dr-priority">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <default value="1"/>
+              <description>
+                <text>DR priority. The greater the value, the higher the priority.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-interval">
+              <type name="uint32">
+                <range value="1..18000"/>
+              </type>
+              <units name="s"/>
+              <default value="30"/>
+              <description>
+                <text>Interval at which Hello messages are sent. It must be shorter than the timeout period of PIM neighbors.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-holdtime">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="105"/>
+              <description>
+                <text>Timeout period during which a router waits for Hello messages sent from its PIM neighbors. It must be longer than the interval for PIM neighbors to send Hello messages.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-override">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <units name="ms"/>
+              <default value="2500"/>
+              <description>
+                <text>Interval at which the prune action in a Hello message is overridden.</text>
+              </description>
+            </leaf>
+            <leaf name="hello-lan-delay">
+              <type name="uint16">
+                <range value="1..32767"/>
+              </type>
+              <units name="ms"/>
+              <default value="500"/>
+              <description>
+                <text>Period from the time when a router receives a Prune message from a downstream device to the time when the router performs the prune action.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-timer-interval">
+              <type name="uint32">
+                <range value="1..18000"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Interval at which Join/Prune messages are sent. The interval must be shorter than the holdtime of Join/Prune messages.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-holdtime">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="210"/>
+              <description>
+                <text>Holdtime for Join/Prune messages sent by a router. The holdtime must be longer than the interval at which Join/Prune messages are sent.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-policy">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Policy for filtering Join/Prune messages.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-asm-policy">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="not(../jp-policy) or not(../jp-asm-policy)"/>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for filtering ASM Join/Prune messages.</text>
+              </description>
+            </leaf>
+            <leaf name="jp-ssm-policy">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="not(../jp-policy) or not(../jp-ssm-policy)"/>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+              <description>
+                <text>Policy for filtering SSM Join/Prune messages.</text>
+              </description>
+            </leaf>
+            <leaf name="nbr-policy">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="leafref">
+                <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+              </type>
+              <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+              <description>
+                <text>Policy for filtering PIM neighbors.</text>
+              </description>
+            </leaf>
+            <leaf name="assert-holdtime">
+              <type name="uint32">
+                <range value="7..65535"/>
+              </type>
+              <units name="s"/>
+              <default value="180"/>
+              <description>
+                <text>Timeout period during which PIM interfaces wait to receive Assert messages from the forwarder.</text>
+              </description>
+            </leaf>
+            <leaf name="require-gen-id">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable a PIM interface to deny Hello messages that do not carry generation IDs. By default, a PIM interface receives Hello messages that do not carry generation IDs.</text>
+              </description>
+            </leaf>
+            <leaf name="bsr-boundary">
+              <type name="bsr-boundary"/>
+              <default value="none"/>
+              <description>
+                <text>Boundary for a PIM domain. The value can be:
+0: no boundary; 1: bidirectional domain boundary; 2: inbound unidirectional domain boundary.</text>
+              </description>
+            </leaf>
+            <leaf name="bfd-enable">
+              <type name="boolean"/>
+              <must condition="../bfd-enable='false' or (../sm-enable='true' and ../is-silent='false')"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable PIM BFD on an interface. By default, PIM BFD is not enabled on an interface.</text>
+              </description>
+            </leaf>
+            <leaf name="bfd-multiplier">
+              <type name="uint32">
+                <range value="3..50"/>
+              </type>
+              <default value="3"/>
+              <description>
+                <text>Local detect multiplier for BFD messages. The value is an integer ranging from 3 to 50. The default value is 3.</text>
+              </description>
+            </leaf>
+            <leaf name="is-silent">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the PIM silent function on an interface. By default, PIM silent is disabled on an interface.</text>
+              </description>
+            </leaf>
+            <leaf name="dr-swt-delay-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable DR switchover delay on an interface. By default, this function is disabled on an interface.</text>
+              </description>
+            </leaf>
+            <leaf name="dr-swt-delay-interval">
+              <when condition="../dr-swt-delay-enable='true'"/>
+              <type name="uint32">
+                <range value="10..3600"/>
+              </type>
+              <units name="s"/>
+              <default value="10"/>
+              <description>
+                <text>Delay for a DR switchover. The setting is ineffective if the DR switchover delay function is not enabled.</text>
+              </description>
+            </leaf>
+            <leaf name="mode">
+              <type name="pim-mode"/>
+              <default value="sparse"/>
+              <description>
+                <text>PIM enable mode.</text>
+              </description>
+            </leaf>
+            <leaf name="state-refresh-capable">
+              <when condition="../../../../../ni:name='_public_' and ../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="true"/>
+              <description>
+                <text>Enable/disable state-refresh.</text>
+              </description>
+            </leaf>
+            <leaf name="graft-retry">
+              <when condition="../../../../../ni:name='_public_' and ../type='ipv4unicast'"/>
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <default value="3"/>
+              <description>
+                <text>The pim timer graft-retry command sets the interval for retransmitting Graft messages on an interface.</text>
+              </description>
+            </leaf>
+            <leaf name="ignore-dr">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <must condition="../ignore-dr='false' or (../is-silent='false' and ../dr-swt-delay-enable='false')"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the function of ignoring the DR state of PIM.</text>
+              </description>
+            </leaf>
+            <leaf name="ignore-assert">
+              <when condition="../type='ipv4unicast'"/>
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the function of ignoring the ASSERT state of PIM.</text>
+              </description>
+            </leaf>
+            <leaf name="single-tag-fwd-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the function of forwarding PIM Hello, Join/Prune, and Assert messages received on QinQ/dot1q termination sub-interfaces. This function can be enabled only on the sub-interfaces configured with single Q pair QinQ encapsulation or single VLAN dot1q encapsulation.</text>
+              </description>
+            </leaf>
+            <container name="if-infos">
+              <config value="false"/>
+              <description>
+                <text>Operational state of PIM interface.</text>
+              </description>
+              <leaf name="pim-version">
+                <type name="uint32">
+                  <range value="1..2"/>
+                </type>
+                <description>
+                  <text>Version of the PIM running on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="state">
+                <type name="interface-state"/>
+                <description>
+                  <text>Status of an interface: Up or Down.</text>
+                </description>
+              </leaf>
+              <leaf name="nbr-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of PIM neighbors on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="dr-priority">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>DR priority.</text>
+                </description>
+              </leaf>
+              <leaf name="dr-addr">
+                <type name="inet:ip-address-no-zone"/>
+                <description>
+                  <text>DR address.</text>
+                </description>
+              </leaf>
+              <leaf name="hello-interval">
+                <type name="uint32">
+                  <range value="1..18000"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>Interval at which Hello messages are sent.</text>
+                </description>
+              </leaf>
+              <leaf name="hello-holdtime">
+                <type name="uint16">
+                  <range value="1..65535"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>Timeout period during which a router waits to receive Hello messages from its neighbors.</text>
+                </description>
+              </leaf>
+              <leaf name="assert-holdtime">
+                <type name="uint32">
+                  <range value="7..2147483647"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>Timeout period during which PIM interfaces wait to receive Assert messages from the forwarder.</text>
+                </description>
+              </leaf>
+              <leaf name="jp-interval">
+                <type name="uint32">
+                  <range value="1..2147483647"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>Interval at which Join/Prune messages are sent.</text>
+                </description>
+              </leaf>
+              <leaf name="jp-holdtime">
+                <type name="uint32">
+                  <range value="1..65535"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>Holdtime for Join/Prune messages sent by a router.</text>
+                </description>
+              </leaf>
+              <leaf name="negotiated-msg-delay">
+                <type name="uint16">
+                  <range value="1..32767"/>
+                </type>
+                <units name="ms"/>
+                <description>
+                  <text>Negotiated delay of the messages transmitted on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="negotiated-override-interval">
+                <type name="uint16">
+                  <range value="1..65535"/>
+                </type>
+                <units name="ms"/>
+                <description>
+                  <text>Negotiated overriding interval on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="gen-id">
+                <type name="pub-type:hex-binary"/>
+                <description>
+                  <text>Generation ID on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="non-dr-nbr-count">
+                <type name="uint32"/>
+                <description>
+                  <text>Number of non-DR neighbors.</text>
+                </description>
+              </leaf>
+              <leaf name="non-landelay-nbr-count">
+                <type name="uint32"/>
+                <description>
+                  <text>Number of neighbors that do not use LAN delay.</text>
+                </description>
+              </leaf>
+              <leaf name="non-join-attribute-nbr-sount">
+                <type name="uint32"/>
+                <description>
+                  <text>Number of neighbors that do not use the Join attribute.</text>
+                </description>
+              </leaf>
+              <leaf name="join-attribute">
+                <type name="boolean"/>
+                <description>
+                  <text>Negotiated Join attribute of the messages transmitted on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="offer-interval">
+                <type name="uint32">
+                  <range value="1..2147483647"/>
+                </type>
+                <units name="ms"/>
+                <description>
+                  <text>Interval at which Offer messages are sent.</text>
+                </description>
+              </leaf>
+              <leaf name="election-robust-count">
+                <type name="uint32">
+                  <range value="1..2147483647"/>
+                </type>
+                <description>
+                  <text>DF election robustness.</text>
+                </description>
+              </leaf>
+              <leaf name="backoff-interval">
+                <type name="uint32">
+                  <range value="1..2147483647"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>Interval at which backoff messages are sent.</text>
+                </description>
+              </leaf>
+              <leaf name="ipsec-name">
+                <type name="string">
+                  <length value="1..15"/>
+                </type>
+                <description>
+                  <text>Description of an SA. The value is a string of 1 to 15 characters.</text>
+                </description>
+              </leaf>
+              <leaf name="ipsec-type">
+                <type name="ipsec-type"/>
+                <description>
+                  <text>Hello options based on the IPsec type.</text>
+                </description>
+              </leaf>
+              <leaf name="pim-mode">
+                <type name="pim-mode"/>
+                <description>
+                  <text>PIM mode.</text>
+                </description>
+              </leaf>
+              <leaf name="state-refresh-enable">
+                <type name="boolean"/>
+                <description>
+                  <text>State-refresh enable.</text>
+                </description>
+              </leaf>
+              <leaf name="state-refresh-interval">
+                <type name="uint32">
+                  <range value="1..255"/>
+                </type>
+                <units name="s"/>
+                <description>
+                  <text>The state-refresh-interval command sets the interval for sending PIM State-Refresh messages.</text>
+                </description>
+              </leaf>
+              <leaf name="graft-retry">
+                <type name="uint32">
+                  <range value="1..65535"/>
+                </type>
+                <description>
+                  <text>The pim timer graft-retry command sets the interval for retransmitting Graft messages on an interface.</text>
+                </description>
+              </leaf>
+              <leaf name="negotiated-state-refresh">
+                <type name="boolean"/>
+                <description>
+                  <text>Negotiation state-refresh capability.</text>
+                </description>
+              </leaf>
+              <leaf name="ignore-dr-state">
+                <type name="boolean"/>
+                <description>
+                  <text>Ignores the DR state of PIM.</text>
+                </description>
+              </leaf>
+              <leaf name="ignore-assert">
+                <type name="boolean"/>
+                <description>
+                  <text>Does not trigger the ASSERT state of PIM.</text>
+                </description>
+              </leaf>
+              <leaf name="snooping-enable">
+                <type name="boolean"/>
+                <description>
+                  <text>Whether to enable Pim Snooping.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="nbrs">
+              <config value="false"/>
+              <description>
+                <text>List of PIM neighbor information.</text>
+              </description>
+              <list name="nbr">
+                <key value="nbr-addr"/>
+                <description>
+                  <text>PIM neighbor state.</text>
+                </description>
+                <leaf name="nbr-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Address of a PIM neighbor.</text>
+                  </description>
+                </leaf>
+                <leaf name="up-time">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Time since the PIM neighbor relationship was established.</text>
+                  </description>
+                </leaf>
+                <leaf name="expire-time">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Time when a PIM neighbor relationship expires.</text>
+                  </description>
+                </leaf>
+                <leaf name="dr-priority-existence">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Whether a DR priority exists.</text>
+                  </description>
+                </leaf>
+                <leaf name="dr-priority">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <description>
+                    <text>DR priority.</text>
+                  </description>
+                </leaf>
+                <leaf name="gen-id-existence">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Whether a generation ID exists.</text>
+                  </description>
+                </leaf>
+                <leaf name="gen-id">
+                  <type name="pub-type:hex-binary"/>
+                  <description>
+                    <text>Random number of the PIM neighbor status.</text>
+                  </description>
+                </leaf>
+                <leaf name="holdtime">
+                  <type name="uint16">
+                    <range value="1..65535"/>
+                  </type>
+                  <units name="s"/>
+                  <description>
+                    <text>TTL of a PIM neighbor relationship. The value 65535 indicates that the PIM neighbor relationship never times out.</text>
+                  </description>
+                </leaf>
+                <leaf name="lan-delay-existence">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Whether a LAN delay for transmitting Prune messages exists.</text>
+                  </description>
+                </leaf>
+                <leaf name="lan-delay">
+                  <type name="uint16">
+                    <range value="1..32767"/>
+                  </type>
+                  <units name="ms"/>
+                  <description>
+                    <text>LAN delay for transmitting Prune messages.</text>
+                  </description>
+                </leaf>
+                <leaf name="override-interval">
+                  <type name="uint32">
+                    <range value="1..65535"/>
+                  </type>
+                  <units name="ms"/>
+                  <description>
+                    <text>Interval for overriding the Prune action.</text>
+                  </description>
+                </leaf>
+                <leaf name="join-attribute">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Whether the Join attribute function is enabled on a PIM neighbor.</text>
+                  </description>
+                </leaf>
+                <leaf name="bidir-enable">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Whether BIDIR-PIM is enabled on the neighbor.</text>
+                  </description>
+                </leaf>
+                <leaf name="state-refresh-interval">
+                  <type name="uint32">
+                    <range value="1..255"/>
+                  </type>
+                  <units name="s"/>
+                  <description>
+                    <text>The state-refresh-interval command sets the interval for sending PIM State-Refresh messages.</text>
+                  </description>
+                </leaf>
+                <container name="second-addrs">
+                  <when condition="../../../type='ipv6unicast'"/>
+                  <description>
+                    <text>List of secondary address information.</text>
+                  </description>
+                  <list name="second-addr">
+                    <key value="address"/>
+                    <description>
+                      <text>Secondary address state.</text>
+                    </description>
+                    <leaf name="address">
+                      <type name="inet:ip-address-no-zone"/>
+                      <description>
+                        <text>Secondary address of a PIM neighbor.</text>
+                      </description>
+                    </leaf>
+                  </list>
+                </container>
+              </list>
+            </container>
+            <container name="bfd-sessions">
+              <config value="false"/>
+              <description>
+                <text>List of PIM BFD session information.</text>
+              </description>
+              <list name="bfd-session">
+                <key value="nbr-addr"/>
+                <description>
+                  <text>Operational state of a PIM BFD session.</text>
+                </description>
+                <leaf name="nbr-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Address of a neighbor.</text>
+                  </description>
+                </leaf>
+                <leaf name="actual-minimum-tx-interval">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <units name="ms"/>
+                  <description>
+                    <text>Actual minimum interval at which BFD packets are sent.</text>
+                  </description>
+                </leaf>
+                <leaf name="actual-minimum-rx-interval">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <units name="ms"/>
+                  <description>
+                    <text>Actual minimum interval at which BFD packets are received.</text>
+                  </description>
+                </leaf>
+                <leaf name="actual-multiplier">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <description>
+                    <text>Actual local detection multiplier.</text>
+                  </description>
+                </leaf>
+                <leaf name="local-port">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <description>
+                    <text>Local discriminator of a BFD session.</text>
+                  </description>
+                </leaf>
+                <leaf name="remote-port">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <description>
+                    <text>Remote discriminator of a BFD session.</text>
+                  </description>
+                </leaf>
+                <leaf name="bfd-status">
+                  <type name="bfd-status"/>
+                  <description>
+                    <text>Status of a PIM BFD session.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+        <container name="routings">
+          <config value="false"/>
+          <description>
+            <text>List of PIM routing information.</text>
+          </description>
+          <list name="routing">
+            <key value="type src-addr grp-addr"/>
+            <description>
+              <text>PIM routing state.</text>
+            </description>
+            <leaf name="type">
+              <type name="addr-family-type"/>
+              <description>
+                <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+              </description>
+            </leaf>
+            <leaf name="src-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Multicast source address.</text>
+              </description>
+            </leaf>
+            <leaf name="grp-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Multicast group address.</text>
+              </description>
+            </leaf>
+            <leaf name="protocol">
+              <type name="sg-mode"/>
+              <description>
+                <text>PIM protocol type.</text>
+              </description>
+            </leaf>
+            <leaf name="rp-mode-type">
+              <type name="rp-type"/>
+              <description>
+                <text>RP type.</text>
+              </description>
+            </leaf>
+            <leaf name="rp-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>RP address.</text>
+              </description>
+            </leaf>
+            <leaf name="rp-is-local-addr">
+              <type name="boolean"/>
+              <description>
+                <text>Whether the RP address is a local address.</text>
+              </description>
+            </leaf>
+            <leaf name="dg-flag">
+              <type name="string">
+                <length value="0..49"/>
+              </type>
+              <description>
+                <text>Flag of the PIM (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="sg-uptime">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Time since the PIM (S, G) entry was generated.</text>
+              </description>
+            </leaf>
+            <leaf name="inbound-interface">
+              <type name="pub-type:if-name"/>
+              <description>
+                <text>Inbound interface of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="src-vrf-name">
+              <type name="pub-type:vrf-name"/>
+              <description>
+                <text>RPF Source VPN Instance.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-vector-rd">
+              <type name="string">
+                <length value="3..21"/>
+              </type>
+              <description>
+                <text>RD of the RPF vector.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-vector-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Address of the RPF vector.</text>
+              </description>
+            </leaf>
+            <leaf name="elected-vector-rd">
+              <type name="string">
+                <length value="3..21"/>
+              </type>
+              <description>
+                <text>RD of the elected vector.</text>
+              </description>
+            </leaf>
+            <leaf name="elected-vector-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Address of elected Vector.</text>
+              </description>
+            </leaf>
+            <leaf name="up-nbr-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Upstream neighbor address of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>RPF address of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="reference-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Reference address of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-mask-len">
+              <type name="uint32">
+                <range value="0..32"/>
+              </type>
+              <description>
+                <text>Mask length of an RPF route.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-metric">
+              <type name="uint32">
+                <range value="0..65535"/>
+              </type>
+              <description>
+                <text>Metric of an RPF route.</text>
+              </description>
+            </leaf>
+            <leaf name="rpf-metric-priority">
+              <type name="uint32">
+                <range value="0..65535"/>
+              </type>
+              <description>
+                <text>Metric priority of an RPF route.</text>
+              </description>
+            </leaf>
+            <leaf name="backup-inbound-if">
+              <type name="string">
+                <length value="0..48"/>
+              </type>
+              <description>
+                <text>Backup inbound interface of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="backup-nbr-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Backup upstream neighbor address of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="backup-rpf-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Backup RPF address of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="up-status">
+              <type name="sg-up-state"/>
+              <description>
+                <text>Upstream Up status of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="upstream-expiration-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Wait time before Join messages are sent to the upstream interface.</text>
+              </description>
+            </leaf>
+            <leaf name="rpt-status">
+              <type name="rpt-up-state"/>
+              <description>
+                <text>RPT status.</text>
+              </description>
+            </leaf>
+            <leaf name="rpt-timeout-period">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>RPT timeout period.</text>
+              </description>
+            </leaf>
+            <leaf name="registration-status">
+              <type name="dr-register-state"/>
+              <description>
+                <text>Registration status.</text>
+              </description>
+            </leaf>
+            <leaf name="registration-stop-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Time when the registration stops.</text>
+              </description>
+            </leaf>
+            <leaf name="graft-retry-expiration-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Graft retry expiration time of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="prune-limit-expiration-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Prune limit expiration time of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="override-expiration-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Override expiration time of the (S, G) entry.</text>
+              </description>
+            </leaf>
+            <leaf name="backup-upstream-expiration-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Wait time before Join messages are sent to the backup upstream interface.</text>
+              </description>
+            </leaf>
+            <leaf name="user-id">
+              <type name="uint32"/>
+              <description>
+                <text>User ID.</text>
+              </description>
+            </leaf>
+            <leaf name="original-src-addr">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Original source information.</text>
+              </description>
+            </leaf>
+            <container name="downstreams">
+              <description>
+                <text>List of downstream information.</text>
+              </description>
+              <list name="downstream">
+                <key value="if-name"/>
+                <description>
+                  <text>Downstream statistics.</text>
+                </description>
+                <leaf name="if-name">
+                  <type name="string">
+                    <length value="0..48"/>
+                  </type>
+                  <description>
+                    <text>Name of the downstream interface.</text>
+                  </description>
+                </leaf>
+                <leaf name="protocol-type">
+                  <type name="string">
+                    <length value="0..48"/>
+                  </type>
+                  <description>
+                    <text>Type of PIM protocol configured on the downstream interface.</text>
+                  </description>
+                </leaf>
+                <leaf name="up-time">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Time since the interface was added to the downstream interface list.</text>
+                  </description>
+                </leaf>
+                <leaf name="timeout-period">
+                  <type name="pub-type:time-tick">
+                    <ext:value-meaning>
+                      <ext:item value="4294967295">
+                        <ext:meaning value="never"/>
+                      </ext:item>
+                    </ext:value-meaning>
+                  </type>
+                  <description>
+                    <text>Timeout period of the downstream interface.</text>
+                  </description>
+                </leaf>
+                <leaf name="dr-status">
+                  <type name="boolean"/>
+                  <description>
+                    <text>DR status.</text>
+                  </description>
+                </leaf>
+                <leaf name="downstream">
+                  <type name="sg-down-state"/>
+                  <description>
+                    <text>Downstream status.</text>
+                  </description>
+                </leaf>
+                <leaf name="downstream-ppt">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Timeout period of the downstream PPT.</text>
+                  </description>
+                </leaf>
+                <leaf name="assert-state-machine">
+                  <type name="assert-state"/>
+                  <description>
+                    <text>Assert state machine.</text>
+                  </description>
+                </leaf>
+                <leaf name="assert-timeout-period">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Assert timeout period.</text>
+                  </description>
+                </leaf>
+                <leaf name="assert-winner-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Address of an assert winner.</text>
+                  </description>
+                </leaf>
+                <leaf name="assert-winner-metric">
+                  <type name="uint32">
+                    <range value="0..65535"/>
+                  </type>
+                  <description>
+                    <text>Metric of an assert winner.</text>
+                  </description>
+                </leaf>
+                <leaf name="assert-winner-metric-priority">
+                  <type name="uint32">
+                    <range value="0..65535"/>
+                  </type>
+                  <description>
+                    <text>Metric priority of an assert winner.</text>
+                  </description>
+                </leaf>
+                <leaf name="local-receiver-exist">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Whether local receivers exist.</text>
+                  </description>
+                </leaf>
+                <leaf name="rpt-status">
+                  <type name="sg-rpt-ds-state"/>
+                  <description>
+                    <text>RPT status.</text>
+                  </description>
+                </leaf>
+                <leaf name="rpt-state-machine-ppt">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>PPT time of the RPT state machine.</text>
+                  </description>
+                </leaf>
+                <leaf name="rpt-timeout-period">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>RPT timeout period.</text>
+                  </description>
+                </leaf>
+                <leaf name="vector-attribute-status">
+                  <type name="rt-attribute-state"/>
+                  <description>
+                    <text>Downstream vector attribute state.</text>
+                  </description>
+                </leaf>
+                <leaf name="elected-vector">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Downstream elected vector.</text>
+                  </description>
+                </leaf>
+                <leaf name="elected-vector-nbr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Downstream elected vector neighbor address.</text>
+                  </description>
+                </leaf>
+                <leaf name="vector-num">
+                  <type name="uint32">
+                    <range value="0..65535"/>
+                  </type>
+                  <description>
+                    <text>Number of vectors.</text>
+                  </description>
+                </leaf>
+                <leaf name="ignore-dr-status">
+                  <type name="boolean"/>
+                  <default value="false"/>
+                  <description>
+                    <text>Ignores DR status.</text>
+                  </description>
+                </leaf>
+                <container name="vectors">
+                  <description>
+                    <text>List of vector state.</text>
+                  </description>
+                  <list name="vector">
+                    <key value="nbr-addr vector-addr"/>
+                    <description>
+                      <text>Vector state.</text>
+                    </description>
+                    <leaf name="nbr-addr">
+                      <type name="inet:ip-address-no-zone"/>
+                      <description>
+                        <text>Neighbor Address.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="vector-addr">
+                      <type name="inet:ip-address-no-zone"/>
+                      <description>
+                        <text>Address of a neighbor's elected vector.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="vector-rd">
+                      <type name="string">
+                        <length value="3..21"/>
+                      </type>
+                      <description>
+                        <text>Vector RDs of neighbors.</text>
+                      </description>
+                    </leaf>
+                    <leaf name="timeout-period">
+                      <type name="pub-type:time-tick"/>
+                      <description>
+                        <text>Timeout period of the vector.</text>
+                      </description>
+                    </leaf>
+                    <container name="vector-hop-addrs">
+                      <description>
+                        <text>List of hop addresses of vectors.</text>
+                      </description>
+                      <list name="vector-hop-addr">
+                        <key value="vector-addr"/>
+                        <description>
+                          <text>Statistics of hop address.</text>
+                        </description>
+                        <leaf name="vector-addr">
+                          <type name="inet:ip-address-no-zone"/>
+                          <description>
+                            <text>Each hop address of a vector.</text>
+                          </description>
+                        </leaf>
+                        <leaf name="sequence-num">
+                          <type name="uint32"/>
+                          <description>
+                            <text>Sequence number.</text>
+                          </description>
+                        </leaf>
+                      </list>
+                    </container>
+                  </list>
+                </container>
+              </list>
+            </container>
+            <container name="recv-vrfs">
+              <description>
+                <text>List of receiver VPN instance information.</text>
+              </description>
+              <list name="recv-vrf">
+                <key value="vrf-name"/>
+                <description>
+                  <text>Statistics of receiver VPN instance.</text>
+                </description>
+                <leaf name="vrf-name">
+                  <type name="pub-type:vrf-name"/>
+                  <description>
+                    <text>Receiver VPN instance.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="pim"/>
+</module>

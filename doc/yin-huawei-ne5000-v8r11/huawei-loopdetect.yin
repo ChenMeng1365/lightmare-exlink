@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-loopdetect"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:loopdetect="urn:huawei:yang:huawei-loopdetect"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-loopdetect"/>
+  <prefix value="loopdetect"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Loopdetect.</text>
+  </description>
+  <revision date="2020-03-06">
+    <description>
+      <text>Change description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-08">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="vlan"/>
+  <container name="loopdetect">
+    <description>
+      <text>Loop detection.</text>
+    </description>
+    <container name="ldetect-global">
+      <presence value="Enable global loop-detect."/>
+      <description>
+        <text>Enable/disable global loop-detect.</text>
+      </description>
+      <leaf name="loose-identifier">
+        <type name="string">
+          <length value="1..16"/>
+        </type>
+        <description>
+          <text>Global loop-detect loose identifier.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="trigger-detect">
+      <description>
+        <text>Configure trigger detect.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>Configure global auto loop detection.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable global auto loop detection.</text>
+          </description>
+        </leaf>
+        <leaf name="min-slot-up-time">
+          <type name="uint32">
+            <range value="1..100"/>
+          </type>
+          <units name="min"/>
+          <default value="30"/>
+          <description>
+            <text>Min slot up time.</text>
+          </description>
+        </leaf>
+        <leaf name="min-port-up-time">
+          <type name="uint32">
+            <range value="1..600"/>
+          </type>
+          <units name="min"/>
+          <default value="10"/>
+          <description>
+            <text>Min port up time.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Interface.</text>
+    </description>
+    <container name="loopdetect">
+      <description>
+        <text>Configure loop detection.</text>
+      </description>
+      <container name="mac-withdraw">
+        <presence value="create loopdetect-mac-withdraw"/>
+        <description>
+          <text>Enable/disable loop-detect MAC-withdraw.</text>
+        </description>
+      </container>
+      <container name="loopback-detect">
+        <presence value="create  loopback-detect"/>
+        <description>
+          <text>Enable/disable loopback detect.</text>
+        </description>
+        <leaf name="block-time">
+          <type name="uint32">
+            <range value="5..1000"/>
+          </type>
+          <units name="s"/>
+          <default value="10"/>
+          <description>
+            <text>Loopback detect block time.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="loop-detect">
+        <when condition="/loopdetect:loopdetect/loopdetect:ldetect-global"/>
+        <presence value="create loop-detect"/>
+        <description>
+          <text>Enable/disable loop detect instance.</text>
+        </description>
+        <leaf name="block-time-type">
+          <type name="enumeration">
+            <enum name="perp-block-time">
+              <value value="1"/>
+              <description>
+                <text>Perpetual block time.</text>
+              </description>
+            </enum>
+            <enum name="norm-block-time">
+              <value value="2"/>
+              <description>
+                <text>Normal block time.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Loop detect block time tpye.</text>
+          </description>
+        </leaf>
+        <leaf name="block-time-value">
+          <when condition="../block-time-type='norm-block-time'"/>
+          <type name="uint16">
+            <range value="1..255"/>
+          </type>
+          <units name="s"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Block time.</text>
+          </description>
+        </leaf>
+        <leaf name="trigger-down">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable loop detect triggerdown.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-priority">
+          <type name="uint32">
+            <range value="0..7"/>
+          </type>
+          <default value="6"/>
+          <description>
+            <text>Loop-detect protocol packet priority.</text>
+          </description>
+        </leaf>
+        <leaf name="only-alarm">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable only send alarm with the interface block.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

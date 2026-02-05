@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-if-tunnel"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-tun="http://openconfig.net/yang/interfaces/tunnel"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-ip="http://openconfig.net/yang/interfaces/ip">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/interfaces/tunnel"/>
+  <prefix value="oc-tun"/>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-if-ip">
+    <prefix value="oc-ip"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This model adds extensions to the OpenConfig interfaces
+model to configure tunnel interfaces on a network
+device.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.1.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.1.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-01-05">
+    <description>
+      <text>Initial tunnel model</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="tunnel-top">
+    <description>
+      <text>Top-level grouping for parameters related to
+a tunnel interface.</text>
+    </description>
+    <container name="tunnel">
+      <description>
+        <text>In the case that the interface is logical tunnel
+interface, the parameters for the tunnel are
+specified within this subtree. Tunnel interfaces
+have only a single logical subinterface associated
+with them.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters associated with the
+tunnel interface</text>
+        </description>
+        <uses name="tunnel-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state parameters associated with
+the tunnel interface.</text>
+        </description>
+        <uses name="tunnel-config"/>
+      </container>
+      <uses name="oc-ip:ipv4-top"/>
+      <uses name="oc-ip:ipv6-top"/>
+    </container>
+  </grouping>
+  <grouping name="tunnel-config">
+    <description>
+      <text>Configuraton parameters relating to a tunnel
+interface.</text>
+    </description>
+    <leaf name="src">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>The source address that should be used for the
+tunnel.</text>
+      </description>
+    </leaf>
+    <leaf name="dst">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>The destination address for the tunnel.</text>
+      </description>
+    </leaf>
+    <leaf name="ttl">
+      <type name="uint8">
+        <range value="1..255"/>
+      </type>
+      <description>
+        <text>The time-to-live (or hop limit) that should be utilised
+for the IP packets used for the tunnel transport.</text>
+      </description>
+    </leaf>
+    <leaf name="gre-key">
+      <type name="uint32"/>
+      <description>
+        <text>The GRE key to be specified for the tunnel. The
+key is used to identify a traffic flow within
+a tunnel.</text>
+      </description>
+      <reference>
+        <text>RFC2890: Key and Sequence Number Extensions to GRE</text>
+      </reference>
+    </leaf>
+  </grouping>
+  <augment target-node="/oc-if:interfaces/oc-if:interface">
+    <description>
+      <text>Augment to add tunnel configuration to interfaces</text>
+    </description>
+    <uses name="tunnel-top"/>
+  </augment>
+</module>

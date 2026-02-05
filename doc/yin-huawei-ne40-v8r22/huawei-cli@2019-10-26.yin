@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-cli"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cli="urn:huawei:yang:huawei-cli"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:huawei:yang:huawei-cli"/>
+  <prefix value="cli"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>CLI window configuration.</text>
+  </description>
+  <revision date="2019-10-26">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="cli"/>
+  <typedef name="processing-status-type">
+    <type name="enumeration">
+      <enum name="initial">
+        <value value="0"/>
+        <description>
+          <text>The diagnostic information generation has not been performed since this startup.</text>
+        </description>
+      </enum>
+      <enum name="processing">
+        <value value="1"/>
+        <description>
+          <text>The diagnostic information generation is processing.</text>
+        </description>
+      </enum>
+      <enum name="completed">
+        <value value="2"/>
+        <description>
+          <text>The diagnostic information generation is completed successfully.</text>
+        </description>
+      </enum>
+      <enum name="failed">
+        <value value="3"/>
+        <description>
+          <text>The diagnostic information generation is completed unsuccessfully.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of diagnostic information generation processing status.</text>
+    </description>
+  </typedef>
+  <typedef name="fail-reason-type">
+    <type name="enumeration">
+      <enum name="no-error">
+        <value value="0"/>
+        <description>
+          <text>No error.</text>
+        </description>
+      </enum>
+      <enum name="prepare-failed">
+        <value value="1"/>
+        <description>
+          <text>Failed to prepare for execution.</text>
+        </description>
+      </enum>
+      <enum name="command-locked">
+        <value value="2"/>
+        <description>
+          <text>Diagnostic information command is being locked now by other method, please wait for a moment.</text>
+        </description>
+      </enum>
+      <enum name="diag-source-error">
+        <value value="3"/>
+        <description>
+          <text>There are some errors in the diagnostic commands to be executed.</text>
+        </description>
+      </enum>
+      <enum name="save-diag-file-failed">
+        <value value="4"/>
+        <description>
+          <text>Failed to save the diagnosis file.</text>
+        </description>
+      </enum>
+      <enum name="cpu-high-end">
+        <value value="5"/>
+        <description>
+          <text>The command execution failed because the CPU usage could not fall below 70% within 300s.</text>
+        </description>
+      </enum>
+      <enum name="internal-error">
+        <value value="6"/>
+        <description>
+          <text>An error occurred in the internal processing.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of failed reason.</text>
+    </description>
+  </typedef>
+  <container name="cli">
+    <description>
+      <text>CLI window configuration.</text>
+    </description>
+    <container name="header">
+      <description>
+        <text>Configure the header displayed upon user login or session startup.</text>
+      </description>
+      <choice name="login-information">
+        <description>
+          <text>Login authentication header, which is displayed before a user enters the user name and password in the CLI window.</text>
+        </description>
+        <case name="head-login-text">
+          <description>
+            <text>Specify the information of login banner.</text>
+          </description>
+          <leaf name="login-text">
+            <type name="string">
+              <length value="1..478"/>
+            </type>
+            <description>
+              <text>Text of a login authentication header.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="head-login-file">
+          <description>
+            <text>Specify the filename of login banner.</text>
+          </description>
+          <leaf name="login-file">
+            <type name="string">
+              <length value="1..64"/>
+              <pattern value="(\w+)(:/)(\w.*)"/>
+            </type>
+            <description>
+              <text>Name of a login authentication header file.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <choice name="shell-information">
+        <description>
+          <text>Session startup header, which is displayed after a user enters the user name and password in the CLI window.</text>
+        </description>
+        <case name="head-shell-text">
+          <description>
+            <text>Specify the information of shell banner.</text>
+          </description>
+          <leaf name="shell-text">
+            <type name="string">
+              <length value="1..478"/>
+            </type>
+            <description>
+              <text>Text of a session startup header.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="head-shell-file">
+          <description>
+            <text>Specify the filename of shell banner.</text>
+          </description>
+          <leaf name="shell-file">
+            <type name="string">
+              <length value="1..64"/>
+              <pattern value="(\w+)(:/)(\w.*)"/>
+            </type>
+            <description>
+              <text>Name of a session startup header file.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+    </container>
+    <container name="query-diagnose-information-generate-process">
+      <config value="false"/>
+      <description>
+        <text>Operational state of diagnose information generation.</text>
+      </description>
+      <leaf name="processsing-status">
+        <type name="processing-status-type"/>
+        <description>
+          <text>Processing status.</text>
+        </description>
+      </leaf>
+      <leaf name="fail-reason">
+        <type name="fail-reason-type"/>
+        <must condition="(../processsing-status='failed')"/>
+        <description>
+          <text>Fail reason of last query diagnose information.</text>
+        </description>
+      </leaf>
+      <leaf name="last-generate-time">
+        <type name="yang:date-and-time"/>
+        <must condition="(../processsing-status!='initial')"/>
+        <description>
+          <text>Last time of query diagnose information.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <rpc name="generate-diagnose-information">
+    <description>
+      <text>Generate diagnose information.</text>
+    </description>
+  </rpc>
+</module>

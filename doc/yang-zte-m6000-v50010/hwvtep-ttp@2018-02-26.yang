@@ -1,0 +1,206 @@
+module hwvtep-ttp{
+  yang-version 1;
+  namespace "urn:hwvtep:ttp:config:yang";
+  prefix "hwvtep-ttp";
+
+  import ietf-inet-types {
+     prefix inet ;
+  }
+  description
+        "hwvtep ttp netconf yang module,without vrf and vlan configuration";
+  revision "2018-02-26" ;
+  typedef datapath-id-type {
+    type string {
+      pattern '[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}' ;
+    }
+  }
+  typedef OFUpDownStateType {
+    type enumeration {
+      enum up {
+        value 0 ;
+      }
+      enum down {
+        value 1 ;
+      }
+    }
+  }
+ typedef OFOpenFlowVersionType {
+    type enumeration {
+      enum not-applicable {
+        value 0 ;
+      }
+      enum 1.0 {
+        value 1 ;
+      }
+      enum 1.1 {
+        value 2 ;
+      }
+      enum 1.2 {
+        value 3 ;
+      }
+      enum 1.3 {
+        value 4 ;
+      }
+      enum 1.4 {
+        value 5 ;
+      }
+      enum 1.5 {
+        value 6 ;
+      }
+    }
+  }
+  container capable-switch {
+    leaf id {
+      type inet:uri {
+        length 1..63 ;
+      }
+      mandatory true ;
+     }
+   	container logical-switches {
+      list switch {
+          key id ;
+          leaf id {
+            type string {
+              length 1..63 ;
+            }
+            mandatory true;
+          }
+        leaf datapath-id {
+          type datapath-id-type {
+            length 23 ;
+          }
+        }      
+        leaf lost-connection-behavior {
+          type enumeration {
+            enum failSecureMode {
+              value 0 ;
+            }
+            enum failStandaloneMode {
+              value 1 ;
+            }
+          }
+          default failSecureMode ;
+        }
+       container controllers {
+          list controller {
+            key id ;
+            leaf id {
+              type string {
+                length 1..63 ;
+              }
+              mandatory true ;
+            }
+            leaf role {
+              type enumeration {
+                enum master {
+                  value 0 ;
+                }
+                enum slave {
+                  value 1 ;
+                }
+                enum equal {
+                  value 2 ;
+                }
+              }
+              default equal ;
+            }
+            leaf ip-address {
+              type inet:ipv4-address ;
+              mandatory true ;
+            }
+            leaf port {
+              type inet:port-number {
+                range 1..65535 ;
+              }
+              mandatory true ;
+            }
+            leaf local-ip-address {
+              type inet:ipv4-address ;
+            }
+            leaf local-port {
+              type inet:port-number {
+                range 0..65535 ;
+              }
+            }
+            leaf protocol {
+              type enumeration {
+                enum tcp {
+                  value 0 ;
+                }
+                enum tls {
+                  value 1 ;
+                }
+              }
+              default tls ;
+            }
+            leaf vrf-name {
+            	type string {
+            		length 1..32;
+            	}
+            }
+            leaf mng-flag {
+            	type boolean ;
+		default false ; 
+            }  
+       	container state {
+            config false ;
+            leaf connection-state {
+              type OFUpDownStateType ;
+            }
+            leaf current-version {
+              type OFOpenFlowVersionType ;
+            }
+           }
+          }
+        }
+        container resources {
+          leaf-list port {
+            type leafref {
+              path /capable-switch/resources/port/resource-id ;
+            }
+          }
+        }
+    }
+}
+	container resources {
+      list port {
+        key resource-id ;
+        leaf resource-id {
+          type inet:uri {
+            length 1..31 ;
+          }
+          mandatory true ;
+        }
+        leaf number {
+          config false ;
+          type uint32 ;
+        }
+        leaf name {
+          config false ;
+          type string {
+            length 1..31 ;
+          }
+        }
+        choice tunnel-type {
+          case vxlan-tunnel {
+            container vxlan-tunnel {
+              presence vxlan-tunnel ;
+              choice endpoints {
+                mandatory true ;
+                case v4-endpoints {
+                  leaf local-endpoint-ipv4-adress {
+                    type inet:ipv4-address ;
+                  }
+                  leaf remote-endpoint-ipv4-adress {
+                    type inet:ipv4-address ;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }   
+    }
+  }
+}
+

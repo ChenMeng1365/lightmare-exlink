@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-igmp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-igmp="http://openconfig.net/yang/igmp"
+        xmlns:oc-igmp-types="http://openconfig.net/yang/igmp/types"
+        xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+        xmlns:oc-acl="http://openconfig.net/yang/acl"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/igmp"/>
+  <prefix value="oc-igmp"/>
+  <import module="openconfig-igmp-types">
+    <prefix value="oc-igmp-types"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-acl">
+    <prefix value="oc-acl"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>An OpenConfig model for Internet Group Management Protocol (IGMP).</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.2.0"/>
+  <revision date="2019-07-09">
+    <description>
+      <text>Re-indent module to two spaces.
+Normalise timeticks64 usage to nanoseconds.</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.1.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-02-19">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="admin-config">
+    <description>
+      <text>Re-usable grouping to enable or disable a particular feature.</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When set to true, the functionality within which this
+leaf is defined is enabled, when set to false it is
+explicitly disabled.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="igmp-interface-config">
+    <description>
+      <text>Configuration data for IGMP on each interface.</text>
+    </description>
+    <leaf name="interface-id">
+      <type name="oc-if:interface-id"/>
+      <description>
+        <text>Reference to an interface on which IGMP is enabled.</text>
+      </description>
+    </leaf>
+    <uses name="admin-config"/>
+    <leaf name="version">
+      <type name="oc-igmp-types:igmp-version"/>
+      <description>
+        <text>IGMP Version.</text>
+      </description>
+    </leaf>
+    <leaf name="query-interval">
+      <type name="oc-igmp-types:igmp-interval-type"/>
+      <description>
+        <text>Interval at which the router sends the IGMP membership
+queries.</text>
+      </description>
+    </leaf>
+    <leaf name="filter-prefixes">
+      <type name="string"/>
+      <description>
+        <text>List used to filter joins.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="igmp-counters-per-version">
+    <description>
+      <text>Counters for each IGMP protocol version.</text>
+    </description>
+    <container name="state">
+      <config value="false"/>
+      <description>
+        <text>Counters for each IGMP protocol version.</text>
+      </description>
+      <leaf name="v1">
+        <type name="uint32"/>
+        <description>
+          <text>IGMP v1.</text>
+        </description>
+      </leaf>
+      <leaf name="v2">
+        <type name="uint32"/>
+        <description>
+          <text>IGMP v2.</text>
+        </description>
+      </leaf>
+      <leaf name="v3">
+        <type name="uint32"/>
+        <description>
+          <text>IGMP v3.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="igmp-interface-counters">
+    <description>
+      <text>State and session data for IGMP on each interface.</text>
+    </description>
+    <container name="counters">
+      <description>
+        <text>Counters avaiable on a per interface bases for IGMP.</text>
+      </description>
+      <container name="queries">
+        <description>
+          <text>IGMP membership queries.</text>
+        </description>
+        <container name="sent">
+          <description>
+            <text>Number of IGMP membership queries sent.</text>
+          </description>
+          <uses name="igmp-counters-per-version"/>
+        </container>
+        <container name="received">
+          <description>
+            <text>Number of IGMP membership queries received.</text>
+          </description>
+          <uses name="igmp-counters-per-version"/>
+        </container>
+      </container>
+      <container name="reports">
+        <description>
+          <text>Number of IGMP membership reports received.</text>
+        </description>
+        <uses name="igmp-counters-per-version"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="igmp-snooping-state">
+    <description>
+      <text>IGMP membership snooping state.</text>
+    </description>
+    <leaf name="group">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>Multicast address.</text>
+      </description>
+    </leaf>
+    <leaf name="source">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>Source address of multicast.</text>
+      </description>
+    </leaf>
+    <leaf name="reporter">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>Address of the last reporter.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="igmp-snooping-structural">
+    <description>
+      <text>IGMP membership information determined through snooping.</text>
+    </description>
+    <container name="membership-groups">
+      <description>
+        <text>List of IGMP Membership information.</text>
+      </description>
+      <list name="group">
+        <key value="group"/>
+        <config value="false"/>
+        <description>
+          <text>Multicast group membership.</text>
+        </description>
+        <leaf name="group">
+          <type name="leafref">
+            <path value="../state/group"/>
+          </type>
+          <description>
+            <text>Multicast address.</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Multicast group membership.</text>
+          </description>
+          <uses name="igmp-snooping-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="igmp-interface-state">
+    <description>
+      <text>IGMP interface state.</text>
+    </description>
+    <leaf name="query-expires">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>This timestamp indicates the time that the next query is sent
+expressed relative to the Unix Epoch (Jan 1, 1970 00:00:00 UTC).</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="igmp-interface-top">
+    <description>
+      <text>Configuration and state data for IGMP on each interface.</text>
+    </description>
+    <container name="interfaces">
+      <description>
+        <text>The interfaces on which IGMP is configured.</text>
+      </description>
+      <list name="interface">
+        <key value="interface-id"/>
+        <description>
+          <text>This container defines interface IGMP configuration and
+state information.</text>
+        </description>
+        <leaf name="interface-id">
+          <type name="leafref">
+            <path value="../config/interface-id"/>
+          </type>
+          <description>
+            <text>Reference to an interface on which IGMP is enabled.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>IGMP interface configuration.</text>
+          </description>
+          <uses name="igmp-interface-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>This container defines state information for IGMP
+interfaces.</text>
+          </description>
+          <uses name="igmp-interface-state"/>
+          <uses name="igmp-interface-config"/>
+        </container>
+        <uses name="igmp-interface-counters"/>
+        <uses name="igmp-snooping-structural"/>
+        <uses name="oc-if:interface-ref"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="igmp-ssm-maps-config">
+    <description>
+      <text>A Source Specific Multicast (SSM) mapping. This allows
+IGMP v2 hosts to be able to join in SSM environments
+by translating IGMP v2 reports into IGMP v3 reports.
+The request in an IGMP v2 join is sent toward the source
+address found by matching the multicast address.</text>
+    </description>
+    <leaf name="source">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>Multicast source address.</text>
+      </description>
+    </leaf>
+    <leaf name="ssm-ranges">
+      <type name="leafref">
+        <path value="/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:config/oc-acl:name"/>
+      </type>
+      <description>
+        <text>List of accepted source specific multicast (SSM) address
+ranges.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="igmp-global-config">
+    <description>
+      <text>This grouping defines global config options for IGMP.</text>
+    </description>
+  </grouping>
+  <grouping name="igmp-global-top">
+    <description>
+      <text>Top level grouping for global IGMP configuration.</text>
+    </description>
+    <container name="ssm">
+      <description>
+        <text>Source specific multicast (SSM).</text>
+      </description>
+      <container name="mappings">
+        <description>
+          <text>A list of source specific multicast (SSM) mappings.</text>
+        </description>
+        <list name="mapping">
+          <key value="source"/>
+          <description>
+            <text>A Source Specific Multicast (SSM) mapping. This allows
+IGMP v2 hosts to be able to join in SSM environments
+by translating IGMP v2 reports into IGMP v3 reports.
+The request in an IGMP v2 join is sent toward the source
+address found by matching the multicast address.</text>
+          </description>
+          <leaf name="source">
+            <type name="leafref">
+              <path value="../config/source"/>
+            </type>
+            <description>
+              <text>Multicast source address.</text>
+            </description>
+          </leaf>
+          <container name="config">
+            <description>
+              <text>Configuration for SSM maps.</text>
+            </description>
+            <uses name="igmp-ssm-maps-config"/>
+          </container>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>State for SSM maps.</text>
+            </description>
+            <uses name="igmp-ssm-maps-config"/>
+          </container>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="igmp-top">
+    <description>
+      <text>Top-level grouping for IGMP.</text>
+    </description>
+    <container name="igmp">
+      <description>
+        <text>Top-level IGMP configuration and operational state.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>Global IGMP configuration and operational state.</text>
+        </description>
+        <uses name="igmp-global-top"/>
+      </container>
+      <uses name="igmp-interface-top"/>
+    </container>
+  </grouping>
+</module>

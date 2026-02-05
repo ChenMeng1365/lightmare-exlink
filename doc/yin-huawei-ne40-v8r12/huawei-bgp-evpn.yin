@@ -1,0 +1,1613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bgp-evpn"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgp-evpn="urn:huawei:yang:huawei-bgp-evpn"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:bgp-rt="urn:huawei:yang:huawei-bgp-routing-table"
+        xmlns:nvo3="urn:huawei:yang:huawei-nvo3"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:huawei:yang:huawei-bgp-evpn"/>
+  <prefix value="bgp-evpn"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-bgp-routing-table">
+    <prefix value="bgp-rt"/>
+  </import>
+  <import module="huawei-nvo3">
+    <prefix value="nvo3"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Configure BGP EVPN.</text>
+  </description>
+  <revision date="2020-04-07">
+    <description>
+      <text>EVPN module YANG file.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="evpnbgp"/>
+  <typedef name="advertise-encap-type">
+    <type name="enumeration">
+      <enum name="vxlan">
+        <value value="1"/>
+        <description>
+          <text>VXLAN.</text>
+        </description>
+      </enum>
+      <enum name="mpls">
+        <value value="2"/>
+        <description>
+          <text>MPLS.</text>
+        </description>
+      </enum>
+      <enum name="srv6">
+        <value value="4"/>
+        <description>
+          <text>SRv6.</text>
+        </description>
+      </enum>
+      <enum name="sd-wan">
+        <value value="5"/>
+        <description>
+          <text>SD-WAN.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Encapsulation type of packets.</text>
+    </description>
+  </typedef>
+  <typedef name="srv6-mode">
+    <type name="enumeration">
+      <enum name="be">
+        <value value="1"/>
+        <description>
+          <text>SRv6 iteration mode is BE.</text>
+        </description>
+      </enum>
+      <enum name="te">
+        <value value="2"/>
+        <description>
+          <text>SRv6 iteration mode is TE.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SRv6 mode is BE or TE.</text>
+    </description>
+  </typedef>
+  <typedef name="add-path-cap-type">
+    <type name="enumeration">
+      <enum name="receive">
+        <value value="1"/>
+        <description>
+          <text>Support receiving add-path routes.</text>
+        </description>
+      </enum>
+      <enum name="send">
+        <value value="2"/>
+        <description>
+          <text>Support sending add-path routes.</text>
+        </description>
+      </enum>
+      <enum name="both">
+        <value value="3"/>
+        <description>
+          <text>Support receiving and sending add-path routes.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of add-path routes.</text>
+    </description>
+  </typedef>
+  <typedef name="config-type">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Disable or inheritance group.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Explicit config enable.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="2"/>
+        <description>
+          <text>Explicit config disable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Route server client.</text>
+    </description>
+  </typedef>
+  <typedef name="route-limit-type">
+    <type name="enumeration">
+      <enum name="noparameter">
+        <value value="0"/>
+        <description>
+          <text>Default value.</text>
+        </description>
+      </enum>
+      <enum name="alert-only">
+        <value value="1"/>
+        <description>
+          <text>An alarm is generated and no additional routes will be accepted if the maximum number of routes allowed have been received.</text>
+        </description>
+      </enum>
+      <enum name="idle-forever">
+        <value value="2"/>
+        <description>
+          <text>The connection that is interrupted is not automatically re-established if the maximum number of routes allowed have been received.</text>
+        </description>
+      </enum>
+      <enum name="idle-timeout">
+        <value value="3"/>
+        <description>
+          <text>After the number of received routes exceeds the threshold and the timeout timer expires, the connection that is interrupted is automatically re-established.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of route limit.</text>
+    </description>
+  </typedef>
+  <typedef name="es-ad-compatible-type">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Default ES AD compatible.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable ES AD compatible.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="2"/>
+        <description>
+          <text>Disable ES AD compatible.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Ethernet A-D per ES Route compatible type.</text>
+    </description>
+  </typedef>
+  <typedef name="peer-comm-config-type">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Configuration on peer was default.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Configuration on peer was enable.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="2"/>
+        <description>
+          <text>Configuration on peer was disable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>State of the configuration on peer.</text>
+    </description>
+  </typedef>
+  <typedef name="evpn-next-hop-mode">
+    <type name="enumeration">
+      <enum name="null">
+        <value value="0"/>
+        <description>
+          <text>The next hop is not changed.</text>
+        </description>
+      </enum>
+      <enum name="local">
+        <value value="1"/>
+        <description>
+          <text>The next hop is changed to the local IP address.</text>
+        </description>
+      </enum>
+      <enum name="invariable">
+        <value value="2"/>
+        <description>
+          <text>Prevent the device from changing the next hop of each imported IGP route when advertising it to its EVPN peers.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>BGP EVPN peer and peer group next hop mode.</text>
+    </description>
+  </typedef>
+  <typedef name="apply-label-type">
+    <type name="enumeration">
+      <enum name="per-route">
+        <value value="0"/>
+        <description>
+          <text>Per-route label allocation.</text>
+        </description>
+      </enum>
+      <enum name="per-nexthop">
+        <value value="1"/>
+        <description>
+          <text>Per-next-hop label allocation.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>BGP EVPN apply label type.</text>
+    </description>
+  </typedef>
+  <typedef name="path-attr-treat-type">
+    <type name="enumeration">
+      <enum name="normal">
+        <value value="0"/>
+        <description>
+          <text>Processing mode of normal path attribute.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Processing mode of path attribute.</text>
+    </description>
+  </typedef>
+  <typedef name="select-depend-type">
+    <type name="enumeration">
+      <enum name="depend-tunnel">
+        <value value="1"/>
+        <description>
+          <text>Routing-dependent tunnel iteration.</text>
+        </description>
+      </enum>
+      <enum name="depend-ip">
+        <value value="2"/>
+        <description>
+          <text>Routing-dependent IP iteration.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of nexthop select depend.</text>
+    </description>
+  </typedef>
+  <typedef name="select-depend-type-ext">
+    <type name="enumeration">
+      <enum name="depend-tunnel">
+        <value value="1"/>
+        <description>
+          <text>Routing-dependent tunnel iteration.</text>
+        </description>
+      </enum>
+      <enum name="depend-ip">
+        <value value="2"/>
+        <description>
+          <text>Routing-dependent IP iteration.</text>
+        </description>
+      </enum>
+      <enum name="depend-none">
+        <value value="3"/>
+        <description>
+          <text>Routing-dependent ignore.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of nexthop select depend.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:peers/bgp:peer/bgp:afs/bgp:af">
+    <description>
+      <text>Augment for an L2VPN instance and EVPN association.</text>
+    </description>
+    <container name="l2vpn-evpn">
+      <when condition="../bgp:type = 'evpn' and ../../../../../../../ni:name='_public_'"/>
+      <must condition="(all-route-limit='true' and mac-route-limit='false' and route-limit) or (all-route-limit='false' and mac-route-limit='true' and route-limit) or (all-route-limit='false' and mac-route-limit='false')"/>
+      <must condition="not(advertise-arp = 'true' and advertise-irb = 'true')"/>
+      <must condition="not(advertise-nd = 'true' and advertise-irbv6 = 'true')"/>
+      <description>
+        <text>Configure peer EVPN.</text>
+      </description>
+      <leaf name="group-name">
+        <ext:operation-exclude value="update"/>
+        <type name="leafref">
+          <path value="../../../../../../bgp:peer-groups/bgp:peer-group/bgp:name"/>
+        </type>
+        <must condition="(../../../../../../bgp:peer-groups/bgp:peer-group[bgp:name=current()]/bgp:type = 'ibgp' and ../../../../bgp:remote-as = /bgp:bgp/bgp:base-process/bgp:as) or (../../../../../../bgp:peer-groups/bgp:peer-group[bgp:name=current()]/bgp:type = 'ebgp' and ../../../../bgp:remote-as != /bgp:bgp/bgp:base-process/bgp:as)"/>
+        <must condition="../../../../../../bgp:peer-groups/bgp:peer-group[bgp:name=current()]/bgp:afs/bgp:af[bgp:type='evpn']"/>
+        <must condition="../../../../../../bgp:peer-groups/bgp:peer-group[bgp:name=current()]/bgp:peer-establish-mode = 'static'"/>
+        <description>
+          <text>Configure a name for a peer group. By default, BGP peers join no peer group. BGP peers distinguish the peer group type when joining a peer group. IBGP peers cannot join an EBGP peer group. After a peer is deleted from the peer group, the peer is disabled from the address family. The object cannot be modified.</text>
+        </description>
+      </leaf>
+      <leaf name="allow-as-loop">
+        <type name="uint8">
+          <range value="1..10"/>
+        </type>
+        <description>
+          <text>Allow repetitive local AS numbers. By default, repetitive local AS numbers are not allowed.</text>
+        </description>
+      </leaf>
+      <leaf name="reflect-client">
+        <when condition="../../../../bgp:remote-as = /bgp:bgp/bgp:base-process/bgp:as"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the local device as a route reflector (RR) and a peer or peer group as its client. This configuration is applicable between IBGP peers only. The configurations of RRs and its clients in an address family are valid only in this address family. Therefore, it is recommended to configure RRs and its clients in the specified address family that is required.</text>
+        </description>
+      </leaf>
+      <choice name="import-policy-type">
+        <description>
+          <text>Set route policy or filter.</text>
+        </description>
+        <case name="rtp-ref">
+          <description>
+            <text>Route policy.</text>
+          </description>
+          <leaf name="import-policy">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the filtering policy applied to the routes learned from a peer. By default, no such policy is specified.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <choice name="export-policy-type">
+        <description>
+          <text>Set route policy or filter.</text>
+        </description>
+        <case name="rtp-ref">
+          <description>
+            <text>Route policy.</text>
+          </description>
+          <leaf name="export-policy">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the filtering policy applied to the routes to be advertised to a peer. By default, no such policy is specified.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <leaf name="advertise-community">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise community attribute to a peer or peer group.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-large-community">
+        <type name="config-type"/>
+        <default value="default"/>
+        <description>
+          <text>Enable large-community attribute advertisement. By default, the function is not configured on any peer. The Link-state address family and the RPD address family do not support this element.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-arp">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise ARP route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-irb">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise IRB route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-irbv6">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise IRBv6 route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-nd">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise ND route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-encap-type">
+        <type name="advertise-encap-type"/>
+        <default value="mpls"/>
+        <description>
+          <text>Encapsulation type of packets.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-add-path-mode">
+        <type name="add-path-cap-type"/>
+        <description>
+          <text>Enable add-path route advertisement to a peer.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-add-path-num">
+        <type name="uint8">
+          <range value="2..128"/>
+        </type>
+        <description>
+          <text>Number of add-path routes that can be advertised to a peer.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-suppressed-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertising suppressed-detail-route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-suppressed-route-status">
+        <type name="boolean"/>
+        <default value="false"/>
+        <config value="false"/>
+        <description>
+          <text>The effective status of advertising suppressed-detail-route.</text>
+        </description>
+      </leaf>
+      <leaf name="all-route-limit">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable all routing overflow alarm received from the specified peer.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-route-limit">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC routing overflow alarm received from the specified peer.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit">
+        <when condition="(../all-route-limit='true' or ../mac-route-limit='true')"/>
+        <type name="uint32">
+          <range value="1..4294967295"/>
+        </type>
+        <description>
+          <text>Configure the maximum number of routes that can be accepted from a peer.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit-percent">
+        <when condition="../route-limit"/>
+        <type name="uint8">
+          <range value="1..100"/>
+        </type>
+        <default value="75"/>
+        <description>
+          <text>Specify the percentage of routes when a router starts to generate an alarm.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit-type">
+        <when condition="../route-limit"/>
+        <type name="route-limit-type"/>
+        <must condition="(../route-limit-type = 'idle-timeout' and ../route-limit-idle-timeout) or (../route-limit-type = 'alert-only') or (../route-limit-type = 'idle-forever') or (../route-limit-type = 'noparameter')"/>
+        <default value="noparameter"/>
+        <description>
+          <text>Set the processing method as alert-only, idle-forever, or idle-timeout when the number of routes exceeds the set threshold. When alert-only is used, only an alarm is generated when the number of routes exceeds the threshold. In this case, new routes are no longer accepted. When idle-forever is used, connections are not automatically reestablished after being cut off until BGP connections are reset if the number of routes exceeds the set threshold. When idle-timeout is used and the idle-timeout timer is specified, the connections are automatically reestablished after being cut off if the number of routes exceeds the set threshold. You can reset BGP connections to reestablish the connections before the idle-timeout times expires.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit-idle-timeout">
+        <when condition="../route-limit-type = 'idle-timeout'"/>
+        <type name="uint16">
+          <range value="1..1200"/>
+        </type>
+        <units name="min"/>
+        <description>
+          <text>Enable/disable specify the value of the idle-timeout timer to automatically reestablish the connections after they are cut off when the number of routes exceeds the set threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="route-update-interval">
+        <type name="uint16">
+          <range value="0..600"/>
+        </type>
+        <units name="s"/>
+        <ext:dynamic-default>
+          <ext:default-value value="15">
+            <when condition="../../../../bgp:remote-as = /bgp:bgp/bgp:base-process/bgp:as"/>
+          </ext:default-value>
+          <ext:default-value value="30">
+            <when condition="../../../../bgp:remote-as != /bgp:bgp/bgp:base-process/bgp:as"/>
+          </ext:default-value>
+        </ext:dynamic-default>
+        <description>
+          <text>Specify the minimum interval at which Update packets are sent. By default, the interval at which Update packets are sent to IBGP peers is 15s, and the interval at which Update packets are sent to EBGP peers is 30s.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-route-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable route regeneration.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-vpnv4-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VPNv4 route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-mac-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-mac-ip-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC-IP route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-mac-ipv6-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reoriginating IRBv6 route of EVPN.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-ip-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable IP route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-ipv6-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reoriginating IPv6 prefix route of EVPN.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginate-vpnv6-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reoriginating the route of VPNv6.</text>
+        </description>
+      </leaf>
+      <leaf name="graceful-restart-static-timer">
+        <type name="uint32">
+          <range value="3600..2147483647"/>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Specifies the maximum time during which a peer waits for a BGP session reestablishment. In seconds.</text>
+        </description>
+      </leaf>
+      <leaf name="es-ad-compatible">
+        <type name="es-ad-compatible-type"/>
+        <default value="default"/>
+        <description>
+          <text>Ethernet A-D per ES Route Compatible.</text>
+        </description>
+      </leaf>
+      <leaf name="split-group-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>Split group name.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-orf-disable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VPN ORF.</text>
+        </description>
+      </leaf>
+      <leaf name="upe-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the peer as an underlayer PE (UPE).</text>
+        </description>
+      </leaf>
+      <leaf name="next-hop-mode">
+        <type name="evpn-next-hop-mode"/>
+        <default value="null"/>
+        <description>
+          <text>Enable next hop mode.</text>
+        </description>
+      </leaf>
+      <leaf name="high-priority">
+        <type name="peer-comm-config-type"/>
+        <default value="default"/>
+        <description>
+          <text>Enable a higher priority to a specified peer.</text>
+        </description>
+      </leaf>
+      <leaf name="high-priority-status">
+        <type name="boolean"/>
+        <default value="false"/>
+        <config value="false"/>
+        <description>
+          <text>The effective status of higher priority to a specified peer.</text>
+        </description>
+      </leaf>
+      <leaf name="preferred-value">
+        <type name="uint32">
+          <range value="0..65535"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Assign a preferred value for the routes learned from a specified peer. The value is an integer. After a preferred value is configured for the routes learned from a specified peer, all the routes that learnt from this peer will use this preferred value. When multiple routes reach the same address prefix, the route with the largest preferred value will be selected.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-detail-route-only">
+        <type name="bgp:peer-attr-enable-type"/>
+        <description>
+          <text>Enable/disable only advertising evpn detailed mac-route.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-detail-route-only-status">
+        <type name="boolean"/>
+        <default value="false"/>
+        <config value="false"/>
+        <description>
+          <text>The effective status of advertising evpn detailed mac-route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-srv6-locator">
+        <when condition="../advertise-encap-type='srv6'"/>
+        <type name="empty"/>
+        <description>
+          <text>Advertise SRv6 locator.</text>
+        </description>
+      </leaf>
+      <container name="effect-state">
+        <config value="false"/>
+        <description>
+          <text>Operational state of peer.</text>
+        </description>
+        <leaf name="advertise-srv6-locator">
+          <type name="boolean"/>
+          <description>
+            <text>Whether to advertise SRv6 locators on the EVPN peer.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="path-attribute-treats">
+        <description>
+          <text>List of modes in which specified path attributes are processed.</text>
+        </description>
+        <list name="path-attribute-treat">
+          <must condition="discard-id-map or withdraw-id-map or unknown-id-map"/>
+          <key value="treat-type"/>
+          <description>
+            <text>Configure mode in which specified path attributes are processed.</text>
+          </description>
+          <leaf name="treat-type">
+            <type name="path-attr-treat-type"/>
+            <description>
+              <text>Mode in which specified path attributes are processed.</text>
+            </description>
+          </leaf>
+          <leaf name="discard-id-map">
+            <type name="pub-type:id-range">
+              <pattern value="((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])?(-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))?(,((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))?))*)|((([\+|\-](25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|([\+|\-]\((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\)))?(,(([\+|\-](25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|([\+|\-]\((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\))))*)"/>
+              <ext:value-range value="0..255"/>
+            </type>
+            <description>
+              <text>Specify a discard attribute ID list. The attribute ids which are not supported as follows: 1 (ORIGIN), 2 (AS_PATH), 3 (NEXT_HOP), 4 (MED), 5 (LOCAL_PREF), 6 (ATOMICAGGREGATE), 7 (AGGREGATOR), 8 (COMMUNITY), 9 (ORIGINATOR_ID), 10 (CLUSTER_LIST), 14 (MP_REACH_NLRI), 15 (MP_UNREACH_NLRI), 17 (AS4PATH), 18 (AS4AGGREGATOR).</text>
+            </description>
+          </leaf>
+          <leaf name="withdraw-id-map">
+            <type name="pub-type:id-range">
+              <pattern value="((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])?(-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))?(,((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))?))*)|((([\+|\-](25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|([\+|\-]\((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\)))?(,(([\+|\-](25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|([\+|\-]\((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\))))*)"/>
+              <ext:value-range value="0..255"/>
+            </type>
+            <description>
+              <text>Specify a withdraw attribute ID list. The attribute ids which are not supported as follows: 1 (ORIGIN), 2 (AS_PATH), 3 (NEXT_HOP), 4 (MED), 5 (LOCAL_PREF), 6 (ATOMICAGGREGATE), 7 (AGGREGATOR), 8 (COMMUNITY), 9 (ORIGINATOR_ID), 10 (CLUSTER_LIST), 14 (MP_REACH_NLRI), 15 (MP_UNREACH_NLRI), 17 (AS4PATH), 18 (AS4AGGREGATOR).</text>
+            </description>
+          </leaf>
+          <leaf name="unknown-id-map">
+            <type name="pub-type:id-range">
+              <pattern value="((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])?(-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))?(,((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))?))*)|((([\+|\-](25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|([\+|\-]\((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\)))?(,(([\+|\-](25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|([\+|\-]\((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])-(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\))))*)"/>
+              <ext:value-range value="0..255"/>
+            </type>
+            <description>
+              <text>Specify an unknown attribute ID list. The attribute ids which are not supported as follows: 1 (ORIGIN), 2 (AS_PATH), 3 (NEXT_HOP), 4 (MED), 5 (LOCAL_PREF), 6 (ATOMICAGGREGATE), 7 (AGGREGATOR), 8 (COMMUNITY), 9 (ORIGINATOR_ID), 10 (CLUSTER_LIST), 14 (MP_REACH_NLRI), 15 (MP_UNREACH_NLRI), 17 (AS4PATH), 18 (AS4AGGREGATOR).</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:peer-groups/bgp:peer-group/bgp:afs/bgp:af">
+    <description>
+      <text>Augment for an L2VPN instance and EVPN association.</text>
+    </description>
+    <container name="l2vpn-evpn">
+      <when condition="(../bgp:type = 'evpn' and ../../../../../../../ni:name='_public_')"/>
+      <must condition="(all-route-limit='true' and mac-route-limit='false' and route-limit) or (all-route-limit='false' and mac-route-limit='true' and route-limit) or (all-route-limit='false' and mac-route-limit='false')"/>
+      <must condition="not(advertise-arp = 'true' and advertise-irb = 'true')"/>
+      <must condition="not(advertise-nd = 'true' and advertise-irbv6 = 'true')"/>
+      <description>
+        <text>Configure EVPN peer group.</text>
+      </description>
+      <leaf name="reflect-client">
+        <when condition="../../../../bgp:type = 'ibgp'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the local device as a route reflector (RR) and a peer or peer group as its client. This configuration is applicable between IBGP peers only. The configurations of RRs and its clients in an address family are valid only in this address family. Therefore, it is recommended to configure RRs and its clients in the specified address family that is required.</text>
+        </description>
+      </leaf>
+      <choice name="import-policy-type">
+        <description>
+          <text>Set route policy or filter.</text>
+        </description>
+        <case name="rtp-ref">
+          <description>
+            <text>Route policy.</text>
+          </description>
+          <leaf name="import-policy">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the filtering policy applied to the routes learned from a peer. By default, no such policy is specified.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <choice name="export-policy-type">
+        <description>
+          <text>Set route policy or filter.</text>
+        </description>
+        <case name="rtp-ref">
+          <description>
+            <text>Route policy.</text>
+          </description>
+          <leaf name="export-policy">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the filtering policy applied to the routes to be advertised to a peer. By default, no such policy is specified.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <leaf name="es-ad-compatible">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable ethernet A-D per ES route compatible.</text>
+        </description>
+      </leaf>
+      <leaf name="split-group-name">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>Split group name.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-orf-disable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VPN ORF.</text>
+        </description>
+      </leaf>
+      <leaf name="upe-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the peer as an underlayer PE (UPE).</text>
+        </description>
+      </leaf>
+      <leaf name="next-hop-mode">
+        <type name="evpn-next-hop-mode"/>
+        <default value="null"/>
+        <description>
+          <text>Enable next hop mode.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-community">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable an advertise the community attribute to a peer or peer group.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-large-community">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable large-community attribute advertisement. The Link-state address family and the RPD address family do not support this element.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-arp">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the advertise ARP route when its value is true.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-irb">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the advertise IRB route when its value is true.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-irbv6">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the advertise IRBv6 route when its value is true.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-nd">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertise ND route when its value is true.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-encap-type">
+        <type name="advertise-encap-type"/>
+        <default value="mpls"/>
+        <description>
+          <text>Encapsulation type of packets.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-suppressed-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable advertising suppressed detail route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-add-path-mode">
+        <type name="add-path-cap-type"/>
+        <description>
+          <text>Enable add-path route advertisement to a peer.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-add-path-num">
+        <type name="uint8">
+          <range value="2..128"/>
+        </type>
+        <description>
+          <text>Number of add-path routes that can be advertised to a peer group.</text>
+        </description>
+      </leaf>
+      <leaf name="all-route-limit">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable all routing overflow alarm received from the specified peer.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-route-limit">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC routing overflow alarm received from the specified peer.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit">
+        <when condition="(../all-route-limit='true' or ../mac-route-limit='true')"/>
+        <type name="uint32">
+          <range value="1..4294967295"/>
+        </type>
+        <description>
+          <text>Configure the maximum number of routes that can be accepted from a peer.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit-percent">
+        <when condition="../route-limit"/>
+        <type name="uint8">
+          <range value="1..100"/>
+        </type>
+        <default value="75"/>
+        <description>
+          <text>Specify the percentage of routes when a router starts to generate an alarm.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit-type">
+        <when condition="../route-limit"/>
+        <type name="route-limit-type"/>
+        <must condition="(../route-limit-type = 'idle-timeout' and ../route-limit-idle-timeout) or (../route-limit-type = 'alert-only') or (../route-limit-type = 'idle-forever') or (../route-limit-type = 'noparameter')"/>
+        <default value="noparameter"/>
+        <description>
+          <text>Set the processing method as alert-only, idle-forever, or idle-timeout when the number of routes exceeds the set threshold. When alert-only is used, only an alarm is generated when the number of routes exceeds the threshold. In this case, new routes are no longer accepted. When idle-forever is used, connections are not automatically reestablished after being cut off until BGP connections are reset if the number of routes exceeds the set threshold. When idle-timeout is used and the idle-timeout timer is specified, the connections are automatically reestablished after being cut off if the number of routes exceeds the set threshold. You can reset BGP connections to reestablish the connections before the idle-timeout times expires.</text>
+        </description>
+      </leaf>
+      <leaf name="route-limit-idle-timeout">
+        <when condition="../route-limit-type = 'idle-timeout'"/>
+        <type name="uint16">
+          <range value="1..1200"/>
+        </type>
+        <units name="min"/>
+        <description>
+          <text>Specify the value of the idle-timeout timer to automatically reestablish the connections after they are cut off when the number of routes exceeds the set threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="route-update-interval">
+        <type name="uint16">
+          <range value="0..600"/>
+        </type>
+        <units name="s"/>
+        <ext:dynamic-default>
+          <ext:default-value value="15">
+            <when condition="../../../../bgp:type = 'ibgp'"/>
+          </ext:default-value>
+          <ext:default-value value="30">
+            <when condition="../../../../bgp:type = 'ebgp'"/>
+          </ext:default-value>
+        </ext:dynamic-default>
+        <description>
+          <text>Specify the minimum interval at which Update packets are sent. By default, the interval at which Update packets are sent to IBGP peers is 15s, and the interval at which Update packets are sent to EBGP peers is 30s.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-route-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable route regeneration.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-mac-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-mac-ip-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MAC-IP route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-mac-ipv6-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reoriginating IRBv6 route of EVPN.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-ip-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable IP route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-ipv6-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reoriginating IPv6 prefix route of EVPN.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-vpnv4-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VPNv4 route regeneration and advertisement.</text>
+        </description>
+      </leaf>
+      <leaf name="reoriginated-vpnv6-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reoriginating the route of VPNv6.</text>
+        </description>
+      </leaf>
+      <leaf name="high-priority">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable routes received from a specified peer have a higher priority.</text>
+        </description>
+      </leaf>
+      <leaf name="preferred-value">
+        <type name="uint32">
+          <range value="0..65535"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Assign a preferred value for the routes learned from a specified peer. The value is an integer. After a preferred value is configured for the routes learned from a specified peer, all the routes that learnt from this peer will use this preferred value. When multiple routes reach the same address prefix, the route with the largest preferred value will be selected.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-detail-route-only">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable only advertising evpn detailed mac-route.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-srv6-locator">
+        <when condition="../advertise-encap-type='srv6'"/>
+        <type name="empty"/>
+        <description>
+          <text>Advertise SRv6 locator.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af">
+    <description>
+      <text>Augment for an L2VPN instance and EVPN association.</text>
+    </description>
+    <container name="l2vpn-evpn">
+      <when condition="(../bgp:type = 'evpn') and (../../../../../ni:name='_public_')"/>
+      <description>
+        <text>Configure L2VPN-EVPN.</text>
+      </description>
+      <leaf name="policy-vpntarget">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable VPN target-based filtering for the received VPN routes. By default, VPN target-based filtering is enabled. Only the VPN route whose Export RT attribute matches the local Import RT attribute can be added to the routing table. This option can be used in the inter-AS VPN Option B solution and the ASBR MP-EBGP inter-AS L2VPN solution in Kompella mode.</text>
+        </description>
+      </leaf>
+      <leaf name="add-path-select-num">
+        <type name="uint8">
+          <range value="2..128"/>
+        </type>
+        <description>
+          <text>Number of add-path routes.</text>
+        </description>
+      </leaf>
+      <leaf name="label-free-delay">
+        <type name="uint8">
+          <range value="0..180"/>
+        </type>
+        <units name="s"/>
+        <default value="5"/>
+        <description>
+          <text>Label free delay.</text>
+        </description>
+      </leaf>
+      <leaf name="route-select-delay">
+        <type name="uint16">
+          <range value="0..3600"/>
+        </type>
+        <units name="s"/>
+        <default value="0"/>
+        <description>
+          <text>Route selection delay.</text>
+        </description>
+      </leaf>
+      <leaf name="exclusive-eviad-enable">
+        <when condition="../route-select-delay!=0"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable route selection delay for non-EVI-AD routes.</text>
+        </description>
+      </leaf>
+      <leaf name="label-per-nexthop">
+        <type name="apply-label-type"/>
+        <default value="per-route"/>
+        <description>
+          <text>Apply label per nexthop enable.</text>
+        </description>
+      </leaf>
+      <leaf name="auto-frr">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Auto FRR.</text>
+        </description>
+      </leaf>
+      <leaf name="detection-threshold">
+        <type name="uint16">
+          <range value="120..3600"/>
+        </type>
+        <default value="300"/>
+        <description>
+          <text>Specify the time in seconds lagging behind average when a peer is determined to be a slow peer.</text>
+        </description>
+      </leaf>
+      <leaf name="absolute-detection-threshold">
+        <type name="uint16">
+          <range value="3..3600"/>
+        </type>
+        <default value="9"/>
+        <description>
+          <text>Specify the packet send delay time in second when a peer is determined to be a slow peer.</text>
+        </description>
+      </leaf>
+      <leaf name="tunnel-selector">
+        <type name="leafref">
+          <path value="/rtp:routing-policy/rtp:tunnel-selectors/rtp:tunnel-selector/rtp:name"/>
+        </type>
+        <description>
+          <text>Configure a tunnel selector and apply it to the BGP IPv4 unicast, BGP VPNv4 address families and BGP VPNv6 address families so that IPv4, VPNv4 and VPNv6 labeled routes can be iterated to tunnels based on the tunnel selector.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-orf-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VPN-ORF capability.</text>
+        </description>
+      </leaf>
+      <leaf name="nexthop-select-depend-type">
+        <type name="select-depend-type-ext"/>
+        <default value="depend-ip"/>
+        <description>
+          <text>In none mode, route selection does not depend on whether the next hop is reachable. In tunnel mode, the labeled EVPN route can participate in route selection only after its next hop is iterated to an LSP. In IP
+mode, the labeled EVPN route can participate in route selection only after its next hop is iterated to an IP address. By default, the labeled EVPN route can participate in route selection
+if its next hop can be iterated to an IP address, regardless of whether the LSP of the next hop exists. This allows the RR that is not enabled with MPLS to forward labeled routes. In non-RR
+networking or RR networking where the BGP next hop is changed, BGP needs to check whether there is an LSP destined for the next hop. If such an LSP is not found, BGP needs to establish an LSP in
+advance. If the default setting is adopted, a labeled EVPN route may be selected prior to LSP establishment. As a result, services are incorrectly switched before LSP establishment and
+service stability is affected. Therefore, allow route selection only after the labeled EVPN route is iterated to an LSP.</text>
+        </description>
+      </leaf>
+      <leaf name="reflect-change-path">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable an RR to use an export policy to change route AS_Path.</text>
+        </description>
+      </leaf>
+      <leaf name="rr-ext-community-filter">
+        <type name="leafref">
+          <path value="/rtp:routing-policy/rtp:ext-community-filters/rtp:ext-community-filter/rtp:name"/>
+        </type>
+        <description>
+          <text>Set the name of the extended community filter supported by an RR group. For the purpose of load balancing, only the IBGP route whose route-target extended community attribute meets the matching rules can be reflected.</text>
+        </description>
+      </leaf>
+      <leaf name="time-df-delay">
+        <type name="uint16">
+          <range value="0..1200"/>
+        </type>
+        <units name="s"/>
+        <default value="60"/>
+        <description>
+          <text>Specifies forwarder election delay-timer value. In seconds.</text>
+        </description>
+      </leaf>
+      <leaf name="reflect-between-client">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable route reflection between clients. If clients of a route reflector (RR) are fully meshed, you can disable route reflection among clients to reduce the cost.</text>
+        </description>
+      </leaf>
+      <leaf name="bestroute-igp-metric-ignore">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable EVPN to ignore the IGP cost of each EVPN route to the next hop in route selection. By default, an EVPN route with a smaller IGP cost to the next hop is preferred.</text>
+        </description>
+      </leaf>
+      <choice name="reflector-type">
+        <description>
+          <text>Set IPv4 address or id.</text>
+        </description>
+        <case name="address">
+          <description>
+            <text>IPv4 address.</text>
+          </description>
+          <leaf name="reflector-cluster-ipv4">
+            <type name="inet:ipv4-address-no-zone"/>
+            <description>
+              <text>Set a cluster ID. The value is expressed in the format of an IPv4 address. Configuring multiple RRs in a cluster can enhance the stability of the network. If a cluster has more than one RR, select this option to set the same cluster ID for all the RRs to avoid routing loops. To allow clients to receive routes from RRs, ensure that the cluster ID of the RRs is different from the router ID of any client. If the cluster ID of the RRs is the same as the router ID of a client, the client will discard received routes.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="id">
+          <description>
+            <text>Set value.</text>
+          </description>
+          <leaf name="reflector-cluster-id">
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <description>
+              <text>Set a cluster ID. Configuring multiple RRs in a cluster can enhance the stability of the network. If a cluster has more than one RR, select this option to set the same cluster ID for all the RRs to avoid routing loops. To allow clients to receive routes from RRs, ensure that the cluster ID of the RRs is different from the router ID of any client. If the cluster ID of the RRs is the same as the router ID of a client, the client will discard received routes.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <container name="nexthop-recursive-lookup">
+        <description>
+          <text>Configure next hop iteration.</text>
+        </description>
+        <container name="common">
+          <description>
+            <text>Configure next hop iteration common options.</text>
+          </description>
+          <leaf name="restrain">
+            <type name="boolean"/>
+            <default value="true"/>
+            <description>
+              <text>Enable/disable the function to restrain next hop iteration in case of next hop flapping.</text>
+            </description>
+          </leaf>
+          <leaf name="default-route">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable default route.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="delay">
+          <description>
+            <text>Configure time of next hop change responding delay.</text>
+          </description>
+          <leaf name="time">
+            <type name="uint8">
+              <range value="1..100"/>
+            </type>
+            <units name="s"/>
+            <must condition="(not(../no-critical-event-time) or (../no-critical-event-time &gt;= ../time))"/>
+            <description>
+              <text>Specify the delay in responding to the next hop change.</text>
+            </description>
+          </leaf>
+          <leaf name="no-critical-event-time">
+            <type name="uint8">
+              <range value="1..100"/>
+            </type>
+            <units name="s"/>
+            <must condition="(not(../time) or (../no-critical-event-time &gt;= ../time))"/>
+            <description>
+              <text>Specify the delay in responding to the next hop change on non critical relay change event.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="bit-error-detection">
+          <description>
+            <text>Configure EVPN bit-error detection parameters.</text>
+          </description>
+          <leaf name="enable">
+            <type name="boolean"/>
+            <must condition="(../enable='false') or (../enable='true' and (../med or ../local-preference))"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable association between bit error events and the adjustment of route attributes.</text>
+            </description>
+          </leaf>
+          <leaf name="med">
+            <when condition="../enable='true'"/>
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <description>
+              <text>Specify the MED adjustment for EVPN routes used when a bit error event occurs.</text>
+            </description>
+          </leaf>
+          <leaf name="local-preference">
+            <when condition="../enable='true'"/>
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <description>
+              <text>Specify the local preference adjustment for routes used when a bit error event occurs.</text>
+            </description>
+          </leaf>
+          <leaf name="route-policy">
+            <when condition="../enable='true'"/>
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+            </type>
+            <description>
+              <text>Specify the name of route-policy for bit-error-triggered protection switching. The MED or local preference of only the routes that match the route-policy is adjusted.</text>
+            </description>
+          </leaf>
+        </container>
+      </container>
+      <uses name="bgp:vrf-af-dampening-routes-ext"/>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af/bgp:ipv4-unicast">
+    <description>
+      <text>EVPN configuration.</text>
+    </description>
+    <container name="evpn">
+      <description>
+        <text>Configure EVPN IPv4.</text>
+      </description>
+      <container name="srv6">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <description>
+          <text>Configure segment-routing IPv6 for EVPN.</text>
+        </description>
+        <leaf name="mode">
+          <type name="srv6-mode"/>
+          <must condition="not (../../../../../../../../nvo3:nvo3/nvo3:vni-list)"/>
+          <description>
+            <text>SRv6 iteration mode.</text>
+          </description>
+        </leaf>
+        <leaf name="down-switch">
+          <when condition="../mode='te'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable switch TE to BE if the associated TE tunnel goes down.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="common">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <description>
+          <text>Configure EVPN common attribute.</text>
+        </description>
+        <leaf name="reoriginate-disable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable reoriginate capability.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="local-cross">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <presence value="Enable the EVPN instance to advertise routes to other VPN instances."/>
+        <description>
+          <text>Configure EVPN local-cross attribute.</text>
+        </description>
+        <leaf name="remote-cross-route-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the use of remotely leaked routes in EVPN local route leaking.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="irb-asymmetric">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <description>
+          <text>Configure IRB asymmetric mode.</text>
+        </description>
+        <leaf name="irb-asymmetric">
+          <type name="empty"/>
+          <description>
+            <text>Enable IRB asymmetric.</text>
+          </description>
+        </leaf>
+        <leaf name="policy-name">
+          <when condition="../irb-asymmetric"/>
+          <type name="leafref">
+            <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+          </type>
+          <description>
+            <text>The name of IRB asymmetric route policy.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af/bgp:ipv6-unicast">
+    <description>
+      <text>EVPN configuration.</text>
+    </description>
+    <container name="evpn">
+      <description>
+        <text>Configure EVPN IPv6.</text>
+      </description>
+      <container name="srv6">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <description>
+          <text>Configure segment-routing IPv6 for EVPN.</text>
+        </description>
+        <leaf name="mode">
+          <type name="srv6-mode"/>
+          <must condition="not (../../../../../../../../nvo3:nvo3/nvo3:vni-list)"/>
+          <description>
+            <text>SRv6 iteration mode.</text>
+          </description>
+        </leaf>
+        <leaf name="down-switch">
+          <when condition="../mode='te'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable switch TE to BE if the associated TE tunnel goes down.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="common">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <description>
+          <text>Configure EVPN common attribute.</text>
+        </description>
+        <leaf name="reoriginate-disable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable reoriginate capability.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="local-cross">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <presence value="Enable the EVPN instance to advertise routes to other VPN instances."/>
+        <description>
+          <text>Configure EVPN local-cross attribute.</text>
+        </description>
+        <leaf name="remote-cross-route-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the use of remotely leaked routes in EVPN local route leaking.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="irb-asymmetric">
+        <when condition="../../../../../../../ni:name!='_public_'"/>
+        <description>
+          <text>Configure IRB asymmetric mode.</text>
+        </description>
+        <leaf name="irb-asymmetric">
+          <type name="empty"/>
+          <description>
+            <text>Enable IRB asymmetric.</text>
+          </description>
+        </leaf>
+        <leaf name="policy-name">
+          <when condition="../irb-asymmetric"/>
+          <type name="leafref">
+            <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+          </type>
+          <description>
+            <text>The name of IRB asymmetric route policy.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/bgp:bgp/bgp:base-process/bgp-rt:bgp-route">
+    <description>
+      <text>BGP routes information of EVPN address family.</text>
+    </description>
+    <container name="l2vpn-evpn">
+      <config value="false"/>
+      <description>
+        <text>Statistics of BGP routes information of EVPN address family.</text>
+      </description>
+      <container name="statistics">
+        <description>
+          <text>List of BGP routes information of EVPN address family.</text>
+        </description>
+        <list name="statistic">
+          <must condition="./vpn-name = '_public_'"/>
+          <key value="vpn-name"/>
+          <description>
+            <text>BGP EVPN address family routes statistics.</text>
+          </description>
+          <leaf name="vpn-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <description>
+              <text>VPN name of a BGP instance.</text>
+            </description>
+          </leaf>
+          <leaf name="total-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Total number of EVPN routes.</text>
+            </description>
+          </leaf>
+          <leaf name="ad-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of Ethernet Auto-Discovery routes.</text>
+            </description>
+          </leaf>
+          <leaf name="mac-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of MAC/IP Advertisement routes.</text>
+            </description>
+          </leaf>
+          <leaf name="include-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of Inclusive Multicast Ethernet Tag routes.</text>
+            </description>
+          </leaf>
+          <leaf name="es-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of Ethernet Segment routes.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-prefix-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of IP Prefix routes.</text>
+            </description>
+          </leaf>
+          <leaf name="smet-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of Selective Multicast Ethernet Tag routes.</text>
+            </description>
+          </leaf>
+          <leaf name="igmp-join-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of IGMP Join Synch routes.</text>
+            </description>
+          </leaf>
+          <leaf name="igmp-leave-route-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of IGMP Leave Synch routes.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

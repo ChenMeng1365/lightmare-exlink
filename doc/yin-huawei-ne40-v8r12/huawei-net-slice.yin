@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-net-slice"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:net-slice="urn:huawei:yang:huawei-net-slice"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ip="urn:huawei:yang:huawei-ip">
+  <namespace uri="urn:huawei:yang:huawei-net-slice"/>
+  <prefix value="net-slice"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ip">
+    <prefix value="ip"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This YANG module defines the essential types for the management of Net-Slice for IGP.</text>
+  </description>
+  <revision date="2021-02-03">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="netslicing"/>
+  <typedef name="net-af-type">
+    <type name="enumeration">
+      <enum name="afipv4">
+        <value value="1"/>
+        <description>
+          <text>IPv4 address family.</text>
+        </description>
+      </enum>
+      <enum name="afipv6">
+        <value value="2"/>
+        <description>
+          <text>IPv6 address family.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Net slice address family type.</text>
+    </description>
+  </typedef>
+  <typedef name="slice-capability-type">
+    <type name="enumeration">
+      <enum name="flexphy">
+        <value value="0"/>
+        <description>
+          <text>Flex phy port type.</text>
+        </description>
+      </enum>
+      <enum name="flexe">
+        <value value="1"/>
+        <description>
+          <text>FlexE port type.</text>
+        </description>
+      </enum>
+      <enum name="channelphy">
+        <value value="2"/>
+        <description>
+          <text>Channel phy port type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Net slice capability type.</text>
+    </description>
+  </typedef>
+  <typedef name="slice-service-class">
+    <type name="enumeration">
+      <enum name="be">
+        <value value="1"/>
+        <description>
+          <text>BE service-class.</text>
+        </description>
+      </enum>
+      <enum name="af1">
+        <value value="2"/>
+        <description>
+          <text>AF1 service-class.</text>
+        </description>
+      </enum>
+      <enum name="af2">
+        <value value="3"/>
+        <description>
+          <text>AF2 service-class.</text>
+        </description>
+      </enum>
+      <enum name="af3">
+        <value value="4"/>
+        <description>
+          <text>AF3 service-class.</text>
+        </description>
+      </enum>
+      <enum name="af4">
+        <value value="5"/>
+        <description>
+          <text>AF4 service-class.</text>
+        </description>
+      </enum>
+      <enum name="ef">
+        <value value="6"/>
+        <description>
+          <text>EF service-class.</text>
+        </description>
+      </enum>
+      <enum name="cs6">
+        <value value="7"/>
+        <description>
+          <text>CS6 service-class.</text>
+        </description>
+      </enum>
+      <enum name="cs7">
+        <value value="8"/>
+        <description>
+          <text>CS7 service-class.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Queue type.</text>
+    </description>
+  </typedef>
+  <container name="net-slice">
+    <description>
+      <text>Configure net slice parameters.</text>
+    </description>
+    <container name="instances">
+      <description>
+        <text>List of net slice instance information.</text>
+      </description>
+      <list name="instance">
+        <key value="id"/>
+        <description>
+          <text>Configure net slice instance.</text>
+        </description>
+        <leaf name="id">
+          <type name="uint32">
+            <range value="0 .. 4294967295"/>
+          </type>
+          <description>
+            <text>Configure net slice instance identifier.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..80"/>
+          </type>
+          <description>
+            <text>Net slice instance description.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="global">
+      <description>
+        <text>Configure net slice global information.</text>
+      </description>
+      <leaf name="protocol-id">
+        <type name="uint8">
+          <range value="0|160..252"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Configure net slice protocol number.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <rpc name="reset-flex-channel-statitic">
+    <description>
+      <text>Reset flex-channle statistic.</text>
+    </description>
+    <input>
+      <leaf name="slice-id">
+        <type name="uint32">
+          <range value="1 .. 4294967295"/>
+        </type>
+        <description>
+          <text>Net-slice instance.</text>
+        </description>
+      </leaf>
+      <leaf name="interface-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <description>
+          <text>Interface name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Net slice interface information.</text>
+    </description>
+    <container name="slice-capabilitys">
+      <config value="false"/>
+      <description>
+        <text>List of Capabilitys for a interface.</text>
+      </description>
+      <list name="slice-capability">
+        <key value="capability"/>
+        <description>
+          <text>Statistics of net slice capability for a interface.</text>
+        </description>
+        <leaf name="capability">
+          <type name="slice-capability-type"/>
+          <description>
+            <text>Slice capability type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="net-slice-binding">
+      <description>
+        <text>Configure parameters for a net slice basic interface.</text>
+      </description>
+      <leaf name="slice-id">
+        <type name="leafref">
+          <path value="/net-slice:net-slice/net-slice:instances/net-slice:instance/net-slice:id"/>
+        </type>
+        <must condition="not (../../net-slice:net-slices/net-slice:net-slice/net-slice:data-plane or ../../net-slice:net-slices/net-slice:net-slice/net-slice:flex-channel) and ../../ip:ipv6 and ((../../ifm:type = 'FlexE' and ../../ip:ipv6/ip:addresses/ip:address/ip:ip) or not (../../ifm:type = 'FlexE'))"/>
+        <description>
+          <text>Configure net slice basic instance identifier. When configuring a basic ID, ensure that a slice ID with the same value has been configured for the main interface or one of its sub-interfaces. If interface type is FLEXE, basic slice can't be enabled if the current interface has already enabled any of the following components:ISIS;ISIS IPv6;MPLS;pim sm;pim IPv6 sm;igmp;mld;dot1q/qinq termination;ip binding vpn;rip (IPv4, IPv6);ospf (IPv4, IPv6);ip address;ip address unnumbered interface;mac-address;IPv6 address;IPv6 address anycast;IPv6 address eui-64;IPv6 security rsakey-pair. Otherwise if the interface type is not FLEXE, basic slice can't be enabled only when the current interface has already enabled ip binding vpn.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="net-slices">
+      <description>
+        <text>List of net slice interfaces.</text>
+      </description>
+      <list name="net-slice">
+        <key value="slice-id"/>
+        <description>
+          <text>Configure parameters for a net slice interface. The slice IDs on the same main interface must be different.</text>
+        </description>
+        <leaf name="slice-id">
+          <type name="leafref">
+            <path value="/net-slice:net-slice/net-slice:instances/net-slice:instance/net-slice:id"/>
+          </type>
+          <must condition="(../../../net-slice:net-slice-binding/net-slice:slice-id and (count(../../net-slice:net-slice/net-slice:data-plane) + count(../../net-slice:net-slice/net-slice:flex-channel)) &lt;= 1) or not (../../../net-slice:net-slice-binding/net-slice:slice-id)"/>
+          <description>
+            <text>Configure net slice instance identifier.</text>
+          </description>
+        </leaf>
+        <choice name="mode">
+          <description>
+            <text>Choose data plane mode or flex channel mode.</text>
+          </description>
+          <case name="data-plane-mode">
+            <description>
+              <text>Enable/disable data plane mode.</text>
+            </description>
+            <leaf name="data-plane">
+              <type name="boolean"/>
+              <must condition="../../../ip:ipv6 and ((../../../ifm:type = 'FlexE' and (../../../ip:ipv6/ip:addresses/ip:address/ip:ip or ../../../net-slice:net-slice-binding)) or not (../../../ifm:type = 'FlexE'))"/>
+              <description>
+                <text>Enable/disable data plane mode.</text>
+              </description>
+              <ext:operation-exclude value="update|delete"/>
+            </leaf>
+          </case>
+          <case name="flex-channel-mode">
+            <description>
+              <text>Configure net slice flex channel.</text>
+            </description>
+            <leaf name="flex-channel">
+              <type name="uint32">
+                <range value="1 .. 4294967295"/>
+              </type>
+              <units name="Mbit/s"/>
+              <must condition="../../../ip:ipv6 and ((../../../ifm:type = 'FlexE' and (../../../ip:ipv6/ip:addresses/ip:address/ip:ip or ../../../net-slice:net-slice-binding)) or not (../../../ifm:type = 'FlexE'))"/>
+              <description>
+                <text>Configure net slice flex channel. Unit is Mbit/s.</text>
+              </description>
+              <ext:operation-exclude value="delete"/>
+            </leaf>
+          </case>
+        </choice>
+        <container name="flex-channel-statistics">
+          <config value="false"/>
+          <description>
+            <text>Statistics of flex-channel.</text>
+          </description>
+          <leaf name="service-class">
+            <type name="slice-service-class"/>
+            <description>
+              <text>Class of service.</text>
+            </description>
+          </leaf>
+          <leaf name="passed-packets">
+            <type name="uint64"/>
+            <units name="packet"/>
+            <description>
+              <text>Passed packets.</text>
+            </description>
+          </leaf>
+          <leaf name="passed-bytes">
+            <type name="uint64"/>
+            <units name="Byte"/>
+            <description>
+              <text>Passed bytes.</text>
+            </description>
+          </leaf>
+          <leaf name="dropped-packets">
+            <type name="uint64"/>
+            <units name="packet"/>
+            <description>
+              <text>Dropped packets.</text>
+            </description>
+          </leaf>
+          <leaf name="dropped-bytes">
+            <type name="uint64"/>
+            <units name="Byte"/>
+            <description>
+              <text>Dropped bytes.</text>
+            </description>
+          </leaf>
+          <leaf name="passed-pps">
+            <type name="uint64"/>
+            <units name="pps"/>
+            <description>
+              <text>Passed pps.</text>
+            </description>
+          </leaf>
+          <leaf name="passed-bps">
+            <type name="uint64"/>
+            <units name="bit/s"/>
+            <description>
+              <text>Passed bps.</text>
+            </description>
+          </leaf>
+          <leaf name="dropped-pps">
+            <type name="uint64"/>
+            <units name="pps"/>
+            <description>
+              <text>Dropped pps.</text>
+            </description>
+          </leaf>
+          <leaf name="dropped-bps">
+            <type name="uint64"/>
+            <units name="bit/s"/>
+            <description>
+              <text>Dropped bps.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+  </augment>
+</module>

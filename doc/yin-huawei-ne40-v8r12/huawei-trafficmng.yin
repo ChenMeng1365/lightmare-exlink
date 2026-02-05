@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-trafficmng"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:trafficmng="urn:huawei:yang:huawei-trafficmng"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:devm="urn:huawei:yang:huawei-devm">
+  <namespace uri="urn:huawei:yang:huawei-trafficmng"/>
+  <prefix value="trafficmng"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-devm">
+    <prefix value="devm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Traffic management.</text>
+  </description>
+  <revision date="2019-12-21">
+    <description>
+      <text>Add new nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-07-21">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="device-mgr"/>
+  <typedef name="board-type">
+    <type name="enumeration">
+      <enum name="sfu">
+        <value value="0"/>
+        <description>
+          <text>Tm board type SFU.</text>
+        </description>
+      </enum>
+      <enum name="lpu">
+        <value value="1"/>
+        <description>
+          <text>Tm board type LPU.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of board.</text>
+    </description>
+  </typedef>
+  <typedef name="lpu-switch-status">
+    <type name="enumeration">
+      <enum name="close">
+        <value value="0"/>
+        <description>
+          <text>Close status.</text>
+        </description>
+      </enum>
+      <enum name="open">
+        <value value="1"/>
+        <description>
+          <text>Open status.</text>
+        </description>
+      </enum>
+      <enum name="init">
+        <value value="2"/>
+        <description>
+          <text>Init status.</text>
+        </description>
+      </enum>
+      <enum name="link-lost-error">
+        <value value="3"/>
+        <description>
+          <text>Link lost error status.</text>
+        </description>
+      </enum>
+      <enum name="crc-error">
+        <value value="4"/>
+        <description>
+          <text>Crc error status.</text>
+        </description>
+      </enum>
+      <enum name="packet-error">
+        <value value="5"/>
+        <description>
+          <text>Packet error status.</text>
+        </description>
+      </enum>
+      <enum name="unstable-error">
+        <value value="6"/>
+        <description>
+          <text>Unstable error status.</text>
+        </description>
+      </enum>
+      <enum name="isoswf-error">
+        <value value="11"/>
+        <description>
+          <text>Isoswf error status.</text>
+        </description>
+      </enum>
+      <enum name="isotm-error">
+        <value value="26"/>
+        <description>
+          <text>Isotm error status.</text>
+        </description>
+      </enum>
+      <enum name="linkv">
+        <value value="42"/>
+        <description>
+          <text>Linkv status.</text>
+        </description>
+      </enum>
+      <enum name="tx-off">
+        <value value="49"/>
+        <description>
+          <text>TX off status.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The status of switch.</text>
+    </description>
+  </typedef>
+  <typedef name="choice-enable-type">
+    <type name="enumeration">
+      <enum name="enable">
+        <value value="0"/>
+        <description>
+          <text>Enable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Enable warm backup.</text>
+    </description>
+  </typedef>
+  <container name="trafficmng">
+    <description>
+      <text>Specify configuration information of traffic management.</text>
+    </description>
+    <container name="board-alarm-sfu-thresholds">
+      <description>
+        <text>List of link-lost alarm config with board sfu.</text>
+      </description>
+      <list name="board-alarm-sfu-threshold">
+        <key value="slot-id"/>
+        <description>
+          <text>Configure link-lost alarm value.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="(c[cl]c\d+/)?\d+"/>
+          </type>
+          <description>
+            <text>Slot ID of board.</text>
+          </description>
+        </leaf>
+        <leaf name="value">
+          <type name="uint32">
+            <range value="1..64"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Value of link-lost.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="board-alarm-lpu-thresholds">
+      <description>
+        <text>List of link-lost alarm config with board lpu.</text>
+      </description>
+      <list name="board-alarm-lpu-threshold">
+        <key value="slot-id"/>
+        <description>
+          <text>Configure link-lost alarm value.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="leafref">
+            <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+          </type>
+          <description>
+            <text>Slot ID of board.</text>
+          </description>
+        </leaf>
+        <leaf name="value">
+          <type name="uint32">
+            <range value="1..16"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Value of link lost.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="sfu-warm-backup-switch">
+      <description>
+        <text>Configure SFU warm backup enable.</text>
+      </description>
+      <leaf name="enable">
+        <type name="choice-enable-type"/>
+        <description>
+          <text>Enable/disable SFU warm backup.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="packet-loss-alarms">
+      <description>
+        <text>List of statistics alarm thresholds.</text>
+      </description>
+      <list name="packet-loss-alarm">
+        <key value="slot-id"/>
+        <description>
+          <text>Configure statistics alarm threshold.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="leafref">
+            <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+          </type>
+          <description>
+            <text>Slot ID of board.</text>
+          </description>
+        </leaf>
+        <leaf name="packets">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <units name="packet"/>
+          <default value="10000"/>
+          <description>
+            <text>Packets.</text>
+          </description>
+        </leaf>
+        <leaf name="seconds">
+          <type name="uint32">
+            <range value="5..3600"/>
+          </type>
+          <units name="s"/>
+          <default value="60"/>
+          <description>
+            <text>Seconds.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="lpu-backpressure-switch">
+      <description>
+        <text>Configure LPU backpressure.</text>
+      </description>
+      <leaf name="enable">
+        <type name="choice-enable-type"/>
+        <description>
+          <text>Enable/disable LPU backpressure.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="tm-sfu-informations">
+      <config value="false"/>
+      <description>
+        <text>List of tm SFU information.</text>
+      </description>
+      <list name="tm-sfu-information">
+        <key value="slot-id"/>
+        <description>
+          <text>Operational state of tm SFU.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="(c[cl]c\d+/)?(SFU)?\d+"/>
+          </type>
+          <description>
+            <text>Slot id.</text>
+          </description>
+        </leaf>
+        <container name="inbound-switch-port-statuss">
+          <description>
+            <text>List of SFU switch input port status.</text>
+          </description>
+          <list name="inbound-switch-port-status">
+            <key value="chip-number port"/>
+            <description>
+              <text>Operational state of SFU switch input port.</text>
+            </description>
+            <leaf name="chip-number">
+              <type name="uint32">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Chip number.</text>
+              </description>
+            </leaf>
+            <leaf name="port">
+              <type name="uint32">
+                <range value="0..200"/>
+              </type>
+              <description>
+                <text>Input port.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="lpu-switch-status"/>
+              <description>
+                <text>Input status.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="outbound-switch-port-statuss">
+          <description>
+            <text>List of SFU switch output port status.</text>
+          </description>
+          <list name="outbound-switch-port-status">
+            <key value="chip-number port"/>
+            <description>
+              <text>Operational state of SFU switch output port.</text>
+            </description>
+            <leaf name="chip-number">
+              <type name="uint32">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Chip number.</text>
+              </description>
+            </leaf>
+            <leaf name="port">
+              <type name="uint32">
+                <range value="0..200"/>
+              </type>
+              <description>
+                <text>Output port.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="lpu-switch-status"/>
+              <description>
+                <text>Output status.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="sfu-statistics">
+          <description>
+            <text>List of SFU statistics.</text>
+          </description>
+          <list name="sfu-statistic">
+            <key value="chip-id"/>
+            <description>
+              <text>Statistics of SFU.</text>
+            </description>
+            <leaf name="chip-id">
+              <type name="uint32">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Chip ID.</text>
+              </description>
+            </leaf>
+            <leaf name="pass-cells">
+              <type name="uint64"/>
+              <description>
+                <text>Pass cells.</text>
+              </description>
+            </leaf>
+            <leaf name="discard-cells">
+              <type name="uint64"/>
+              <description>
+                <text>Discard cells.</text>
+              </description>
+            </leaf>
+            <leaf name="send-cells">
+              <type name="uint64"/>
+              <description>
+                <text>Send cells.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="tm-lpu-statuss">
+      <config value="false"/>
+      <description>
+        <text>List of the status of the switch port on an LPU.</text>
+      </description>
+      <list name="tm-lpu-status">
+        <key value="slot-id"/>
+        <description>
+          <text>Operational state of the switch port on an LPU.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="(c[cl]c\d+/)?\d+"/>
+          </type>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+        </leaf>
+        <container name="inbound-switch-port-statuss">
+          <description>
+            <text>List of LPU switch input port status.</text>
+          </description>
+          <list name="inbound-switch-port-status">
+            <key value="chip-number port"/>
+            <description>
+              <text>Operational state of LPU switch input port.</text>
+            </description>
+            <leaf name="chip-number">
+              <type name="uint32">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Chip number.</text>
+              </description>
+            </leaf>
+            <leaf name="port">
+              <type name="uint32">
+                <range value="0..200"/>
+              </type>
+              <description>
+                <text>Input port.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="lpu-switch-status"/>
+              <description>
+                <text>Input status.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="outbound-switch-port-statuss">
+          <description>
+            <text>List of LPU switch output port status.</text>
+          </description>
+          <list name="outbound-switch-port-status">
+            <key value="chip-number port"/>
+            <description>
+              <text>Operational state of LPU switch output port.</text>
+            </description>
+            <leaf name="chip-number">
+              <type name="uint32">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Chip number.</text>
+              </description>
+            </leaf>
+            <leaf name="port">
+              <type name="uint32">
+                <range value="0..200"/>
+              </type>
+              <description>
+                <text>Output port.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="lpu-switch-status"/>
+              <description>
+                <text>Output status.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="tm-statisticss">
+          <description>
+            <text>List of tm statistics.</text>
+          </description>
+          <list name="tm-statistics">
+            <key value="chip-id"/>
+            <description>
+              <text>Tm statistics.</text>
+            </description>
+            <leaf name="chip-id">
+              <type name="uint32">
+                <range value="0..7"/>
+              </type>
+              <description>
+                <text>Chip ID.</text>
+              </description>
+            </leaf>
+            <leaf name="pass-packets-in">
+              <type name="uint64"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of packets entered by NP to FABRIC.</text>
+              </description>
+            </leaf>
+            <leaf name="discard-packets-in">
+              <type name="uint64"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of packets discarded from NP to FABRIC.</text>
+              </description>
+            </leaf>
+            <leaf name="send-cells-in">
+              <type name="uint64"/>
+              <description>
+                <text>Number of cells from NP to FABRIC out.</text>
+              </description>
+            </leaf>
+            <leaf name="pass-cells-out">
+              <type name="uint64"/>
+              <description>
+                <text>Number of cells entered by FABRIC to NP.</text>
+              </description>
+            </leaf>
+            <leaf name="pass-packets-out">
+              <type name="uint64"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of packets entered by FABRIC to NP.</text>
+              </description>
+            </leaf>
+            <leaf name="discard-packets-out">
+              <type name="uint64"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of packets discarded by FABRIC to NP.</text>
+              </description>
+            </leaf>
+            <leaf name="send-packets-out">
+              <type name="uint64"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of packages from FABRIC to NP.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

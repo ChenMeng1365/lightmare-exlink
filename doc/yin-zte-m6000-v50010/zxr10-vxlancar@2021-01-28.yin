@@ -1,0 +1,1356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-vxlancar"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vxlancar="http://www.zte.com.cn/zxr10/netconf/schema/rosng/vxlancar"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/vxlancar"/>
+  <prefix value="vxlancar"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe QoS VXLAN CAR info.</text>
+  </description>
+  <revision date="2021-01-28">
+    <description>
+      <text>Support to configure VXLAN CAR base on IPv4 address or vni, add new containers as follows:
+/configuration/qos/vni-or-addr-vxlan-cars.</text>
+    </description>
+  </revision>
+  <revision date="2019-03-14">
+    <description>
+      <text>Support to configure VXLAN CAR, add new containers as follows:
+/configuration/qos/ipv4-vxlan-cars.</text>
+    </description>
+  </revision>
+  <feature name="qos-vni-or-addr-vxlan-cars"/>
+  <typedef name="qos-dscp-bitmap">
+    <type name="ncd:bitmap">
+      <pattern value="(((((([1-9][0-9]{0,0})|0|([1-5][0-9]{1,1})|(6[0-2])|63)-(([1-9][0-9]{0,0})|0|([1-5][0-9]{1,1})|(6[0-2])|63))|(([1-9][0-9]{0,0})|0|([1-5][0-9]{1,1})|(6[0-2])|63)),){0,3}(((([1-9][0-9]{0,0})|0|([1-5][0-9]{1,1})|(6[0-2])|63)-(([1-9][0-9]{0,0})|0|([1-5][0-9]{1,1})|(6[0-2])|63))|(([1-9][0-9]{0,0})|0|([1-5][0-9]{1,1})|(6[0-2])|63)){1,1})">
+        <description>
+          <text>Configure DSCP in range mode, support single DSCP value or range(max num:4;spacing mark:,) in &lt;0-63&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of QoS dscp in range mode, support single DSCP value or range(max num:4;spacing mark:,) in &lt;0-63&gt;. For example,"6,10-30,40,50-60",etc.</text>
+    </description>
+  </typedef>
+  <typedef name="qos-prec-bitmap">
+    <type name="ncd:bitmap">
+      <pattern value="(((([0-7]-[0-7])|[0-7]),){0,3}(([0-7]-[0-7])|([0-7])){1,1})">
+        <description>
+          <text>Configure IP-Precedence in range mode, support single precedence value or range(max num:4;spacing mark:,) in &lt;0-7&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of QoS IP-Precedence in range mode, support single precedence value or range(max num:4;spacing mark:,) in &lt;0-7&gt;. For example,"0,4-7",etc.</text>
+    </description>
+  </typedef>
+  <typedef name="qos-vlan-bitmap">
+    <type name="ncd:bitmap">
+      <pattern value="(((((([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)-(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094))|(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)),){0,3}(((([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)-(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094))|(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)){1,1})">
+        <description>
+          <text>Configure VLAN in range mode, support single VLAN value or range(max num:4;spacing mark:,) in &lt;1-4094&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of QoS VLAN in range mode, support single VLAN value or range(max num:4;spacing mark:,) in &lt;1-4094&gt;. For example,"1-300,400,450-500",etc.</text>
+    </description>
+  </typedef>
+  <typedef name="qos-mpls-bitmap">
+    <type name="ncd:bitmap">
+      <pattern value="(((([0-7]-[0-7])|[0-7]),){0,3}(([0-7]-[0-7])|([0-7])){1,1})">
+        <description>
+          <text>Configure MPLS-EXP in range mode, support single MPLS-EXP value or range(max num:4;spacing mark:,) in &lt;0-7&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of QoS MPLS-EXP in range mode, support single MPLS-EXP value or range(max num:4;spacing mark:,) in &lt;0-7&gt;. For example,"0,3-5,7",etc.</text>
+    </description>
+  </typedef>
+  <typedef name="qos-8021p-bitmap">
+    <type name="ncd:bitmap">
+      <pattern value="(((([0-7]-[0-7])|[0-7]),){0,3}(([0-7]-[0-7])|([0-7])){1,1})">
+        <description>
+          <text>Configure 802.1p in range mode, support single 802.1p value or range(max num:4;spacing mark:,) in &lt;0-7&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of QoS 802.1p in range mode, support single 802.1p value or range(max num:4;spacing mark:,) in &lt;0-7&gt;. For example,"0,3-5,7",etc.</text>
+    </description>
+  </typedef>
+  <typedef name="qos-vlan-range">
+    <type name="ncd:range">
+      <pattern value="(((((([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)-(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094))|(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)),){0,3}(((([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)-(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094))|(([1-9][0-9]{1,2})|([2-9][0-9]{0,0})|1|([1-3][0-9]{3,3})|(40[0-8][0-9]{1,1})|(409[0-3])|4094)){1,1})">
+        <description>
+          <text>Configure VLAN in range mode, support single VLAN value or range(max num:4;spacing mark:,) in &lt;1-4094&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of QoS VLAN in range mode, support single VLAN value or range(max num:4;spacing mark:,) in &lt;1-4094&gt;. For example,"1-300,400,450-500",etc.</text>
+    </description>
+  </typedef>
+  <typedef name="qos-service-class">
+    <type name="enumeration">
+      <enum name="be">
+        <value value="1"/>
+        <description>
+          <text>Best effort</text>
+        </description>
+      </enum>
+      <enum name="af1">
+        <value value="2"/>
+        <description>
+          <text>Assured forwarding class 1</text>
+        </description>
+      </enum>
+      <enum name="af2">
+        <value value="3"/>
+        <description>
+          <text>Assured forwarding class 2</text>
+        </description>
+      </enum>
+      <enum name="af3">
+        <value value="4"/>
+        <description>
+          <text>Assured forwarding class 3</text>
+        </description>
+      </enum>
+      <enum name="af4">
+        <value value="5"/>
+        <description>
+          <text>Assured forwarding class 4</text>
+        </description>
+      </enum>
+      <enum name="ef">
+        <value value="6"/>
+        <description>
+          <text>Expedited forward</text>
+        </description>
+      </enum>
+      <enum name="cs6">
+        <value value="7"/>
+        <description>
+          <text>Internetwork control service class</text>
+        </description>
+      </enum>
+      <enum name="cs7">
+        <value value="8"/>
+        <description>
+          <text>Network control service class</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definition of server class of PHB info, see below:
+             be (1) Best effort
+             af1(2) Assured forwarding class 1
+             af2(3) Assured forwarding class 2
+             af3(4) Assured forwarding class 3
+             af4(5) Assured forwarding class 4
+             ef (6) Expedited forward
+             cs6(7) Internetwork control service class
+             cs7(8) Network control service class</text>
+    </description>
+  </typedef>
+  <typedef name="qos-color-type">
+    <type name="enumeration">
+      <enum name="green">
+        <value value="1"/>
+        <description>
+          <text>Green packets</text>
+        </description>
+      </enum>
+      <enum name="yellow">
+        <value value="2"/>
+        <description>
+          <text>Yellow packets</text>
+        </description>
+      </enum>
+      <enum name="red">
+        <value value="3"/>
+        <description>
+          <text>Red packets</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definition of color type of PHB info, see below:
+             green  (1) Green packets
+             yellow (2) Yellow packets
+             red    (3) Red packets</text>
+    </description>
+  </typedef>
+  <typedef name="qos-reserved-words">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Match packets with default dscp (000000)</text>
+        </description>
+      </enum>
+      <enum name="af11">
+        <value value="10"/>
+        <description>
+          <text>Match packets with AF11 dscp (001010)</text>
+        </description>
+      </enum>
+      <enum name="af12">
+        <value value="12"/>
+        <description>
+          <text>Match packets with AF12 dscp (001100)</text>
+        </description>
+      </enum>
+      <enum name="af13">
+        <value value="14"/>
+        <description>
+          <text>Match packets with AF13 dscp (001110)</text>
+        </description>
+      </enum>
+      <enum name="af21">
+        <value value="18"/>
+        <description>
+          <text>Match packets with AF21 dscp (010010)</text>
+        </description>
+      </enum>
+      <enum name="af22">
+        <value value="20"/>
+        <description>
+          <text>Match packets with AF22 dscp (010100)</text>
+        </description>
+      </enum>
+      <enum name="af23">
+        <value value="22"/>
+        <description>
+          <text>Match packets with AF23 dscp (010110)</text>
+        </description>
+      </enum>
+      <enum name="af31">
+        <value value="26"/>
+        <description>
+          <text>Match packets with AF31 dscp (011010)</text>
+        </description>
+      </enum>
+      <enum name="af32">
+        <value value="28"/>
+        <description>
+          <text>Match packets with AF32 dscp (011100)</text>
+        </description>
+      </enum>
+      <enum name="af33">
+        <value value="30"/>
+        <description>
+          <text>Match packets with AF33 dscp (011110)</text>
+        </description>
+      </enum>
+      <enum name="af41">
+        <value value="34"/>
+        <description>
+          <text>Match packets with AF41 dscp (100010)</text>
+        </description>
+      </enum>
+      <enum name="af42">
+        <value value="36"/>
+        <description>
+          <text>Match packets with AF42 dscp (100100)</text>
+        </description>
+      </enum>
+      <enum name="af43">
+        <value value="38"/>
+        <description>
+          <text>Match packets with AF43 dscp (100110)</text>
+        </description>
+      </enum>
+      <enum name="ef">
+        <value value="46"/>
+        <description>
+          <text>Match packets with EF dscp (101110)</text>
+        </description>
+      </enum>
+      <enum name="cs1">
+        <value value="8"/>
+        <description>
+          <text>Match packets with CS1(precedence 1) dscp (001000)</text>
+        </description>
+      </enum>
+      <enum name="cs2">
+        <value value="16"/>
+        <description>
+          <text>Match packets with CS2(precedence 2) dscp (010000)</text>
+        </description>
+      </enum>
+      <enum name="cs3">
+        <value value="24"/>
+        <description>
+          <text>Match packets with CS3(precedence 3) dscp (011000)</text>
+        </description>
+      </enum>
+      <enum name="cs4">
+        <value value="32"/>
+        <description>
+          <text>Match packets with CS4(precedence 4) dscp (100000)</text>
+        </description>
+      </enum>
+      <enum name="cs5">
+        <value value="40"/>
+        <description>
+          <text>Match packets with CS5(precedence 5) dscp (101000)</text>
+        </description>
+      </enum>
+      <enum name="cs6">
+        <value value="48"/>
+        <description>
+          <text>Match packets with CS6(precedence 6) dscp (110000)</text>
+        </description>
+      </enum>
+      <enum name="cs7">
+        <value value="56"/>
+        <description>
+          <text>Match packets with CS7(precedence 7) dscp (111000)</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definition of resserved words of DSCP info ,see below:
+      default(0) Match packets with default dscp (000000)      
+      af11(10)   Match packets with AF11 dscp (001010)                                
+      af12(12)   Match packets with AF12 dscp (001100)                                
+      af13(14)   Match packets with AF13 dscp (001110)                                
+      af21(18)   Match packets with AF21 dscp (010010)                                
+      af22(20)   Match packets with AF22 dscp (010100)                                
+      af23(22)   Match packets with AF23 dscp (010110)                                
+      af31(26)   Match packets with AF31 dscp (011010)                                
+      af32(28)   Match packets with AF32 dscp (011100)                                
+      af33(30)   Match packets with AF33 dscp (011110)                                
+      af41(34)   Match packets with AF41 dscp (100010)                                
+      af42(36)   Match packets with AF42 dscp (100100)                                
+      af43(38)   Match packets with AF43 dscp (100110)   
+      ef(46)     Match packets with EF dscp (101110)                             
+      cs1(8)     Match packets with CS1(precedence 1) dscp (001000)                   
+      cs2(16)    Match packets with CS2(precedence 2) dscp (010000)                   
+      cs3(24)    Match packets with CS3(precedence 3) dscp (011000)                   
+      cs4(32)    Match packets with CS4(precedence 4) dscp (100000)                   
+      cs5(40)    Match packets with CS5(precedence 5) dscp (101000)                   
+      cs6(48)    Match packets with CS6(precedence 6) dscp (110000)                   
+      cs7(56)    Match packets with CS7(precedence 7) dscp (111000)</text>
+    </description>
+  </typedef>
+  <typedef name="qos-ip-type">
+    <type name="enumeration">
+      <enum name="any">
+        <value value="0"/>
+        <description>
+          <text>Based on any IP</text>
+        </description>
+      </enum>
+      <enum name="ipv4">
+        <value value="1"/>
+        <description>
+          <text>Based on IPv4</text>
+        </description>
+      </enum>
+      <enum name="ipv6">
+        <value value="2"/>
+        <description>
+          <text>Based on IPv6</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Configure based on IP, see below:
+      any  Packets based on any IP;
+      ipv4 Packets based on IPv4;
+      ipv6 Packets based on IPv6;</text>
+    </description>
+  </typedef>
+  <typedef name="qos-rate-unit-type">
+    <type name="enumeration">
+      <enum name="kbps">
+        <value value="1"/>
+        <description>
+          <text>Kilobits per second</text>
+        </description>
+      </enum>
+      <enum name="mbps">
+        <value value="2"/>
+        <description>
+          <text>Megabits per second</text>
+        </description>
+      </enum>
+      <enum name="gbps">
+        <value value="3"/>
+        <description>
+          <text>Gigabits per second</text>
+        </description>
+      </enum>
+      <enum name="pps">
+        <value value="4"/>
+        <description>
+          <text>Packet per second</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definition of rate unit of police car info, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+    </description>
+  </typedef>
+  <typedef name="qos-bucket-unit-type">
+    <type name="enumeration">
+      <enum name="kb">
+        <value value="1"/>
+        <description>
+          <text>Kilobits</text>
+        </description>
+      </enum>
+      <enum name="mb">
+        <value value="2"/>
+        <description>
+          <text>Megabits</text>
+        </description>
+      </enum>
+      <enum name="gb">
+        <value value="3"/>
+        <description>
+          <text>Gigabits</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definition of bucket unit of police car info, see below:
+             kb  (1) Kilobits
+             mb  (2) Megabits
+             gb  (3) Gigabits</text>
+    </description>
+  </typedef>
+  <typedef name="qos-threshold-unit-type">
+    <type name="enumeration">
+      <enum name="kbytes">
+        <value value="1"/>
+        <description>
+          <text>Kilobytes</text>
+        </description>
+      </enum>
+      <enum name="mbytes">
+        <value value="2"/>
+        <description>
+          <text>Megabytes</text>
+        </description>
+      </enum>
+      <enum name="gbytes">
+        <value value="3"/>
+        <description>
+          <text>Gigabytes</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The definition of threshold unit of wred info, see below:
+             kb  (1) Kilobytes
+             mb  (2) Megabytes
+             gb  (3) Gigabytes</text>
+    </description>
+  </typedef>
+  <typedef name="qos-direction">
+    <type name="enumeration">
+      <enum name="input">
+        <value value="1"/>
+        <description>
+          <text>input  Attaches to the input flow</text>
+        </description>
+      </enum>
+      <enum name="output">
+        <value value="2"/>
+        <description>
+          <text>output Attaches to the output flow</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The flow direction, as follows,
+     input  Attaches to the input flow
+     output Attaches to the output flow</text>
+    </description>
+  </typedef>
+  <typedef name="qos-port-range">
+    <type name="ncd:range">
+      <pattern value="(((((([1-9][0-9]{1,3})|([1-9][0-9]{0,0})|0|([1-5][0-9]{4,4})|(6[0-4][0-9]{3,3})|(65[0-4][0-9]{2,2})|(655[0-2][0-9]{1,1})|(6553[0-4])|65535)-(([1-9][0-9]{1,3})|([1-9][0-9]{0,0})|0|([1-5][0-9]{4,4})|(6[0-4][0-9]{3,3})|(65[0-4][0-9]{2,2})|(655[0-2][0-9]{1,1})|(6553[0-4])|65535))|(([1-9][0-9]{1,3})|([1-9][0-9]{0,0})|0|([1-5][0-9]{4,4})|(6[0-4][0-9]{3,3})|(65[0-4][0-9]{2,2})|(655[0-2][0-9]{1,1})|(6553[0-4])|65535)),){0,3}(((([1-9][0-9]{1,3})|([1-9][0-9]{0,0})|0|([1-5][0-9]{4,4})|(6[0-4][0-9]{3,3})|(65[0-4][0-9]{2,2})|(655[0-2][0-9]{1,1})|(6553[0-4])|65535)-(([1-9][0-9]{1,3})|([1-9][0-9]{0,0})|0|([1-5][0-9]{4,4})|(6[0-4][0-9]{3,3})|(65[0-4][0-9]{2,2})|(655[0-2][0-9]{1,1})|(6553[0-4])|65535))|(([1-9][0-9]{1,3})|([1-9][0-9]{0,0})|0|([1-5][0-9]{4,4})|(6[0-4][0-9]{3,3})|(65[0-4][0-9]{2,2})|(655[0-2][0-9]{1,1})|(6553[0-4])|65535)){1,1})">
+        <description>
+          <text>Configure port in range mode, support single port value or range(max num:4;spacing mark:,) in &lt;0-65535&gt;.</text>
+        </description>
+      </pattern>
+    </type>
+    <description>
+      <text>The definition of port in range mode, support single port value or range(max num:4;spacing mark:,) in &lt;0-65535&gt;. For example,"1-300,400,450-500",etc.</text>
+    </description>
+  </typedef>
+  <container name="configuration">
+    <description>
+      <text>Configuration information</text>
+    </description>
+    <container name="qos">
+      <description>
+        <text>Configuration about QoS</text>
+      </description>
+      <container name="ipv4-vxlan-cars">
+        <description>
+          <text>Configure VXLAN rate limit parameters</text>
+        </description>
+        <list name="ipv4-vxlan-car">
+          <description>
+            <text>Configure VXLAN item</text>
+          </description>
+          <key value="vni-id src-addr dst-addr"/>
+          <leaf name="vni-id">
+            <description>
+              <text>VNI ID</text>
+            </description>
+            <type name="uint32">
+              <range value="1..16777215">
+                <description>
+                  <text>VNI ID</text>
+                </description>
+              </range>
+            </type>
+          </leaf>
+          <leaf name="src-addr">
+            <description>
+              <text>Source address of VXLAN tunnel</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="dst-addr">
+            <description>
+              <text>Destination address of VXLAN tunnel</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <container name="rate-limit">
+            <description>
+              <text>Configure interface rate limit parameters</text>
+            </description>
+            <container name="localports">
+              <description>
+                <text>Match local port</text>
+              </description>
+              <list name="localport">
+                <description>
+                  <text>Configure interface rate limit based on matching localport</text>
+                </description>
+                <key value="if-direct"/>
+                <leaf name="if-direct">
+                  <description>
+                    <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="input">
+                      <value value="1"/>
+                      <description>
+                        <text>Rate limit on input</text>
+                      </description>
+                    </enum>
+                    <enum name="output">
+                      <value value="2"/>
+                      <description>
+                        <text>Rate limit on output</text>
+                      </description>
+                    </enum>
+                  </type>
+                </leaf>
+                <leaf name="cir">
+                  <description>
+                    <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="8..4294967295">
+                      <description>
+                        <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                      </description>
+                    </range>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="cbs">
+                  <description>
+                    <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..4294967295">
+                      <description>
+                        <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                      </description>
+                    </range>
+                  </type>
+                  <units name="byte"/>
+                </leaf>
+              </list>
+            </container>
+          </container>
+        </list>
+      </container>
+      <container name="vni-or-addr-vxlan-cars">
+        <description>
+          <text>Configure VXLAN rate limit parameters</text>
+        </description>
+        <container name="vni-id-vxlan-car">
+          <description>
+            <text>Configure VXLAN item base on vni</text>
+          </description>
+          <list name="vni-id-vxlan-car">
+            <description>
+              <text>Configure VXLAN item</text>
+            </description>
+            <key value="vni-id"/>
+            <leaf name="vni-id">
+              <description>
+                <text>VNI ID</text>
+              </description>
+              <type name="uint32">
+                <range value="1..16777215">
+                  <description>
+                    <text>VNI ID</text>
+                  </description>
+                </range>
+              </type>
+            </leaf>
+            <container name="rate-limit">
+              <description>
+                <text>Configure rate limit parameters</text>
+              </description>
+              <container name="unknown-multicasts">
+                <description>
+                  <text>Match unknown-multicast</text>
+                </description>
+                <list name="unknown-multicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching unknown-multicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="broadcasts">
+                <description>
+                  <text>Match broadcast</text>
+                </description>
+                <list name="broadcast">
+                  <description>
+                    <text>Configure interface rate limit based on matching broadcasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="multicasts">
+                <description>
+                  <text>Match multicast</text>
+                </description>
+                <list name="multicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching multicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="unicasts">
+                <description>
+                  <text>Match unicast</text>
+                </description>
+                <list name="unicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching unicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="unknown-unicasts">
+                <description>
+                  <text>Match unknown-unicast</text>
+                </description>
+                <list name="unknown-unicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching unknown-unicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+            </container>
+          </list>
+        </container>
+        <container name="addr-vxlan-car">
+          <description>
+            <text>Configure VXLAN item base on IPv4 address</text>
+          </description>
+          <list name="addr-vxlan-car">
+            <description>
+              <text>Configure VXLAN item</text>
+            </description>
+            <key value="src-addr dst-addr"/>
+            <leaf name="src-addr">
+              <description>
+                <text>Source address of VXLAN tunnel</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+            </leaf>
+            <leaf name="dst-addr">
+              <description>
+                <text>Destination address of VXLAN tunnel</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+            </leaf>
+            <container name="rate-limit">
+              <description>
+                <text>Configure rate limit parameters</text>
+              </description>
+              <container name="unknown-multicasts">
+                <description>
+                  <text>Match unknown-multicast</text>
+                </description>
+                <list name="unknown-multicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching unknown-multicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="broadcasts">
+                <description>
+                  <text>Match broadcast</text>
+                </description>
+                <list name="broadcast">
+                  <description>
+                    <text>Configure interface rate limit based on matching broadcasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="multicasts">
+                <description>
+                  <text>Match multicast</text>
+                </description>
+                <list name="multicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching multicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="unicasts">
+                <description>
+                  <text>Match unicast</text>
+                </description>
+                <list name="unicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching unicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+              <container name="unknown-unicasts">
+                <description>
+                  <text>Match unknown-unicast</text>
+                </description>
+                <list name="unknown-unicast">
+                  <description>
+                    <text>Configure interface rate limit based on matching unknown-unicasts</text>
+                  </description>
+                  <key value="if-direct"/>
+                  <leaf name="if-direct">
+                    <description>
+                      <text>Specify the direction of VXLAN, as follows,
+     input  Rate limit on input
+     output Rate limit on output</text>
+                    </description>
+                    <type name="enumeration">
+                      <enum name="input">
+                        <value value="1"/>
+                        <description>
+                          <text>Rate limit on input</text>
+                        </description>
+                      </enum>
+                      <enum name="output">
+                        <value value="2"/>
+                        <description>
+                          <text>Rate limit on output</text>
+                        </description>
+                      </enum>
+                    </type>
+                  </leaf>
+                  <leaf name="cir-value">
+                    <description>
+                      <text>Configure the CIR(Committed Information Rate) value (default: kilobits per second)</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="8..4294967295">
+                        <description>
+                          <text>The CIR value (default: kilobits per second),support &lt;8-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                  <leaf name="cir-unit">
+                    <description>
+                      <text>Configure the unit of  CIR value, see below:
+             kbps  (1) Kilobits per second
+             mbps  (2) Megabits per second
+             gbps  (3) Gigabits per second
+             pps   (4) Packet   per second</text>
+                    </description>
+                    <type name="qos-rate-unit-type"/>
+                  </leaf>
+                  <leaf name="cbs">
+                    <description>
+                      <text>Configure the CBS(Committed Burst Size) size in bytes</text>
+                    </description>
+                    <type name="uint32">
+                      <range value="1..4294967295">
+                        <description>
+                          <text>The CBS(Committed Burst Size) size in bytes, support &lt;1-4294967295&gt;</text>
+                        </description>
+                      </range>
+                    </type>
+                    <units name="byte"/>
+                  </leaf>
+                </list>
+              </container>
+            </container>
+          </list>
+        </container>
+        <ncd:revise-date date="2021-01-28"/>
+      </container>
+    </container>
+  </container>
+</module>

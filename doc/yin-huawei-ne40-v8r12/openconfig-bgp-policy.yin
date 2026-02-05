@@ -1,0 +1,1102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-bgp-policy"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-bgp-pol="http://openconfig.net/yang/bgp-policy"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-rpol="http://openconfig.net/yang/routing-policy"
+        xmlns:oc-pol-types="http://openconfig.net/yang/policy-types"
+        xmlns:oc-bgp-types="http://openconfig.net/yang/bgp-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/bgp-policy"/>
+  <prefix value="oc-bgp-pol"/>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-routing-policy">
+    <prefix value="oc-rpol"/>
+  </import>
+  <import module="openconfig-policy-types">
+    <prefix value="oc-pol-types"/>
+  </import>
+  <import module="openconfig-bgp-types">
+    <prefix value="oc-bgp-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This module contains data definitions for BGP routing policy.
+It augments the base routing-policy module with BGP-specific
+options for conditions and actions.</text>
+  </description>
+  <oc-ext:openconfig-version semver="6.0.0"/>
+  <revision date="2019-02-01">
+    <description>
+      <text>Move BGP community match-set-options from
+policy-definitions/statements/.../bgp-conditions to
+defined-sets/bgp-defined-sets/community-set for wider platform
+support.</text>
+    </description>
+    <reference>
+      <text>6.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>5.0.2</text>
+    </reference>
+  </revision>
+  <revision date="2018-08-20">
+    <description>
+      <text>Correct description of AFI-SAFI enabled leaf.</text>
+    </description>
+    <reference>
+      <text>5.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-04-11">
+    <description>
+      <text>Correct naming of BGP maximum prefix warning percentage leaf.</text>
+    </description>
+    <reference>
+      <text>5.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-03-20">
+    <description>
+      <text>Added SR-TE policy SAFI</text>
+    </description>
+    <reference>
+      <text>4.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-10">
+    <description>
+      <text>Add error notifications; moved add-paths config; add AS
+prepend policy features; removed unneeded config leaves</text>
+    </description>
+    <reference>
+      <text>4.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-02">
+    <description>
+      <text>Bugfix to remove remaining global-level policy data</text>
+    </description>
+    <reference>
+      <text>3.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-26">
+    <description>
+      <text>Add dynamic neighbor support, migrate to OpenConfig types</text>
+    </description>
+    <reference>
+      <text>3.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-06-21">
+    <description>
+      <text>OpenConfig BGP refactor</text>
+    </description>
+    <reference>
+      <text>2.1.1</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <typedef name="bgp-set-community-option-type">
+    <type name="enumeration">
+      <enum name="ADD">
+        <description>
+          <text>add the specified communities to the existing
+community attribute</text>
+        </description>
+      </enum>
+      <enum name="REMOVE">
+        <description>
+          <text>remove the specified communities from the
+existing community attribute</text>
+        </description>
+      </enum>
+      <enum name="REPLACE">
+        <description>
+          <text>replace the existing community attribute with
+the specified communities. If an empty set is
+specified, this removes the community attribute
+from the route.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Type definition for options when setting the community
+attribute in a policy action</text>
+    </description>
+  </typedef>
+  <typedef name="bgp-next-hop-type">
+    <type name="union">
+      <type name="oc-inet:ip-address"/>
+      <type name="enumeration">
+        <enum name="SELF">
+          <description>
+            <text>special designation for local router's own
+address, i.e., next-hop-self</text>
+          </description>
+        </enum>
+      </type>
+    </type>
+    <description>
+      <text>type definition for specifying next-hop in policy actions</text>
+    </description>
+  </typedef>
+  <typedef name="bgp-set-med-type">
+    <type name="union">
+      <type name="uint32"/>
+      <type name="string">
+        <pattern value="^[+-][0-9]+$"/>
+      </type>
+      <type name="enumeration">
+        <enum name="IGP">
+          <description>
+            <text>set the MED value to the IGP cost toward the
+next hop for the route</text>
+          </description>
+        </enum>
+      </type>
+    </type>
+    <description>
+      <text>Type definition for specifying how the BGP MED can
+be set in BGP policy actions. The three choices are to set
+the MED directly, increment/decrement using +/- notation,
+and setting it to the IGP cost (predefined value).</text>
+    </description>
+  </typedef>
+  <grouping name="match-as-path-config">
+    <description>
+      <text>Configuration data for match conditions on AS path set</text>
+    </description>
+    <leaf name="as-path-set">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:defined-sets/oc-bgp-pol:bgp-defined-sets/oc-bgp-pol:as-path-sets/oc-bgp-pol:as-path-set/oc-bgp-pol:as-path-set-name"/>
+      </type>
+      <description>
+        <text>References a defined AS path set</text>
+      </description>
+    </leaf>
+    <uses name="oc-rpol:match-set-options-group"/>
+  </grouping>
+  <grouping name="match-as-path-state">
+    <description>
+      <text>Operational state data for match conditions on AS path set</text>
+    </description>
+  </grouping>
+  <grouping name="match-as-path-top">
+    <description>
+      <text>Top-level grouping for match conditions on AS path set</text>
+    </description>
+    <container name="match-as-path-set">
+      <description>
+        <text>Match a referenced as-path set according to the logic
+defined in the match-set-options leaf</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for match conditions on AS path set</text>
+        </description>
+        <uses name="match-as-path-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for match conditions on AS
+path set</text>
+        </description>
+        <uses name="match-as-path-config"/>
+        <uses name="match-as-path-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="bgp-match-set-conditions">
+    <description>
+      <text>Condition statement definitions for checking membership in a
+defined set</text>
+    </description>
+    <uses name="match-as-path-top"/>
+  </grouping>
+  <grouping name="community-count-config">
+    <description>
+      <text>Configuration data for community count condition</text>
+    </description>
+    <uses name="oc-pol-types:attribute-compare-operators"/>
+  </grouping>
+  <grouping name="community-count-state">
+    <description>
+      <text>Operational state data for community count condition</text>
+    </description>
+  </grouping>
+  <grouping name="community-count-top">
+    <description>
+      <text>Top-level grouping for community count condition</text>
+    </description>
+    <container name="community-count">
+      <description>
+        <text>Value and comparison operations for conditions based on the
+number of communities in the route update</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for community count condition</text>
+        </description>
+        <uses name="community-count-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for community count condition</text>
+        </description>
+        <uses name="community-count-config"/>
+        <uses name="community-count-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="as-path-length-config">
+    <description>
+      <text>Configuration data for AS path length condition</text>
+    </description>
+    <uses name="oc-pol-types:attribute-compare-operators"/>
+  </grouping>
+  <grouping name="as-path-length-state">
+    <description>
+      <text>Operational state data for AS path length condition</text>
+    </description>
+  </grouping>
+  <grouping name="as-path-length-top">
+    <description>
+      <text>Top-level grouping for AS path length condition</text>
+    </description>
+    <container name="as-path-length">
+      <description>
+        <text>Value and comparison operations for conditions based on the
+length of the AS path in the route update</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for AS path length condition</text>
+        </description>
+        <uses name="as-path-length-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for AS path length condition</text>
+        </description>
+        <uses name="as-path-length-config"/>
+        <uses name="as-path-length-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="bgp-conditions-config">
+    <description>
+      <text>Configuration data for BGP-specific policy conditions</text>
+    </description>
+    <leaf name="med-eq">
+      <type name="uint32"/>
+      <description>
+        <text>Condition to check if the received MED value is equal to
+the specified value</text>
+      </description>
+    </leaf>
+    <leaf name="origin-eq">
+      <type name="oc-bgp-types:bgp-origin-attr-type"/>
+      <description>
+        <text>Condition to check if the route origin is equal to the
+specified value</text>
+      </description>
+    </leaf>
+    <leaf-list name="next-hop-in">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>List of next hop addresses to check for in the route
+update</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="afi-safi-in">
+      <type name="identityref">
+        <base name="oc-bgp-types:AFI_SAFI_TYPE"/>
+      </type>
+      <description>
+        <text>List of address families which the NLRI may be
+within</text>
+      </description>
+    </leaf-list>
+    <leaf name="local-pref-eq">
+      <type name="uint32"/>
+      <description>
+        <text>Condition to check if the local pref attribute is equal to
+the specified value</text>
+      </description>
+    </leaf>
+    <leaf name="route-type">
+      <type name="enumeration">
+        <enum name="INTERNAL">
+          <description>
+            <text>route type is internal</text>
+          </description>
+        </enum>
+        <enum name="EXTERNAL">
+          <description>
+            <text>route type is external</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Condition to check the route type in the route update</text>
+      </description>
+    </leaf>
+    <leaf name="community-set">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:defined-sets/oc-bgp-pol:bgp-defined-sets/oc-bgp-pol:community-sets/oc-bgp-pol:community-set/oc-bgp-pol:community-set-name"/>
+      </type>
+      <description>
+        <text>References a defined community set</text>
+      </description>
+    </leaf>
+    <leaf name="ext-community-set">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:defined-sets/oc-bgp-pol:bgp-defined-sets/oc-bgp-pol:ext-community-sets/oc-bgp-pol:ext-community-set/oc-bgp-pol:ext-community-set-name"/>
+      </type>
+      <description>
+        <text>References a defined extended community set</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-conditions-state">
+    <description>
+      <text>Operational state data for BGP-specific policy conditions</text>
+    </description>
+  </grouping>
+  <grouping name="bgp-conditions-top">
+    <description>
+      <text>Top-level grouping for BGP-specific policy conditions</text>
+    </description>
+    <container name="bgp-conditions">
+      <description>
+        <text>Top-level container </text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for BGP-specific policy conditions</text>
+        </description>
+        <uses name="bgp-conditions-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for BGP-specific policy
+conditions</text>
+        </description>
+        <uses name="bgp-conditions-config"/>
+        <uses name="bgp-conditions-state"/>
+      </container>
+      <uses name="community-count-top"/>
+      <uses name="as-path-length-top"/>
+      <uses name="bgp-match-set-conditions"/>
+    </container>
+  </grouping>
+  <grouping name="community-set-config">
+    <description>
+      <text>Configuration data for BGP community sets</text>
+    </description>
+    <leaf name="community-set-name">
+      <type name="string"/>
+      <mandatory value="true"/>
+      <description>
+        <text>name / label of the community set -- this is used to
+reference the set in match conditions</text>
+      </description>
+    </leaf>
+    <leaf-list name="community-member">
+      <type name="union">
+        <type name="oc-bgp-types:bgp-std-community-type"/>
+        <type name="oc-bgp-types:bgp-community-regexp-type"/>
+        <type name="oc-bgp-types:bgp-well-known-community-type"/>
+      </type>
+      <description>
+        <text>members of the community set.
+For an ADD operation these are the communities that will be added;
+the regexp type is not valid in this operation.
+For REMOVE or REPLACE operations then matching communities will
+be removed unless match-set-options is INVERT which will
+reverse this to mean that anything that does not match will be
+removed.</text>
+      </description>
+    </leaf-list>
+    <uses name="oc-rpol:match-set-options-group"/>
+  </grouping>
+  <grouping name="community-set-state">
+    <description>
+      <text>Operational state data for BGP community sets</text>
+    </description>
+  </grouping>
+  <grouping name="community-set-top">
+    <description>
+      <text>Top-level grouping for BGP community sets</text>
+    </description>
+    <container name="community-sets">
+      <description>
+        <text>Enclosing container for list of defined BGP community sets</text>
+      </description>
+      <list name="community-set">
+        <key value="community-set-name"/>
+        <description>
+          <text>List of defined BGP community sets</text>
+        </description>
+        <leaf name="community-set-name">
+          <type name="leafref">
+            <path value="../config/community-set-name"/>
+          </type>
+          <description>
+            <text>Reference to list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for BGP community sets</text>
+          </description>
+          <uses name="community-set-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for BGP community sets</text>
+          </description>
+          <uses name="community-set-config"/>
+          <uses name="community-set-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ext-community-set-config">
+    <description>
+      <text>Configuration data for extended BGP community sets</text>
+    </description>
+    <leaf name="ext-community-set-name">
+      <type name="string"/>
+      <description>
+        <text>name / label of the extended community set -- this is
+used to reference the set in match conditions</text>
+      </description>
+    </leaf>
+    <leaf-list name="ext-community-member">
+      <type name="union">
+        <type name="oc-bgp-types:bgp-ext-community-type"/>
+        <type name="oc-bgp-types:bgp-community-regexp-type"/>
+      </type>
+      <description>
+        <text>members of the extended community set
+For an ADD operation these are the communities that will be added;
+the regexp type is not valid in this operation.
+For REMOVE or REPLACE operations then matching communities will
+be removed unless match-set-options is INVERT which will
+reverse this to mean that anything that does not match will be
+removed.</text>
+      </description>
+    </leaf-list>
+    <uses name="oc-rpol:match-set-options-group"/>
+  </grouping>
+  <grouping name="ext-community-set-state">
+    <description>
+      <text>Operational state data for extended BGP community sets</text>
+    </description>
+  </grouping>
+  <grouping name="ext-community-set-top">
+    <description>
+      <text>Top-level grouping for extended BGP community sets</text>
+    </description>
+    <container name="ext-community-sets">
+      <description>
+        <text>Enclosing container for list of extended BGP community
+sets</text>
+      </description>
+      <list name="ext-community-set">
+        <key value="ext-community-set-name"/>
+        <description>
+          <text>List of defined extended BGP community sets</text>
+        </description>
+        <leaf name="ext-community-set-name">
+          <type name="leafref">
+            <path value="../config/ext-community-set-name"/>
+          </type>
+          <description>
+            <text>Reference to list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for extended BGP community sets</text>
+          </description>
+          <uses name="ext-community-set-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for extended BGP community sets</text>
+          </description>
+          <uses name="ext-community-set-config"/>
+          <uses name="ext-community-set-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="as-path-set-config">
+    <description>
+      <text>Configuration data for AS path sets</text>
+    </description>
+    <leaf name="as-path-set-name">
+      <type name="string"/>
+      <description>
+        <text>name of the AS path set -- this is used to reference
+the set in match conditions</text>
+      </description>
+    </leaf>
+    <leaf-list name="as-path-set-member">
+      <type name="string"/>
+      <description>
+        <text>AS path expression -- list of ASes in the set</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="as-path-set-state">
+    <description>
+      <text>Operational state data for AS path sets</text>
+    </description>
+  </grouping>
+  <grouping name="as-path-set-top">
+    <description>
+      <text>Top-level grouping for AS path sets</text>
+    </description>
+    <container name="as-path-sets">
+      <description>
+        <text>Enclosing container for list of define AS path sets</text>
+      </description>
+      <list name="as-path-set">
+        <key value="as-path-set-name"/>
+        <description>
+          <text>List of defined AS path sets</text>
+        </description>
+        <leaf name="as-path-set-name">
+          <type name="leafref">
+            <path value="../config/as-path-set-name"/>
+          </type>
+          <description>
+            <text>Reference to list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for AS path sets</text>
+          </description>
+          <uses name="as-path-set-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for AS path sets</text>
+          </description>
+          <uses name="as-path-set-config"/>
+          <uses name="as-path-set-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <augment target-node="/oc-rpol:routing-policy/oc-rpol:defined-sets">
+    <description>
+      <text>adds BGP defined sets container to routing policy
+model</text>
+    </description>
+    <container name="bgp-defined-sets">
+      <description>
+        <text>BGP-related set definitions for policy match conditions</text>
+      </description>
+      <uses name="community-set-top"/>
+      <uses name="ext-community-set-top"/>
+      <uses name="as-path-set-top"/>
+    </container>
+  </augment>
+  <grouping name="as-path-prepend-config">
+    <description>
+      <text>Configuration data for the AS path prepend action</text>
+    </description>
+    <leaf name="repeat-n">
+      <type name="uint8">
+        <range value="1..max"/>
+      </type>
+      <description>
+        <text>Number of times to prepend the value specified in the asn
+leaf to the AS path. If no value is specified by the asn
+leaf, the local AS number of the system is used. The value
+should be between 1 and the maximum supported by the
+implementation.</text>
+      </description>
+    </leaf>
+    <leaf name="asn">
+      <type name="oc-inet:as-number"/>
+      <description>
+        <text>The AS number to prepend to the AS path. If this leaf is
+not specified and repeat-n is set, then the local AS
+number will be used for prepending.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="as-path-prepend-state">
+    <description>
+      <text>Operational state data for the AS path prepend action</text>
+    </description>
+  </grouping>
+  <grouping name="as-path-prepend-top">
+    <description>
+      <text>Top-level grouping for the AS path prepend action</text>
+    </description>
+    <container name="set-as-path-prepend">
+      <description>
+        <text>Action to prepend the specified AS number to the AS-path a
+specified number of times</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for the AS path prepend action</text>
+        </description>
+        <uses name="as-path-prepend-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for the AS path prepend action</text>
+        </description>
+        <uses name="as-path-prepend-config"/>
+        <uses name="as-path-prepend-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="set-community-action-common">
+    <description>
+      <text>Common leaves for set-community and set-ext-community
+actions</text>
+    </description>
+    <leaf name="method">
+      <type name="enumeration">
+        <enum name="INLINE">
+          <description>
+            <text>The extended communities are specified inline as a
+list</text>
+          </description>
+        </enum>
+        <enum name="REFERENCE">
+          <description>
+            <text>The extended communities are specified by referencing a
+defined ext-community set</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Indicates the method used to specify the extended
+communities for the set-ext-community action</text>
+      </description>
+    </leaf>
+    <leaf name="options">
+      <type name="bgp-set-community-option-type"/>
+      <description>
+        <text>Options for modifying the community attribute with
+the specified values.  These options apply to both
+methods of setting the community attribute.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="set-community-inline-config">
+    <description>
+      <text>Configuration data for inline specification of set-community
+action</text>
+    </description>
+    <leaf-list name="communities">
+      <type name="union">
+        <type name="oc-bgp-types:bgp-std-community-type"/>
+        <type name="oc-bgp-types:bgp-well-known-community-type"/>
+      </type>
+      <description>
+        <text>Set the community values for the update inline with
+a list.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="set-community-inline-state">
+    <description>
+      <text>Operational state data or inline specification of
+set-community action</text>
+    </description>
+  </grouping>
+  <grouping name="set-community-inline-top">
+    <description>
+      <text>Top-level grouping or inline specification of set-community
+action</text>
+    </description>
+    <container name="inline">
+      <when condition="../config/method=INLINE">
+        <description>
+          <text>Active only when the set-community method is INLINE</text>
+        </description>
+      </when>
+      <description>
+        <text>Set the community values for the action inline with
+a list.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data or inline specification of set-community
+action</text>
+        </description>
+        <uses name="set-community-inline-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data or inline specification of
+set-community action</text>
+        </description>
+        <uses name="set-community-inline-config"/>
+        <uses name="set-community-inline-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="set-community-reference-config">
+    <description>
+      <text>Configuration data for referening a community-set in the
+set-community action</text>
+    </description>
+    <leaf name="community-set-ref">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:defined-sets/oc-bgp-pol:bgp-defined-sets/oc-bgp-pol:community-sets/oc-bgp-pol:community-set/oc-bgp-pol:community-set-name"/>
+      </type>
+      <description>
+        <text>References a defined community set by name</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="set-community-reference-state">
+    <description>
+      <text>Operational state data for referening a community-set in the
+set-community action</text>
+    </description>
+  </grouping>
+  <grouping name="set-community-reference-top">
+    <description>
+      <text>Top-level grouping for referening a community-set in the
+set-community action</text>
+    </description>
+    <container name="reference">
+      <when condition="../config/method=REFERENCE">
+        <description>
+          <text>Active only when the set-community method is REFERENCE</text>
+        </description>
+      </when>
+      <description>
+        <text>Provide a reference to a defined community set for the
+set-community action</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for referening a community-set in the
+set-community action</text>
+        </description>
+        <uses name="set-community-reference-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for referening a community-set
+in the set-community action</text>
+        </description>
+        <uses name="set-community-reference-config"/>
+        <uses name="set-community-reference-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="set-community-action-config">
+    <description>
+      <text>Configuration data for the set-community action</text>
+    </description>
+    <uses name="set-community-action-common"/>
+  </grouping>
+  <grouping name="set-community-action-state">
+    <description>
+      <text>Operational state data for the set-community action</text>
+    </description>
+  </grouping>
+  <grouping name="set-community-action-top">
+    <description>
+      <text>Top-level grouping for the set-community action</text>
+    </description>
+    <container name="set-community">
+      <description>
+        <text>Action to set the community attributes of the route, along
+with options to modify how the community is modified.
+Communities may be set using an inline list OR
+reference to an existing defined set (not both).</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for the set-community action</text>
+        </description>
+        <uses name="set-community-action-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for the set-community action</text>
+        </description>
+        <uses name="set-community-action-config"/>
+        <uses name="set-community-action-state"/>
+      </container>
+      <uses name="set-community-inline-top"/>
+      <uses name="set-community-reference-top"/>
+    </container>
+  </grouping>
+  <grouping name="set-ext-community-inline-config">
+    <description>
+      <text>Configuration data for inline specification of
+set-ext-community action</text>
+    </description>
+    <leaf-list name="communities">
+      <type name="union">
+        <type name="oc-bgp-types:bgp-ext-community-type"/>
+        <type name="oc-bgp-types:bgp-well-known-community-type"/>
+      </type>
+      <description>
+        <text>Set the extended community values for the update inline
+with a list.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="set-ext-community-inline-state">
+    <description>
+      <text>Operational state data or inline specification of
+set-ext-community action</text>
+    </description>
+  </grouping>
+  <grouping name="set-ext-community-inline-top">
+    <description>
+      <text>Top-level grouping or inline specification of set-ext-community
+action</text>
+    </description>
+    <container name="inline">
+      <when condition="../config/method=INLINE">
+        <description>
+          <text>Active only when the set-community method is INLINE</text>
+        </description>
+      </when>
+      <description>
+        <text>Set the extended community values for the action inline with
+a list.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data or inline specification of
+set-ext-community action</text>
+        </description>
+        <uses name="set-ext-community-inline-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data or inline specification of
+set-ext-community action</text>
+        </description>
+        <uses name="set-ext-community-inline-config"/>
+        <uses name="set-ext-community-inline-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="set-ext-community-reference-config">
+    <description>
+      <text>Configuration data for referening a extended community-set
+in the set-ext-community action</text>
+    </description>
+    <leaf name="ext-community-set-ref">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:defined-sets/oc-bgp-pol:bgp-defined-sets/oc-bgp-pol:ext-community-sets/oc-bgp-pol:ext-community-set/oc-bgp-pol:ext-community-set-name"/>
+      </type>
+      <description>
+        <text>References a defined extended community set by
+name</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="set-ext-community-reference-state">
+    <description>
+      <text>Operational state data for referening an extended
+community-set in the set-ext-community action</text>
+    </description>
+  </grouping>
+  <grouping name="set-ext-community-reference-top">
+    <description>
+      <text>Top-level grouping for referening an extended community-set
+in the set-community action</text>
+    </description>
+    <container name="reference">
+      <when condition="../config/method=REFERENCE">
+        <description>
+          <text>Active only when the set-community method is REFERENCE</text>
+        </description>
+      </when>
+      <description>
+        <text>Provide a reference to an extended community set for the
+set-ext-community action</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for referening an extended
+community-set in the set-ext-community action</text>
+        </description>
+        <uses name="set-ext-community-reference-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for referening an extended
+community-set in the set-ext-community action</text>
+        </description>
+        <uses name="set-ext-community-reference-config"/>
+        <uses name="set-ext-community-reference-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="set-ext-community-action-config">
+    <description>
+      <text>Configuration data for the set-ext-community action</text>
+    </description>
+    <uses name="set-community-action-common"/>
+  </grouping>
+  <grouping name="set-ext-community-action-state">
+    <description>
+      <text>Operational state data for the set-ext-community action</text>
+    </description>
+  </grouping>
+  <grouping name="set-ext-community-action-top">
+    <description>
+      <text>Top-level grouping for the set-ext-community action</text>
+    </description>
+    <container name="set-ext-community">
+      <description>
+        <text>Action to set the extended community attributes of the
+route, along with options to modify how the community is
+modified. Extended communities may be set using an inline
+list OR a reference to an existing defined set (but not
+both).</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for the set-ext-community action</text>
+        </description>
+        <uses name="set-ext-community-action-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for the set-ext-community action</text>
+        </description>
+        <uses name="set-ext-community-action-config"/>
+        <uses name="set-ext-community-action-state"/>
+      </container>
+      <uses name="set-ext-community-inline-top"/>
+      <uses name="set-ext-community-reference-top"/>
+    </container>
+  </grouping>
+  <grouping name="bgp-actions-config">
+    <description>
+      <text>Configuration data for BGP-specific actions</text>
+    </description>
+    <leaf name="set-route-origin">
+      <type name="oc-bgp-types:bgp-origin-attr-type"/>
+      <description>
+        <text>set the origin attribute to the specified
+value</text>
+      </description>
+    </leaf>
+    <leaf name="set-local-pref">
+      <type name="uint32"/>
+      <description>
+        <text>set the local pref attribute on the route
+update</text>
+      </description>
+    </leaf>
+    <leaf name="set-next-hop">
+      <type name="bgp-next-hop-type"/>
+      <description>
+        <text>set the next-hop attribute in the route update</text>
+      </description>
+    </leaf>
+    <leaf name="set-med">
+      <type name="bgp-set-med-type"/>
+      <description>
+        <text>set the med metric attribute in the route
+update</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-actions-state">
+    <description>
+      <text>Operational state data for BGP-specific actions</text>
+    </description>
+  </grouping>
+  <grouping name="bgp-actions-top">
+    <description>
+      <text>Top-level grouping for BGP-specific actions</text>
+    </description>
+    <container name="bgp-actions">
+      <description>
+        <text>Top-level container for BGP-specific actions</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for BGP-specific actions</text>
+        </description>
+        <uses name="bgp-actions-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for BGP-specific actions</text>
+        </description>
+        <uses name="bgp-actions-config"/>
+        <uses name="bgp-actions-state"/>
+      </container>
+      <uses name="as-path-prepend-top"/>
+      <uses name="set-community-action-top"/>
+      <uses name="set-ext-community-action-top"/>
+    </container>
+  </grouping>
+  <augment target-node="/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:conditions">
+    <description>
+      <text>BGP policy conditions added to routing policy module</text>
+    </description>
+    <uses name="bgp-conditions-top"/>
+  </augment>
+  <augment target-node="/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:actions">
+    <description>
+      <text>BGP policy actions added to routing policy
+module</text>
+    </description>
+    <uses name="bgp-actions-top"/>
+  </augment>
+</module>

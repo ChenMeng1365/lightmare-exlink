@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-ospfv2-global"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-ospfv2="http://openconfig.net/yang/ospfv2"
+           xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-rpol="http://openconfig.net/yang/routing-policy"
+           xmlns:oc-ospft="http://openconfig.net/yang/ospf-types">
+  <belongs-to module="openconfig-ospfv2">
+    <prefix value="oc-ospfv2"/>
+  </belongs-to>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-routing-policy">
+    <prefix value="oc-rpol"/>
+  </import>
+  <import module="openconfig-ospf-types">
+    <prefix value="oc-ospft"/>
+  </import>
+  <include module="openconfig-ospfv2-common"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This submodule provides OSPFv2 configuration and operational
+state parameters that are global to a particular OSPF instance</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.2.1"/>
+  <revision date="2019-11-05">
+    <description>
+      <text>Fix paths in when statements is LSDB model</text>
+    </description>
+    <reference>
+      <text>0.2.1</text>
+    </reference>
+  </revision>
+  <revision date="2019-07-09">
+    <description>
+      <text>Normalise all timeticks64 to be expressed in nanoseconds.</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.1.3</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-05">
+    <description>
+      <text>Bug fixes in when statements in lsdb</text>
+    </description>
+    <reference>
+      <text>0.1.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Minor formatting fixes.</text>
+    </description>
+    <reference>
+      <text>0.1.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-28">
+    <description>
+      <text>Initial public release of OSPFv2</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-06-24">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>0.0.1</text>
+    </reference>
+  </revision>
+  <grouping name="ospfv2-global-config">
+    <description>
+      <text>Global configuration for OSPFv2</text>
+    </description>
+    <leaf name="router-id">
+      <type name="yang:dotted-quad"/>
+      <description>
+        <text>A 32-bit number represented as a dotted quad assigned to
+each router running the OSPFv2 protocol. This number should
+be unique within the autonomous system</text>
+      </description>
+      <reference>
+        <text>rfc2828</text>
+      </reference>
+    </leaf>
+    <leaf name="summary-route-cost-mode">
+      <type name="enumeration">
+        <enum name="RFC1583_COMPATIBLE">
+          <description>
+            <text>Specify that summary routes should assume the cost of
+the lowest-cost more-specific route as per the behaviour
+specified in RFC1583</text>
+          </description>
+        </enum>
+        <enum name="RFC2328_COMPATIBLE">
+          <description>
+            <text>Specify that summary routes should assume the cost of the
+highest-cost more-specific route as per the revised
+behaviour specified in RFC2328</text>
+          </description>
+        </enum>
+      </type>
+      <default value="RFC2328_COMPATIBLE"/>
+      <description>
+        <text>Specify how costs for the summary routes should be specified
+as per the behaviour in the original OSPF specification
+RFC1583, or alternatively whether the revised behaviour
+described in RFC2328 should be utilised</text>
+      </description>
+    </leaf>
+    <leaf name="igp-shortcuts">
+      <type name="boolean"/>
+      <description>
+        <text>When this leaf is set to true, OSPFv2 will route traffic to
+a remote system via any LSP to the system that is marked as
+shortcut eligible.</text>
+      </description>
+    </leaf>
+    <leaf name="log-adjacency-changes">
+      <type name="boolean"/>
+      <description>
+        <text>When this leaf is set to true, a log message will be
+generated when the state of an OSPFv2 neighbour changes.</text>
+      </description>
+    </leaf>
+    <leaf name="hide-transit-only-networks">
+      <type name="boolean"/>
+      <description>
+        <text>When this leaf is set to true, do not advertise prefixes
+into OSPFv2 that correspond to transit interfaces, as per
+the behaviour discussed in RFC6860.</text>
+      </description>
+      <reference>
+        <text>RFC6860 - Hiding Transit-Only Networks in OSPF</text>
+      </reference>
+    </leaf>
+  </grouping>
+  <grouping name="ospfv2-global-spf-timers-config">
+    <description>
+      <text>Configuration parameters relating to global SPF timer
+parameters for OSPFv2</text>
+    </description>
+    <leaf name="initial-delay">
+      <type name="uint32"/>
+      <units name="msec"/>
+      <description>
+        <text>The value of this leaf specifies the time between a change
+in topology being detected and the first run of the SPF
+algorithm.</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-delay">
+      <type name="uint32"/>
+      <units name="msec"/>
+      <description>
+        <text>The value of this leaf specifies the maximum delay between
+a topology change being detected and the SPF algorithm
+running. This value is used for implementations that support
+increasing the wait time between SPF runs.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ospfv2-global-lsa-generation-timers-config">
+    <description>
+      <text>Configuration parameters relating to global LSA generation
+parameters for OSPFv2</text>
+    </description>
+    <leaf name="initial-delay">
+      <type name="uint32"/>
+      <units name="msec"/>
+      <description>
+        <text>The value of this leaf specifies the time between the first
+time an LSA is generated and advertised and the subsequent
+generation of that LSA.</text>
+      </description>
+    </leaf>
+    <leaf name="maximum-delay">
+      <type name="uint32"/>
+      <units name="msec"/>
+      <description>
+        <text>The value of this leaf specifies the maximum time between the
+generation of an LSA and the subsequent re-generation of that
+LSA. This value is used in implementations that support
+increasing delay between generation of an LSA</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ospfv2-global-spf-timers-state">
+    <description>
+      <text>Operational state parameters relating to OSPFv2 global
+timers</text>
+    </description>
+    <uses name="ospfv2-common-timers"/>
+  </grouping>
+  <grouping name="ospfv2-global-lsa-generation-timers-state">
+    <description>
+      <text>Operational state parameters relating to OSPFv2 global
+timers</text>
+    </description>
+    <uses name="ospfv2-common-timers"/>
+  </grouping>
+  <grouping name="ospfv2-global-graceful-restart-config">
+    <description>
+      <text>Configuration parameters relating to graceful restart for
+OSPFv2</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <description>
+        <text>When the value of this leaf is set to true, graceful restart
+is enabled on the local system. In this case, the system will
+use Grace-LSAs to signal that it is restarting to its
+neighbors.</text>
+      </description>
+    </leaf>
+    <leaf name="helper-only">
+      <type name="boolean"/>
+      <description>
+        <text>Operate graceful-restart only in helper mode. When this leaf
+is set to true, the local system does not use Grace-LSAs to
+indicate that it is restarting, but will accept Grace-LSAs
+from remote systems, and suppress withdrawl of adjacencies
+of the system for the grace period specified</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ospfv2-global-mpls-config">
+    <description>
+      <text>Configuration parameters for OSPFv2 options which
+relate to MPLS</text>
+    </description>
+    <leaf name="traffic-engineering-extensions">
+      <type name="boolean"/>
+      <description>
+        <text>When this leaf is set to true, use traffic engineering
+extensions for OSPF to advertise TE parameters via type 10
+Opaque LSAs</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ospfv2-global-inter-areapp-config">
+    <description>
+      <text>Configuration parameters for OSPFv2 policies which propagate
+prefixes between areas</text>
+    </description>
+    <leaf name="src-area">
+      <type name="leafref">
+        <path value="../../../../../areas/area/identifier"/>
+      </type>
+      <description>
+        <text>The area from which prefixes are to be exported.</text>
+      </description>
+    </leaf>
+    <leaf name="dst-area">
+      <type name="leafref">
+        <path value="../../../../../areas/area/identifier"/>
+      </type>
+      <description>
+        <text>The destination area to which prefixes are to be imported</text>
+      </description>
+    </leaf>
+    <uses name="oc-rpol:apply-policy-import-config"/>
+  </grouping>
+  <grouping name="ospfv2-global-max-metric-config">
+    <description>
+      <text>Configuration paramters relating to setting the OSPFv2
+maximum metric.</text>
+    </description>
+    <leaf name="set">
+      <type name="boolean"/>
+      <description>
+        <text>When this leaf is set to true, all non-stub interfaces of
+the local system are advertised with the maximum metric,
+such that the router does not act as a transit system,
+(similarly to the IS-IS overload functionality).</text>
+      </description>
+      <reference>
+        <text>RFC3137 - OSPF Stub Router Advertisement</text>
+      </reference>
+    </leaf>
+    <leaf name="timeout">
+      <type name="uint64"/>
+      <units name="seconds"/>
+      <description>
+        <text>The delay, in seconds, after which the advertisement of
+entities with the maximum metric should be cleared, and
+the system reverts to the default, or configured, metrics.</text>
+      </description>
+    </leaf>
+    <leaf-list name="include">
+      <type name="identityref">
+        <base name="oc-ospft:MAX_METRIC_INCLUDE"/>
+      </type>
+      <description>
+        <text>By default, the maximum metric is advertised for all
+non-stub interfaces of a device. When identities are
+specified within this leaf-list, additional entities
+are also advertised with the maximum metric according
+to the values within the list.</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="trigger">
+      <type name="identityref">
+        <base name="oc-ospft:MAX_METRIC_TRIGGER"/>
+      </type>
+      <description>
+        <text>By default, the maximum metric is only advertised
+when the max-metric/set leaf is specified as true.
+In the case that identities are specified within this
+list, they provide additional triggers (e.g., system
+boot) that may cause the max-metric to be set. In this
+case, the system should still honour the timeout specified
+by the max-metric/timeout leaf, and clear the max-metric
+advertisements after the expiration of this timer.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="ospfv2-global-structural">
+    <description>
+      <text>Top level structural grouping for OSPFv2 global parameters</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configuration and operational state parameters for settings
+that are global to the OSPFv2 instance</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Global configuration parameters for OSPFv2</text>
+        </description>
+        <uses name="ospfv2-global-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state parameters for OSPFv2</text>
+        </description>
+        <uses name="ospfv2-global-config"/>
+      </container>
+      <container name="timers">
+        <description>
+          <text>Configuration and operational state parameters for OSPFv2
+timers</text>
+        </description>
+        <container name="spf">
+          <description>
+            <text>Configuration and operational state parameters relating
+to timers governing the operation of SPF runs</text>
+          </description>
+          <container name="config">
+            <description>
+              <text>Configuration parameters relating to global OSPFv2
+SPF timers</text>
+            </description>
+            <uses name="ospfv2-global-spf-timers-config"/>
+          </container>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>Operational state parameters relating to the global
+OSPFv2 SPF timers</text>
+            </description>
+            <uses name="ospfv2-global-spf-timers-config"/>
+            <uses name="ospfv2-global-spf-timers-state"/>
+          </container>
+        </container>
+        <container name="max-metric">
+          <description>
+            <text>Configuration and operational state parameters relating
+to setting the OSPFv2 maximum metric.</text>
+          </description>
+          <container name="config">
+            <description>
+              <text>Configuration parameters relating to setting the OSPFv2
+maximum metric for a set of advertised entities.</text>
+            </description>
+            <uses name="ospfv2-global-max-metric-config"/>
+          </container>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>Operational state parameters relating to setting the
+OSPFv2 maximum metric for a set of advertised entities.</text>
+            </description>
+            <uses name="ospfv2-global-max-metric-config"/>
+          </container>
+        </container>
+        <container name="lsa-generation">
+          <description>
+            <text>Configuration and operational state parameters relating
+to timers governing the generation of LSAs by the local
+system</text>
+          </description>
+          <container name="config">
+            <description>
+              <text>Configuration parameters relating to the generation of
+LSAs by the local system</text>
+            </description>
+            <uses name="ospfv2-global-lsa-generation-timers-config"/>
+          </container>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>Operational state parameters relating to the generation
+of LSAs by the local system</text>
+            </description>
+            <uses name="ospfv2-global-lsa-generation-timers-config"/>
+            <uses name="ospfv2-global-lsa-generation-timers-state"/>
+          </container>
+        </container>
+      </container>
+      <container name="graceful-restart">
+        <description>
+          <text>Configuration and operational state parameters for OSPFv2
+graceful restart</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration parameters relating to OSPFv2 graceful
+restart</text>
+          </description>
+          <uses name="ospfv2-global-graceful-restart-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state parameters relating to OSPFv2 graceful
+restart</text>
+          </description>
+          <uses name="ospfv2-global-graceful-restart-config"/>
+        </container>
+      </container>
+      <container name="mpls">
+        <description>
+          <text>OSPFv2 parameters relating to MPLS</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration parameters relating to MPLS for OSPFv2</text>
+          </description>
+          <uses name="ospfv2-global-mpls-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state parameters relating to MPLS for
+OSPFv2</text>
+          </description>
+          <uses name="ospfv2-global-mpls-config"/>
+        </container>
+        <container name="igp-ldp-sync">
+          <description>
+            <text>OSPFv2 parameters relating to LDP/IGP synchronization</text>
+          </description>
+          <container name="config">
+            <description>
+              <text>Configuration parameters relating to LDP/IG
+synchronization.</text>
+            </description>
+            <uses name="ospfv2-common-mpls-igp-ldp-sync-config"/>
+          </container>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>Operational state variables relating to LDP/IGP
+synchronization</text>
+            </description>
+            <uses name="ospfv2-common-mpls-igp-ldp-sync-config"/>
+          </container>
+        </container>
+      </container>
+      <container name="inter-area-propagation-policies">
+        <description>
+          <text>Policies defining how inter-area propagation should be performed
+by the OSPF instance</text>
+        </description>
+        <list name="inter-area-propagation-policy">
+          <key value="src-area dst-area"/>
+          <description>
+            <text>A list of connections between pairs of areas - routes are
+propagated from the source (src) area to the destination (dst)
+area according to the policy specified</text>
+          </description>
+          <leaf name="src-area">
+            <type name="leafref">
+              <path value="../config/src-area"/>
+            </type>
+            <description>
+              <text>Reference to the source area</text>
+            </description>
+          </leaf>
+          <leaf name="dst-area">
+            <type name="leafref">
+              <path value="../config/dst-area"/>
+            </type>
+            <description>
+              <text>Reference to the destination area</text>
+            </description>
+          </leaf>
+          <container name="config">
+            <description>
+              <text>Configuration parameters relating to the inter-area
+propagation policy</text>
+            </description>
+            <uses name="ospfv2-global-inter-areapp-config"/>
+          </container>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>Operational state parameters relating to the inter-area
+propagation policy</text>
+            </description>
+            <uses name="ospfv2-global-inter-areapp-config"/>
+          </container>
+        </list>
+      </container>
+    </container>
+  </grouping>
+</submodule>

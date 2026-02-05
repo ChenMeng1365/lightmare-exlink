@@ -1,0 +1,659 @@
+module: zxr10-ospfv3
+  +--rw configuration
+  |  +--rw ospfv3
+  |     +--rw processes
+  |        +--rw process* [proc-id]
+  |           +--rw proc-id                 uint32
+  |           +--rw vrf-name?               string
+  |           +--rw bfd-enable?             empty
+  |           +--rw bfd-template?           string
+  |           +--rw default-metric?         uint32
+  |           +--rw maximum-paths?          uint32
+  |           +--rw fast-reroute?           empty
+  |           +--rw nsf?                    empty
+  |           +--rw grace-period?           uint32
+  |           +--rw ispf?                   empty
+  |           +--rw ldp-igp-sync?           empty
+  |           +--rw cap-vrf-lite?           empty
+  |           +--rw reference-bandwidth?    uint32
+  |           +--rw te-link-delay?          enumeration
+  |           +--rw frr-policy!
+  |           |  +--rw (policy-type)
+  |           |     +--:(route-policy)
+  |           |        +--rw route-policy-name    string
+  |           +--rw router-id!
+  |           |  +--rw router-id    ncd:ipv4-address
+  |           +--rw distance
+  |           |  +--rw external?     uint8
+  |           |  +--rw inter-area?   uint8
+  |           |  +--rw intra-area?   uint8
+  |           +--rw distribute-list
+  |           |  +--rw distribute-list-in!
+  |           |     +--rw policy-name
+  |           |        +--rw (policy-name)
+  |           |           +--:(access-list)
+  |           |           |  +--rw acl-name          string
+  |           |           +--:(route-map)
+  |           |              +--rw route-map-name    string
+  |           +--rw prefix-priority!
+  |           |  +--rw prefix-lists!
+  |           |  |  +--rw prefix-list* [priority]
+  |           |  |     +--rw priority       enumeration
+  |           |  |     +--rw prefix-name    string
+  |           |  +--rw tags!
+  |           |     +--rw tag* [priority tag-value]
+  |           |        +--rw priority     enumeration
+  |           |        +--rw tag-value    uint32
+  |           +--rw redistribute
+  |           |  +--rw redistribute-ospf!
+  |           |  |  +--rw redistribute-ospf* [ospf-proc-id]
+  |           |  |     +--rw ospf-proc-id          uint32
+  |           |  |     +--rw metric?               uint32
+  |           |  |     +--rw metric-type?          enumeration
+  |           |  |     +--rw route-map-name?       string
+  |           |  |     +--rw tag?                  uint32
+  |           |  |     +--rw with-origin-metric?   empty
+  |           |  |     +--rw host-only?            empty
+  |           |  +--rw redistribute-isis!
+  |           |  |  +--rw redistribute-isis* [isis-proc-id]
+  |           |  |     +--rw isis-proc-id          uint32
+  |           |  |     +--rw metric?               uint32
+  |           |  |     +--rw metric-type?          enumeration
+  |           |  |     +--rw route-map-name?       string
+  |           |  |     +--rw tag?                  uint32
+  |           |  |     +--rw with-origin-metric?   empty
+  |           |  |     +--rw host-only?            empty
+  |           |  +--rw redistribute-other!
+  |           |  |  +--rw redistribute-other* [protocol]
+  |           |  |     +--rw protocol              enumeration
+  |           |  |     +--rw metric?               uint32
+  |           |  |     +--rw metric-type?          enumeration
+  |           |  |     +--rw route-map-name?       string
+  |           |  |     +--rw tag?                  uint32
+  |           |  |     +--rw with-origin-metric?   empty
+  |           |  |     +--rw host-only?            empty
+  |           |  +--rw redistribute-ps
+  |           |     +--rw redistribute-ps* [type]
+  |           |        +--rw type                  enumeration
+  |           |        +--rw with-origin-metric?   empty
+  |           |        +--rw metric?               uint32
+  |           |        +--rw metric-type?          enumeration
+  |           |        +--rw route-map-name?       string
+  |           |        +--rw tag?                  uint32
+  |           |        +--rw host-only?            empty
+  |           +--rw summary-prefixs
+  |           |  +--rw summary-prefix* [summary-prefix prefix-len]
+  |           |     +--rw summary-prefix    ncd:ipv6-address
+  |           |     +--rw prefix-len        ncd:ipv6-mask-length
+  |           +--rw timers-throttle!
+  |           |  +--rw spf!
+  |           |  |  +--rw hold-time         uint32
+  |           |  |  +--rw delay-time        uint32
+  |           |  |  +--rw max-delay-time    uint32
+  |           |  +--rw lsa-update!
+  |           |  |  +--rw hold-time         uint32
+  |           |  |  +--rw delay-time        uint32
+  |           |  |  +--rw max-delay-time    uint32
+  |           |  +--rw lsa-arrival!
+  |           |     +--rw hold-time         uint32
+  |           |     +--rw delay-time        uint32
+  |           |     +--rw max-delay-time    uint32
+  |           +--rw notify-default-route
+  |           |  +--rw always?        empty
+  |           |  +--rw metric?        uint32
+  |           |  +--rw metric-type?   enumeration
+  |           |  +--rw route-map?     string
+  |           +--rw areas
+  |           |  +--rw area* [area-id]
+  |           |     +--rw area-id                  ncd:ipv4-address
+  |           |     +--rw bfd?                     enumeration
+  |           |     +--rw bfd-template?            string
+  |           |     +--rw ldp-igp-sync?            enumeration
+  |           |     +--rw ranges
+  |           |     |  +--rw range* [prefix prefix-len]
+  |           |     |  |  +--rw prefix           ncd:ipv6-address
+  |           |     |  |  +--rw prefix-len       ncd:ipv6-mask-length
+  |           |     |  |  +--rw not-advertise?   empty
+  |           |     |  +--rw nssa-range* [prefix prefix-len]
+  |           |     |     +--rw prefix           ncd:ipv6-address
+  |           |     |     +--rw prefix-len       ncd:ipv6-mask-length
+  |           |     |     +--rw not-advertise?   empty
+  |           |     |     +--rw metric?          uint32
+  |           |     |     +--rw tag?             uint32
+  |           |     +--rw interfaces
+  |           |     |  +--rw interface* [interface-name]
+  |           |     |     +--rw interface-name             ncd:ifname
+  |           |     |     +--rw instance-id?               uint32
+  |           |     |     +--rw bfd?                       enumeration
+  |           |     |     +--rw bfd-template?              string
+  |           |     |     +--rw cost?                      uint32
+  |           |     |     +--rw hello-interval?            uint32
+  |           |     |     +--rw dead-interval?             uint32
+  |           |     |     +--rw retransmit-interval?       uint32
+  |           |     |     +--rw transmit-delay?            uint32
+  |           |     |     +--rw priority?                  uint32
+  |           |     |     +--rw mtu-ignore?                empty
+  |           |     |     +--rw linklsa-suppress-enable?   empty
+  |           |     |     +--rw fast-reroute-disable?      empty
+  |           |     |     +--rw passive?                   empty
+  |           |     |     +--rw ldp-igp-sync?              enumeration
+  |           |     |     +--rw link-damping!
+  |           |     |     |  +--rw cost
+  |           |     |     |  |  +--rw (cost)
+  |           |     |     |  |     +--:(maximum)
+  |           |     |     |  |     |  +--rw maximum           empty
+  |           |     |     |  |     +--:(increase-value)
+  |           |     |     |  |        +--rw increase-value    uint32
+  |           |     |     |  +--rw damping-time    uint32
+  |           |     |     +--rw network-type
+  |           |     |     |  +--rw (network-type)?
+  |           |     |     |     +--:(broadcast)
+  |           |     |     |     |  +--rw broadcast              empty
+  |           |     |     |     +--:(nbma)
+  |           |     |     |     |  +--rw nbma                   empty
+  |           |     |     |     +--:(point-to-point)
+  |           |     |     |     |  +--rw point-to-point         empty
+  |           |     |     |     +--:(point-to-multipoint)
+  |           |     |     |     |  +--rw point-to-multipoint    empty
+  |           |     |     |     +--:(p-to-mp-nb)
+  |           |     |     |        +--rw p-to-mp-nb             empty
+  |           |     |     +--rw neighbors
+  |           |     |     |  +--rw neighbor* [nbr-linklocal-address]
+  |           |     |     |     +--rw nbr-linklocal-address    ncd:ipv6-address
+  |           |     |     |     +--rw priority?                uint32
+  |           |     |     |     +--rw poll-interval?           uint32
+  |           |     |     |     +--rw cost?                    uint32
+  |           |     |     +--rw ipsec
+  |           |     |     |  +--rw (ipsec)?
+  |           |     |     |     +--:(authentication)
+  |           |     |     |     |  +--rw authentication!
+  |           |     |     |     |     +--rw (authentication)?
+  |           |     |     |     |        +--:(authentication-ipsec)
+  |           |     |     |     |        |  +--rw spi-id                 uint32
+  |           |     |     |     |        |  +--rw authentication-key
+  |           |     |     |     |        |  |  +--rw (authentication-key)
+  |           |     |     |     |        |  |     +--:(md5)
+  |           |     |     |     |        |  |     |  +--rw (md5-password-type)?
+  |           |     |     |     |        |  |     |     +--:(unencrypted)
+  |           |     |     |     |        |  |     |     |  +--rw md5-key           string
+  |           |     |     |     |        |  |     |     +--:(encrypted)
+  |           |     |     |     |        |  |     |        +--rw encry-md5-key     string
+  |           |     |     |     |        |  |     +--:(sha1)
+  |           |     |     |     |        |  |     |  +--rw (sha1-password-type)?
+  |           |     |     |     |        |  |     |     +--:(unencrypted)
+  |           |     |     |     |        |  |     |     |  +--rw sha1-key          string
+  |           |     |     |     |        |  |     |     +--:(encrypted)
+  |           |     |     |     |        |  |     |        +--rw encry-sha1-key    string
+  |           |     |     |     |        |  |     +--:(keychain)
+  |           |     |     |     |        |  |        +--rw keychain-name           string
+  |           |     |     |     |        |  +--rw roll-interval?         uint32
+  |           |     |     |     |        +--:(authentication-null)
+  |           |     |     |     |           +--rw authentication-null    empty
+  |           |     |     |     +--:(encryption)
+  |           |     |     |        +--rw encryption!
+  |           |     |     |           +--rw (encryption)?
+  |           |     |     |              +--:(encryption-ipsec)
+  |           |     |     |              |  +--rw spi-id                uint32
+  |           |     |     |              |  +--rw encryption-key
+  |           |     |     |              |  |  +--rw (encryption-key)
+  |           |     |     |              |  |     +--:(null)
+  |           |     |     |              |  |     |  +--rw null                          empty
+  |           |     |     |              |  |     +--:(des)
+  |           |     |     |              |  |     |  +--rw (des-password-type)?
+  |           |     |     |              |  |     |     +--:(unencrypted)
+  |           |     |     |              |  |     |     |  +--rw des-key                 string
+  |           |     |     |              |  |     |     +--:(encrypted)
+  |           |     |     |              |  |     |        +--rw encry-des-key           string
+  |           |     |     |              |  |     +--:(triple-des)
+  |           |     |     |              |  |     |  +--rw (triple-des-password-type)?
+  |           |     |     |              |  |     |     +--:(unencrypted)
+  |           |     |     |              |  |     |     |  +--rw triple-des-key          string
+  |           |     |     |              |  |     |     +--:(encrypted)
+  |           |     |     |              |  |     |        +--rw encry-triple-des-key    string
+  |           |     |     |              |  |     +--:(aes-cbc)
+  |           |     |     |              |  |     |  +--rw (aes-password-type)?
+  |           |     |     |              |  |     |     +--:(unencrypted)
+  |           |     |     |              |  |     |     |  +--rw aes-cbc-key             string
+  |           |     |     |              |  |     |     +--:(encrypted)
+  |           |     |     |              |  |     |        +--rw encry-aes-cbc-key       string
+  |           |     |     |              |  |     +--:(keychain)
+  |           |     |     |              |  |        +--rw keychain-name                 string
+  |           |     |     |              |  +--rw authentication-key
+  |           |     |     |              |  |  +--rw (authentication-key)
+  |           |     |     |              |  |     +--:(md5)
+  |           |     |     |              |  |     |  +--rw (md5-password-type)?
+  |           |     |     |              |  |     |     +--:(unencrypted)
+  |           |     |     |              |  |     |     |  +--rw md5-key           string
+  |           |     |     |              |  |     |     +--:(encrypted)
+  |           |     |     |              |  |     |        +--rw encry-md5-key     string
+  |           |     |     |              |  |     +--:(sha1)
+  |           |     |     |              |  |     |  +--rw (sha1-password-type)?
+  |           |     |     |              |  |     |     +--:(unencrypted)
+  |           |     |     |              |  |     |     |  +--rw sha1-key          string
+  |           |     |     |              |  |     |     +--:(encrypted)
+  |           |     |     |              |  |     |        +--rw encry-sha1-key    string
+  |           |     |     |              |  |     +--:(keychain)
+  |           |     |     |              |  |        +--rw keychain-name           string
+  |           |     |     |              |  +--rw roll-interval?        uint32
+  |           |     |     |              +--:(encryption-null)
+  |           |     |     |                 +--rw encryption-null       empty
+  |           |     |     +--rw keychain!
+  |           |     |     |  +--rw keychain-name    string
+  |           |     |     +--rw cost-lag-down
+  |           |     |     |  +--rw (cost-lag-down)?
+  |           |     |     |     +--:(increase-value)
+  |           |     |     |     |  +--rw increase-value?   uint16
+  |           |     |     |     +--:(maximum)
+  |           |     |     |        +--rw maximum?          empty
+  |           |     |     +--rw segment-routing
+  |           |     |     |  +--rw srv6
+  |           |     |     |     +--rw pspFlag?   enumeration
+  |           |     |     +--rw cost-bfd-down
+  |           |     |     |  +--rw (cost-bfd-down)?
+  |           |     |     |     +--:(increase-value)
+  |           |     |     |     |  +--rw increase-value?   uint16
+  |           |     |     |     +--:(maximum)
+  |           |     |     |        +--rw maximum?          empty
+  |           |     |     +--rw ti-lfa
+  |           |     |     |  +--rw srlg* [srlg-id]
+  |           |     |     |     +--rw srlg-id    uint32
+  |           |     |     +--rw suppress-flapping
+  |           |     |     |  +--rw adjacency
+  |           |     |     |     +--rw capability?         enumeration
+  |           |     |     |     +--rw detect-parameter!
+  |           |     |     |     |  +--rw detect-interval    uint16
+  |           |     |     |     |  +--rw threshold          uint16
+  |           |     |     |     |  +--rw resume-interval    uint16
+  |           |     |     |     +--rw hold-down!
+  |           |     |     |        +--rw hold-interval    uint16
+  |           |     |     +--rw link-sd!
+  |           |     |        +--rw cost
+  |           |     |           +--rw (cost)?
+  |           |     |              +--:(maximum)
+  |           |     |              |  +--rw maximum?          empty
+  |           |     |              +--:(increase-value)
+  |           |     |                 +--rw increase-value?   uint16
+  |           |     +--rw stub
+  |           |     |  +--rw no-summary?       empty
+  |           |     |  +--rw default-cost?     uint32
+  |           |     |  +--rw default-origin?   empty
+  |           |     +--rw virtual-links
+  |           |     |  +--rw virtual-link* [neighbor-id]
+  |           |     |     +--rw neighbor-id            ncd:ipv4-address
+  |           |     |     +--rw hello-interval?        uint32
+  |           |     |     +--rw dead-interval?         uint32
+  |           |     |     +--rw retransmit-interval?   uint32
+  |           |     |     +--rw transmit-delay?        uint32
+  |           |     |     +--rw ipsec
+  |           |     |        +--rw (ipsec)?
+  |           |     |           +--:(authentication)
+  |           |     |           |  +--rw authentication!
+  |           |     |           |     +--rw spi-id                uint32
+  |           |     |           |     +--rw authentication-key
+  |           |     |           |     |  +--rw (authentication-key)
+  |           |     |           |     |     +--:(md5)
+  |           |     |           |     |     |  +--rw (md5-password-type)?
+  |           |     |           |     |     |     +--:(unencrypted)
+  |           |     |           |     |     |     |  +--rw md5-key           string
+  |           |     |           |     |     |     +--:(encrypted)
+  |           |     |           |     |     |        +--rw encry-md5-key     string
+  |           |     |           |     |     +--:(sha1)
+  |           |     |           |     |     |  +--rw (sha1-password-type)?
+  |           |     |           |     |     |     +--:(unencrypted)
+  |           |     |           |     |     |     |  +--rw sha1-key          string
+  |           |     |           |     |     |     +--:(encrypted)
+  |           |     |           |     |     |        +--rw encry-sha1-key    string
+  |           |     |           |     |     +--:(keychain)
+  |           |     |           |     |        +--rw keychain-name           string
+  |           |     |           |     +--rw roll-interval?        uint32
+  |           |     |           +--:(encryption)
+  |           |     |              +--rw encryption!
+  |           |     |                 +--rw spi-id                uint32
+  |           |     |                 +--rw encryption-key
+  |           |     |                 |  +--rw (encryption-key)
+  |           |     |                 |     +--:(null)
+  |           |     |                 |     |  +--rw null                          empty
+  |           |     |                 |     +--:(des)
+  |           |     |                 |     |  +--rw (des-password-type)?
+  |           |     |                 |     |     +--:(unencrypted)
+  |           |     |                 |     |     |  +--rw des-key                 string
+  |           |     |                 |     |     +--:(encrypted)
+  |           |     |                 |     |        +--rw encry-des-key           string
+  |           |     |                 |     +--:(triple-des)
+  |           |     |                 |     |  +--rw (triple-des-password-type)?
+  |           |     |                 |     |     +--:(unencrypted)
+  |           |     |                 |     |     |  +--rw triple-des-key          string
+  |           |     |                 |     |     +--:(encrypted)
+  |           |     |                 |     |        +--rw encry-triple-des-key    string
+  |           |     |                 |     +--:(aes-cbc)
+  |           |     |                 |     |  +--rw (aes-password-type)?
+  |           |     |                 |     |     +--:(unencrypted)
+  |           |     |                 |     |     |  +--rw aes-cbc-key             string
+  |           |     |                 |     |     +--:(encrypted)
+  |           |     |                 |     |        +--rw encry-aes-cbc-key       string
+  |           |     |                 |     +--:(keychain)
+  |           |     |                 |        +--rw keychain-name                 string
+  |           |     |                 +--rw authentication-key
+  |           |     |                 |  +--rw (authentication-key)
+  |           |     |                 |     +--:(md5)
+  |           |     |                 |     |  +--rw (md5-password-type)?
+  |           |     |                 |     |     +--:(unencrypted)
+  |           |     |                 |     |     |  +--rw md5-key           string
+  |           |     |                 |     |     +--:(encrypted)
+  |           |     |                 |     |        +--rw encry-md5-key     string
+  |           |     |                 |     +--:(sha1)
+  |           |     |                 |     |  +--rw (sha1-password-type)?
+  |           |     |                 |     |     +--:(unencrypted)
+  |           |     |                 |     |     |  +--rw sha1-key          string
+  |           |     |                 |     |     +--:(encrypted)
+  |           |     |                 |     |        +--rw encry-sha1-key    string
+  |           |     |                 |     +--:(keychain)
+  |           |     |                 |        +--rw keychain-name           string
+  |           |     |                 +--rw roll-interval?        uint32
+  |           |     +--rw ipsec
+  |           |     |  +--rw (ipsec)?
+  |           |     |     +--:(authentication)
+  |           |     |     |  +--rw authentication!
+  |           |     |     |     +--rw spi-id                uint32
+  |           |     |     |     +--rw authentication-key
+  |           |     |     |     |  +--rw (authentication-key)
+  |           |     |     |     |     +--:(md5)
+  |           |     |     |     |     |  +--rw (md5-password-type)?
+  |           |     |     |     |     |     +--:(unencrypted)
+  |           |     |     |     |     |     |  +--rw md5-key           string
+  |           |     |     |     |     |     +--:(encrypted)
+  |           |     |     |     |     |        +--rw encry-md5-key     string
+  |           |     |     |     |     +--:(sha1)
+  |           |     |     |     |     |  +--rw (sha1-password-type)?
+  |           |     |     |     |     |     +--:(unencrypted)
+  |           |     |     |     |     |     |  +--rw sha1-key          string
+  |           |     |     |     |     |     +--:(encrypted)
+  |           |     |     |     |     |        +--rw encry-sha1-key    string
+  |           |     |     |     |     +--:(keychain)
+  |           |     |     |     |        +--rw keychain-name           string
+  |           |     |     |     +--rw roll-interval?        uint32
+  |           |     |     +--:(encryption)
+  |           |     |        +--rw encryption!
+  |           |     |           +--rw spi-id                uint32
+  |           |     |           +--rw encryption-key
+  |           |     |           |  +--rw (encryption-key)
+  |           |     |           |     +--:(null)
+  |           |     |           |     |  +--rw null                          empty
+  |           |     |           |     +--:(des)
+  |           |     |           |     |  +--rw (des-password-type)?
+  |           |     |           |     |     +--:(unencrypted)
+  |           |     |           |     |     |  +--rw des-key                 string
+  |           |     |           |     |     +--:(encrypted)
+  |           |     |           |     |        +--rw encry-des-key           string
+  |           |     |           |     +--:(triple-des)
+  |           |     |           |     |  +--rw (triple-des-password-type)?
+  |           |     |           |     |     +--:(unencrypted)
+  |           |     |           |     |     |  +--rw triple-des-key          string
+  |           |     |           |     |     +--:(encrypted)
+  |           |     |           |     |        +--rw encry-triple-des-key    string
+  |           |     |           |     +--:(aes-cbc)
+  |           |     |           |     |  +--rw (aes-password-type)?
+  |           |     |           |     |     +--:(unencrypted)
+  |           |     |           |     |     |  +--rw aes-cbc-key             string
+  |           |     |           |     |     +--:(encrypted)
+  |           |     |           |     |        +--rw encry-aes-cbc-key       string
+  |           |     |           |     +--:(keychain)
+  |           |     |           |        +--rw keychain-name                 string
+  |           |     |           +--rw authentication-key
+  |           |     |           |  +--rw (authentication-key)
+  |           |     |           |     +--:(md5)
+  |           |     |           |     |  +--rw (md5-password-type)?
+  |           |     |           |     |     +--:(unencrypted)
+  |           |     |           |     |     |  +--rw md5-key           string
+  |           |     |           |     |     +--:(encrypted)
+  |           |     |           |     |        +--rw encry-md5-key     string
+  |           |     |           |     +--:(sha1)
+  |           |     |           |     |  +--rw (sha1-password-type)?
+  |           |     |           |     |     +--:(unencryted)
+  |           |     |           |     |     |  +--rw sha1-key          string
+  |           |     |           |     |     +--:(encrypted)
+  |           |     |           |     |        +--rw encry-sha1-key    string
+  |           |     |           |     +--:(keychain)
+  |           |     |           |        +--rw keychain-name           string
+  |           |     |           +--rw roll-interval?        uint32
+  |           |     +--rw keychain!
+  |           |     |  +--rw keychain-name    string
+  |           |     +--rw nssa
+  |           |     |  +--rw translator-role?                 enumeration
+  |           |     |  +--rw trans-stab-interval?             uint32
+  |           |     |  +--rw no-summary?                      empty
+  |           |     |  +--rw no-redistribution?               empty
+  |           |     |  +--rw suppress-fa?                     empty
+  |           |     |  +--rw default-information-originate!
+  |           |     |     +--rw metric?        uint32
+  |           |     |     +--rw metric-type?   enumeration
+  |           |     +--rw multi-area-interfaces
+  |           |        +--rw multi-area-interface* [interface-name]
+  |           |           +--rw interface-name         ncd:ifname
+  |           |           +--rw hello-interval?        uint32
+  |           |           +--rw dead-interval?         uint32
+  |           |           +--rw cost?                  uint32
+  |           |           +--rw mtu-ignore?            empty
+  |           |           +--rw retransmit-interval?   uint32
+  |           |           +--rw transmit-delay?        uint32
+  |           |           +--rw authentication
+  |           |              +--rw (authentication)?
+  |           |                 +--:(keychain)
+  |           |                    +--rw keychain?   string
+  |           +--rw domain-ids
+  |           |  +--rw domain-id* [type value]
+  |           |     +--rw type     enumeration
+  |           |     +--rw value    string
+  |           |     +--rw flag?    enumeration
+  |           +--rw distance-policy
+  |           |  +--rw policy-type?   enumeration
+  |           |  +--rw policy-name?   string
+  |           +--rw segment-routing
+  |           |  +--rw mpls
+  |           |  |  +--rw capability?      enumeration
+  |           |  |  +--rw adj-sid
+  |           |  |  |  +--rw type?   enumeration
+  |           |  |  +--rw entropy-label
+  |           |  |     +--rw capability?   enumeration
+  |           |  +--rw srv6
+  |           |     +--rw capability?   enumeration
+  |           |     +--rw pspFlag?      enumeration
+  |           |     +--rw locators
+  |           |        +--rw locator* [locator-name]
+  |           |           +--rw locator-name      string
+  |           |           +--rw end-sids
+  |           |           |  +--rw end-sid* [func-code]
+  |           |           |     +--rw func-code    ncd:ipv6-address
+  |           |           |     +--rw psp?         int8
+  |           |           |     +--rw usp?         int8
+  |           |           +--rw end-x-sids
+  |           |           |  +--rw end-x-sid* [func-code]
+  |           |           |     +--rw func-code         ncd:ipv6-address
+  |           |           |     +--rw interface-name    ncd:ifname
+  |           |           |     +--rw neighbor-id?      ncd:ipv4-address
+  |           |           |     +--rw psp?              uint8
+  |           |           |     +--rw usp?              uint8
+  |           |           +--rw end-sid-auto!
+  |           |           |  +--rw psp?   empty
+  |           |           |  +--rw usp?   empty
+  |           |           +--rw end-x-sid-auto!
+  |           |              +--rw psp?   empty
+  |           |              +--rw usp?   empty
+  |           +--rw bgp-ls!
+  |           |  +--rw instance-id?   uint32
+  |           +--rw frr!
+  |           |  +--rw ti-lfa!
+  |           |  |  +--rw protection-type!
+  |           |  |  |  +--rw node-protecting?   empty
+  |           |  |  +--rw srv6?              enumeration
+  |           |  |  +--rw sr-mpls?           enumeration
+  |           |  +--rw tilfa-priority!
+  |           |  |  +--rw tilfa-priority?   uint8
+  |           |  +--rw ipfrr-priority!
+  |           |     +--rw ipfrr-priority?   uint8
+  |           +--rw microloop-prevention
+  |           |  +--rw segment-routing
+  |           |     +--rw mpls
+  |           |     |  +--rw capability?   enumeration
+  |           |     +--rw srv6
+  |           |     |  +--rw capability?   enumeration
+  |           |     +--rw delay-time?   uint32
+  |           +--rw max-metric
+  |           |  +--rw router-lsa!
+  |           |     +--rw on-startup
+  |           |        +--rw timeout?   uint32
+  |           +--rw suppress-flapping
+  |              +--rw adjacency
+  |                 +--rw capability?   enumeration
+  +--ro state
+  |  +--ro ospfv3
+  |     +--ro processes
+  |     |  +--ro process* [process-id]
+  |     |     +--ro process-id            uint32
+  |     |     +--ro router-id?            ncd:ipv4-address
+  |     |     +--ro vrf-name?             string
+  |     |     +--ro socket-state?         enumeration
+  |     |     +--ro distance
+  |     |     |  +--ro external?     uint8
+  |     |     |  +--ro inter-area?   uint8
+  |     |     |  +--ro intra-area?   uint8
+  |     |     +--ro external-lsa-count?   uint32
+  |     |     +--ro route-count?          uint32
+  |     |     +--ro default-metric?       uint32
+  |     |     +--ro area-count
+  |     |     |  +--ro total-count?    uint32
+  |     |     |  +--ro normal-count?   uint32
+  |     |     |  +--ro stub-count?     uint32
+  |     |     +--ro areas
+  |     |        +--ro area* [area-id]
+  |     |           +--ro area-id                 ncd:ipv4-address
+  |     |           +--ro interface-count?        uint32
+  |     |           +--ro ipsec
+  |     |           |  +--ro spi-id?                     uint32
+  |     |           |  +--ro type?                       enumeration
+  |     |           |  +--ro authentication-algorithm?   enumeration
+  |     |           |  +--ro encryption-algorithm?       enumeration
+  |     |           +--ro area-type?              enumeration
+  |     |           +--ro default-cost?           uint32
+  |     |           +--ro spf-calculate-times?    uint32
+  |     |           +--ro ispf-calculate-times?   uint32
+  |     |           +--ro lsa-count?              uint32
+  |     |           +--ro unknown-lsa-count?      uint32
+  |     +--ro interfaces
+  |     |  +--ro normal-interfaces
+  |     |  |  +--ro normal-interface* [process-id area-id interface-name]
+  |     |  |     +--ro process-id               uint32
+  |     |  |     +--ro area-id                  ncd:ipv4-address
+  |     |  |     +--ro interface-name           ncd:ifname
+  |     |  |     +--ro admin-state?             enumeration
+  |     |  |     +--ro protocol-state?          enumeration
+  |     |  |     +--ro linklocal-address?       ncd:ipv6-address
+  |     |  |     +--ro interface-id?            uint32
+  |     |  |     +--ro instance-id?             uint8
+  |     |  |     +--ro network-type?            enumeration
+  |     |  |     +--ro cost?                    uint32
+  |     |  |     +--ro transmit-delay?          uint32
+  |     |  |     +--ro interface-state?         enumeration
+  |     |  |     +--ro priority?                uint32
+  |     |  |     +--ro ldp-sync-config?         enumeration
+  |     |  |     +--ro ldp-sync-state?          enumeration
+  |     |  |     +--ro ldp-link-state?          enumeration
+  |     |  |     +--ro no-cut-edge?             empty
+  |     |  |     +--ro dr?                      ncd:ipv4-address
+  |     |  |     +--ro dr-linklocal-address?    ncd:ipv6-address
+  |     |  |     +--ro bdr?                     ncd:ipv4-address
+  |     |  |     +--ro bdr-linklocal-address?   ncd:ipv6-address
+  |     |  |     +--ro hello-interval?          uint32
+  |     |  |     +--ro dead-interval?           uint32
+  |     |  |     +--ro wait-interval?           uint32
+  |     |  |     +--ro retransmit-interval?     uint32
+  |     |  |     +--ro neighbor-count?          uint32
+  |     |  |     +--ro full-neighbor-count?     uint32
+  |     |  |     +--ro linklsa-suppress?        empty
+  |     |  |     +--ro damp-state?              enumeration
+  |     |  |     +--ro damp-remain?             uint32
+  |     |  |     +--ro ipsec
+  |     |  |        +--ro spi-id?                     uint32
+  |     |  |        +--ro type?                       enumeration
+  |     |  |        +--ro authentication-algorithm?   enumeration
+  |     |  |        +--ro encryption-algorithm?       enumeration
+  |     |  |        +--ro state?                      enumeration
+  |     |  +--ro virtual-interfaces
+  |     |     +--ro virtual-interface* [process-id area-id neighbor-id]
+  |     |        +--ro process-id               uint32
+  |     |        +--ro area-id                  ncd:ipv4-address
+  |     |        +--ro neighbor-id              ncd:ipv4-address
+  |     |        +--ro interface-id?            uint32
+  |     |        +--ro state?                   enumeration
+  |     |        +--ro neighbor-ipv6-address?   ncd:ipv6-address
+  |     |        +--ro out-interface-name?      ncd:ifname
+  |     |        +--ro cost?                    uint32
+  |     |        +--ro hello-interval?          uint32
+  |     |        +--ro dead-interval?           uint32
+  |     |        +--ro wait-interval?           uint32
+  |     |        +--ro retransmit-interval?     uint32
+  |     |        +--ro transmit-delay?          uint32
+  |     |        +--ro interface-state?         enumeration
+  |     |        +--ro neighbor-state?          enumeration
+  |     |        +--ro ipsec
+  |     |           +--ro spi-id?                     uint32
+  |     |           +--ro type?                       enumeration
+  |     |           +--ro authentication-algorithm?   enumeration
+  |     |           +--ro encryption-algorithm?       enumeration
+  |     |           +--ro state?                      enumeration
+  |     +--ro neighbors
+  |        +--ro normal-neighbors
+  |        |  +--ro normal-neighbor* [process-id area-id interface-name neighbor-id]
+  |        |     +--ro process-id                    uint32
+  |        |     +--ro area-id                       ncd:ipv4-address
+  |        |     +--ro interface-name                ncd:ifname
+  |        |     +--ro neighbor-id                   ncd:ipv4-address
+  |        |     +--ro interface-id?                 uint32
+  |        |     +--ro neighbor-linklocal-address?   ncd:ipv6-address
+  |        |     +--ro priority?                     uint32
+  |        |     +--ro neighbor-state?               enumeration
+  |        |     +--ro neighbor-role?                enumeration
+  |        |     +--ro state-change-times?           uint32
+  |        |     +--ro dr?                           ncd:ipv4-address
+  |        |     +--ro bdr?                          ncd:ipv4-address
+  |        |     +--ro retransmit-list-count?        uint32
+  |        |     +--ro dd-list-count?                uint32
+  |        |     +--ro request-list-count?           uint32
+  |        |     +--ro dead-time?                    string
+  |        |     +--ro full-time?                    string
+  |        |     +--ro options-field?                uint32
+  |        |     +--ro options
+  |        |        +--ro v6-bit?   empty
+  |        |        +--ro e-bit?    empty
+  |        |        +--ro n-bit?    empty
+  |        |        +--ro r-bit?    empty
+  |        |        +--ro dc-bit?   empty
+  |        +--ro virtual-neighbors
+  |           +--ro virtual-neighbor* [process-id transit-area-id neighbor-id]
+  |              +--ro process-id               uint32
+  |              +--ro transit-area-id          ncd:ipv4-address
+  |              +--ro neighbor-id              ncd:ipv4-address
+  |              +--ro area-id?                 ncd:ipv4-address
+  |              +--ro out-interface-name?      ncd:ifname
+  |              +--ro interface-id?            uint32
+  |              +--ro neighbor-ipv6-address?   ncd:ipv6-address
+  |              +--ro priority?                uint32
+  |              +--ro neighbor-state?          enumeration
+  |              +--ro state-change-times?      uint32
+  |              +--ro retransmit-list-count?   uint32
+  |              +--ro dd-list-count?           uint32
+  |              +--ro request-list-count?      uint32
+  |              +--ro dead-time?               string
+  |              +--ro full-time?               string
+  |              +--ro options-field?           uint32
+  |              +--ro options
+  |                 +--ro v6-bit?   empty
+  |                 +--ro e-bit?    empty
+  |                 +--ro n-bit?    empty
+  |                 +--ro r-bit?    empty
+  |                 +--ro dc-bit?   empty
+  +--ro operation
+     +--ro ospfv3
+        +--ro clear
+           +--ro process
+              +--ro process-id?   uint32

@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-mpls-te"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-mpls="http://openconfig.net/yang/mpls"
+           xmlns:inet="http://openconfig.net/yang/types/inet"
+           xmlns:oc-rsvp="http://openconfig.net/yang/rsvp"
+           xmlns:oc-mplst="http://openconfig.net/yang/mpls-types"
+           xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <belongs-to module="openconfig-mpls">
+    <prefix value="oc-mpls"/>
+  </belongs-to>
+  <import module="openconfig-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="openconfig-mpls-rsvp">
+    <prefix value="oc-rsvp"/>
+  </import>
+  <import module="openconfig-mpls-types">
+    <prefix value="oc-mplst"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>Configuration related to constrained-path LSPs and traffic
+engineering.  These definitions are not specific to a particular
+signaling protocol or mechanism (see related submodules for
+signaling protocol-specific configuration).</text>
+  </description>
+  <oc-ext:openconfig-version semver="3.0.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>3.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-07-02">
+    <description>
+      <text>Add new RSVP-TE statistics, remove associated-rsvp-session
+leaf. Remove use of date-and-time.</text>
+    </description>
+    <reference>
+      <text>3.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-16">
+    <description>
+      <text>Included attributes for base LDP configuration.</text>
+    </description>
+    <reference>
+      <text>2.6.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-13">
+    <description>
+      <text>Add ttl-propagation to global MPLS config</text>
+    </description>
+    <reference>
+      <text>2.5.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-05">
+    <description>
+      <text>Fixed bugs in when statements on RSVP-TE attributes</text>
+    </description>
+    <reference>
+      <text>2.4.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Minor formatting fixes.</text>
+    </description>
+    <reference>
+      <text>2.4.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-06-21">
+    <description>
+      <text>Add TC bits typedef.</text>
+    </description>
+    <reference>
+      <text>2.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-03-22">
+    <description>
+      <text>Add RSVP calculated-absolute-subscription-bw</text>
+    </description>
+    <reference>
+      <text>2.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-26">
+    <description>
+      <text>Add RSVP Tspec, clarify units for RSVP, remove unused LDP</text>
+    </description>
+    <reference>
+      <text>2.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-12-15">
+    <description>
+      <text>Add additional MPLS parameters</text>
+    </description>
+    <reference>
+      <text>2.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-09-01">
+    <description>
+      <text>Revisions based on implementation feedback</text>
+    </description>
+    <reference>
+      <text>2.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-08-08">
+    <description>
+      <text>Public release of MPLS models</text>
+    </description>
+    <reference>
+      <text>1.0.1</text>
+    </reference>
+  </revision>
+  <typedef name="te-bandwidth-type">
+    <type name="enumeration">
+      <enum name="SPECIFIED">
+        <description>
+          <text>Bandwidth is explicitly specified</text>
+        </description>
+      </enum>
+      <enum name="AUTO">
+        <description>
+          <text>Bandwidth is automatically computed</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>enumerated type for specifying whether bandwidth is
+explicitly specified or automatically computed</text>
+    </description>
+  </typedef>
+  <typedef name="mpls-srlg-flooding-type">
+    <type name="enumeration">
+      <enum name="FLOODED_SRLG">
+        <description>
+          <text>SRLG is flooded in the IGP</text>
+        </description>
+      </enum>
+      <enum name="STATIC_SRLG">
+        <description>
+          <text>SRLG is not flooded, the members are
+statically configured</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Enumerated bype for specifying how the SRLG is flooded</text>
+    </description>
+  </typedef>
+  <typedef name="mpls-hop-type">
+    <type name="enumeration">
+      <enum name="LOOSE">
+        <description>
+          <text>loose hop in an explicit path</text>
+        </description>
+      </enum>
+      <enum name="STRICT">
+        <description>
+          <text>strict hop in an explicit path</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>enumerated type for specifying loose or strict
+paths</text>
+    </description>
+  </typedef>
+  <typedef name="te-metric-type">
+    <type name="union">
+      <type name="enumeration">
+        <enum name="IGP">
+          <description>
+            <text>set the LSP metric to track the underlying
+IGP metric</text>
+          </description>
+        </enum>
+      </type>
+      <type name="uint32"/>
+    </type>
+    <description>
+      <text>union type for setting the LSP TE metric to a
+static value, or to track the IGP metric</text>
+    </description>
+  </typedef>
+  <typedef name="cspf-tie-breaking">
+    <type name="enumeration">
+      <enum name="RANDOM">
+        <description>
+          <text>CSPF calculation selects a random path among
+multiple equal-cost paths to the destination</text>
+        </description>
+      </enum>
+      <enum name="LEAST_FILL">
+        <description>
+          <text>CSPF calculation selects the path with greatest
+available bandwidth</text>
+        </description>
+      </enum>
+      <enum name="MOST_FILL">
+        <description>
+          <text>CSPF calculation selects the path with the least
+available bandwidth</text>
+        </description>
+      </enum>
+    </type>
+    <default value="RANDOM"/>
+    <description>
+      <text>type to indicate the CSPF selection policy when
+multiple equal cost paths are available</text>
+    </description>
+  </typedef>
+  <grouping name="te-tunnel-reoptimize-config">
+    <description>
+      <text>Definition for reoptimize timer configuration</text>
+    </description>
+    <leaf name="reoptimize-timer">
+      <type name="uint16"/>
+      <units name="seconds"/>
+      <description>
+        <text>frequency of reoptimization of
+a traffic engineered LSP</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-lsp-auto-bandwidth-config">
+    <description>
+      <text>Configuration parameters related to autobandwidth</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>enables mpls auto-bandwidth on the
+lsp</text>
+      </description>
+    </leaf>
+    <leaf name="min-bw">
+      <type name="oc-mplst:bandwidth-kbps"/>
+      <description>
+        <text>set the minimum bandwidth in Kbps for an
+auto-bandwidth LSP</text>
+      </description>
+    </leaf>
+    <leaf name="max-bw">
+      <type name="oc-mplst:bandwidth-kbps"/>
+      <description>
+        <text>set the maximum bandwidth in Kbps for an
+auto-bandwidth LSP</text>
+      </description>
+    </leaf>
+    <leaf name="adjust-interval">
+      <type name="uint32"/>
+      <description>
+        <text>time in seconds between adjustments to
+LSP bandwidth</text>
+      </description>
+    </leaf>
+    <leaf name="adjust-threshold">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>percentage difference between the LSP's
+specified bandwidth and its current bandwidth
+allocation -- if the difference is greater than the
+specified percentage, auto-bandwidth adjustment is
+triggered</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-lsp-auto-bandwidth-state">
+    <description>
+      <text>Operational state parameters relating to auto-bandwidth</text>
+    </description>
+    <leaf name="interval-high-bw">
+      <type name="oc-mplst:bandwidth-kbps"/>
+      <description>
+        <text>The maximum measured bandwidth during the current
+auto-bandwidth adjust interval expressed in kilobits
+per second.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-lsp-overflow-config">
+    <description>
+      <text>configuration for mpls lsp bandwidth
+overflow adjustment</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>enables mpls lsp bandwidth overflow
+adjustment on the lsp</text>
+      </description>
+    </leaf>
+    <leaf name="overflow-threshold">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>bandwidth percentage change to trigger
+an overflow event</text>
+      </description>
+    </leaf>
+    <leaf name="trigger-event-count">
+      <type name="uint16"/>
+      <description>
+        <text>number of consecutive overflow sample
+events needed to trigger an overflow adjustment</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-lsp-underflow-config">
+    <description>
+      <text>configuration for mpls lsp bandwidth
+underflow adjustment</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>enables bandwidth underflow
+adjustment on the lsp</text>
+      </description>
+    </leaf>
+    <leaf name="underflow-threshold">
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>bandwidth percentage change to trigger
+and underflow event</text>
+      </description>
+    </leaf>
+    <leaf name="trigger-event-count">
+      <type name="uint16"/>
+      <description>
+        <text>number of consecutive underflow sample
+events needed to trigger an underflow adjustment</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-path-placement-constraints-config">
+    <description>
+      <text>Configuration data for link affinities</text>
+    </description>
+    <leaf-list name="exclude-group">
+      <type name="leafref">
+        <path value="../../../../../../../../../../te-global-attributes/mpls-admin-groups/admin-group/admin-group-name"/>
+      </type>
+      <description>
+        <text>list of references to named admin-groups to exclude in
+path calculation.</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="include-all-group">
+      <type name="leafref">
+        <path value="../../../../../../../../../../te-global-attributes/mpls-admin-groups/admin-group/admin-group-name"/>
+      </type>
+      <description>
+        <text>list of references to named admin-groups of which all must
+be included</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="include-any-group">
+      <type name="leafref">
+        <path value="../../../../../../../../../../te-global-attributes/mpls-admin-groups/admin-group/admin-group-name"/>
+      </type>
+      <description>
+        <text>list of references to named admin-groups of which one must
+be included</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="te-global-tunnel-config">
+    <description>
+      <text>Configuration parameters relevant to a single
+traffic engineered tunnel.</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>The tunnel name</text>
+      </description>
+    </leaf>
+    <leaf name="type">
+      <type name="identityref">
+        <base name="oc-mplst:TUNNEL_TYPE"/>
+      </type>
+      <description>
+        <text>Tunnel type, p2p or p2mp</text>
+      </description>
+    </leaf>
+    <leaf name="signaling-protocol">
+      <type name="identityref">
+        <base name="oc-mplst:PATH_SETUP_PROTOCOL"/>
+      </type>
+      <description>
+        <text>Signaling protocol used to set up this tunnel</text>
+      </description>
+    </leaf>
+    <leaf name="shortcut-eligible">
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Whether this LSP is considered to be eligible for us as a
+shortcut in the IGP. In the case that this leaf is set to
+true, the IGP SPF calculation uses the metric specified to
+determine whether traffic should be carried over this LSP</text>
+      </description>
+    </leaf>
+    <uses name="oc-rsvp:rsvp-p2p-tunnel-attributes-config"/>
+  </grouping>
+  <grouping name="tunnel-p2p-attributes-config">
+    <description>
+      <text>Configuration related to p2p LSPs</text>
+    </description>
+    <leaf name="destination">
+      <type name="inet:ip-address"/>
+      <description>
+        <text>P2P tunnel destination address</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="p2p-path-config">
+    <description>
+      <text>Configuration parameters for p2p paths</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Path name</text>
+      </description>
+    </leaf>
+    <leaf name="path-computation-method">
+      <type name="identityref">
+        <base name="oc-mplst:PATH_COMPUTATION_METHOD"/>
+      </type>
+      <default value="oc-mplst:LOCALLY_COMPUTED"/>
+      <description>
+        <text>The method used for computing the path, either
+locally computed, queried from a server or not
+computed at all (explicitly configured).</text>
+      </description>
+    </leaf>
+    <leaf name="use-cspf">
+      <when condition="../path-computation-method = 'LOCALLY_COMPUTED'">
+        <description>
+          <text>The use of cspf when the path-computation method is
+local computation</text>
+        </description>
+      </when>
+      <type name="boolean"/>
+      <description>
+        <text>Flag to enable CSPF for locally computed LSPs</text>
+      </description>
+    </leaf>
+    <leaf name="path-computation-server">
+      <when condition="../path-computation-method = 'EXTERNALLY_QUERIED'">
+        <description>
+          <text>The path-computation server when the path is
+externally queried</text>
+        </description>
+      </when>
+      <type name="inet:ip-address"/>
+      <description>
+        <text>Address of the external path computation
+server</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-tunnel-p2p-top">
+    <description>
+      <text>Top level grouping for p2p configuration</text>
+    </description>
+    <container name="p2p-tunnel-attributes">
+      <when condition="../config/type = 'P2P'">
+        <description>
+          <text>Include this container for LSPs of type P2P</text>
+        </description>
+      </when>
+      <description>
+        <text>Parameters related to LSPs of type P2P</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for P2P LSPs</text>
+        </description>
+        <uses name="tunnel-p2p-attributes-config"/>
+      </container>
+      <uses name="p2p-primary-paths-top"/>
+    </container>
+  </grouping>
+  <grouping name="te-tunnel-bandwidth-config">
+    <description>
+      <text>Configuration parameters related to bandwidth for a tunnel</text>
+    </description>
+    <leaf name="specification-type">
+      <type name="te-bandwidth-type"/>
+      <default value="SPECIFIED"/>
+      <description>
+        <text>The method used for settign the bandwidth, either explicitly
+specified or configured</text>
+      </description>
+    </leaf>
+    <leaf name="set-bandwidth">
+      <when condition="../specification-type = 'SPECIFIED'">
+        <description>
+          <text>The bandwidth value when bandwidth is explicitly
+specified</text>
+        </description>
+      </when>
+      <type name="oc-mplst:bandwidth-kbps"/>
+      <description>
+        <text>set bandwidth explicitly, e.g., using
+offline calculation</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-tunnel-bandwidth-top">
+    <description>
+      <text>Top level grouping for specifying bandwidth for a tunnel</text>
+    </description>
+    <container name="bandwidth">
+      <description>
+        <text>Bandwidth configuration for TE LSPs</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters related to bandwidth on TE
+tunnels:</text>
+        </description>
+        <uses name="te-tunnel-bandwidth-config"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="p2p-primary-paths-top">
+    <description>
+      <text>Top level grouping for p2p primary paths</text>
+    </description>
+    <container name="p2p-primary-path">
+      <description>
+        <text>Primary paths associated with the LSP</text>
+      </description>
+      <list name="p2p-primary-path">
+        <key value="name"/>
+        <description>
+          <text>List of p2p primary paths for a tunnel</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Path name</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration parameters related to paths</text>
+          </description>
+          <uses name="p2p-path-config"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="te-tunnels-top">
+    <description>
+      <text>Top level grouping for TE tunnels</text>
+    </description>
+    <container name="tunnels">
+      <description>
+        <text>Enclosing container for tunnels</text>
+      </description>
+      <list name="tunnel">
+        <key value="name"/>
+        <description>
+          <text>List of TE tunnels. This list contains only the LSPs that the
+current device originates (i.e., for which it is the head-end).
+Where the signaling protocol utilised for an LSP allows a mid-point
+or tail device to be aware of the LSP (e.g., RSVP-TE), then the
+associated sessions are maintained per protocol</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>The tunnel name</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration parameters related to TE tunnels:</text>
+          </description>
+          <uses name="te-global-tunnel-config"/>
+        </container>
+        <uses name="te-tunnel-bandwidth-top"/>
+        <uses name="te-tunnel-p2p-top"/>
+      </list>
+    </container>
+  </grouping>
+</submodule>

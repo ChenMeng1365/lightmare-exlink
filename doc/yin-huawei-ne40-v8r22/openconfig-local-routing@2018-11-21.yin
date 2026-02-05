@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-local-routing"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-loc-rt="http://openconfig.net/yang/local-routing"
+        xmlns:inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-pt="http://openconfig.net/yang/policy-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/local-routing"/>
+  <prefix value="oc-loc-rt"/>
+  <import module="openconfig-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="openconfig-policy-types">
+    <prefix value="oc-pt"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module describes configuration and operational state data
+for routes that are locally generated, i.e., not created by
+dynamic routing protocols.  These include static routes, locally
+created aggregate routes for reducing the number of constituent
+routes that must be advertised, summary routes for IGPs, etc.
+
+This model expresses locally generated routes as generically as
+possible, avoiding configuration of protocol-specific attributes
+at the time of route creation.  This is primarily to avoid
+assumptions about how underlying router implementations handle
+route attributes in various routing table data structures they
+maintain.  Hence, the definition of locally generated routes
+essentially creates 'bare' routes that do not have any protocol-
+specific attributes.
+
+When protocol-specific attributes must be attached to a route
+(e.g., communities on a locally defined route meant to be
+advertised via BGP), the attributes should be attached via a
+protocol-specific policy after importing the route into the
+protocol for distribution (again via routing policy).</text>
+  </description>
+  <oc-ext:openconfig-version semver="1.0.2"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>1.0.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-05-15">
+    <description>
+      <text>Update to resolve style guide non-compliance.</text>
+    </description>
+    <reference>
+      <text>1.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2016-05-11">
+    <description>
+      <text>OpenConfig public release</text>
+    </description>
+    <reference>
+      <text>1.0.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <identity name="LOCAL_DEFINED_NEXT_HOP">
+    <description>
+      <text>A base identity type of local defined next-hops</text>
+    </description>
+  </identity>
+  <identity name="DROP">
+    <base name="LOCAL_DEFINED_NEXT_HOP"/>
+    <description>
+      <text>Discard traffic for the corresponding destination</text>
+    </description>
+  </identity>
+  <identity name="LOCAL_LINK">
+    <base name="LOCAL_DEFINED_NEXT_HOP"/>
+    <description>
+      <text>Treat traffic towards addresses within the specified
+next-hop prefix as though they are connected to a local
+link. When the LOCAL_LINK next-hop type is specified,
+an interface must also be specified such that
+the local system can determine which link to trigger
+link-layer address discovery against</text>
+    </description>
+  </identity>
+  <typedef name="local-defined-next-hop">
+    <type name="identityref">
+      <base name="LOCAL_DEFINED_NEXT_HOP"/>
+    </type>
+    <description>
+      <text>Pre-defined next-hop designation for locally generated
+routes</text>
+    </description>
+  </typedef>
+  <grouping name="local-generic-settings">
+    <description>
+      <text>Generic options that can be set on local routes When
+they are defined</text>
+    </description>
+    <leaf name="set-tag">
+      <type name="oc-pt:tag-type"/>
+      <description>
+        <text>Set a generic tag value on the route. This tag can be
+used for filtering routes that are distributed to other
+routing protocols.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="local-static-config">
+    <description>
+      <text>Configuration data for static routes.</text>
+    </description>
+    <leaf name="prefix">
+      <type name="inet:ip-prefix"/>
+      <description>
+        <text>Destination prefix for the static route, either IPv4 or
+IPv6.</text>
+      </description>
+    </leaf>
+    <uses name="local-generic-settings"/>
+  </grouping>
+  <grouping name="local-static-state">
+    <description>
+      <text>Operational state data for static routes</text>
+    </description>
+  </grouping>
+  <grouping name="local-static-nexthop-config">
+    <description>
+      <text>Configuration parameters related to each next-hop entry
+specified for a static route</text>
+    </description>
+    <leaf name="index">
+      <type name="string"/>
+      <description>
+        <text>An user-specified identifier utilised to uniquely reference
+the next-hop entry in the next-hop list. The value of this
+index has no semantic meaning other than for referencing
+the entry.</text>
+      </description>
+    </leaf>
+    <leaf name="next-hop">
+      <type name="union">
+        <type name="inet:ip-address"/>
+        <type name="local-defined-next-hop"/>
+      </type>
+      <description>
+        <text>The next-hop that is to be used for the static route
+- this may be specified as an IP address, an interface
+or a pre-defined next-hop type - for instance, DROP or
+LOCAL_LINK. When this leaf is not set, and the interface-ref
+value is specified for the next-hop, then the system should
+treat the prefix as though it is directly connected to the
+interface.</text>
+      </description>
+    </leaf>
+    <leaf name="metric">
+      <type name="uint32"/>
+      <description>
+        <text>A metric which is utilised to specify the preference of
+the next-hop entry when it is injected into the RIB. The
+lower the metric, the more preferable the prefix is. When
+this value is not specified the metric is inherited from
+the default metric utilised for static routes within the
+network instance that the static routes are being
+instantiated. When multiple next-hops are specified for a
+static route, the metric is utilised to determine which of
+the next-hops is to be installed in the RIB. When multiple
+next-hops have the same metric (be it specified, or simply
+the default) then these next-hops should all be installed
+in the RIB</text>
+      </description>
+    </leaf>
+    <leaf name="recurse">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Determines whether the next-hop should be allowed to
+be looked up recursively - i.e., via a RIB entry which has
+been installed by a routing protocol, or another static route
+- rather than needing to be connected directly to an
+interface of the local system within the current network
+instance. When the interface reference specified within the
+next-hop entry is set (i.e., is not null) then forwarding is
+restricted to being via the interface specified - and
+recursion is hence disabled.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="local-static-nexthop-state">
+    <description>
+      <text>Operational state parameters relating to a next-hop entry
+for a static route</text>
+    </description>
+  </grouping>
+  <grouping name="local-static-top">
+    <description>
+      <text>Top-level grouping for the list of static route definitions</text>
+    </description>
+    <container name="static-routes">
+      <description>
+        <text>Enclosing container for the list of static routes</text>
+      </description>
+      <list name="static">
+        <key value="prefix"/>
+        <description>
+          <text>List of locally configured static routes</text>
+        </description>
+        <leaf name="prefix">
+          <type name="leafref">
+            <path value="../config/prefix"/>
+          </type>
+          <description>
+            <text>Reference to the destination prefix list key.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for static routes</text>
+          </description>
+          <uses name="local-static-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for static routes</text>
+          </description>
+          <uses name="local-static-config"/>
+          <uses name="local-static-state"/>
+        </container>
+        <container name="next-hops">
+          <description>
+            <text>Configuration and state parameters relating to the
+next-hops that are to be utilised for the static
+route being specified</text>
+          </description>
+          <list name="next-hop">
+            <key value="index"/>
+            <description>
+              <text>A list of next-hops to be utilised for the static
+route being specified.</text>
+            </description>
+            <leaf name="index">
+              <type name="leafref">
+                <path value="../config/index"/>
+              </type>
+              <description>
+                <text>A reference to the index of the current next-hop.
+The index is intended to be a user-specified value
+which can be used to reference the next-hop in
+question, without any other semantics being
+assigned to it.</text>
+              </description>
+            </leaf>
+            <container name="config">
+              <description>
+                <text>Configuration parameters relating to the next-hop
+entry</text>
+              </description>
+              <uses name="local-static-nexthop-config"/>
+            </container>
+            <container name="state">
+              <config value="false"/>
+              <description>
+                <text>Operational state parameters relating to the
+next-hop entry</text>
+              </description>
+              <uses name="local-static-nexthop-config"/>
+              <uses name="local-static-nexthop-state"/>
+            </container>
+            <uses name="oc-if:interface-ref"/>
+          </list>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="local-aggregate-config">
+    <description>
+      <text>Configuration data for aggregate routes</text>
+    </description>
+    <leaf name="prefix">
+      <type name="inet:ip-prefix"/>
+      <description>
+        <text>Aggregate prefix to be advertised</text>
+      </description>
+    </leaf>
+    <leaf name="discard">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When true, install the aggregate route with a discard
+next-hop -- traffic destined to the aggregate will be
+discarded with no ICMP message generated.  When false,
+traffic destined to an aggregate address when no
+constituent routes are present will generate an ICMP
+unreachable message.</text>
+      </description>
+    </leaf>
+    <uses name="local-generic-settings"/>
+  </grouping>
+  <grouping name="local-aggregate-state">
+    <description>
+      <text>Operational state data for local aggregate advertisement
+definitions</text>
+    </description>
+  </grouping>
+  <grouping name="local-aggregate-top">
+    <description>
+      <text>Top-level grouping for local aggregates</text>
+    </description>
+    <container name="local-aggregates">
+      <description>
+        <text>Enclosing container for locally-defined aggregate
+routes</text>
+      </description>
+      <list name="aggregate">
+        <key value="prefix"/>
+        <description>
+          <text>List of aggregates</text>
+        </description>
+        <leaf name="prefix">
+          <type name="leafref">
+            <path value="../config/prefix"/>
+          </type>
+          <description>
+            <text>Reference to the configured prefix for this aggregate</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for aggregate advertisements</text>
+          </description>
+          <uses name="local-aggregate-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for aggregate
+advertisements</text>
+          </description>
+          <uses name="local-aggregate-config"/>
+          <uses name="local-aggregate-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="local-routes-config">
+    <description>
+      <text>Configuration data for locally defined routes</text>
+    </description>
+  </grouping>
+  <grouping name="local-routes-state">
+    <description>
+      <text>Operational state data for locally defined routes</text>
+    </description>
+  </grouping>
+  <grouping name="local-routes-top">
+    <description>
+      <text>Top-level grouping for local routes</text>
+    </description>
+    <container name="local-routes">
+      <description>
+        <text>Top-level container for local routes</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for locally defined routes</text>
+        </description>
+        <uses name="local-routes-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for locally defined routes</text>
+        </description>
+        <uses name="local-routes-config"/>
+        <uses name="local-routes-state"/>
+      </container>
+      <uses name="local-static-top"/>
+      <uses name="local-aggregate-top"/>
+    </container>
+  </grouping>
+  <uses name="local-routes-top"/>
+</module>

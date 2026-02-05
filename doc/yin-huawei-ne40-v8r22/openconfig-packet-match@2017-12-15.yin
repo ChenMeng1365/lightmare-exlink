@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-packet-match"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-pkt-match="http://openconfig.net/yang/header-fields"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-yang="http://openconfig.net/yang/types/yang"
+        xmlns:oc-pkt-match-types="http://openconfig.net/yang/packet-match-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/header-fields"/>
+  <prefix value="oc-pkt-match"/>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <import module="openconfig-packet-match-types">
+    <prefix value="oc-pkt-match-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module defines data related to packet header fields
+used in matching operations, for example in ACLs.  When a
+field is omitted from a match expression, the effect is a
+wildcard ('any') for that field.</text>
+  </description>
+  <oc-ext:openconfig-version semver="1.1.0"/>
+  <revision date="2017-12-15">
+    <description>
+      <text>Add MPLS packet field matches</text>
+    </description>
+    <reference>
+      <text>1.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-05-26">
+    <description>
+      <text>Separated IP matches into AFs</text>
+    </description>
+    <reference>
+      <text>1.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-08-08">
+    <description>
+      <text>OpenConfig public release</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-04-27">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>TBD</text>
+    </reference>
+  </revision>
+  <grouping name="ethernet-header-config">
+    <description>
+      <text>Configuration data of fields in Ethernet header.</text>
+    </description>
+    <leaf name="source-mac">
+      <type name="oc-yang:mac-address"/>
+      <description>
+        <text>Source IEEE 802 MAC address.</text>
+      </description>
+    </leaf>
+    <leaf name="source-mac-mask">
+      <type name="oc-yang:mac-address"/>
+      <description>
+        <text>Source IEEE 802 MAC address mask.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-mac">
+      <type name="oc-yang:mac-address"/>
+      <description>
+        <text>Destination IEEE 802 MAC address.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-mac-mask">
+      <type name="oc-yang:mac-address"/>
+      <description>
+        <text>Destination IEEE 802 MAC address mask.</text>
+      </description>
+    </leaf>
+    <leaf name="ethertype">
+      <type name="oc-pkt-match-types:ethertype-type"/>
+      <description>
+        <text>Ethertype field to match in Ethernet packets</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ethernet-header-state">
+    <description>
+      <text>State information of fields in Ethernet header.</text>
+    </description>
+  </grouping>
+  <grouping name="ethernet-header-top">
+    <description>
+      <text>Top level container for fields in Ethernet header.</text>
+    </description>
+    <container name="l2">
+      <description>
+        <text>Ethernet header fields</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data</text>
+        </description>
+        <uses name="ethernet-header-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State Information.</text>
+        </description>
+        <uses name="ethernet-header-config"/>
+        <uses name="ethernet-header-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="mpls-header-top">
+    <description>
+      <text>Top-level container for fields in an MPLS header.</text>
+    </description>
+    <container name="mpls">
+      <description>
+        <text>MPLS header fields</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters relating to fields within
+the MPLS header.</text>
+        </description>
+        <uses name="mpls-header-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state parameters relating to fields
+within the MPLS header</text>
+        </description>
+        <uses name="mpls-header-config"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="mpls-header-config">
+    <description>
+      <text>Configuration parameters relating to matches within
+MPLS header fields.</text>
+    </description>
+    <leaf name="traffic-class">
+      <type name="uint8">
+        <range value="0..7"/>
+      </type>
+      <description>
+        <text>The value of the MPLS traffic class (TC) bits,
+formerly known as the EXP bits.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ip-protocol-fields-common-config">
+    <description>
+      <text>IP protocol fields common to IPv4 and IPv6</text>
+    </description>
+    <leaf name="dscp">
+      <type name="oc-inet:dscp"/>
+      <description>
+        <text>Value of diffserv codepoint.</text>
+      </description>
+    </leaf>
+    <leaf name="protocol">
+      <type name="oc-pkt-match-types:ip-protocol-type"/>
+      <description>
+        <text>The protocol carried in the IP packet, expressed either
+as its IP protocol number, or by a defined identity.</text>
+      </description>
+    </leaf>
+    <leaf name="hop-limit">
+      <type name="uint8">
+        <range value="0..255"/>
+      </type>
+      <description>
+        <text>The IP packet's hop limit -- known as TTL (in hops) in
+IPv4 packets, and hop limit in IPv6</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ipv4-protocol-fields-config">
+    <description>
+      <text>Configuration data of IP protocol fields
+for IPv4</text>
+    </description>
+    <leaf name="source-address">
+      <type name="oc-inet:ipv4-prefix"/>
+      <description>
+        <text>Source IPv4 address prefix.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-address">
+      <type name="oc-inet:ipv4-prefix"/>
+      <description>
+        <text>Destination IPv4 address prefix.</text>
+      </description>
+    </leaf>
+    <uses name="ip-protocol-fields-common-config"/>
+  </grouping>
+  <grouping name="ipv4-protocol-fields-state">
+    <description>
+      <text>State information of IP header fields for IPv4</text>
+    </description>
+  </grouping>
+  <grouping name="ipv4-protocol-fields-top">
+    <description>
+      <text>IP header fields for IPv4</text>
+    </description>
+    <container name="ipv4">
+      <description>
+        <text>Top level container for IPv4 match field data</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for IPv4 match fields</text>
+        </description>
+        <uses name="ipv4-protocol-fields-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State information for IPv4 match fields</text>
+        </description>
+        <uses name="ipv4-protocol-fields-config"/>
+        <uses name="ipv4-protocol-fields-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="ipv6-protocol-fields-config">
+    <description>
+      <text>Configuration data for IPv6 match fields</text>
+    </description>
+    <leaf name="source-address">
+      <type name="oc-inet:ipv6-prefix"/>
+      <description>
+        <text>Source IPv6 address prefix.</text>
+      </description>
+    </leaf>
+    <leaf name="source-flow-label">
+      <type name="oc-inet:ipv6-flow-label"/>
+      <description>
+        <text>Source IPv6 Flow label.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-address">
+      <type name="oc-inet:ipv6-prefix"/>
+      <description>
+        <text>Destination IPv6 address prefix.</text>
+      </description>
+    </leaf>
+    <leaf name="destination-flow-label">
+      <type name="oc-inet:ipv6-flow-label"/>
+      <description>
+        <text>Destination IPv6 Flow label.</text>
+      </description>
+    </leaf>
+    <uses name="ip-protocol-fields-common-config"/>
+  </grouping>
+  <grouping name="ipv6-protocol-fields-state">
+    <description>
+      <text>Operational state data for IPv6 match fields</text>
+    </description>
+  </grouping>
+  <grouping name="ipv6-protocol-fields-top">
+    <description>
+      <text>Top-level grouping for IPv6 match fields</text>
+    </description>
+    <container name="ipv6">
+      <description>
+        <text>Top-level container for IPv6 match field data</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for IPv6 match fields</text>
+        </description>
+        <uses name="ipv6-protocol-fields-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for IPv6 match fields</text>
+        </description>
+        <uses name="ipv6-protocol-fields-config"/>
+        <uses name="ipv6-protocol-fields-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="transport-fields-config">
+    <description>
+      <text>Configuration data of transport-layer packet fields</text>
+    </description>
+    <leaf name="source-port">
+      <type name="oc-pkt-match-types:port-num-range"/>
+      <description>
+        <text>Source port or range</text>
+      </description>
+    </leaf>
+    <leaf name="destination-port">
+      <type name="oc-pkt-match-types:port-num-range"/>
+      <description>
+        <text>Destination port or range</text>
+      </description>
+    </leaf>
+    <leaf-list name="tcp-flags">
+      <type name="identityref">
+        <base name="oc-pkt-match-types:TCP_FLAGS"/>
+      </type>
+      <description>
+        <text>List of TCP flags to match</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="transport-fields-state">
+    <description>
+      <text>State data of transport-fields</text>
+    </description>
+  </grouping>
+  <grouping name="transport-fields-top">
+    <description>
+      <text>Destination transport-fields top level grouping</text>
+    </description>
+    <container name="transport">
+      <description>
+        <text>Transport fields container</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data</text>
+        </description>
+        <uses name="transport-fields-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State data</text>
+        </description>
+        <uses name="transport-fields-config"/>
+        <uses name="transport-fields-state"/>
+      </container>
+    </container>
+  </grouping>
+</module>

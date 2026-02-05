@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-pwve-access"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-pwve-access="urn:huawei:yang:huawei-bras-pwve-access"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:bras-cu-agent="urn:huawei:yang:huawei-bras-cu-agent"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-bras-pwve-access"/>
+  <prefix value="bras-pwve-access"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-bras-cu-agent">
+    <prefix value="bras-cu-agent"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras PWVE access.</text>
+  </description>
+  <revision date="2019-11-16">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-control"/>
+  <container name="bras-pwve-access">
+    <description>
+      <text>Bras PWVE access.</text>
+    </description>
+    <container name="location-groups">
+      <description>
+        <text>List of the location group.</text>
+      </description>
+      <list name="location-group">
+        <must condition="/bras-cu-agent:bras-cu-agent/bras-cu-agent:cu-agent"/>
+        <key value="name"/>
+        <max-elements value="256"/>
+        <description>
+          <text>Configure the location group.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>The specify name of location group.</text>
+          </description>
+        </leaf>
+        <container name="interfaces">
+          <description>
+            <text>List of the specify interface.</text>
+          </description>
+          <list name="interface">
+            <key value="name"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure the specify interface.</text>
+            </description>
+            <leaf name="name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='GigabitEthernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='10GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='40GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='100GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='25GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='50GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='50|100GE'"/>
+              <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:class='main-interface'"/>
+              <description>
+                <text>The specify name of interface.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Configure PWVE access to interface model.</text>
+    </description>
+    <container name="pwve-access">
+      <description>
+        <text>Configure PWVE access to interface model.</text>
+      </description>
+      <container name="pwve-interface">
+        <when condition="../../ifm:type = 'PW-VE'"/>
+        <description>
+          <text>Configure PWVE interface.</text>
+        </description>
+        <container name="push-vlan-tag">
+          <description>
+            <text>Configure user VLAN tags.</text>
+          </description>
+          <leaf name="pe-vid">
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Configure PE VLAN ID.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-vid">
+            <when condition="../pe-vid"/>
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Configure CE VLAN ID.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="bind-location-group">
+          <description>
+            <text>Configure the name of location group.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/bras-pwve-access:bras-pwve-access/bras-pwve-access:location-groups/bras-pwve-access:location-group/bras-pwve-access:name"/>
+            </type>
+            <description>
+              <text>Specify the name of location group.</text>
+            </description>
+          </leaf>
+        </container>
+      </container>
+    </container>
+  </augment>
+</module>

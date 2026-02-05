@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ifm-hdlc"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ifm-hdlc="urn:huawei:yang:huawei-ifm-hdlc"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-ifm-hdlc"/>
+  <prefix value="ifm-hdlc"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>High-level data link control protocol.</text>
+  </description>
+  <revision date="2019-12-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="hdlc"/>
+  <typedef name="damp-level">
+    <type name="enumeration">
+      <enum name="light">
+        <value value="0"/>
+        <description>
+          <text>Light weight.</text>
+        </description>
+      </enum>
+      <enum name="middle">
+        <value value="1"/>
+        <description>
+          <text>Middle weight.</text>
+        </description>
+      </enum>
+      <enum name="heavy">
+        <value value="2"/>
+        <description>
+          <text>Heavy weight.</text>
+        </description>
+      </enum>
+      <enum name="manual">
+        <value value="3"/>
+        <description>
+          <text>Manually configure the parameters.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>HDLC damp level.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm">
+    <description>
+      <text>Configure extend interface attributes.</text>
+    </description>
+    <container name="hdlc-damp">
+      <must condition="(damp-level='manual' and suppress and reuse and max-suppress-time and half-lifeperiod) or (damp-level!='manual')"/>
+      <description>
+        <text>Configure HDLC link status damping, the suppress value must be less than the value of reuse x (2 to the power of (max-suppress-time/half-lifeperiod)).</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable the HDLC link status damping.</text>
+        </description>
+      </leaf>
+      <leaf name="damp-level">
+        <when condition="../enable='true'"/>
+        <type name="damp-level"/>
+        <default value="light"/>
+        <description>
+          <text>HDLC link status damping level.</text>
+        </description>
+      </leaf>
+      <leaf name="suppress">
+        <when condition="../enable='true' and ../damp-level='manual'"/>
+        <type name="uint32">
+          <range value="1..20000"/>
+        </type>
+        <units name="s"/>
+        <must condition="../suppress&gt;../reuse"/>
+        <description>
+          <text>1000 times of suppress threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="reuse">
+        <when condition="../enable='true' and ../damp-level='manual'"/>
+        <type name="uint32">
+          <range value="1..20000"/>
+        </type>
+        <units name="s"/>
+        <must condition="../suppress&gt;../reuse"/>
+        <description>
+          <text>1000 times of reuse threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="max-suppress-time">
+        <when condition="../enable='true' and ../damp-level='manual'"/>
+        <type name="uint16">
+          <range value="1..255"/>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Max suppress time.</text>
+        </description>
+      </leaf>
+      <leaf name="half-lifeperiod">
+        <when condition="../enable='true' and ../damp-level='manual'"/>
+        <type name="uint16">
+          <range value="1..60"/>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>HDLC protocol status damping half life time.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

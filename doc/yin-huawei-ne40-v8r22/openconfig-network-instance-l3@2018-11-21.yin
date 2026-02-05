@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-network-instance-l3"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-ni-l3="http://openconfig.net/yang/network-instance-l3"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:octypes="http://openconfig.net/yang/openconfig-types">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/network-instance-l3"/>
+  <prefix value="oc-ni-l3"/>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="octypes"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module contains groupings which specifically relate to
+Layer 3 network instance configuration and operational state
+parameters.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.11.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.11.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-08-17">
+    <description>
+      <text>Add a route limit for L3 network instances.</text>
+    </description>
+    <reference>
+      <text>0.11.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-12-13">
+    <description>
+      <text>Fix incorrect constraint on SR and MPLS containers</text>
+    </description>
+    <reference>
+      <text>0.9.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Minor formatting fixes</text>
+    </description>
+    <reference>
+      <text>0.8.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-28">
+    <description>
+      <text>Add OSPFv2 to network instance</text>
+    </description>
+    <reference>
+      <text>0.8.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-26">
+    <description>
+      <text>Add policy forwarding to network instance</text>
+    </description>
+    <reference>
+      <text>0.7.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-13">
+    <description>
+      <text>Add AFT to the network instance</text>
+    </description>
+    <reference>
+      <text>0.6.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-12-15">
+    <description>
+      <text>Add segment routing to network instance</text>
+    </description>
+    <reference>
+      <text>0.5.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-11-10">
+    <description>
+      <text>Update model to include IS-IS.</text>
+    </description>
+    <reference>
+      <text>0.4.1</text>
+    </reference>
+  </revision>
+  <revision date="2016-09-28">
+    <description>
+      <text>Change L2 instance to submodule; add MAC table</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-08-11">
+    <description>
+      <text>Resolve repeated container names in routing protocols</text>
+    </description>
+    <reference>
+      <text>0.2.3</text>
+    </reference>
+  </revision>
+  <revision date="2016-07-08">
+    <description>
+      <text>Updated with refactored routing protocol models</text>
+    </description>
+    <reference>
+      <text>0.2.1</text>
+    </reference>
+  </revision>
+  <revision date="2016-03-29">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-03-14">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="l3ni-instance">
+    <description>
+      <text>Configuration and operational state parameters relevant
+to network instances that include a Layer 3 type</text>
+    </description>
+  </grouping>
+  <grouping name="l3ni-instance-common-config">
+    <description>
+      <text>Configuration parameters that are common to L3 network
+instances other than the default instance</text>
+    </description>
+    <leaf-list name="enabled-address-families">
+      <type name="identityref">
+        <base name="octypes:ADDRESS_FAMILY"/>
+      </type>
+      <description>
+        <text>The address families that are to be enabled for this
+network instance.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="l3ni-route-limit-structural">
+    <description>
+      <text>Configuration and state for the maximum number of routes
+that should be used by routing instance.</text>
+    </description>
+    <container name="route-limits">
+      <description>
+        <text>Configuration and operational state relating to the
+maximum number of routes for the address family that
+should be allowed within the Layer 3 network instance.
+
+When the specified value is reached, no further prefixes
+should be installed into the system's RIB from this network
+instance unless the warning only leaf is set. In this case,
+new routes should still be installed. If a alarm threshold
+is specified, then this should be used to generate
+alarms via telemetry for the network instance.</text>
+      </description>
+      <list name="route-limit">
+        <key value="afi"/>
+        <description>
+          <text>A route limit applying to a particular address family.</text>
+        </description>
+        <leaf name="afi">
+          <type name="leafref">
+            <path value="../config/afi"/>
+          </type>
+          <description>
+            <text>Reference to the address family for which the route
+limit is being applied.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration options relating to the route limit.</text>
+          </description>
+          <uses name="l3ni-route-limit-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state parameters relating to the route limit.</text>
+          </description>
+          <uses name="l3ni-route-limit-config"/>
+          <uses name="l3ni-route-limit-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="l3ni-route-limit-config">
+    <description>
+      <text>Configuration options relating to the route limit for a network
+instance.</text>
+    </description>
+    <leaf name="afi">
+      <type name="identityref">
+        <base name="octypes:ADDRESS_FAMILY"/>
+      </type>
+      <description>
+        <text>The address family for which the route limit applies.</text>
+      </description>
+    </leaf>
+    <leaf name="maximum">
+      <type name="uint32"/>
+      <description>
+        <text>The maximum number of routes for the address family. The
+system should not install more than maximum number of
+prefixes into the RIB unless the warning-only leaf is specified.</text>
+      </description>
+    </leaf>
+    <leaf name="warning-only">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When specified, the route limit specified is considered only as
+a warning - and routes should continue to be installed into the
+RIB over the limit specified in the maximum leaf.</text>
+      </description>
+    </leaf>
+    <leaf name="alarm-threshold">
+      <type name="uint32"/>
+      <description>
+        <text>When specified, an alarm should be generated when the threshold
+number of installed routes is reached.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="l3ni-route-limit-state">
+    <description>
+      <text>Operational state relating to the route limit for a network
+instance.</text>
+    </description>
+    <leaf name="threshold-exceeded">
+      <type name="boolean"/>
+      <description>
+        <text>This leaf should be set to true in the case that the threshold
+number of routes has been exceeded.</text>
+      </description>
+    </leaf>
+    <leaf name="installed-routes">
+      <type name="uint32"/>
+      <description>
+        <text>The current number of routes installed for the address family.</text>
+      </description>
+    </leaf>
+  </grouping>
+</module>

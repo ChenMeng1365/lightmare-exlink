@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-lpt"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:lpt="urn:huawei:yang:huawei-lpt"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:l2vpn="urn:huawei:yang:huawei-l2vpn"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:huawei:yang:huawei-lpt"/>
+  <prefix value="lpt"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-l2vpn">
+    <prefix value="l2vpn"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Link state pass through configuration.</text>
+  </description>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-29">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="lpt"/>
+  <typedef name="port-state">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>Port state is open.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="0"/>
+        <description>
+          <text>Port state is closed.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Port state.</text>
+    </description>
+  </typedef>
+  <typedef name="fsm-state">
+    <type name="enumeration">
+      <enum name="init">
+        <value value="0"/>
+        <description>
+          <text>Fsm state is init.</text>
+        </description>
+      </enum>
+      <enum name="normal">
+        <value value="3"/>
+        <description>
+          <text>Fsm state is Normal.</text>
+        </description>
+      </enum>
+      <enum name="network-fault">
+        <value value="2"/>
+        <description>
+          <text>Fsm state is network fault.</text>
+        </description>
+      </enum>
+      <enum name="user-fault">
+        <value value="1"/>
+        <description>
+          <text>Fsm state is user fault.</text>
+        </description>
+      </enum>
+      <enum name="resume-wait">
+        <value value="4"/>
+        <description>
+          <text>Fsm state is wait resume.</text>
+        </description>
+      </enum>
+      <enum name="user-resume">
+        <value value="5"/>
+        <description>
+          <text>Fsm state is user resume.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Lpt Fsm State.</text>
+    </description>
+  </typedef>
+  <typedef name="vc-type">
+    <type name="enumeration">
+      <enum name="ethernet">
+        <value value="5"/>
+        <description>
+          <text>The vc type is ETHERNET.</text>
+        </description>
+      </enum>
+      <enum name="vlan">
+        <value value="4"/>
+        <description>
+          <text>The vc type is VLAN.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Vc type.</text>
+    </description>
+  </typedef>
+  <typedef name="net-carrier-type">
+    <type name="enumeration">
+      <enum name="pw">
+        <value value="0"/>
+        <description>
+          <text>The UNI leaf type is PW.</text>
+        </description>
+      </enum>
+      <enum name="qinq-link">
+        <value value="1"/>
+        <description>
+          <text>The UNI leaf type is QINQ.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The network side carrier type.</text>
+    </description>
+  </typedef>
+  <typedef name="notification-mode-type">
+    <type name="enumeration">
+      <enum name="lpt-mode">
+        <value value="0"/>
+        <description>
+          <text>LPT packet mode for fault transfer.</text>
+        </description>
+      </enum>
+      <enum name="csf-mode">
+        <value value="1"/>
+        <description>
+          <text>CSF packet mode for fault transfer.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Packet mode for fault transfer.</text>
+    </description>
+  </typedef>
+  <typedef name="oam-type">
+    <type name="enumeration">
+      <enum name="lpt-oam">
+        <value value="1"/>
+        <description>
+          <text>LPT oam detection.</text>
+        </description>
+      </enum>
+      <enum name="pw-oam">
+        <value value="2"/>
+        <description>
+          <text>PW oam detection.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Network side fault detection mode.</text>
+    </description>
+  </typedef>
+  <grouping name="ptp-instance-paras">
+    <description>
+      <text>LPT p2p instance configuration.</text>
+    </description>
+    <leaf name="enable">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable LPT state.</text>
+      </description>
+    </leaf>
+    <leaf name="recover-time">
+      <ext:operation-exclude value="update|delete">
+        <when condition="../enable = 'true'"/>
+        <description>
+          <text>The 'recover-time' cannot be updated or deleted, when enable node is 'true'.</text>
+        </description>
+      </ext:operation-exclude>
+      <type name="uint32">
+        <range value="1..600"/>
+      </type>
+      <units name="s"/>
+      <default value="1"/>
+      <description>
+        <text>Recovery time value.</text>
+      </description>
+    </leaf>
+    <leaf name="hold-off-time">
+      <ext:operation-exclude value="update|delete">
+        <when condition="../enable = 'true'"/>
+        <description>
+          <text>The 'hold-off-time' cannot be updated or deleted, when enable node is 'true'.</text>
+        </description>
+      </ext:operation-exclude>
+      <type name="uint32">
+        <range value="0..10000"/>
+      </type>
+      <units name="ms"/>
+      <must condition="(../hold-off-time mod 100)=0"/>
+      <default value="1000"/>
+      <description>
+        <text>Holdoff time value.</text>
+      </description>
+    </leaf>
+    <leaf name="oam-period">
+      <ext:operation-exclude value="update|delete">
+        <when condition="../enable = 'true'"/>
+        <description>
+          <text>The 'oam-period' cannot be updated or deleted, when enable node is 'true'.</text>
+        </description>
+      </ext:operation-exclude>
+      <type name="uint32">
+        <range value="10..100"/>
+      </type>
+      <units name="100 ms"/>
+      <default value="10"/>
+      <description>
+        <text>OAM period value.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ptp-instance-state">
+    <description>
+      <text>LPT p2p instance state.</text>
+    </description>
+    <leaf name="net-carrier-type">
+      <type name="net-carrier-type"/>
+      <config value="false"/>
+      <description>
+        <text>The network side Carrier Type.</text>
+      </description>
+    </leaf>
+    <leaf name="user-port-state">
+      <type name="port-state"/>
+      <config value="false"/>
+      <description>
+        <text>User side port status.</text>
+      </description>
+    </leaf>
+    <leaf name="protocol-state">
+      <type name="fsm-state"/>
+      <default value="normal"/>
+      <config value="false"/>
+      <description>
+        <text>LPT protocol status.</text>
+      </description>
+    </leaf>
+    <leaf name="local-fault">
+      <type name="boolean"/>
+      <default value="false"/>
+      <config value="false"/>
+      <description>
+        <text>Local user side fault.</text>
+      </description>
+    </leaf>
+    <leaf name="net-fault">
+      <type name="boolean"/>
+      <default value="false"/>
+      <config value="false"/>
+      <description>
+        <text>Local network side fault.</text>
+      </description>
+    </leaf>
+    <leaf name="remote-fault">
+      <type name="boolean"/>
+      <default value="false"/>
+      <config value="false"/>
+      <description>
+        <text>LPT remote instance fault.</text>
+      </description>
+    </leaf>
+    <leaf name="notification-mode">
+      <type name="notification-mode-type"/>
+      <config value="false"/>
+      <description>
+        <text>Packet mode for fault transfer.</text>
+      </description>
+    </leaf>
+    <leaf name="oam-type">
+      <type name="oam-type"/>
+      <config value="false"/>
+      <description>
+        <text>Network side fault detection mode.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <augment target-node="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:vpws-ldp/l2vpn:acs/l2vpn:ac">
+    <description>
+      <text>LPT in a AC interface.</text>
+    </description>
+    <container name="lpt">
+      <description>
+        <text>Configure LPT in a AC interface.</text>
+      </description>
+      <container name="ptp-instance">
+        <presence value="Create a ptp instance."/>
+        <description>
+          <text>Configure point to point instance of LPT.</text>
+        </description>
+        <uses name="ptp-instance-paras"/>
+        <leaf name="peer-ip">
+          <type name="inet:ipv4-address-no-zone"/>
+          <config value="false"/>
+          <description>
+            <text>Remote IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="vc-id">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Virtual channel ID.</text>
+          </description>
+        </leaf>
+        <leaf name="vc-type">
+          <type name="vc-type"/>
+          <config value="false"/>
+          <description>
+            <text>Virtual channel type.</text>
+          </description>
+        </leaf>
+        <uses name="ptp-instance-state"/>
+      </container>
+    </container>
+  </augment>
+</module>

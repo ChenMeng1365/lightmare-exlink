@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-lldp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-lldp="http://openconfig.net/yang/lldp"
+        xmlns:oc-lldp-types="http://openconfig.net/yang/lldp/types"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/lldp"/>
+  <prefix value="oc-lldp"/>
+  <import module="openconfig-lldp-types">
+    <prefix value="oc-lldp-types"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module defines configuration and operational state data
+for the LLDP protocol.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.2.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.2.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-07-17">
+    <description>
+      <text>Adds ttl to lldp-neighbor-state</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-05-16">
+    <description>
+      <text>Initial public revision</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="lldp-common-counters">
+    <description>
+      <text>Definition of global and per-interface counters</text>
+    </description>
+    <leaf name="frame-in">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of lldp frames received.</text>
+      </description>
+    </leaf>
+    <leaf name="frame-out">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of frames transmitted out.</text>
+      </description>
+    </leaf>
+    <leaf name="frame-error-in">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of LLDP frames received with errors.</text>
+      </description>
+    </leaf>
+    <leaf name="frame-discard">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of LLDP frames received and discarded.</text>
+      </description>
+    </leaf>
+    <leaf name="tlv-discard">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of TLV frames received and discarded.</text>
+      </description>
+    </leaf>
+    <leaf name="tlv-unknown">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of frames received with unknown TLV.</text>
+      </description>
+    </leaf>
+    <leaf name="last-clear">
+      <type name="yang:date-and-time"/>
+      <description>
+        <text>Indicates the last time the counters were
+cleared.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-global-counters">
+    <description>
+      <text>Definition of global LLDP counters</text>
+    </description>
+    <uses name="lldp-common-counters"/>
+    <leaf name="tlv-accepted">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of valid TLVs received.</text>
+      </description>
+    </leaf>
+    <leaf name="entries-aged-out">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of entries aged out due to timeout.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-interface-counters">
+    <description>
+      <text>Definition of per-interface LLDP counters</text>
+    </description>
+    <uses name="lldp-common-counters"/>
+    <leaf name="frame-error-out">
+      <type name="yang:counter64"/>
+      <description>
+        <text>The number of frame transmit errors on the
+interface.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-system-info-config">
+    <description>
+      <text>Configuration data for system-level local and remote
+LLDP information</text>
+    </description>
+    <leaf name="system-name">
+      <type name="string">
+        <length value="0..255"/>
+      </type>
+      <description>
+        <text>The system name field shall contain an alpha-numeric string
+that indicates the system's administratively assigned name.
+The system name should be the system's fully qualified domain
+name. If implementations support IETF RFC 3418, the sysName
+object should be used for this field.</text>
+      </description>
+    </leaf>
+    <leaf name="system-description">
+      <type name="string">
+        <length value="0..255"/>
+      </type>
+      <description>
+        <text>The system description field shall contain an alpha-numeric
+string that is the textual description of the network entity.
+The system description should include the full name and
+version identification of the system's hardware type,
+software operating system, and networking software. If
+implementations support IETF RFC 3418, the sysDescr object
+should be used for this field.</text>
+      </description>
+    </leaf>
+    <leaf name="chassis-id">
+      <type name="string"/>
+      <description>
+        <text>The Chassis ID is a mandatory TLV which identifies the
+chassis component of the endpoint identifier associated with
+the transmitting LLDP agent</text>
+      </description>
+    </leaf>
+    <leaf name="chassis-id-type">
+      <type name="oc-lldp-types:chassis-id-type"/>
+      <description>
+        <text>This field identifies the format and source of the chassis
+identifier string. It is an enumerator defined by the
+LldpChassisIdSubtype object from IEEE 802.1AB MIB.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-system-info-state">
+    <description>
+      <text>Operational state data reported for the local and remote
+systems</text>
+    </description>
+  </grouping>
+  <grouping name="lldp-neighbor-config">
+    <description>
+      <text>Configuration data for LLDP neighbors</text>
+    </description>
+  </grouping>
+  <grouping name="lldp-neighbor-state">
+    <description>
+      <text>Operational state data for LLDP neighbors</text>
+    </description>
+    <leaf name="id">
+      <type name="string"/>
+      <description>
+        <text>System generated identifier for the neighbor on the
+interface.</text>
+      </description>
+    </leaf>
+    <leaf name="age">
+      <type name="uint64"/>
+      <units name="seconds"/>
+      <description>
+        <text>Age since discovery</text>
+      </description>
+    </leaf>
+    <leaf name="last-update">
+      <type name="int64"/>
+      <description>
+        <text>Seconds since last update received.</text>
+      </description>
+    </leaf>
+    <leaf name="ttl">
+      <type name="uint16"/>
+      <units name="seconds"/>
+      <description>
+        <text>The time-to-live (TTL) is a mandatory TLV which indicates
+how long information from the neighbor should be considered
+valid.</text>
+      </description>
+    </leaf>
+    <leaf name="port-id">
+      <type name="string"/>
+      <description>
+        <text>The Port ID is a mandatory TLV which identifies the port
+component of the endpoint identifier associated with the
+transmitting LLDP agent. If the specified port is an IEEE
+802.3 Repeater port, then this TLV is optional.</text>
+      </description>
+    </leaf>
+    <leaf name="port-id-type">
+      <type name="oc-lldp-types:port-id-type"/>
+      <description>
+        <text>This field identifies the format and source of the port
+identifier string. It is an enumerator defined by the
+PtopoPortIdType object from RFC2922.</text>
+      </description>
+    </leaf>
+    <leaf name="port-description">
+      <type name="string"/>
+      <description>
+        <text>The binary string containing the actual port identifier for
+the port which this LLDP PDU was transmitted. The source and
+format of this field is defined by PtopoPortId from
+RFC2922.</text>
+      </description>
+    </leaf>
+    <leaf name="management-address">
+      <type name="string"/>
+      <description>
+        <text>The Management Address is a mandatory TLV which identifies a
+network address associated with the local LLDP agent, which
+can be used to reach the agent on the port identified in the
+Port ID TLV.</text>
+      </description>
+    </leaf>
+    <leaf name="management-address-type">
+      <type name="string"/>
+      <description>
+        <text>The enumerated value for the network address type
+identified in this TLV. This enumeration is defined in the
+'Assigned Numbers' RFC [RFC3232] and the
+ianaAddressFamilyNumbers object.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-capabilities-config">
+    <description>
+      <text>Configuration data for LLDP capabilities</text>
+    </description>
+  </grouping>
+  <grouping name="lldp-capabilities-state">
+    <description>
+      <text>Operational state data for LLDP capabilities</text>
+    </description>
+    <leaf name="name">
+      <type name="identityref">
+        <base name="oc-lldp-types:LLDP_SYSTEM_CAPABILITY"/>
+      </type>
+      <description>
+        <text>Name of the system capability advertised by the neighbor.
+Capabilities are represented in a bitmap that defines the
+primary functions of the system. The capabilities are
+defined in IEEE 802.1AB.</text>
+      </description>
+    </leaf>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <description>
+        <text>Indicates whether the corresponding system capability is
+enabled on the neighbor.</text>
+      </description>
+      <reference>
+        <text>Sec 8.5.8.2 of IEEE 802.1AB-2009</text>
+      </reference>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-capabilities-top">
+    <description>
+      <text>Top-level grouping for LLDP capabilities</text>
+    </description>
+    <container name="capabilities">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of LLDP capabilities</text>
+      </description>
+      <list name="capability">
+        <key value="name"/>
+        <description>
+          <text>List of LLDP system capabilities advertised by the
+neighbor</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../state/name"/>
+          </type>
+          <description>
+            <text>Reference to capabilities list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for LLDP capabilities</text>
+          </description>
+          <uses name="lldp-capabilities-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for LLDP capabilities</text>
+          </description>
+          <uses name="lldp-capabilities-config"/>
+          <uses name="lldp-capabilities-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="lldp-custom-tlv-config">
+    <description>
+      <text>Configuration data for custom LLDP TLVs</text>
+    </description>
+  </grouping>
+  <grouping name="lldp-custom-tlv-state">
+    <description>
+      <text>Operational state data for custom LLDP TLVs</text>
+    </description>
+    <leaf name="type">
+      <type name="int32"/>
+      <description>
+        <text>The integer value identifying the type of information
+contained in the value field.</text>
+      </description>
+    </leaf>
+    <leaf name="oui">
+      <type name="string"/>
+      <description>
+        <text>The organizationally unique identifier field shall contain
+the organization's OUI as defined in Clause 9 of IEEE Std
+802. The high-order octet is 0 and the low-order 3 octets
+are the SMI Network Management Private Enterprise Code of
+the Vendor in network byte order, as defined in the
+'Assigned Numbers' RFC [RFC3232].</text>
+      </description>
+    </leaf>
+    <leaf name="oui-subtype">
+      <type name="string"/>
+      <description>
+        <text>The organizationally defined subtype field shall contain a
+unique subtype value assigned by the defining organization.</text>
+      </description>
+    </leaf>
+    <leaf name="value">
+      <type name="binary"/>
+      <description>
+        <text>A variable-length octet-string containing the
+instance-specific information for this TLV.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-custom-tlv-top">
+    <description>
+      <text>Top-level grouping for custom LLDP TLVs</text>
+    </description>
+    <container name="custom-tlvs">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of custom TLVs from a
+neighbor</text>
+      </description>
+      <list name="tlv">
+        <key value="type oui oui-subtype"/>
+        <description>
+          <text>List of custom LLDP TLVs from a neighbor</text>
+        </description>
+        <leaf name="type">
+          <type name="leafref">
+            <path value="../state/type"/>
+          </type>
+          <description>
+            <text>Reference to type list key</text>
+          </description>
+        </leaf>
+        <leaf name="oui">
+          <type name="leafref">
+            <path value="../state/oui"/>
+          </type>
+          <description>
+            <text>Reference to oui list key</text>
+          </description>
+        </leaf>
+        <leaf name="oui-subtype">
+          <type name="leafref">
+            <path value="../state/oui-subtype"/>
+          </type>
+          <description>
+            <text>Reference to oui-subtype list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data </text>
+          </description>
+          <uses name="lldp-custom-tlv-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data </text>
+          </description>
+          <uses name="lldp-custom-tlv-config"/>
+          <uses name="lldp-custom-tlv-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="lldp-neighbor-top">
+    <description>
+      <text>Top-level grouping for the LLDP neighbor list</text>
+    </description>
+    <container name="neighbors">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of LLDP neighbors on an
+interface</text>
+      </description>
+      <list name="neighbor">
+        <key value="id"/>
+        <description>
+          <text>List of LLDP neighbors</text>
+        </description>
+        <leaf name="id">
+          <type name="leafref">
+            <path value="../state/id"/>
+          </type>
+          <description>
+            <text> </text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data </text>
+          </description>
+          <uses name="lldp-neighbor-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data </text>
+          </description>
+          <uses name="lldp-system-info-config"/>
+          <uses name="lldp-system-info-state"/>
+          <uses name="lldp-neighbor-config"/>
+          <uses name="lldp-neighbor-state"/>
+        </container>
+        <uses name="lldp-custom-tlv-top"/>
+        <uses name="lldp-capabilities-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="lldp-interface-config">
+    <description>
+      <text>Configuration data for LLDP on each interface</text>
+    </description>
+    <leaf name="name">
+      <type name="oc-if:base-interface-ref"/>
+      <description>
+        <text>Reference to the LLDP Ethernet interface</text>
+      </description>
+    </leaf>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Enable or disable the LLDP protocol on the interface.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="lldp-interface-state">
+    <description>
+      <text>Operational state data for LLDP on each interface</text>
+    </description>
+    <container name="counters">
+      <description>
+        <text>LLDP counters on each interface</text>
+      </description>
+      <uses name="lldp-interface-counters"/>
+    </container>
+  </grouping>
+  <grouping name="lldp-interface-top">
+    <description>
+      <text>Top-level grouping </text>
+    </description>
+    <container name="interfaces">
+      <description>
+        <text>Enclosing container </text>
+      </description>
+      <list name="interface">
+        <key value="name"/>
+        <description>
+          <text>List of interfaces on which LLDP is enabled / available</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to the list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for LLDP on each interface</text>
+          </description>
+          <uses name="lldp-interface-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data </text>
+          </description>
+          <uses name="lldp-interface-config"/>
+          <uses name="lldp-interface-state"/>
+        </container>
+        <uses name="lldp-neighbor-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="lldp-config">
+    <description>
+      <text>Configuration data for global LLDP parameters</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>System level state of the LLDP protocol.</text>
+      </description>
+    </leaf>
+    <leaf name="hello-timer">
+      <type name="uint64"/>
+      <units name="seconds"/>
+      <description>
+        <text>System level hello timer for the LLDP protocol.</text>
+      </description>
+    </leaf>
+    <leaf-list name="suppress-tlv-advertisement">
+      <type name="identityref">
+        <base name="oc-lldp-types:LLDP_TLV"/>
+      </type>
+      <description>
+        <text>Indicates whether the local system should suppress the
+advertisement of particular TLVs with the LLDP PDUs that it
+transmits. Where a TLV type is specified within this list, it
+should not be included in any LLDP PDU transmitted by the
+local agent.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="lldp-state">
+    <description>
+      <text>Operational state data for global LLDP parameters</text>
+    </description>
+    <container name="counters">
+      <description>
+        <text>Global LLDP counters</text>
+      </description>
+      <uses name="lldp-global-counters"/>
+    </container>
+  </grouping>
+  <grouping name="lldp-top">
+    <description>
+      <text>Top-level grouping for LLDP model</text>
+    </description>
+    <container name="lldp">
+      <description>
+        <text>Top-level container for LLDP configuration and state data</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data </text>
+        </description>
+        <uses name="lldp-config"/>
+        <uses name="lldp-system-info-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data </text>
+        </description>
+        <uses name="lldp-config"/>
+        <uses name="lldp-system-info-config"/>
+        <uses name="lldp-system-info-state"/>
+        <uses name="lldp-state"/>
+      </container>
+      <uses name="lldp-interface-top"/>
+    </container>
+  </grouping>
+  <uses name="lldp-top"/>
+</module>

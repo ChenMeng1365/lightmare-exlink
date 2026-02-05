@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-clockmgr"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:clockmgr="http://www.zte.com.cn/zxr10/netconf/schema/rosng/clockmgr"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/clockmgr"/>
+  <prefix value="clockmgr"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe clock mgr.</text>
+  </description>
+  <revision date="2019-05-20">
+    <description>
+      <text>Add rpc:set-system-time.</text>
+    </description>
+  </revision>
+  <revision date="2017-10-23">
+    <description>
+      <text>Add clockmgr:/operation/clock/clock-time-set/utc;
+Add clockmgr:/state/clock-utc-time-get.</text>
+    </description>
+  </revision>
+  <revision date="2015-04-01">
+    <description>
+      <text>Add leaf:/clockmgr:/configuration/clock/summer-time/offset-sign</text>
+    </description>
+  </revision>
+  <revision date="2015-02-10">
+    <description>
+      <text>Modify the timezone and summer-time-lists from list to container.</text>
+    </description>
+  </revision>
+  <revision date="2014-05-07">
+    <description>
+      <text>Modify the descriptions for these containers lists and leafs:
+/clockmgr:configuration/clockmgr:clock/clockmgr:timezone-lists;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:abs-day/clockmgr:time-start;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:rec-week/clockmgr:week-start;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:rec-week/clockmgr:weekday-start;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:rec-week/clockmgr:time-start;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:rec-week/clockmgr:week-end;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:rec-week/clockmgr:weekday-end;
+/clockmgr:configuration/clockmgr:clock/clockmgr:summer-time-lists/clockmgr:summer-time/clockmgr:mode/clockmgr:rec-day/clockmgr:time-start;
+/clockmgr:operation/clockmgr:clock.</text>
+    </description>
+  </revision>
+  <revision date="2014-04-17">
+    <description>
+      <text>Modify the length for the name of timezone and the name of summer-time.</text>
+    </description>
+  </revision>
+  <revision date="2014-04-03">
+    <description>
+      <text>Add units for max-threshold and offset of summer-time.</text>
+    </description>
+  </revision>
+  <revision date="2014-03-10">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>The configuration of clock.</text>
+    </description>
+    <container name="clock">
+      <description>
+        <text>The node of clock.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>The node of clock global configuration.</text>
+        </description>
+        <leaf name="ntp-priority">
+          <description>
+            <text>NTP priority,the range is 1-10.</text>
+          </description>
+          <type name="uint8">
+            <range value="1..10"/>
+          </type>
+          <default value="9"/>
+        </leaf>
+        <leaf name="ptp-priority">
+          <description>
+            <text>PTP priority,the range is 1-10.</text>
+          </description>
+          <type name="uint8">
+            <range value="1..10"/>
+          </type>
+          <default value="10"/>
+        </leaf>
+        <leaf name="max-threshold">
+          <description>
+            <text>Maximum threshold of sync-clock offset.</text>
+          </description>
+          <type name="uint32">
+            <range value="500..86400000"/>
+          </type>
+          <units name="ms"/>
+        </leaf>
+      </container>
+      <container name="timezone">
+        <description>
+          <text>The configuration of time zone.</text>
+        </description>
+        <presence value="timezone"/>
+        <leaf name="name">
+          <description>
+            <text>Name of time zone.</text>
+          </description>
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="hour">
+          <description>
+            <text>Hours offset from UTC.</text>
+          </description>
+          <type name="int32">
+            <range value="-12..14"/>
+          </type>
+          <default value="0"/>
+        </leaf>
+        <leaf name="minute">
+          <description>
+            <text>Minutes offset from UTC.</text>
+          </description>
+          <type name="int32">
+            <range value="0..59"/>
+          </type>
+          <default value="0"/>
+        </leaf>
+      </container>
+      <container name="summer-time">
+        <description>
+          <text>The configuration of summer time.</text>
+        </description>
+        <presence value="summertime"/>
+        <leaf name="name">
+          <description>
+            <text>Name of summer time.</text>
+          </description>
+          <type name="string">
+            <length value="1..9"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="offset">
+          <description>
+            <text>Offset to add in minutes.</text>
+          </description>
+          <type name="uint16">
+            <range value="1..240"/>
+          </type>
+          <units name="minute"/>
+          <default value="60"/>
+        </leaf>
+        <leaf name="offset-sign">
+          <description>
+            <text>Offset sign.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="positive">
+              <value value="0"/>
+              <description>
+                <text>The offset sign is positive.</text>
+              </description>
+            </enum>
+            <enum name="negative">
+              <value value="1"/>
+              <description>
+                <text>The offset sign is negative.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="positive"/>
+          <ncd:revise-date date="2015-04-01"/>
+        </leaf>
+        <choice name="mode">
+          <description>
+            <text>The mode of summer time configuration.</text>
+          </description>
+          <case name="abs-day">
+            <description>
+              <text>The mode of absolute date:Year-Month-Day-Time.</text>
+            </description>
+            <container name="abs-day">
+              <description>
+                <text>The mode of absolute date:Year-Month-Day-Time.</text>
+              </description>
+              <leaf name="year-start">
+                <description>
+                  <text>Year to start.</text>
+                </description>
+                <type name="uint16">
+                  <range value="2000..2037"/>
+                </type>
+              </leaf>
+              <leaf name="month-start">
+                <description>
+                  <text>Month to start.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..12"/>
+                </type>
+              </leaf>
+              <leaf name="day-start">
+                <description>
+                  <text>Day to start.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..31"/>
+                </type>
+              </leaf>
+              <leaf name="time-start">
+                <description>
+                  <text>Time to start.</text>
+                </description>
+                <type name="ncd:summer-clock"/>
+              </leaf>
+              <leaf name="year-end">
+                <description>
+                  <text>Year to end.</text>
+                </description>
+                <type name="uint16">
+                  <range value="2000..2037"/>
+                </type>
+              </leaf>
+              <leaf name="month-end">
+                <description>
+                  <text>Month to end.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..12"/>
+                </type>
+              </leaf>
+              <leaf name="day-end">
+                <description>
+                  <text>Day to end.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..31"/>
+                </type>
+              </leaf>
+              <leaf name="time-end">
+                <description>
+                  <text>Time to end.</text>
+                </description>
+                <type name="ncd:summer-clock"/>
+              </leaf>
+            </container>
+          </case>
+          <case name="rec-week">
+            <description>
+              <text>The mode of recurring date:Month-Week-WeekDay-Time.</text>
+            </description>
+            <container name="rec-week">
+              <description>
+                <text>The mode of recurring date:Month-Week-WeekDay-Time.</text>
+              </description>
+              <leaf name="month-start">
+                <description>
+                  <text>Month to start.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..12"/>
+                </type>
+              </leaf>
+              <leaf name="week-start">
+                <description>
+                  <text>Week to start.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="1">
+                    <value value="1"/>
+                  </enum>
+                  <enum name="2">
+                    <value value="2"/>
+                  </enum>
+                  <enum name="3">
+                    <value value="3"/>
+                  </enum>
+                  <enum name="4">
+                    <value value="4"/>
+                  </enum>
+                  <enum name="5">
+                    <value value="5"/>
+                  </enum>
+                  <enum name="first">
+                    <value value="11"/>
+                  </enum>
+                  <enum name="last">
+                    <value value="15"/>
+                  </enum>
+                </type>
+              </leaf>
+              <leaf name="weekday-start">
+                <description>
+                  <text>Weekday to start.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..7"/>
+                </type>
+              </leaf>
+              <leaf name="time-start">
+                <description>
+                  <text>Time to start.</text>
+                </description>
+                <type name="ncd:summer-clock"/>
+              </leaf>
+              <leaf name="month-end">
+                <description>
+                  <text>Month to end.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..12"/>
+                </type>
+              </leaf>
+              <leaf name="week-end">
+                <description>
+                  <text>Week to end.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="1">
+                    <value value="1"/>
+                  </enum>
+                  <enum name="2">
+                    <value value="2"/>
+                  </enum>
+                  <enum name="3">
+                    <value value="3"/>
+                  </enum>
+                  <enum name="4">
+                    <value value="4"/>
+                  </enum>
+                  <enum name="5">
+                    <value value="5"/>
+                  </enum>
+                  <enum name="first">
+                    <value value="11"/>
+                  </enum>
+                  <enum name="last">
+                    <value value="15"/>
+                  </enum>
+                </type>
+              </leaf>
+              <leaf name="weekday-end">
+                <description>
+                  <text>Weekday to end.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..7"/>
+                </type>
+              </leaf>
+              <leaf name="time-end">
+                <description>
+                  <text>Time to end.</text>
+                </description>
+                <type name="ncd:summer-clock"/>
+              </leaf>
+            </container>
+          </case>
+          <case name="rec-day">
+            <description>
+              <text>The mode of recurring date:Month-Day-Time.</text>
+            </description>
+            <container name="rec-day">
+              <description>
+                <text>The mode of recurring date:Month-Day-Time.</text>
+              </description>
+              <leaf name="month-start">
+                <description>
+                  <text>Month to start.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..12"/>
+                </type>
+              </leaf>
+              <leaf name="day-start">
+                <description>
+                  <text>Day to start.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..31"/>
+                </type>
+              </leaf>
+              <leaf name="time-start">
+                <description>
+                  <text>Time to start.</text>
+                </description>
+                <type name="ncd:summer-clock"/>
+              </leaf>
+              <leaf name="month-end">
+                <description>
+                  <text>Month to end.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..12"/>
+                </type>
+              </leaf>
+              <leaf name="day-end">
+                <description>
+                  <text>Day to end.</text>
+                </description>
+                <type name="uint8">
+                  <range value="1..31"/>
+                </type>
+              </leaf>
+              <leaf name="time-end">
+                <description>
+                  <text>Time to end.</text>
+                </description>
+                <type name="ncd:summer-clock"/>
+              </leaf>
+            </container>
+          </case>
+        </choice>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>The operation of clock.</text>
+    </description>
+    <container name="clock">
+      <description>
+        <text>The node of clock.</text>
+      </description>
+      <leaf name="sync-threshold-switch">
+        <description>
+          <text>The switch for sync-clock threshold.</text>
+        </description>
+        <type name="uint8">
+          <range value="0"/>
+        </type>
+      </leaf>
+      <container name="clock-time-set">
+        <description>
+          <text>Set system time.</text>
+        </description>
+        <presence value="false"/>
+        <leaf name="date">
+          <description>
+            <text>Current date.</text>
+          </description>
+          <type name="ncd:date"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="time">
+          <description>
+            <text>Current time.</text>
+          </description>
+          <type name="ncd:time"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="utc">
+          <description>
+            <text>UTC flag.</text>
+          </description>
+          <type name="uint8">
+            <range value="0..1"/>
+          </type>
+          <default value="0"/>
+          <ncd:revise-date date="2017-10-23"/>
+        </leaf>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>The state of clock.</text>
+    </description>
+    <container name="clock-utc-time-get">
+      <description>
+        <text>Get system UTC time.</text>
+      </description>
+      <leaf name="date">
+        <description>
+          <text>Current date.</text>
+        </description>
+        <type name="ncd:date"/>
+      </leaf>
+      <leaf name="time">
+        <description>
+          <text>Current time.</text>
+        </description>
+        <type name="ncd:time"/>
+      </leaf>
+      <ncd:revise-date date="2017-10-23"/>
+    </container>
+    <container name="clock-time-get">
+      <description>
+        <text>Get system time.</text>
+      </description>
+      <leaf name="date">
+        <description>
+          <text>Current date.</text>
+        </description>
+        <type name="ncd:date"/>
+      </leaf>
+      <leaf name="time">
+        <description>
+          <text>Current time.</text>
+        </description>
+        <type name="ncd:time"/>
+      </leaf>
+    </container>
+  </container>
+  <rpc name="set-system-time">
+    <input>
+      <leaf name="new-time">
+        <config value="false"/>
+        <description>
+          <text>date-and-time.</text>
+        </description>
+        <type name="string"/>
+        <mandatory value="true"/>
+      </leaf>
+    </input>
+  </rpc>
+</module>

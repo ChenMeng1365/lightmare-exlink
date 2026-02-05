@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ospfv2-sr"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ospfv2-sr="urn:huawei:yang:huawei-ospfv2-sr"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ospfv2="urn:huawei:yang:huawei-ospfv2"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:sr="urn:huawei:yang:huawei-segment-routing"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:huawei:yang:huawei-ospfv2-sr"/>
+  <prefix value="ospfv2-sr"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-ospfv2">
+    <prefix value="ospfv2"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-segment-routing">
+    <prefix value="sr"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>OSPF segment routing management.</text>
+  </description>
+  <revision date="2020-06-17">
+    <description>
+      <text>Add leaf units.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-04">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-04">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="ospf"/>
+  <typedef name="lsp-trigger-type">
+    <type name="enumeration">
+      <enum name="ip-prefix">
+        <value value="0"/>
+        <description>
+          <text>Trigger IP prefix list for segment routing.</text>
+        </description>
+      </enum>
+      <enum name="none">
+        <value value="1"/>
+        <description>
+          <text>Do not trigger FECs for segment routing.</text>
+        </description>
+      </enum>
+      <enum name="host">
+        <value value="2"/>
+        <description>
+          <text>Trigger host FECs for segment routing.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Segment routing lsp trigger type.</text>
+    </description>
+  </typedef>
+  <typedef name="prefix-sid-type">
+    <type name="enumeration">
+      <enum name="absolute">
+        <value value="1"/>
+        <description>
+          <text>Absolute value.</text>
+        </description>
+      </enum>
+      <enum name="index">
+        <value value="2"/>
+        <description>
+          <text>Index.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Prefix SID type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/ospfv2:ospfv2/ospfv2:sites/ospfv2:site">
+    <description>
+      <text>OSPFv2 segment routing augment to OSPFv2.</text>
+    </description>
+    <container name="segment-routing">
+      <description>
+        <text>Configure segment routing.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <must condition="../enable='false' or (../../../../../sr:segment-routing/sr:enable='true' and ../../../../../ni:name='_public_' and ../../ospfv2:opaque='true')"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable MPLS on the segment routing forwarding plane.</text>
+        </description>
+      </leaf>
+      <container name="binding">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure segment routing prefix and SID mapping information.</text>
+        </description>
+        <leaf name="receive">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable segment routing prefix and SID mapping information receiving function.</text>
+          </description>
+        </leaf>
+        <leaf name="advertise">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable segment routing prefix and SID mapping information sending function.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="lsp-trigger">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure LSP trigger policy.</text>
+        </description>
+        <leaf name="type">
+          <type name="lsp-trigger-type"/>
+          <must condition="../type='ip-prefix' and ../ip-prefix or ../type!='ip-prefix'"/>
+          <default value="host"/>
+          <description>
+            <text>LSP trigger type.</text>
+          </description>
+        </leaf>
+        <leaf name="ip-prefix">
+          <when condition="../type='ip-prefix'"/>
+          <type name="leafref">
+            <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+          </type>
+          <description>
+            <text>IP prefix name.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+    <container name="srgbs">
+      <when condition="(../../../../sr:segment-routing/sr:enable='true' and ../../../../ni:name='_public_' and ../ospfv2:opaque='true')"/>
+      <description>
+        <text>List of segment routing global block (SRGB).</text>
+      </description>
+      <list name="srgb">
+        <key value="lower-bound upper-bound"/>
+        <max-elements value="1"/>
+        <description>
+          <text>Configure segment routing global block (SRGB).</text>
+        </description>
+        <leaf name="lower-bound">
+          <type name="uint32">
+            <range value="16..1048575"/>
+          </type>
+          <description>
+            <text>Start value of a segment routing global block (SRGB).</text>
+          </description>
+        </leaf>
+        <leaf name="upper-bound">
+          <type name="uint32">
+            <range value="16..1048575"/>
+          </type>
+          <description>
+            <text>End value of a segment routing global block (SRGB).</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="sr-avoid-micro-loop">
+      <when condition="../ospfv2-sr:segment-routing/ospfv2-sr:enable='true'"/>
+      <description>
+        <text>Configure OSPF SR avoid microloop.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable SR avoid microloop.</text>
+        </description>
+      </leaf>
+      <leaf name="rib-update-delay">
+        <type name="uint32">
+          <range value="1000..60000"/>
+        </type>
+        <units name="ms"/>
+        <default value="5000"/>
+        <description>
+          <text>Set the route delivery delay for SR avoid microloop.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="sr-mapping-servers">
+      <config value="false"/>
+      <description>
+        <text>List of segment-routing mapping-server informations.</text>
+      </description>
+      <list name="sr-mapping-server">
+        <key value="dest-ip mask-length adv-router-id area-id"/>
+        <description>
+          <text>Statistics of segment-routing mapping-server information.</text>
+        </description>
+        <leaf name="dest-ip">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Destination IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="mask-length">
+          <type name="uint8"/>
+          <description>
+            <text>Mask length.</text>
+          </description>
+        </leaf>
+        <leaf name="adv-router-id">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Advertisement router ID.</text>
+          </description>
+        </leaf>
+        <leaf name="area-id">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Area ID.</text>
+          </description>
+        </leaf>
+        <leaf name="sid">
+          <type name="uint32"/>
+          <description>
+            <text>SID value.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="sr-routings">
+      <config value="false"/>
+      <description>
+        <text>List of OSPF SR routing table.</text>
+      </description>
+      <list name="sr-routing">
+        <key value="dest-ip mask-length adv-router-id if-name ip-addr"/>
+        <description>
+          <text>Statistics of OSPF SR routing table.</text>
+        </description>
+        <leaf name="dest-ip">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Destination IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="mask-length">
+          <type name="uint32"/>
+          <description>
+            <text>Mask length.</text>
+          </description>
+        </leaf>
+        <leaf name="adv-router-id">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Advertisement router ID.</text>
+          </description>
+        </leaf>
+        <leaf name="if-name">
+          <type name="string">
+            <length value="1..64"/>
+          </type>
+          <description>
+            <text>Outgoing interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="ip-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Nexthop address of destination.</text>
+          </description>
+        </leaf>
+        <leaf name="area-id">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Area ID of destination.</text>
+          </description>
+        </leaf>
+        <leaf name="path-type">
+          <type name="string">
+            <length value="1..21"/>
+          </type>
+          <description>
+            <text>Destination path type.</text>
+          </description>
+        </leaf>
+        <leaf name="sr-in-label">
+          <type name="uint32"/>
+          <description>
+            <text>In label.</text>
+          </description>
+        </leaf>
+        <leaf name="sr-out-label">
+          <type name="uint32"/>
+          <description>
+            <text>Out label.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-sid">
+          <type name="uint32"/>
+          <description>
+            <text>Prefix SID.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-flag">
+          <type name="string">
+            <length value="1..20"/>
+          </type>
+          <description>
+            <text>Prefix SID flag.</text>
+          </description>
+        </leaf>
+        <leaf name="bak-if-name">
+          <type name="string">
+            <length value="1..64"/>
+          </type>
+          <description>
+            <text>Backup outgoing interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="bak-ip-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Backup nexthop address.</text>
+          </description>
+        </leaf>
+        <leaf name="bak-path-type">
+          <type name="uint8"/>
+          <description>
+            <text>Backup path type.</text>
+          </description>
+        </leaf>
+        <leaf name="adj-label-stack">
+          <type name="string">
+            <length value="1..512"/>
+          </type>
+          <description>
+            <text>The adjacency label stack from P to Q.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/ospfv2:ospfv2/ospfv2:sites/ospfv2:site/ospfv2:areas/ospfv2:area/ospfv2:interfaces/ospfv2:interface">
+    <description>
+      <text>Prefix SID augment to OSPF.</text>
+    </description>
+    <container name="prefix-sids">
+      <when condition="../../../../../ospfv2-sr:segment-routing/ospfv2-sr:enable='true' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/../ospfv2:name]/ifm:type='LoopBack'"/>
+      <description>
+        <text>List of prefix segment ID.</text>
+      </description>
+      <list name="prefix-sid">
+        <key value="algorithm"/>
+        <description>
+          <text>Configure prefix segment ID.</text>
+        </description>
+        <leaf name="algorithm">
+          <type name="uint32">
+            <range value="0"/>
+          </type>
+          <description>
+            <text>Prefix SID algorithm.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="prefix-sid-type"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Prefix segment ID type on the Loopback interface.</text>
+          </description>
+        </leaf>
+        <leaf name="label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Prefix segment ID label on the Loopback interface.</text>
+          </description>
+        </leaf>
+        <leaf name="node-flag">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the N flag on the Loopback interface.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>

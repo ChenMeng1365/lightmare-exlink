@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-vcluster"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vcluster="urn:huawei:yang:huawei-vcluster"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-vcluster"/>
+  <prefix value="vcluster"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Configuration and Information of IPRAN Virtual Cluster Access.</text>
+  </description>
+  <revision date="2020-07-11">
+    <description>
+      <text>Add private syntax to the keychain name.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-20">
+    <description>
+      <text>Fixed some problems.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-10">
+    <description>
+      <text>Fixed some nodes description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-13">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="virtual-cluster"/>
+  <typedef name="vc-role">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Default is no configuration.</text>
+        </description>
+      </enum>
+      <enum name="master">
+        <value value="1"/>
+        <description>
+          <text>Role of virtual cluster access is Master.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Role.</text>
+    </description>
+  </typedef>
+  <typedef name="run-state">
+    <type name="enumeration">
+      <enum name="init">
+        <value value="0"/>
+        <description>
+          <text>Run state of virtual cluster access router is intializtion.</text>
+        </description>
+      </enum>
+      <enum name="setup">
+        <value value="1"/>
+        <description>
+          <text>Run state of virtual cluster access router is setup.</text>
+        </description>
+      </enum>
+      <enum name="registing">
+        <value value="2"/>
+        <description>
+          <text>Run state of virtual cluster access router is registing.</text>
+        </description>
+      </enum>
+      <enum name="running">
+        <value value="3"/>
+        <description>
+          <text>Run state of virtual cluster access router is running.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>VC AP Status Info.</text>
+    </description>
+  </typedef>
+  <typedef name="graceful-restart-state">
+    <type name="enumeration">
+      <enum name="idle">
+        <value value="0"/>
+        <description>
+          <text>GR state of virtual cluster access routert is idle.</text>
+        </description>
+      </enum>
+      <enum name="reconnect">
+        <value value="1"/>
+        <description>
+          <text>GR state of virtual cluster access router is reconnect.</text>
+        </description>
+      </enum>
+      <enum name="recovery">
+        <value value="2"/>
+        <description>
+          <text>GR state of virtual cluster access router is recovery.</text>
+        </description>
+      </enum>
+      <enum name="aging">
+        <value value="3"/>
+        <description>
+          <text>GR state of virtual cluster access router is aging.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Graceful restart state.</text>
+    </description>
+  </typedef>
+  <container name="vcluster">
+    <description>
+      <text>Virtual Cluster Access.</text>
+    </description>
+    <container name="global">
+      <presence value="Enable/disable vcluster function."/>
+      <description>
+        <text>Configure basic function of virtural cluster.</text>
+      </description>
+      <leaf name="role">
+        <type name="vc-role"/>
+        <default value="default"/>
+        <description>
+          <text>Role of virtual cluster access. Include ap and master. Default is no configuration.</text>
+        </description>
+      </leaf>
+      <leaf name="admin-ip-address">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>Admin IP of virtual cluster access.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-name">
+        <when condition="../admin-ip-address"/>
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+        </type>
+        <must condition="../vpn-name='_public_'"/>
+        <default value="_public_"/>
+        <description>
+          <text>VPN name.</text>
+        </description>
+      </leaf>
+      <leaf name="keychain-name">
+        <type name="string">
+          <length value="0..47"/>
+          <pattern value="[^A-Z]+"/>
+        </type>
+        <ext:case-sensitivity value="lower-only"/>
+        <description>
+          <text>Keychain name.</text>
+        </description>
+      </leaf>
+      <leaf name="vc-min-tx-interval">
+        <when condition="../role='master'"/>
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <default value="50"/>
+        <description>
+          <text>The minimum transmit interval of VC BFD.</text>
+        </description>
+      </leaf>
+      <leaf name="vc-min-rx-interval">
+        <when condition="../role='master'"/>
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <default value="50"/>
+        <description>
+          <text>The minimum receive interval of VC BFD.</text>
+        </description>
+      </leaf>
+      <leaf name="vc-detect-multiplier">
+        <when condition="../role='master'"/>
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Detection multiplier of VC BFD.</text>
+        </description>
+      </leaf>
+      <leaf name="vc-bit-error-detection">
+        <when condition="../role='master'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VC bit error detection.</text>
+        </description>
+      </leaf>
+      <leaf name="vp-min-rx-interval">
+        <when condition="../role='master'"/>
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <default value="10"/>
+        <description>
+          <text>The minimum receive interval of VP BFD.</text>
+        </description>
+      </leaf>
+      <leaf name="vp-min-tx-interval">
+        <when condition="../role='master'"/>
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <default value="10"/>
+        <description>
+          <text>The minimum transmit interval of VP BFD.</text>
+        </description>
+      </leaf>
+      <leaf name="vp-detect-multiplier">
+        <when condition="../role='master'"/>
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Detection multiplier of VP BFD.</text>
+        </description>
+      </leaf>
+      <leaf name="vp-bit-error-detection">
+        <when condition="../role='master'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VP bit error detection.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+</module>

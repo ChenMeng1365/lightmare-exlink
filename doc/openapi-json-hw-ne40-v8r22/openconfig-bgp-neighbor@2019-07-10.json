@@ -1,0 +1,2512 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "openconfig-bgp-neighbor API generated from openconfig-bgp-neighbor@2019-07-10.yang",
+        "version": "1.0.0",
+        "title": "openconfig-bgp-neighbor API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "bgp-neighbor-config": {
+            "description": "Configuration parameters relating to a base BGP neighbor that\nare not also applicable to any other context\n(e.g., peer group)",
+            "properties": {
+                "peer-group": {
+                    "type": "string",
+                    "x-path": "../../../../peer-groups/peer-group/peer-group-name",
+                    "description": "The peer-group with which this neighbor is associated"
+                },
+                "neighbor-address": {
+                    "type": "string",
+                    "description": "Address of the BGP peer, either in IPv4 or IPv6"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whether the BGP peer is enabled. In cases where the\nenabled leaf is set to false, the local system should not\ninitiate connections to the neighbor, and should not\nrespond to TCP connections attempts from the neighbor. If\nthe state of the BGP session is ESTABLISHED at the time\nthat this leaf is set to false, the BGP session should be\nceased."
+                }
+            }
+        },
+        "bgp-neighbor-use-multiple-paths": {
+            "description": "Multipath configuration and state applicable to a BGP\nneighbor",
+            "properties": {
+                "use-multiple-paths": {
+                    "description": "Parameters related to the use of multiple-paths for the same\nNLRI when they are received only from this neighbor",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to multipath",
+                            "$ref": "#/definitions/bgp-common-use-multiple-paths-config"
+                        },
+                        "state": {
+                            "description": "State parameters relating to multipath",
+                            "$ref": "#/definitions/bgp-common-use-multiple-paths-config"
+                        },
+                        "ebgp": {
+                            "description": "Multipath configuration for eBGP",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to eBGP multipath",
+                                    "$ref": "#/definitions/bgp-common-use-multiple-paths-ebgp-as-options-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to eBGP multipath",
+                                    "$ref": "#/definitions/bgp-common-use-multiple-paths-ebgp-as-options-config"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-neighbor-state": {
+            "description": "Operational state parameters relating only to a BGP neighbor",
+            "properties": {
+                "session-state": {
+                    "type": "string",
+                    "enum": [
+                        "IDLE",
+                        "CONNECT",
+                        "ACTIVE",
+                        "OPENSENT",
+                        "OPENCONFIRM",
+                        "ESTABLISHED"
+                    ],
+                    "description": "Operational state of the BGP peer"
+                },
+                "last-established": {
+                    "type": "string",
+                    "description": "This timestamp indicates the time that the\nBGP session last transitioned in or out of the Established\nstate.  The value is the timestamp in nanoseconds relative to\nthe Unix Epoch (Jan 1, 1970 00:00:00 UTC).\n\nThe BGP session uptime can be computed by clients as the\ndifference between this value and the current time in UTC\n(assuming the session is in the ESTABLISHED state, per the\nsession-state leaf)."
+                },
+                "established-transitions": {
+                    "type": "string",
+                    "description": "Number of transitions to the Established state for\nthe neighbor session.  This value is analogous to the\nbgpPeerFsmEstablishedTransitions object from the standard\nBGP-4 MIB"
+                },
+                "supported-capabilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "BGP capabilities negotiated as supported with the peer"
+                    }
+                },
+                "messages": {
+                    "description": "Counters for BGP messages sent and received from the\nneighbor",
+                    "properties": {
+                        "sent": {
+                            "description": "Counters relating to BGP messages sent to the neighbor",
+                            "$ref": "#/definitions/bgp-neighbor-counters-message-types-state"
+                        },
+                        "received": {
+                            "description": "Counters for BGP messages received from the neighbor",
+                            "$ref": "#/definitions/bgp-neighbor-counters-message-types-state"
+                        }
+                    }
+                },
+                "queues": {
+                    "description": "Counters related to queued messages associated with the\nBGP neighbor",
+                    "$ref": "#/definitions/bgp-neighbor-queue-counters-state"
+                },
+                "dynamically-configured": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, the peer was configured dynamically\ndue to an inbound connection request from a specified source prefix\nwithin a dynamic-neighbor-prefix."
+                }
+            }
+        },
+        "bgp-neighbor-counters-message-types-state": {
+            "description": "Grouping of BGP message types, included for re-use\nacross counters",
+            "properties": {
+                "UPDATE": {
+                    "type": "string",
+                    "description": "Number of BGP UPDATE messages announcing, withdrawing\nor modifying paths exchanged."
+                },
+                "NOTIFICATION": {
+                    "type": "string",
+                    "description": "Number of BGP NOTIFICATION messages indicating an\nerror condition has occurred exchanged."
+                },
+                "last-notification-time": {
+                    "type": "string",
+                    "description": "This timestamp indicates the time that a NOTIFICATION\nmessage was sent or received on the peering session\n(based on whether this leaf is associated with\nsent or received messages).\n\nThe value is the timestamp in nanoseconds relative to\nthe Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                },
+                "last-notification-error-code": {
+                    "type": "string",
+                    "description": "Indicates the last BGP error sent or received on the peering\nsession (based on whether this leaf is associated with\nsent or received messages)."
+                },
+                "last-notification-error-subcode": {
+                    "type": "string",
+                    "description": "Indicates the last BGP error subcode sent or received on\nthe peering session (based on whether this leaf is associated\nwith sent or received messages)"
+                }
+            }
+        },
+        "bgp-neighbor-queue-counters-state": {
+            "description": "Counters relating to the message queues associated with the\nBGP peer",
+            "properties": {
+                "input": {
+                    "type": "string",
+                    "description": "The number of messages received from the peer currently\nqueued"
+                },
+                "output": {
+                    "type": "string",
+                    "description": "The number of messages queued to be sent to the peer"
+                }
+            }
+        },
+        "bgp-neighbor-transport-state": {
+            "description": "Operational state parameters relating to the transport session\nused for the BGP session",
+            "properties": {
+                "local-port": {
+                    "type": "string",
+                    "description": "Local TCP port being used for the TCP session supporting\nthe BGP session"
+                },
+                "remote-address": {
+                    "type": "string",
+                    "description": "Remote address to which the BGP session has been\nestablished"
+                },
+                "remote-port": {
+                    "type": "string",
+                    "description": "Remote port being used by the peer for the TCP session\nsupporting the BGP session"
+                }
+            }
+        },
+        "bgp-neighbor-error-handling-state": {
+            "description": "Operational state parameters relating to enhanced error\nerror handling for BGP",
+            "properties": {
+                "erroneous-update-messages": {
+                    "type": "string",
+                    "description": "The number of BGP UPDATE messages for which the\ntreat-as-withdraw mechanism has been applied based\non erroneous message contents"
+                }
+            }
+        },
+        "bgp-neighbor-timers-state": {
+            "description": "Operational state parameters relating to BGP timers associated\nwith the BGP session",
+            "properties": {
+                "negotiated-hold-time": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "The negotiated hold-time for the BGP session"
+                }
+            }
+        },
+        "bgp-neighbor-afi-safi-graceful-restart-state": {
+            "description": "Operational state variables relating to the graceful-restart\nmechanism on a per-AFI-SAFI basis",
+            "properties": {
+                "received": {
+                    "type": "boolean",
+                    "description": "This leaf indicates whether the neighbor advertised the\nability to support graceful-restart for this AFI-SAFI"
+                },
+                "advertised": {
+                    "type": "boolean",
+                    "description": "This leaf indicates whether the ability to support\ngraceful-restart has been advertised to the peer"
+                }
+            }
+        },
+        "bgp-neighbor-graceful-restart-state": {
+            "description": "Operational state information relevant to graceful restart\nfor BGP",
+            "properties": {
+                "peer-restart-time": {
+                    "type": "string",
+                    "description": "The period of time (advertised by the peer) that\nthe peer expects a restart of a BGP session to\ntake"
+                },
+                "peer-restarting": {
+                    "type": "boolean",
+                    "description": "This flag indicates whether the remote neighbor is currently\nin the process of restarting, and hence received routes are\ncurrently stale"
+                },
+                "local-restarting": {
+                    "type": "boolean",
+                    "description": "This flag indicates whether the local neighbor is currently\nrestarting. The flag is unset after all NLRI have been\nadvertised to the peer, and the End-of-RIB (EOR) marker has\nbeen unset"
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "HELPER_ONLY",
+                        "BILATERAL",
+                        "REMOTE_HELPER"
+                    ],
+                    "description": "Ths leaf indicates the mode of operation of BGP graceful\nrestart with the peer"
+                }
+            }
+        },
+        "bgp-neighbor-afi-safi-state": {
+            "description": "Operational state parameters relating to an individual AFI,\nSAFI for a neighbor",
+            "properties": {
+                "active": {
+                    "type": "boolean",
+                    "description": "This value indicates whether a particular AFI-SAFI has\nbeen succesfully negotiated with the peer. An AFI-SAFI\nmay be enabled in the current running configuration, but a\nsession restart may be required in order to negotiate the new\ncapability."
+                },
+                "prefixes": {
+                    "description": "Prefix counters for the BGP session",
+                    "properties": {
+                        "received": {
+                            "type": "string",
+                            "description": "The number of prefixes that are received from the\nneighbor after applying any policies. This count is the\nnumber of prefixes present in the post-policy Adj-RIB-In\nfor the neighbor"
+                        },
+                        "received-pre-policy": {
+                            "type": "string",
+                            "description": "The number of prefixes that are received from the\nneighbor before applying any policies. This count is\nthe number of prefixes present in the pre-policy\nAdj-RIB-In for the neighbor"
+                        },
+                        "sent": {
+                            "type": "string",
+                            "description": "The number of prefixes that are advertised to the\nneighbor after applying any policies. This count is\nthe number of prefixes present in the post-policy\nAdj-RIB-Out for the neighbor"
+                        },
+                        "installed": {
+                            "type": "string",
+                            "description": "The number of prefices received from the neighbor that\nare installed in the network instance RIB and actively used\nfor forwarding.\n\nRoutes that are actively used for forwarding are\ndefined to be those that:\n- are selected, after the application of policies, to be\n  included in the Adj-RIB-In-Post, AND\n- are selected by best path selection and hence installed\n  in the Loc-RIB (either as the only route, or as part of\n  a multipath set, AND\n- are selected, after the application of protocol\n  preferences (e.g., administrative distance) as the\n  route to be used by the system's RIB"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-neighbor-afi-safi-list": {
+            "description": "List of address-families associated with the BGP neighbor",
+            "properties": {
+                "afi-safi": {
+                    "description": "AFI,SAFI configuration available for the\nneighbour or group",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/bgp-common-structure-neighbor-group-add-paths"
+                            },
+                            {
+                                "$ref": "#/definitions/bgp-common-mp-all-afi-safi-list-contents"
+                            },
+                            {
+                                "$ref": "#/definitions/bgp-neighbor-use-multiple-paths"
+                            },
+                            {
+                                "properties": {
+                                    "afi-safi-name": {
+                                        "type": "string",
+                                        "x-path": "../config/afi-safi-name",
+                                        "description": "Reference to the AFI-SAFI name used as a key\nfor the AFI-SAFI list"
+                                    },
+                                    "config": {
+                                        "description": "Configuration parameters for the AFI-SAFI",
+                                        "$ref": "#/definitions/bgp-common-mp-afi-safi-config"
+                                    },
+                                    "state": {
+                                        "description": "State information relating to the AFI-SAFI",
+                                        "$ref": "#/definitions/bgp-neighbor-afi-safi-state"
+                                    },
+                                    "graceful-restart": {
+                                        "description": "Parameters relating to BGP graceful-restart",
+                                        "properties": {
+                                            "config": {
+                                                "description": "Configuration options for BGP graceful-restart",
+                                                "$ref": "#/definitions/bgp-common-mp-afi-safi-graceful-restart-config"
+                                            },
+                                            "state": {
+                                                "description": "State information for BGP graceful-restart",
+                                                "$ref": "#/definitions/bgp-neighbor-afi-safi-graceful-restart-state"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "afi-safi-name"
+                }
+            }
+        },
+        "bgp-neighbor-base": {
+            "description": "Parameters related to a BGP neighbor",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-logging-options"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-ebgp-multihop"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-route-reflector"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-as-path-options"
+                },
+                {
+                    "$ref": "#/definitions/bgp-neighbor-use-multiple-paths"
+                },
+                {
+                    "$ref": "#/definitions/apply-policy-group"
+                },
+                {
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to the BGP neighbor or\ngroup",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-config"
+                        },
+                        "state": {
+                            "description": "State information relating to the BGP neighbor",
+                            "$ref": "#/definitions/bgp-neighbor-state"
+                        },
+                        "timers": {
+                            "description": "Timers related to a BGP neighbor",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to timers used for the\nBGP neighbor",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-timers-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to the timers used for the BGP\nneighbor",
+                                    "$ref": "#/definitions/bgp-neighbor-timers-state"
+                                }
+                            }
+                        },
+                        "transport": {
+                            "description": "Transport session parameters for the BGP neighbor",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to the transport\nsession(s) used for the BGP neighbor",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-transport-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to the transport session(s)\nused for the BGP neighbor",
+                                    "$ref": "#/definitions/bgp-neighbor-transport-state"
+                                }
+                            }
+                        },
+                        "error-handling": {
+                            "description": "Error handling parameters used for the BGP neighbor or\ngroup",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters enabling or modifying the\nbehavior or enhanced error handling mechanisms for the BGP\nneighbor",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-error-handling-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to enhanced error handling\nmechanisms for the BGP neighbor",
+                                    "$ref": "#/definitions/bgp-neighbor-error-handling-state"
+                                }
+                            }
+                        },
+                        "graceful-restart": {
+                            "description": "Parameters relating the graceful restart mechanism for BGP",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to graceful-restart",
+                                    "$ref": "#/definitions/bgp-common-graceful-restart-config"
+                                },
+                                "state": {
+                                    "description": "State information associated with graceful-restart",
+                                    "$ref": "#/definitions/bgp-neighbor-graceful-restart-state"
+                                }
+                            }
+                        },
+                        "afi-safis": {
+                            "description": "Per-address-family configuration parameters associated with\nthe neighbor",
+                            "$ref": "#/definitions/bgp-neighbor-afi-safi-list"
+                        }
+                    }
+                }
+            ]
+        },
+        "bgp-neighbor-list": {
+            "description": "The list of BGP neighbors",
+            "properties": {
+                "neighbor": {
+                    "description": "List of BGP neighbors configured on the local system,\nuniquely identified by peer IPv[46] address",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/bgp-neighbor-base"
+                            },
+                            {
+                                "properties": {
+                                    "neighbor-address": {
+                                        "type": "string",
+                                        "x-path": "../config/neighbor-address",
+                                        "description": "Reference to the address of the BGP neighbor used as\na key in the neighbor list"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "neighbor-address"
+                }
+            }
+        },
+        "bgp-common-neighbor-group-timers-config": {
+            "description": "Config parameters related to timers associated with the BGP\npeer",
+            "properties": {
+                "connect-retry": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Time interval in seconds between attempts to establish a\nsession with the peer."
+                },
+                "hold-time": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Time interval in seconds that a BGP session will be\nconsidered active in the absence of keepalive or other\nmessages from the peer.  The hold-time is typically\nset to 3x the keepalive-interval."
+                },
+                "keepalive-interval": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Time interval in seconds between transmission of keepalive\nmessages to the neighbor.  Typically set to 1/3 the\nhold-time."
+                },
+                "minimum-advertisement-interval": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Minimum time which must elapse between subsequent UPDATE\nmessages relating to a common set of NLRI being transmitted\nto a peer. This timer is referred to as\nMinRouteAdvertisementIntervalTimer by RFC 4721 and serves to\nreduce the number of UPDATE messages transmitted when a\nparticular set of NLRI exhibit instability."
+                }
+            }
+        },
+        "bgp-common-neighbor-group-config": {
+            "description": "Neighbor level configuration items.",
+            "properties": {
+                "peer-as": {
+                    "type": "string",
+                    "description": "AS number of the peer."
+                },
+                "local-as": {
+                    "type": "string",
+                    "description": "The local autonomous system number that is to be used\nwhen establishing sessions with the remote peer or peer\ngroup, if this differs from the global BGP router\nautonomous system number."
+                },
+                "peer-type": {
+                    "type": "string",
+                    "enum": [
+                        "INTERNAL",
+                        "EXTERNAL"
+                    ],
+                    "description": "Explicitly designate the peer or peer group as internal\n(iBGP) or external (eBGP)."
+                },
+                "auth-password": {
+                    "type": "string",
+                    "description": "Configures an MD5 authentication password for use with\nneighboring devices."
+                },
+                "remove-private-as": {
+                    "type": "string",
+                    "description": "Remove private AS numbers from updates sent to peers - when\nthis leaf is not specified, the AS_PATH attribute should be\nsent to the peer unchanged"
+                },
+                "route-flap-damping": {
+                    "type": "boolean",
+                    "description": "Enable route flap damping."
+                },
+                "send-community": {
+                    "type": "string",
+                    "enum": [
+                        "STANDARD",
+                        "EXTENDED",
+                        "BOTH",
+                        "NONE"
+                    ],
+                    "description": "Specify which types of community should be sent to the\nneighbor or group. The default is to not send the\ncommunity attribute"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "An optional textual description (intended primarily for use\nwith a peer or group"
+                }
+            }
+        },
+        "bgp-common-neighbor-group-transport-config": {
+            "description": "Configuration parameters relating to the transport protocol\nused by the BGP session to the peer",
+            "properties": {
+                "tcp-mss": {
+                    "type": "string",
+                    "description": "Sets the max segment size for BGP TCP sessions."
+                },
+                "mtu-discovery": {
+                    "type": "boolean",
+                    "description": "Turns path mtu discovery for BGP TCP sessions on (true)\nor off (false)"
+                },
+                "passive-mode": {
+                    "type": "boolean",
+                    "description": "Wait for peers to issue requests to open a BGP session,\nrather than initiating sessions from the local router."
+                },
+                "local-address": {
+                    "type": "string",
+                    "description": "Set the local IP (either IPv4 or IPv6) address to use\nfor the session when sending BGP update messages.  This\nmay be expressed as either an IP address or reference\nto the name of an interface."
+                }
+            }
+        },
+        "bgp-common-neighbor-group-error-handling-config": {
+            "description": "Configuration parameters relating to enhanced error handling\nbehaviours for BGP",
+            "properties": {
+                "treat-as-withdraw": {
+                    "type": "boolean",
+                    "description": "Specify whether erroneous UPDATE messages for which the\nNLRI can be extracted are reated as though the NLRI is\nwithdrawn - avoiding session reset"
+                }
+            }
+        },
+        "bgp-common-neighbor-group-logging-options-config": {
+            "description": "Configuration parameters specifying the logging behaviour for\nBGP sessions to the peer",
+            "properties": {
+                "log-neighbor-state-changes": {
+                    "type": "boolean",
+                    "description": "Configure logging of peer state changes.  Default is\nto enable logging of peer state changes."
+                }
+            }
+        },
+        "bgp-common-neighbor-group-multihop-config": {
+            "description": "Configuration parameters specifying the multihop behaviour for\nBGP sessions to the peer",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "When enabled the referenced group or neighbors are permitted\nto be indirectly connected - including cases where the TTL\ncan be decremented between the BGP peers"
+                },
+                "multihop-ttl": {
+                    "type": "string",
+                    "description": "Time-to-live value to use when packets are sent to the\nreferenced group or neighbors and ebgp-multihop is enabled"
+                }
+            }
+        },
+        "bgp-common-neighbor-group-route-reflector-config": {
+            "description": "Configuration parameters determining whether the behaviour of\nthe local system when acting as a route-reflector",
+            "properties": {
+                "route-reflector-cluster-id": {
+                    "type": "string",
+                    "description": "route-reflector cluster id to use when local router is\nconfigured as a route reflector.  Commonly set at the group\nlevel, but allows a different cluster\nid to be set for each neighbor."
+                },
+                "route-reflector-client": {
+                    "type": "boolean",
+                    "description": "Configure the neighbor as a route reflector client."
+                }
+            }
+        },
+        "bgp-common-neighbor-group-as-path-options-config": {
+            "description": "Configuration parameters allowing manipulation of the AS_PATH\nattribute",
+            "properties": {
+                "allow-own-as": {
+                    "type": "string",
+                    "description": "Specify the number of occurrences of the local BGP speaker's\nAS that can occur within the AS_PATH before it is rejected."
+                },
+                "replace-peer-as": {
+                    "type": "boolean",
+                    "description": "Replace occurrences of the peer's AS in the AS_PATH\nwith the local autonomous system number"
+                },
+                "disable-peer-as-filter": {
+                    "type": "boolean",
+                    "description": "When set to true, the system advertises routes to a peer\neven if the peer's AS was in the AS path.  The default\nbehavior (false) suppresses advertisements to peers if\ntheir AS number is in the AS path of the route."
+                }
+            }
+        },
+        "bgp-common-neighbor-group-add-paths-config": {
+            "description": "Configuration parameters specfying whether the local system\nwill send or receive multiple paths using ADD_PATHS",
+            "properties": {
+                "receive": {
+                    "type": "boolean",
+                    "description": "Enable capability negotiation to receive multiple path\nadvertisements for an NLRI from the neighbor or group"
+                },
+                "send": {
+                    "type": "boolean",
+                    "description": "Enable capability negotiation to send multiple path\nadvertisements for an NLRI from the neighbor or group"
+                },
+                "send-max": {
+                    "type": "string",
+                    "description": "The maximum total number of paths to advertise to neighbors\nfor a single NLRI.  This includes the single best path as\nwell as additional paths advertised when add-paths is\nenabled."
+                },
+                "eligible-prefix-policy": {
+                    "type": "string",
+                    "x-path": "/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                    "description": "A reference to a routing policy which can be used to\nrestrict the prefixes for which add-paths is enabled"
+                }
+            }
+        },
+        "bgp-common-graceful-restart-config": {
+            "description": "Configuration parameters relating to BGP graceful restart.",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable or disable the graceful-restart capability."
+                },
+                "restart-time": {
+                    "type": "string",
+                    "description": "Estimated time (in seconds) for the local BGP speaker to\nrestart a session. This value is advertise in the graceful\nrestart BGP capability.  This is a 12-bit value, referred to\nas Restart Time in RFC4724.  Per RFC4724, the suggested\ndefault value is <= the hold-time value."
+                },
+                "stale-routes-time": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "An upper-bound on the time thate stale routes will be\nretained by a router after a session is restarted. If an\nEnd-of-RIB (EOR) marker is received prior to this timer\nexpiring stale-routes will be flushed upon its receipt - if\nno EOR is received, then when this timer expires stale paths\nwill be purged. This timer is referred to as the\nSelection_Deferral_Timer in RFC4724"
+                },
+                "helper-only": {
+                    "type": "boolean",
+                    "description": "Enable graceful-restart in helper mode only. When this\nleaf is set, the local system does not retain forwarding\nits own state during a restart, but supports procedures\nfor the receiving speaker, as defined in RFC4724."
+                }
+            }
+        },
+        "bgp-common-use-multiple-paths-config": {
+            "description": "Generic configuration options relating to use of multiple\npaths for a referenced AFI-SAFI, group or neighbor",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Whether the use of multiple paths for the same NLRI is\nenabled for the neighbor. This value is overridden by\nany more specific configuration value."
+                }
+            }
+        },
+        "bgp-common-use-multiple-paths-ebgp-as-options-config": {
+            "description": "Configuration parameters specific to eBGP multipath applicable\nto all contexts",
+            "properties": {
+                "allow-multiple-as": {
+                    "type": "boolean",
+                    "description": "Allow multipath to use paths from different neighbouring\nASes.  The default is to only consider multiple paths from\nthe same neighbouring AS."
+                }
+            }
+        },
+        "bgp-common-global-group-use-multiple-paths": {
+            "description": "Common grouping used for both global and groups which provides\nconfiguration and state parameters relating to use of multiple\npaths",
+            "properties": {
+                "use-multiple-paths": {
+                    "description": "Parameters related to the use of multiple paths for the\nsame NLRI",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to multipath",
+                            "$ref": "#/definitions/bgp-common-use-multiple-paths-config"
+                        },
+                        "state": {
+                            "description": "State parameters relating to multipath",
+                            "$ref": "#/definitions/bgp-common-use-multiple-paths-config"
+                        },
+                        "ebgp": {
+                            "description": "Multipath parameters for eBGP",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to eBGP multipath",
+                                    "$ref": "#/definitions/bgp-common-use-multiple-paths-ebgp-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to eBGP multipath",
+                                    "$ref": "#/definitions/bgp-common-use-multiple-paths-ebgp-config"
+                                }
+                            }
+                        },
+                        "ibgp": {
+                            "description": "Multipath parameters for iBGP",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to iBGP multipath",
+                                    "$ref": "#/definitions/bgp-common-use-multiple-paths-ibgp-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to iBGP multipath",
+                                    "$ref": "#/definitions/bgp-common-use-multiple-paths-ibgp-config"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-use-multiple-paths-ebgp-config": {
+            "description": "Configuration parameters relating to multipath for eBGP",
+            "properties": {
+                "allow-multiple-as": {
+                    "type": "boolean",
+                    "description": "Allow multipath to use paths from different neighbouring\nASes.  The default is to only consider multiple paths from\nthe same neighbouring AS."
+                },
+                "maximum-paths": {
+                    "type": "string",
+                    "description": "Maximum number of parallel paths to consider when using\nBGP multipath. The default is use a single path."
+                }
+            }
+        },
+        "bgp-common-use-multiple-paths-ibgp-config": {
+            "description": "Configuration parmaeters relating to multipath for iBGP",
+            "properties": {
+                "maximum-paths": {
+                    "type": "string",
+                    "description": "Maximum number of parallel paths to consider when using\niBGP multipath. The default is to use a single path"
+                }
+            }
+        },
+        "bgp-common-route-selection-options-config": {
+            "description": "Set of configuration options that govern best\npath selection.",
+            "properties": {
+                "always-compare-med": {
+                    "type": "boolean",
+                    "description": "Compare multi-exit discriminator (MED) value from\ndifferent ASes when selecting the best route.  The\ndefault behavior is to only compare MEDs for paths\nreceived from the same AS."
+                },
+                "ignore-as-path-length": {
+                    "type": "boolean",
+                    "description": "Ignore the AS path length when selecting the best path.\nThe default is to use the AS path length and prefer paths\nwith shorter length."
+                },
+                "external-compare-router-id": {
+                    "type": "boolean",
+                    "description": "When comparing similar routes received from external\nBGP peers, use the router-id as a criterion to select\nthe active path."
+                },
+                "advertise-inactive-routes": {
+                    "type": "boolean",
+                    "description": "Advertise inactive routes to external peers.  The\ndefault is to only advertise active routes."
+                },
+                "enable-aigp": {
+                    "type": "boolean",
+                    "description": "Flag to enable sending / receiving accumulated IGP\nattribute in routing updates"
+                },
+                "ignore-next-hop-igp-metric": {
+                    "type": "boolean",
+                    "description": "Ignore the IGP metric to the next-hop when calculating\nBGP best-path. The default is to select the route for\nwhich the metric to the next-hop is lowest"
+                }
+            }
+        },
+        "bgp-common-route-selection-options": {
+            "description": "Configuration and state relating to route selection options",
+            "properties": {
+                "route-selection-options": {
+                    "description": "Parameters relating to options for route selection",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to route selection\noptions",
+                            "$ref": "#/definitions/bgp-common-route-selection-options-config"
+                        },
+                        "state": {
+                            "description": "State information for the route selection options",
+                            "$ref": "#/definitions/bgp-common-route-selection-options-config"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-state": {
+            "description": "Grouping containing common counters relating to prefixes and\npaths",
+            "properties": {
+                "total-paths": {
+                    "type": "string",
+                    "description": "Total number of BGP paths within the context"
+                },
+                "total-prefixes": {
+                    "type": "string",
+                    "description": "Total number of BGP prefixes received within the context"
+                }
+            }
+        },
+        "bgp-common-mp-afi-safi-graceful-restart-config": {
+            "description": "BGP graceful restart parameters that apply on a per-AFI-SAFI\nbasis",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "This leaf indicates whether graceful-restart is enabled for\nthis AFI-SAFI"
+                }
+            }
+        },
+        "bgp-common-mp-afi-safi-config": {
+            "description": "Configuration parameters used for all BGP AFI-SAFIs",
+            "properties": {
+                "afi-safi-name": {
+                    "type": "string",
+                    "description": "AFI,SAFI"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "This leaf indicates whether the AFI-SAFI is\nenabled for the neighbour or group"
+                }
+            }
+        },
+        "bgp-common-mp-all-afi-safi-list-contents": {
+            "description": "A common grouping used for contents of the list that is used\nfor AFI-SAFI entries",
+            "$ref": "#/definitions/bgp-common-mp-srte-policy-ipv6-group"
+        },
+        "bgp-common-mp-ipv4-unicast-group": {
+            "description": "Group for IPv4 Unicast configuration options",
+            "properties": {
+                "ipv4-unicast": {
+                    "description": "IPv4 unicast configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-ipv4-ipv6-unicast-common"
+                }
+            }
+        },
+        "bgp-common-mp-ipv6-unicast-group": {
+            "description": "Group for IPv6 Unicast configuration options",
+            "properties": {
+                "ipv6-unicast": {
+                    "description": "IPv6 unicast configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-ipv4-ipv6-unicast-common"
+                }
+            }
+        },
+        "bgp-common-mp-ipv4-labeled-unicast-group": {
+            "description": "Group for IPv4 Labeled Unicast configuration options",
+            "properties": {
+                "ipv4-labeled-unicast": {
+                    "description": "IPv4 Labeled Unicast configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+                }
+            }
+        },
+        "bgp-common-mp-ipv6-labeled-unicast-group": {
+            "description": "Group for IPv6 Labeled Unicast configuration options",
+            "properties": {
+                "ipv6-labeled-unicast": {
+                    "description": "IPv6 Labeled Unicast configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+                }
+            }
+        },
+        "bgp-common-mp-l3vpn-ipv4-unicast-group": {
+            "description": "Group for IPv4 Unicast L3VPN configuration options",
+            "properties": {
+                "l3vpn-ipv4-unicast": {
+                    "description": "Unicast IPv4 L3VPN configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-l3vpn-ipv4-ipv6-unicast-common"
+                }
+            }
+        },
+        "bgp-common-mp-l3vpn-ipv6-unicast-group": {
+            "description": "Group for IPv6 Unicast L3VPN configuration options",
+            "properties": {
+                "l3vpn-ipv6-unicast": {
+                    "description": "Unicast IPv6 L3VPN configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-l3vpn-ipv4-ipv6-unicast-common"
+                }
+            }
+        },
+        "bgp-common-mp-l3vpn-ipv4-multicast-group": {
+            "description": "Group for IPv4 L3VPN multicast configuration options",
+            "properties": {
+                "l3vpn-ipv4-multicast": {
+                    "description": "Multicast IPv4 L3VPN configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-l3vpn-ipv4-ipv6-multicast-common"
+                }
+            }
+        },
+        "bgp-common-mp-l3vpn-ipv6-multicast-group": {
+            "description": "Group for IPv6 L3VPN multicast configuration options",
+            "properties": {
+                "l3vpn-ipv6-multicast": {
+                    "description": "Multicast IPv6 L3VPN configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-l3vpn-ipv4-ipv6-multicast-common"
+                }
+            }
+        },
+        "bgp-common-mp-l2vpn-vpls-group": {
+            "description": "Group for BGP-signalled VPLS configuration options",
+            "properties": {
+                "l2vpn-vpls": {
+                    "description": "BGP-signalled VPLS configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-l2vpn-common"
+                }
+            }
+        },
+        "bgp-common-mp-l2vpn-evpn-group": {
+            "description": "Group for BGP EVPN configuration options",
+            "properties": {
+                "l2vpn-evpn": {
+                    "description": "BGP EVPN configuration options",
+                    "$ref": "#/definitions/bgp-common-mp-l2vpn-common"
+                }
+            }
+        },
+        "bgp-common-mp-all-afi-safi-common": {
+            "description": "Grouping for configuration common to all AFI,SAFI",
+            "properties": {
+                "prefix-limit": {
+                    "description": "Configure the maximum number of prefixes that will be\naccepted from a peer",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to the prefix\nlimit for the AFI-SAFI",
+                            "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common-prefix-limit-config"
+                        },
+                        "state": {
+                            "description": "State information relating to the prefix-limit for the\nAFI-SAFI",
+                            "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common-prefix-limit-config"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-mp-ipv4-ipv6-unicast-common": {
+            "description": "Common configuration that is applicable for IPv4 and IPv6\nunicast",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+                },
+                {
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters for common IPv4 and IPv6 unicast\nAFI-SAFI options",
+                            "$ref": "#/definitions/bgp-common-mp-ipv4-ipv6-unicast-common-config"
+                        },
+                        "state": {
+                            "description": "State information for common IPv4 and IPv6 unicast\nparameters",
+                            "$ref": "#/definitions/bgp-common-mp-ipv4-ipv6-unicast-common-config"
+                        }
+                    }
+                }
+            ]
+        },
+        "bgp-common-mp-l3vpn-ipv4-ipv6-unicast-common": {
+            "description": "Common configuration applied across L3VPN for IPv4\nand IPv6",
+            "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+        },
+        "bgp-common-mp-l3vpn-ipv4-ipv6-multicast-common": {
+            "description": "Common configuration applied across L3VPN for IPv4\nand IPv6",
+            "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+        },
+        "bgp-common-mp-l2vpn-common": {
+            "description": "Common configuration applied across L2VPN address\nfamilies",
+            "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+        },
+        "bgp-common-mp-srte-policy-ipv4-group": {
+            "description": "Grouping for SR-TE for AFI 1",
+            "properties": {
+                "srte-policy-ipv4": {
+                    "description": "Configuration and operational state parameters relating to\nthe SR-TE Policy SAFI for IPv4 Unicast.",
+                    "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+                }
+            }
+        },
+        "bgp-common-mp-srte-policy-ipv6-group": {
+            "description": "Grouping for SR-TE for AFI 2",
+            "properties": {
+                "srte-policy-ipv6": {
+                    "description": "Configuration and operational state parameters relating to\nthe SR-TE Policy SAFI for IPv6 Unicast.",
+                    "$ref": "#/definitions/bgp-common-mp-all-afi-safi-common"
+                }
+            }
+        },
+        "bgp-common-mp-all-afi-safi-common-prefix-limit-config": {
+            "description": "Configuration parameters relating to prefix-limits for an\nAFI-SAFI",
+            "properties": {
+                "max-prefixes": {
+                    "type": "string",
+                    "description": "Maximum number of prefixes that will be accepted\nfrom the neighbour"
+                },
+                "prevent-teardown": {
+                    "type": "boolean",
+                    "description": "Do not tear down the BGP session when the maximum\nprefix limit is exceeded, but rather only log a\nwarning. The default of this leaf is false, such\nthat when it is not specified, the session is torn\ndown."
+                },
+                "warning-threshold-pct": {
+                    "type": "string",
+                    "description": "Threshold on number of prefixes that can be received\nfrom a neighbour before generation of warning messages\nor log entries. Expressed as a percentage of\nmax-prefixes"
+                },
+                "restart-timer": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Time interval in seconds after which the BGP session\nis re-established after being torn down due to exceeding\nthe max-prefix limit."
+                }
+            }
+        },
+        "bgp-common-mp-ipv4-ipv6-unicast-common-config": {
+            "description": "Common configuration parameters for IPv4 and IPv6 Unicast\naddress families",
+            "properties": {
+                "send-default-route": {
+                    "type": "boolean",
+                    "description": "If set to true, send the default-route to the neighbour(s)"
+                }
+            }
+        },
+        "bgp-peer-group-config": {
+            "description": "Configuration parameters relating to a base BGP peer group that\nare not also applicable to any other context (e.g., neighbor)",
+            "properties": {
+                "peer-group-name": {
+                    "type": "string",
+                    "description": "Name of the BGP peer-group"
+                }
+            }
+        },
+        "bgp-peer-group-afi-safi-list": {
+            "description": "List of address-families associated with the BGP peer-group",
+            "properties": {
+                "afi-safi": {
+                    "description": "AFI,SAFI configuration available for the\nneighbour or group",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/bgp-common-structure-neighbor-group-add-paths"
+                            },
+                            {
+                                "$ref": "#/definitions/bgp-common-global-group-use-multiple-paths"
+                            },
+                            {
+                                "$ref": "#/definitions/bgp-common-mp-all-afi-safi-list-contents"
+                            },
+                            {
+                                "properties": {
+                                    "afi-safi-name": {
+                                        "type": "string",
+                                        "x-path": "../config/afi-safi-name",
+                                        "description": "Reference to the AFI-SAFI name used as a key\nfor the AFI-SAFI list"
+                                    },
+                                    "config": {
+                                        "description": "Configuration parameters for the AFI-SAFI",
+                                        "$ref": "#/definitions/bgp-common-mp-afi-safi-config"
+                                    },
+                                    "state": {
+                                        "description": "State information relating to the AFI-SAFI",
+                                        "$ref": "#/definitions/bgp-common-mp-afi-safi-config"
+                                    },
+                                    "graceful-restart": {
+                                        "description": "Parameters relating to BGP graceful-restart",
+                                        "properties": {
+                                            "config": {
+                                                "description": "Configuration options for BGP graceful-restart",
+                                                "$ref": "#/definitions/bgp-common-mp-afi-safi-graceful-restart-config"
+                                            },
+                                            "state": {
+                                                "description": "State information for BGP graceful-restart",
+                                                "$ref": "#/definitions/bgp-common-mp-afi-safi-graceful-restart-config"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "afi-safi-name"
+                }
+            }
+        },
+        "bgp-peer-group-base": {
+            "description": "Parameters related to a BGP group",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-logging-options"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-ebgp-multihop"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-route-reflector"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-structure-neighbor-group-as-path-options"
+                },
+                {
+                    "$ref": "#/definitions/bgp-common-global-group-use-multiple-paths"
+                },
+                {
+                    "$ref": "#/definitions/apply-policy-group"
+                },
+                {
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to the BGP neighbor or\ngroup",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-config"
+                        },
+                        "state": {
+                            "description": "State information relating to the BGP peer-group",
+                            "$ref": "#/definitions/bgp-common-state"
+                        },
+                        "timers": {
+                            "description": "Timers related to a BGP peer-group",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to timers used for the\nBGP neighbor or peer group",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-timers-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to the timers used for the BGP\ngroup",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-timers-config"
+                                }
+                            }
+                        },
+                        "transport": {
+                            "description": "Transport session parameters for the BGP peer-group",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to the transport\nsession(s) used for the BGP neighbor or group",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-transport-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to the transport session(s)\nused for the BGP neighbor or group",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-transport-config"
+                                }
+                            }
+                        },
+                        "error-handling": {
+                            "description": "Error handling parameters used for the BGP peer-group",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters enabling or modifying the\nbehavior or enhanced error handling mechanisms for the BGP\ngroup",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-error-handling-config"
+                                },
+                                "state": {
+                                    "description": "State information relating to enhanced error handling\nmechanisms for the BGP group",
+                                    "$ref": "#/definitions/bgp-common-neighbor-group-error-handling-config"
+                                }
+                            }
+                        },
+                        "graceful-restart": {
+                            "description": "Parameters relating the graceful restart mechanism for BGP",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to graceful-restart",
+                                    "$ref": "#/definitions/bgp-common-graceful-restart-config"
+                                },
+                                "state": {
+                                    "description": "State information associated with graceful-restart",
+                                    "$ref": "#/definitions/bgp-common-graceful-restart-config"
+                                }
+                            }
+                        },
+                        "afi-safis": {
+                            "description": "Per-address-family configuration parameters associated with\nthegroup",
+                            "$ref": "#/definitions/bgp-peer-group-afi-safi-list"
+                        }
+                    }
+                }
+            ]
+        },
+        "bgp-peer-group-list": {
+            "description": "The list of BGP peer groups",
+            "properties": {
+                "peer-group": {
+                    "description": "List of BGP peer-groups configured on the local system -\nuniquely identified by peer-group name",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/bgp-peer-group-base"
+                            },
+                            {
+                                "properties": {
+                                    "peer-group-name": {
+                                        "type": "string",
+                                        "x-path": "../config/peer-group-name",
+                                        "description": "Reference to the name of the BGP peer-group used as a\nkey in the peer-group list"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "peer-group-name"
+                }
+            }
+        },
+        "bgp-common-structure-neighbor-group-logging-options": {
+            "description": "Structural grouping used to include error handling configuration and\nstate for both BGP neighbors and groups",
+            "properties": {
+                "logging-options": {
+                    "description": "Logging options for events related to the BGP neighbor or\ngroup",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters enabling or modifying logging\nfor events relating to the BGPgroup",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-logging-options-config"
+                        },
+                        "state": {
+                            "description": "State information relating to logging for the BGP neighbor\nor group",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-logging-options-config"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-structure-neighbor-group-ebgp-multihop": {
+            "description": "Structural grouping used to include eBGP multihop configuration and\nstate for both BGP neighbors and peer groups",
+            "properties": {
+                "ebgp-multihop": {
+                    "description": "eBGP multi-hop parameters for the BGPgroup",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to eBGP multihop for the\nBGP group",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-multihop-config"
+                        },
+                        "state": {
+                            "description": "State information for eBGP multihop, for the BGP neighbor\nor group",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-multihop-config"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-structure-neighbor-group-route-reflector": {
+            "description": "Structural grouping used to include route reflector configuration and\nstate for both BGP neighbors and peer groups",
+            "properties": {
+                "route-reflector": {
+                    "description": "Route reflector parameters for the BGPgroup",
+                    "properties": {
+                        "config": {
+                            "description": "Configuraton parameters relating to route reflection\nfor the BGPgroup",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-route-reflector-config"
+                        },
+                        "state": {
+                            "description": "State information relating to route reflection for the\nBGPgroup",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-route-reflector-config"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-structure-neighbor-group-as-path-options": {
+            "description": "Structural grouping used to include AS_PATH manipulation configuration\nand state for both BGP neighbors and peer groups",
+            "properties": {
+                "as-path-options": {
+                    "description": "AS_PATH manipulation parameters for the BGP neighbor or\ngroup",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to AS_PATH manipulation\nfor the BGP peer or group",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-as-path-options-config"
+                        },
+                        "state": {
+                            "description": "State information relating to the AS_PATH manipulation\nmechanisms for the BGP peer or group",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-as-path-options-config"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-common-structure-neighbor-group-add-paths": {
+            "description": "Structural grouping used to include ADD-PATHs configuration and state\nfor both BGP neighbors and peer groups",
+            "properties": {
+                "add-paths": {
+                    "description": "Parameters relating to the advertisement and receipt of\nmultiple paths for a single NLRI (add-paths)",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to ADD_PATHS",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-add-paths-config"
+                        },
+                        "state": {
+                            "description": "State information associated with ADD_PATHS",
+                            "$ref": "#/definitions/bgp-common-neighbor-group-add-paths-config"
+                        }
+                    }
+                }
+            }
+        },
+        "prefix-set-config": {
+            "description": "Configuration data for prefix sets used in policy\ndefinitions.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name / label of the prefix set -- this is used to\nreference the set in match conditions"
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "IPV4",
+                        "IPV6",
+                        "MIXED"
+                    ],
+                    "description": "Indicates the mode of the prefix set, in terms of which\naddress families (IPv4, IPv6, or both) are present.  The\nmode provides a hint, but the device must validate that all\nprefixes are of the indicated type, and is expected to\nreject the configuration if there is a discrepancy.  The\nMIXED mode may not be supported on devices that require\nprefix sets to be of only one address family."
+                }
+            }
+        },
+        "prefix-set-state": {
+            "description": "Operational state data for prefix sets"
+        },
+        "prefix-set-top": {
+            "description": "Top-level data definitions for a list of IPv4 or IPv6\nprefixes which are matched as part of a policy",
+            "properties": {
+                "prefix-sets": {
+                    "description": "Enclosing container ",
+                    "properties": {
+                        "prefix-set": {
+                            "description": "List of the defined prefix sets",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/prefix-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Reference to prefix name list key"
+                                            },
+                                            "config": {
+                                                "description": "Configuration data for prefix sets",
+                                                "$ref": "#/definitions/prefix-set-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data ",
+                                                "$ref": "#/definitions/prefix-set-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "prefix-config": {
+            "description": "Configuration data for a prefix definition",
+            "properties": {
+                "ip-prefix": {
+                    "type": "string",
+                    "description": "The prefix member in CIDR notation -- while the\nprefix may be either IPv4 or IPv6, most\nimplementations require all members of the prefix set\nto be the same address family.  Mixing address types in\nthe same prefix set is likely to cause an error."
+                },
+                "masklength-range": {
+                    "type": "string",
+                    "description": "Defines a range for the masklength, or 'exact' if\nthe prefix has an exact length.\n\nExample: 10.3.192.0/21 through 10.3.192.0/24 would be\nexpressed as prefix: 10.3.192.0/21,\nmasklength-range: 21..24.\n\nExample: 10.3.192.0/21 would be expressed as\nprefix: 10.3.192.0/21,\nmasklength-range: exact"
+                }
+            }
+        },
+        "prefix-state": {
+            "description": "Operational state data for prefix definitions"
+        },
+        "prefix-top": {
+            "description": "Top-level grouping for prefixes in a prefix list",
+            "properties": {
+                "prefixes": {
+                    "description": "Enclosing container for the list of prefixes in a policy\nprefix list",
+                    "properties": {
+                        "prefix": {
+                            "description": "List of prefixes in the prefix set",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "ip-prefix": {
+                                        "type": "string",
+                                        "x-path": "../config/ip-prefix",
+                                        "description": "Reference to the ip-prefix list key."
+                                    },
+                                    "masklength-range": {
+                                        "type": "string",
+                                        "x-path": "../config/masklength-range",
+                                        "description": "Reference to the masklength-range list key"
+                                    },
+                                    "config": {
+                                        "description": "Configuration data for prefix definition",
+                                        "$ref": "#/definitions/prefix-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for prefix definition",
+                                        "$ref": "#/definitions/prefix-state"
+                                    }
+                                }
+                            },
+                            "x-key": "ip-prefix masklength-range"
+                        }
+                    }
+                }
+            }
+        },
+        "neighbor-set-config": {
+            "description": "Configuration data for neighbor set definitions",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name / label of the neighbor set -- this is used to\nreference the set in match conditions"
+                },
+                "address": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "List of IP addresses in the neighbor set"
+                    }
+                }
+            }
+        },
+        "neighbor-set-state": {
+            "description": "Operational state data for neighbor set definitions"
+        },
+        "neighbor-set-top": {
+            "description": "Top-level data definition for a list of IPv4 or IPv6\nneighbors which can be matched in a routing policy",
+            "properties": {
+                "neighbor-sets": {
+                    "description": "Enclosing container for the list of neighbor set\ndefinitions",
+                    "properties": {
+                        "neighbor-set": {
+                            "description": "List of defined neighbor sets for use in policies.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "x-path": "../config/name",
+                                        "description": "Reference to the neighbor set name list key."
+                                    },
+                                    "config": {
+                                        "description": "Configuration data for neighbor sets.",
+                                        "$ref": "#/definitions/neighbor-set-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for neighbor sets.",
+                                        "$ref": "#/definitions/neighbor-set-state"
+                                    }
+                                }
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "tag-set-config": {
+            "description": "Configuration data for tag set definitions.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name / label of the tag set -- this is used to reference\nthe set in match conditions"
+                },
+                "tag-value": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Value of the tag set member"
+                    }
+                }
+            }
+        },
+        "tag-set-state": {
+            "description": "Operational state data for tag set definitions."
+        },
+        "tag-set-top": {
+            "description": "Top-level data definitions for a list of tags which can\nbe matched in policies",
+            "properties": {
+                "tag-sets": {
+                    "description": "Enclosing container for the list of tag sets.",
+                    "properties": {
+                        "tag-set": {
+                            "description": "List of tag set definitions.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "x-path": "../config/name",
+                                        "description": "Reference to the tag set name list key"
+                                    },
+                                    "config": {
+                                        "description": "Configuration data for tag sets",
+                                        "$ref": "#/definitions/tag-set-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for tag sets",
+                                        "$ref": "#/definitions/tag-set-state"
+                                    }
+                                }
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "generic-defined-sets": {
+            "description": "Data definitions for pre-defined sets of attributes used in\npolicy match conditions.  These sets are generic and can\nbe used in matching conditions in different routing\nprotocols.",
+            "$ref": "#/definitions/tag-set-top"
+        },
+        "match-set-options-group": {
+            "description": "Grouping containing options relating to how a particular set\nshould be matched",
+            "properties": {
+                "match-set-options": {
+                    "type": "string",
+                    "description": "Optional parameter that governs the behaviour of the\nmatch operation"
+                }
+            }
+        },
+        "match-set-options-restricted-group": {
+            "description": "Grouping for a restricted set of match operation modifiers",
+            "properties": {
+                "match-set-options": {
+                    "type": "string",
+                    "description": "Optional parameter that governs the behaviour of the\nmatch operation.  This leaf only supports matching on ANY\nmember of the set or inverting the match.  Matching on ALL is\nnot supported"
+                }
+            }
+        },
+        "match-interface-condition-config": {
+            "description": "Configuration data for interface match condition",
+            "$ref": "#/definitions/interface-ref-common"
+        },
+        "match-interface-condition-state": {
+            "description": "Operational state data for interface match condition"
+        },
+        "match-interface-condition-top": {
+            "description": "Top-level grouping for the interface match condition",
+            "properties": {
+                "match-interface": {
+                    "description": "Top-level container for interface match conditions",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for interface match conditions",
+                            "$ref": "#/definitions/match-interface-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for interface match conditions",
+                            "$ref": "#/definitions/match-interface-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "prefix-set-condition-config": {
+            "description": "Configuration data for prefix-set conditions",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/match-set-options-restricted-group"
+                },
+                {
+                    "properties": {
+                        "prefix-set": {
+                            "type": "string",
+                            "x-path": "../../../../../../../../defined-sets/prefix-sets/prefix-set/config/name",
+                            "description": "References a defined prefix set"
+                        }
+                    }
+                }
+            ]
+        },
+        "prefix-set-condition-state": {
+            "description": "Operational state data for prefix-set conditions"
+        },
+        "prefix-set-condition-top": {
+            "description": "Top-level grouping for prefix-set conditions",
+            "properties": {
+                "match-prefix-set": {
+                    "description": "Match a referenced prefix-set according to the logic\ndefined in the match-set-options leaf",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for a prefix-set condition",
+                            "$ref": "#/definitions/prefix-set-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for a prefix-set condition",
+                            "$ref": "#/definitions/prefix-set-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "neighbor-set-condition-config": {
+            "description": "Configuration data for neighbor-set conditions",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/match-set-options-restricted-group"
+                },
+                {
+                    "properties": {
+                        "neighbor-set": {
+                            "type": "string",
+                            "x-path": "../../../../../../../../defined-sets/neighbor-sets/neighbor-set/name",
+                            "description": "References a defined neighbor set"
+                        }
+                    }
+                }
+            ]
+        },
+        "neighbor-set-condition-state": {
+            "description": "Operational state data for neighbor-set conditions"
+        },
+        "neighbor-set-condition-top": {
+            "description": "Top-level grouping for neighbor-set conditions",
+            "properties": {
+                "match-neighbor-set": {
+                    "description": "Match a referenced neighbor set according to the logic\ndefined in the match-set-options-leaf",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data ",
+                            "$ref": "#/definitions/neighbor-set-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data ",
+                            "$ref": "#/definitions/neighbor-set-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "tag-set-condition-config": {
+            "description": "Configuration data for tag-set condition statements",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/match-set-options-restricted-group"
+                },
+                {
+                    "properties": {
+                        "tag-set": {
+                            "type": "string",
+                            "x-path": "../../../../../../../../defined-sets/tag-sets/tag-set/name",
+                            "description": "References a defined tag set"
+                        }
+                    }
+                }
+            ]
+        },
+        "tag-set-condition-state": {
+            "description": "Operational state data for tag-set condition statements"
+        },
+        "tag-set-condition-top": {
+            "description": "Top-level grouping for tag-set conditions",
+            "properties": {
+                "match-tag-set": {
+                    "description": "Match a referenced tag set according to the logic defined\nin the match-options-set leaf",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for tag-set conditions",
+                            "$ref": "#/definitions/tag-set-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data tag-set conditions",
+                            "$ref": "#/definitions/tag-set-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "generic-conditions": {
+            "description": "Condition statement definitions for checking\nmembership in a generic defined set",
+            "$ref": "#/definitions/tag-set-condition-top"
+        },
+        "generic-actions": {
+            "description": "Definitions for common set of policy action statements that\nmanage the disposition or control flow of the policy",
+            "properties": {
+                "policy-result": {
+                    "type": "string",
+                    "description": "Select the final disposition for the route, either\naccept or reject."
+                }
+            }
+        },
+        "policy-conditions-config": {
+            "description": "Configuration data for general policy conditions, i.e., those\nnot related to match-sets",
+            "properties": {
+                "call-policy": {
+                    "type": "string",
+                    "x-path": "../../../../../../../oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                    "description": "Applies the statements from the specified policy\ndefinition and then returns control the current\npolicy statement. Note that the called policy may\nitself call other policies (subject to\nimplementation limitations). This is intended to\nprovide a policy 'subroutine' capability.  The\ncalled policy should contain an explicit or a\ndefault route disposition that returns an\neffective true (accept-route) or false\n(reject-route), otherwise the behavior may be\nambiguous and implementation dependent"
+                },
+                "install-protocol-eq": {
+                    "type": "string",
+                    "description": "Condition to check the protocol / method used to install\nthe route into the local routing table"
+                }
+            }
+        },
+        "policy-conditions-state": {
+            "description": "Operational state data for policy conditions"
+        },
+        "policy-conditions-top": {
+            "description": "Top-level grouping for policy conditions",
+            "properties": {
+                "conditions": {
+                    "description": "Condition statements for the current policy statement",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/generic-conditions"
+                        },
+                        {
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration data for policy conditions",
+                                    "$ref": "#/definitions/policy-conditions-config"
+                                },
+                                "state": {
+                                    "description": "Operational state data for policy conditions",
+                                    "$ref": "#/definitions/policy-conditions-state"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "policy-statements-config": {
+            "description": "Configuration data for policy statements",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name of the policy statement"
+                }
+            }
+        },
+        "policy-statements-state": {
+            "description": "Operational state data for policy statements"
+        },
+        "policy-actions-config": {
+            "description": "Configuration data for policy actions",
+            "$ref": "#/definitions/generic-actions"
+        },
+        "policy-actions-state": {
+            "description": "Operational state data for policy actions"
+        },
+        "policy-actions-top": {
+            "description": "Top-level grouping for policy actions",
+            "properties": {
+                "actions": {
+                    "description": "Top-level container for policy action statements",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for policy actions",
+                            "$ref": "#/definitions/policy-actions-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for policy actions",
+                            "$ref": "#/definitions/policy-actions-state"
+                        }
+                    }
+                }
+            }
+        },
+        "policy-statements-top": {
+            "description": "Top-level grouping for the policy statements list",
+            "properties": {
+                "statements": {
+                    "description": "Enclosing container for policy statements",
+                    "properties": {
+                        "statement": {
+                            "description": "Policy statements group conditions and actions\nwithin a policy definition.  They are evaluated in\nthe order specified (see the description of policy\nevaluation at the top of this module.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/policy-conditions-top"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/policy-actions-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Reference to list key"
+                                            },
+                                            "config": {
+                                                "description": "Configuration data for policy statements",
+                                                "$ref": "#/definitions/policy-statements-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data for policy statements",
+                                                "$ref": "#/definitions/policy-statements-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "defined-sets-top": {
+            "description": "Top-level grouping for defined set definitions",
+            "properties": {
+                "defined-sets": {
+                    "description": "Predefined sets of attributes used in policy match\nstatements",
+                    "$ref": "#/definitions/generic-defined-sets"
+                }
+            }
+        },
+        "policy-definitions-config": {
+            "description": "Configuration data for policy definitions",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the top-level policy definition -- this name\nis used in references to the current policy"
+                }
+            }
+        },
+        "policy-definitions-state": {
+            "description": "Operational state data for policy definitions"
+        },
+        "policy-definitions-top": {
+            "description": "Top-level grouping for the policy definition list",
+            "properties": {
+                "policy-definitions": {
+                    "description": "Enclosing container for the list of top-level policy\n definitions",
+                    "properties": {
+                        "policy-definition": {
+                            "description": "List of top-level policy definitions, keyed by unique\nname.  These policy definitions are expected to be\nreferenced (by name) in policy chains specified in import\nor export configuration statements.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/policy-statements-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Reference to the list key"
+                                            },
+                                            "config": {
+                                                "description": "Configuration data for policy defintions",
+                                                "$ref": "#/definitions/policy-definitions-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data for policy definitions",
+                                                "$ref": "#/definitions/policy-definitions-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "routing-policy-top": {
+            "description": "Top level container for OpenConfig routing policy",
+            "properties": {
+                "routing-policy": {
+                    "description": "Top-level container for all routing policy configuration",
+                    "$ref": "#/definitions/policy-definitions-top"
+                }
+            }
+        },
+        "apply-policy-import-config": {
+            "description": "Configuration data for applying import policies",
+            "properties": {
+                "import-policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                        "description": "list of policy names in sequence to be applied on\nreceiving a routing update in the current context, e.g.,\nfor the current peer group, neighbor, address family,\netc."
+                    }
+                },
+                "default-import-policy": {
+                    "type": "string",
+                    "description": "explicitly set a default policy if no policy definition\nin the import policy chain is satisfied."
+                }
+            }
+        },
+        "apply-policy-export-config": {
+            "description": "Configuration data for applying export policies",
+            "properties": {
+                "export-policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                        "description": "list of policy names in sequence to be applied on\nsending a routing update in the current context, e.g.,\nfor the current peer group, neighbor, address family,\netc."
+                    }
+                },
+                "default-export-policy": {
+                    "type": "string",
+                    "description": "explicitly set a default policy if no policy definition\nin the export policy chain is satisfied."
+                }
+            }
+        },
+        "apply-policy-config": {
+            "description": "Configuration data for routing policies",
+            "$ref": "#/definitions/apply-policy-export-config"
+        },
+        "apply-policy-state": {
+            "description": "Operational state associated with routing policy"
+        },
+        "apply-policy-group": {
+            "description": "Top level container for routing policy applications. This\ngrouping is intended to be used in routing models where\nneeded.",
+            "properties": {
+                "apply-policy": {
+                    "description": "Anchor point for routing policies in the model.\nImport and export policies are with respect to the local\nrouting table, i.e., export (send) and import (receive),\ndepending on the context.",
+                    "properties": {
+                        "config": {
+                            "description": "Policy configuration data.",
+                            "$ref": "#/definitions/apply-policy-config"
+                        },
+                        "state": {
+                            "description": "Operational state for routing policy",
+                            "$ref": "#/definitions/apply-policy-state"
+                        }
+                    }
+                }
+            }
+        },
+        "interface-ref-common": {
+            "description": "Reference leafrefs to interface / subinterface",
+            "properties": {
+                "interface": {
+                    "type": "string",
+                    "x-path": "/oc-if:interfaces/oc-if:interface/oc-if:name",
+                    "description": "Reference to a base interface.  If a reference to a\nsubinterface is required, this leaf must be specified\nto indicate the base interface."
+                },
+                "subinterface": {
+                    "type": "string",
+                    "x-path": "/oc-if:interfaces/oc-if:interface[oc-if:name=current()/../interface]/oc-if:subinterfaces/oc-if:subinterface/oc-if:index",
+                    "description": "Reference to a subinterface -- this requires the base\ninterface to be specified using the interface leaf in\nthis container.  If only a reference to a base interface\nis requuired, this leaf should not be set."
+                }
+            }
+        },
+        "interface-ref-state-container": {
+            "description": "Reusable opstate w/container for a reference to an\ninterface or subinterface",
+            "properties": {
+                "state": {
+                    "description": "Operational state for interface-ref",
+                    "$ref": "#/definitions/interface-ref-common"
+                }
+            }
+        },
+        "interface-ref": {
+            "description": "Reusable definition for a reference to an interface or\nsubinterface",
+            "properties": {
+                "interface-ref": {
+                    "description": "Reference to an interface or subinterface",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interface-ref-state-container"
+                        },
+                        {
+                            "properties": {
+                                "config": {
+                                    "description": "Configured reference to interface / subinterface",
+                                    "$ref": "#/definitions/interface-ref-common"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "interface-ref-state": {
+            "description": "Reusable opstate w/container for a reference to an\ninterface or subinterface",
+            "properties": {
+                "interface-ref": {
+                    "description": "Reference to an interface or subinterface",
+                    "$ref": "#/definitions/interface-ref-state-container"
+                }
+            }
+        },
+        "base-interface-ref-state": {
+            "description": "Reusable opstate w/container for a reference to a\nbase interface (no subinterface).",
+            "properties": {
+                "state": {
+                    "description": "Operational state for base interface reference",
+                    "properties": {
+                        "interface": {
+                            "type": "string",
+                            "description": "Reference to a base interface."
+                        }
+                    }
+                }
+            }
+        },
+        "interface-common-config": {
+            "description": "Configuration data data nodes common to physical interfaces\nand subinterfaces",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "A textual description of the interface.\n\nA server implementation MAY map this leaf to the ifAlias\nMIB object.  Such an implementation needs to use some\nmechanism to handle the differences in size and characters\nallowed between this leaf and ifAlias.  The definition of\nsuch a mechanism is outside the scope of this document.\n\nSince ifAlias is defined to be stored in non-volatile\nstorage, the MIB implementation MUST map ifAlias to the\nvalue of 'description' in the persistently stored\ndatastore.\n\nSpecifically, if the device supports ':startup', when\nifAlias is read the device MUST return the value of\n'description' in the 'startup' datastore, and when it is\nwritten, it MUST be written to the 'running' and 'startup'\ndatastores.  Note that it is up to the implementation to\n\ndecide whether to modify this single leaf in 'startup' or\nperform an implicit copy-config from 'running' to\n'startup'.\n\nIf the device does not support ':startup', ifAlias MUST\nbe mapped to the 'description' leaf in the 'running'\ndatastore."
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "This leaf contains the configured, desired state of the\ninterface.\n\nSystems that implement the IF-MIB use the value of this\nleaf in the 'running' datastore to set\nIF-MIB.ifAdminStatus to 'up' or 'down' after an ifEntry\nhas been initialized, as described in RFC 2863.\n\nChanges in this leaf in the 'running' datastore are\nreflected in ifAdminStatus, but if ifAdminStatus is\nchanged over SNMP, this leaf is not affected."
+                }
+            }
+        },
+        "interface-phys-config": {
+            "description": "Configuration data for physical interfaces",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/interface-common-config"
+                },
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the interface.\n\nA device MAY restrict the allowed values for this leaf,\npossibly depending on the type of the interface.\nFor system-controlled interfaces, this leaf is the\ndevice-specific name of the interface.  The 'config false'\nlist interfaces/interface[name]/state contains the currently\nexisting interfaces on the device.\n\nIf a client tries to create configuration for a\nsystem-controlled interface that is not present in the\ncorresponding state list, the server MAY reject\nthe request if the implementation does not support\npre-provisioning of interfaces or if the name refers to\nan interface that can never exist in the system.  A\nNETCONF server MUST reply with an rpc-error with the\nerror-tag 'invalid-value' in this case.\n\nThe IETF model in RFC 7223 provides YANG features for the\nfollowing (i.e., pre-provisioning and arbitrary-names),\nhowever they are omitted here:\n\n If the device supports pre-provisioning of interface\n configuration, the 'pre-provisioning' feature is\n advertised.\n\n If the device allows arbitrarily named user-controlled\n interfaces, the 'arbitrary-names' feature is advertised.\n\nWhen a configured user-controlled interface is created by\nthe system, it is instantiated with the same name in the\n/interfaces/interface[name]/state list."
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "The type of the interface.\n\nWhen an interface entry is created, a server MAY\ninitialize the type leaf with a valid value, e.g., if it\nis possible to derive the type from the name of the\ninterface.\n\nIf a client tries to set the type of an interface to a\nvalue that can never be used by the system, e.g., if the\ntype is not supported or if the type does not match the\nname of the interface, the server MUST reject the request.\nA NETCONF server MUST reply with an rpc-error with the\nerror-tag 'invalid-value' in this case."
+                        },
+                        "mtu": {
+                            "type": "string",
+                            "description": "Set the max transmission unit size in octets\nfor the physical interface.  If this is not set, the mtu is\nset to the operational default -- e.g., 1514 bytes on an\nEthernet interface."
+                        },
+                        "loopback-mode": {
+                            "type": "boolean",
+                            "description": "When set to true, the interface is logically looped back,\nsuch that packets that are forwarded via the interface\nare received on the same interface."
+                        }
+                    }
+                }
+            ]
+        },
+        "interface-phys-holdtime-config": {
+            "description": "Configuration data for interface hold-time settings --\napplies to physical interfaces.",
+            "properties": {
+                "up": {
+                    "type": "string",
+                    "description": "Dampens advertisement when the interface\ntransitions from down to up.  A zero value means dampening\nis turned off, i.e., immediate notification."
+                },
+                "down": {
+                    "type": "string",
+                    "description": "Dampens advertisement when the interface transitions from\nup to down.  A zero value means dampening is turned off,\ni.e., immediate notification."
+                }
+            }
+        },
+        "interface-phys-holdtime-state": {
+            "description": "Operational state data for interface hold-time."
+        },
+        "interface-phys-holdtime-top": {
+            "description": "Top-level grouping for setting link transition\ndampening on physical and other types of interfaces.",
+            "properties": {
+                "hold-time": {
+                    "description": "Top-level container for hold-time settings to enable\ndampening advertisements of interface transitions.",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for interface hold-time settings.",
+                            "$ref": "#/definitions/interface-phys-holdtime-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for interface hold-time.",
+                            "$ref": "#/definitions/interface-phys-holdtime-state"
+                        }
+                    }
+                }
+            }
+        },
+        "interface-common-state": {
+            "description": "Operational state data (in addition to intended configuration)\nat the global level for this interface",
+            "properties": {
+                "ifindex": {
+                    "type": "string",
+                    "description": "System assigned number for each interface.  Corresponds to\nifIndex object in SNMP Interface MIB"
+                },
+                "admin-status": {
+                    "type": "string",
+                    "enum": [
+                        "UP",
+                        "DOWN",
+                        "TESTING"
+                    ],
+                    "description": "The desired state of the interface.  In RFC 7223 this leaf\nhas the same read semantics as ifAdminStatus.  Here, it\nreflects the administrative state as set by enabling or\ndisabling the interface."
+                },
+                "oper-status": {
+                    "type": "string",
+                    "enum": [
+                        "UP",
+                        "DOWN",
+                        "TESTING",
+                        "UNKNOWN",
+                        "DORMANT",
+                        "NOT_PRESENT",
+                        "LOWER_LAYER_DOWN"
+                    ],
+                    "description": "The current operational state of the interface.\n\nThis leaf has the same semantics as ifOperStatus."
+                },
+                "last-change": {
+                    "type": "string",
+                    "description": "This timestamp indicates the time of the last state change\nof the interface (e.g., up-to-down transition). This\ncorresponds to the ifLastChange object in the standard\ninterface MIB.\n\nThe value is the timestamp in nanoseconds relative to\nthe Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                }
+            },
+            "discriminator": "admin-status"
+        },
+        "interface-counters-state": {
+            "description": "Operational state representing interface counters\nand statistics.",
+            "properties": {
+                "counters": {
+                    "description": "A collection of interface-related statistics objects.",
+                    "properties": {
+                        "in-octets": {
+                            "type": "string",
+                            "description": "The total number of octets received on the interface,\nincluding framing characters.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-unicast-pkts": {
+                            "type": "string",
+                            "description": "The number of packets, delivered by this sub-layer to a\nhigher (sub-)layer, that were not addressed to a\nmulticast or broadcast address at this sub-layer.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-broadcast-pkts": {
+                            "type": "string",
+                            "description": "The number of packets, delivered by this sub-layer to a\nhigher (sub-)layer, that were addressed to a broadcast\naddress at this sub-layer.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-multicast-pkts": {
+                            "type": "string",
+                            "description": "The number of packets, delivered by this sub-layer to a\nhigher (sub-)layer, that were addressed to a multicast\naddress at this sub-layer.  For a MAC-layer protocol,\nthis includes both Group and Functional addresses.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-discards": {
+                            "type": "string",
+                            "description": "The number of inbound packets that were chosen to be\ndiscarded even though no errors had been detected to\nprevent their being deliverable to a higher-layer\nprotocol.  One possible reason for discarding such a\npacket could be to free up buffer space.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-errors": {
+                            "type": "string",
+                            "description": "For packet-oriented interfaces, the number of inbound\npackets that contained errors preventing them from being\ndeliverable to a higher-layer protocol.  For character-\noriented or fixed-length interfaces, the number of\ninbound transmission units that contained errors\npreventing them from being deliverable to a higher-layer\nprotocol.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-unknown-protos": {
+                            "type": "string",
+                            "description": "For packet-oriented interfaces, the number of packets\nreceived via the interface that were discarded because\nof an unknown or unsupported protocol.  For\ncharacter-oriented or fixed-length interfaces that\nsupport protocol multiplexing, the number of\ntransmission units received via the interface that were\ndiscarded because of an unknown or unsupported protocol.\nFor any interface that does not support protocol\nmultiplexing, this counter is not present.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-fcs-errors": {
+                            "type": "string",
+                            "description": "Number of received packets which had errors in the\nframe check sequence (FCS), i.e., framing errors.\n\nDiscontinuities in the value of this counter can occur\nwhen the device is re-initialization as indicated by the\nvalue of 'last-clear'."
+                        },
+                        "out-octets": {
+                            "type": "string",
+                            "description": "The total number of octets transmitted out of the\ninterface, including framing characters.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-unicast-pkts": {
+                            "type": "string",
+                            "description": "The total number of packets that higher-level protocols\nrequested be transmitted, and that were not addressed\nto a multicast or broadcast address at this sub-layer,\nincluding those that were discarded or not sent.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-broadcast-pkts": {
+                            "type": "string",
+                            "description": "The total number of packets that higher-level protocols\nrequested be transmitted, and that were addressed to a\nbroadcast address at this sub-layer, including those\nthat were discarded or not sent.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-multicast-pkts": {
+                            "type": "string",
+                            "description": "The total number of packets that higher-level protocols\nrequested be transmitted, and that were addressed to a\nmulticast address at this sub-layer, including those\nthat were discarded or not sent.  For a MAC-layer\nprotocol, this includes both Group and Functional\naddresses.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-discards": {
+                            "type": "string",
+                            "description": "The number of outbound packets that were chosen to be\ndiscarded even though no errors had been detected to\nprevent their being transmitted.  One possible reason\nfor discarding such a packet could be to free up buffer\nspace.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-errors": {
+                            "type": "string",
+                            "description": "For packet-oriented interfaces, the number of outbound\npackets that could not be transmitted because of errors.\nFor character-oriented or fixed-length interfaces, the\nnumber of outbound transmission units that could not be\ntransmitted because of errors.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "carrier-transitions": {
+                            "type": "string",
+                            "description": "Number of times the interface state has transitioned\nbetween up and down since the time the device restarted\nor the last-clear time, whichever is most recent."
+                        },
+                        "last-clear": {
+                            "type": "string",
+                            "description": "Timestamp of the last time the interface counters were\ncleared.\n\nThe value is the timestamp in nanoseconds relative to\nthe Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                        }
+                    }
+                }
+            }
+        },
+        "sub-unnumbered-config": {
+            "description": "Configuration data for unnumbered subinterfaces",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Indicates that the subinterface is unnumbered.  By default\nthe subinterface is numbered, i.e., expected to have an\nIP address configuration."
+                }
+            }
+        },
+        "sub-unnumbered-state": {
+            "description": "Operational state data unnumbered subinterfaces"
+        },
+        "sub-unnumbered-top": {
+            "description": "Top-level grouping unnumbered subinterfaces",
+            "properties": {
+                "unnumbered": {
+                    "description": "Top-level container for setting unnumbered interfaces.\nIncludes reference the interface that provides the\naddress information",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interface-ref"
+                        },
+                        {
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration data for unnumbered interface",
+                                    "$ref": "#/definitions/sub-unnumbered-config"
+                                },
+                                "state": {
+                                    "description": "Operational state data for unnumbered interfaces",
+                                    "$ref": "#/definitions/sub-unnumbered-state"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "subinterfaces-config": {
+            "description": "Configuration data for subinterfaces",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/interface-common-config"
+                },
+                {
+                    "properties": {
+                        "index": {
+                            "type": "string",
+                            "description": "The index of the subinterface, or logical interface number.\nOn systems with no support for subinterfaces, or not using\nsubinterfaces, this value should default to 0, i.e., the\ndefault subinterface."
+                        }
+                    }
+                }
+            ]
+        },
+        "subinterfaces-state": {
+            "description": "Operational state data for subinterfaces",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/interface-common-state"
+                },
+                {
+                    "$ref": "#/definitions/interface-counters-state"
+                },
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The system-assigned name for the sub-interface.  This MAY\nbe a combination of the base interface name and the\nsubinterface index, or some other convention used by the\nsystem."
+                        }
+                    }
+                }
+            ]
+        },
+        "subinterfaces-top": {
+            "description": "Subinterface data for logical interfaces associated with a\ngiven interface",
+            "properties": {
+                "subinterfaces": {
+                    "description": "Enclosing container for the list of subinterfaces associated\nwith a physical interface",
+                    "properties": {
+                        "subinterface": {
+                            "description": "The list of subinterfaces (logical interfaces) associated\nwith a physical interface",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "index": {
+                                        "type": "string",
+                                        "x-path": "../config/index",
+                                        "description": "The index number of the subinterface -- used to address\nthe logical interface"
+                                    },
+                                    "config": {
+                                        "description": "Configurable items at the subinterface level",
+                                        "$ref": "#/definitions/subinterfaces-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for logical interfaces",
+                                        "$ref": "#/definitions/subinterfaces-state"
+                                    }
+                                }
+                            },
+                            "x-key": "index"
+                        }
+                    }
+                }
+            }
+        },
+        "interfaces-top": {
+            "description": "Top-level grouping for interface configuration and\noperational state data",
+            "properties": {
+                "interfaces": {
+                    "description": "Top level container for interfaces, including configuration\nand state data.",
+                    "properties": {
+                        "interface": {
+                            "description": "The list of named interfaces on the device.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/interface-phys-holdtime-top"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/subinterfaces-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "References the configured name of the interface"
+                                            },
+                                            "config": {
+                                                "description": "Configurable items at the global, physical interface\nlevel",
+                                                "$ref": "#/definitions/interface-phys-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data at the global interface level",
+                                                "$ref": "#/definitions/interface-counters-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "stat-interval-state": {
+            "description": "Reusable leaf definition for stats computation interval",
+            "properties": {
+                "interval": {
+                    "type": "string",
+                    "description": "If supported by the system, this reports the time interval\nover which the min/max/average statistics are computed by\nthe system."
+                }
+            }
+        },
+        "min-max-time": {
+            "description": "Common grouping for recording the absolute time at which\nthe minimum and maximum values occurred in the statistics",
+            "properties": {
+                "min-time": {
+                    "type": "string",
+                    "description": "The absolute time at which the minimum value occurred.\nThe value is the timestamp in nanoseconds relative to\n the Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                },
+                "max-time": {
+                    "type": "string",
+                    "description": "The absolute time at which the maximum value occurred.\nThe value is the timestamp in nanoseconds relative to\n the Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                }
+            }
+        },
+        "avg-min-max-stats-precision1": {
+            "description": "Common nodes for recording average, minimum, and\nmaximum values for a statistic.  These values all have\nfraction-digits set to 1.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed is also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time\ninterval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statitic over the time\ninterval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision1": {
+            "description": "Common grouping for recording an instantaneous statistic value\nin addition to avg-min-max stats",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/avg-min-max-stats-precision1"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision2-dB": {
+            "description": "Common grouping for recording dB values with 2 decimal\nprecision. Values include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        },
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time interval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statistic over the time\ninterval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision2-dBm": {
+            "description": "Common grouping for recording dBm values with 2 decimal\nprecision. Values include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        },
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time\ninterval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statistic over the time interval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision2-mA": {
+            "description": "Common grouping for recording mA values with 2 decimal\nprecision. Values include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        },
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time\ninterval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statistic over the time\ninterval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-pct": {
+            "description": "Common grouping for percentage statistics.\nValues include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "string",
+                            "description": "The instantaneous percentage value."
+                        },
+                        "avg": {
+                            "type": "string",
+                            "description": "The arithmetic mean value of the percentage measure of the\nstatistic over the time interval."
+                        },
+                        "min": {
+                            "type": "string",
+                            "description": "The minimum value of the percentage measure of the\nstatistic over the time interval."
+                        },
+                        "max": {
+                            "type": "string",
+                            "description": "The maximum value of the percentage measure of the\nstatistic over the time interval."
+                        }
+                    }
+                }
+            ]
+        },
+        "attribute-compare-operators": {
+            "description": "common definitions for comparison operations in\ncondition statements",
+            "properties": {
+                "operator": {
+                    "type": "string",
+                    "description": "type of comparison to be performed"
+                },
+                "value": {
+                    "type": "string",
+                    "description": "value to compare with the community count"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-macm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:macm="urn:huawei:yang:huawei-macm"
+        xmlns:evpn="urn:huawei:yang:huawei-evpn"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-macm"/>
+  <prefix value="macm"/>
+  <import module="huawei-evpn">
+    <prefix value="evpn"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>MAC routing management module that stores and selects the optimal MAC.</text>
+  </description>
+  <revision date="2020-03-30">
+    <description>
+      <text>Add container macm.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-01-10">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="limit-action">
+    <type name="enumeration">
+      <enum name="mac-unchanged">
+        <value value="0"/>
+        <description>
+          <text>When the number of EVPN MAC routes reach the upper limit, the MAC routes remain unchanged and the system generates an alarm.</text>
+        </description>
+      </enum>
+      <enum name="simply-alert">
+        <value value="1"/>
+        <description>
+          <text>When the number of EVPN MAC routes reach the upper limit, the subsequent routes can be added to replace the existing routes and the system only generates an alarm.</text>
+        </description>
+      </enum>
+      <enum name="relearn-unchanged">
+        <value value="2"/>
+        <description>
+          <text>The existing EVPN MAC routes must to be deleted, and relearn to the upper limit for once. Then the MAC routes remain unchanged and the system generates an alarm.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The action of MAC routing limit.</text>
+    </description>
+  </typedef>
+  <typedef name="route-flag">
+    <type name="enumeration">
+      <enum name="download">
+        <value value="1"/>
+        <description>
+          <text>Download to FIB.</text>
+        </description>
+      </enum>
+      <enum name="no-download">
+        <value value="2"/>
+        <description>
+          <text>Not download to FIB.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MAC route flag.</text>
+    </description>
+  </typedef>
+  <typedef name="route-status">
+    <type name="enumeration">
+      <enum name="active">
+        <value value="1"/>
+        <description>
+          <text>Active route.</text>
+        </description>
+      </enum>
+      <enum name="inactive">
+        <value value="2"/>
+        <description>
+          <text>Inactive route.</text>
+        </description>
+      </enum>
+      <enum name="invalid">
+        <value value="3"/>
+        <description>
+          <text>Invalid route.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MAC route status.</text>
+    </description>
+  </typedef>
+  <typedef name="route-source">
+    <type name="enumeration">
+      <enum name="local">
+        <value value="1"/>
+        <description>
+          <text>From Local.</text>
+        </description>
+      </enum>
+      <enum name="BGP">
+        <value value="2"/>
+        <description>
+          <text>From BGP.</text>
+        </description>
+      </enum>
+      <enum name="total">
+        <value value="3"/>
+        <description>
+          <text>Learn from local and via BGP.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MAC route source.</text>
+    </description>
+  </typedef>
+  <typedef name="route-type">
+    <type name="enumeration">
+      <enum name="dynamic">
+        <value value="1"/>
+        <description>
+          <text>Dynamic.</text>
+        </description>
+      </enum>
+      <enum name="static">
+        <value value="2"/>
+        <description>
+          <text>Static.</text>
+        </description>
+      </enum>
+      <enum name="dynamic-black-hole">
+        <value value="3"/>
+        <description>
+          <text>Dynamic black-hole.</text>
+        </description>
+      </enum>
+      <enum name="dynamic-leaf">
+        <value value="4"/>
+        <description>
+          <text>Dynamic E-tree leaf.</text>
+        </description>
+      </enum>
+      <enum name="static-leaf">
+        <value value="5"/>
+        <description>
+          <text>Static E-tree leaf.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MAC route type.</text>
+    </description>
+  </typedef>
+  <grouping name="mac-statistics-collection">
+    <description>
+      <text>MAC route statistics collection.</text>
+    </description>
+    <leaf name="protocol">
+      <type name="route-source"/>
+      <description>
+        <text>MAC route source.</text>
+      </description>
+    </leaf>
+    <leaf name="total">
+      <type name="uint32"/>
+      <description>
+        <text>Number of MAC routes in total.</text>
+      </description>
+    </leaf>
+    <leaf name="active">
+      <type name="uint32"/>
+      <description>
+        <text>Number of active MAC routes.</text>
+      </description>
+    </leaf>
+    <leaf name="added">
+      <type name="uint32"/>
+      <description>
+        <text>Number of active and inactive MAC routes added to the MAC table.</text>
+      </description>
+    </leaf>
+    <leaf name="deleted">
+      <type name="uint32"/>
+      <description>
+        <text>Number of MAC routes deleted from the MAC table.</text>
+      </description>
+    </leaf>
+    <leaf name="freed">
+      <type name="uint32"/>
+      <description>
+        <text>Number of MAC routes that are permanently deleted from the MAC table.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <container name="macm">
+    <config value="false"/>
+    <description>
+      <text>MAC route management that stores and selects the optimal MAC.</text>
+    </description>
+    <container name="evpn-global">
+      <description>
+        <text>Statistics of global attributes.</text>
+      </description>
+      <container name="statistics">
+        <description>
+          <text>List of EVPN instance MAC route statistics.</text>
+        </description>
+        <list name="statistic">
+          <key value="protocol"/>
+          <description>
+            <text>Statistics of MAC Route collection.</text>
+          </description>
+          <uses name="mac-statistics-collection"/>
+        </list>
+      </container>
+    </container>
+    <container name="evpn-instances">
+      <description>
+        <text>List of attributes in EVPN instances.</text>
+      </description>
+      <list name="evpn-instance">
+        <key value="name"/>
+        <description>
+          <text>Operational data of attributes in an EVPN instance.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/evpn:evpn/evpn:instances/evpn:instance/evpn:name"/>
+          </type>
+          <description>
+            <text>The name of EVPN instance.</text>
+          </description>
+        </leaf>
+        <container name="statistics">
+          <description>
+            <text>List of MAC route statistics in an EVPN instance.</text>
+          </description>
+          <list name="statistic">
+            <key value="protocol"/>
+            <description>
+              <text>Statistics of MAC routes.</text>
+            </description>
+            <uses name="mac-statistics-collection"/>
+          </list>
+        </container>
+        <container name="routes">
+          <description>
+            <text>List of EVPN MAC routes.</text>
+          </description>
+          <list name="route">
+            <key value="mac vlan-tag-id"/>
+            <description>
+              <text>Operational data of EVPN MAC route table.</text>
+            </description>
+            <leaf name="mac">
+              <type name="pub-type:mac-address">
+                <length value="0..255"/>
+              </type>
+              <description>
+                <text>MAC address.</text>
+              </description>
+            </leaf>
+            <leaf name="vlan-tag-id">
+              <type name="uint32"/>
+              <description>
+                <text>VLAN tag ID.</text>
+              </description>
+            </leaf>
+            <leaf name="protocol">
+              <type name="route-source"/>
+              <description>
+                <text>Mac route source.</text>
+              </description>
+            </leaf>
+            <leaf name="domain-id">
+              <type name="uint32"/>
+              <description>
+                <text>Bridge domain ID.</text>
+              </description>
+            </leaf>
+            <leaf name="peer">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>The address of Remote for Mac route.</text>
+              </description>
+            </leaf>
+            <leaf name="interface">
+              <type name="pub-type:if-name"/>
+              <description>
+                <text>Outbound interface to reach the next hop. If the outbound interface is a tunnel interface, the tunnel interface name is displayed.</text>
+              </description>
+            </leaf>
+            <leaf name="flag">
+              <type name="route-flag"/>
+              <description>
+                <text>MAC route flag.</text>
+              </description>
+            </leaf>
+            <leaf name="label">
+              <type name="uint32"/>
+              <description>
+                <text>Label that is allocated by MPLS and used for traffic forwarding via tunnel.</text>
+              </description>
+            </leaf>
+            <leaf name="indirect-id">
+              <type name="pub-type:hex-binary"/>
+              <description>
+                <text>Indirect ID for a MAC route.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="route-status"/>
+              <description>
+                <text>MAC route status.</text>
+              </description>
+            </leaf>
+            <leaf name="type">
+              <type name="route-type"/>
+              <description>
+                <text>MAC route type.</text>
+              </description>
+            </leaf>
+            <leaf name="age">
+              <type name="string">
+                <length value="0..20"/>
+              </type>
+              <description>
+                <text>Keep alive time.</text>
+              </description>
+            </leaf>
+            <leaf name="tunnel">
+              <type name="string">
+                <length value="1..21"/>
+              </type>
+              <description>
+                <text>Tunnel information.</text>
+              </description>
+            </leaf>
+            <leaf name="ce-vlan">
+              <type name="uint32"/>
+              <description>
+                <text>Inner VLAN tag.</text>
+              </description>
+            </leaf>
+            <leaf name="pe-vlan">
+              <type name="uint32"/>
+              <description>
+                <text>Outer VLAN tag.</text>
+              </description>
+            </leaf>
+            <leaf name="vtep-ip">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>The address of VTEP.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/evpn:evpn/evpn:instances/evpn:instance">
+    <description>
+      <text>MAC routing configuration for an evpn instance.</text>
+    </description>
+    <container name="mac-limit">
+      <when condition="../evpn:type='normal' or ../evpn:type='bd-evpn'"/>
+      <description>
+        <text>Configure MAC routing limit for an evpn instance.</text>
+      </description>
+      <container name="rule">
+        <description>
+          <text>Configure rule of MAC routes limit.</text>
+        </description>
+        <leaf name="maximum">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <description>
+            <text>Maximum number of MAC routes supported by an EVPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="action">
+          <when condition="../maximum"/>
+          <type name="limit-action"/>
+          <default value="mac-unchanged"/>
+          <description>
+            <text>The action of MAC limit when the number of EVPN MAC routes exceeds the specified number.</text>
+          </description>
+        </leaf>
+        <leaf name="current-mac-number">
+          <when condition="../maximum"/>
+          <type name="uint32"/>
+          <config value="false"/>
+          <description>
+            <text>Current MAC number of EVPN instance.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="alarm-threshold">
+        <description>
+          <text>Configure alarm threshold of MAC routing limit in percentage.</text>
+        </description>
+        <leaf name="lower">
+          <type name="uint8">
+            <range value="1..100"/>
+          </type>
+          <units name="%"/>
+          <must condition="../upper &gt; ../lower"/>
+          <default value="70"/>
+          <description>
+            <text>The lower limit in percentage for MAC routes.</text>
+          </description>
+        </leaf>
+        <leaf name="upper">
+          <type name="uint8">
+            <range value="1..100"/>
+          </type>
+          <units name="%"/>
+          <must condition="../upper &gt; ../lower"/>
+          <default value="80"/>
+          <description>
+            <text>The upper limit in percentage for MAC routes.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="vstm"/>
+</module>

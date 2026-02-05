@@ -1,0 +1,987 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-aaa"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:hwtacacs="urn:huawei:yang:huawei-hwtacacs"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-aaa"/>
+  <prefix value="aaa"/>
+  <import module="huawei-hwtacacs">
+    <prefix value="hwtacacs"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <include module="huawei-aaa-type"/>
+  <include module="huawei-aaa-lam"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Security management, which includes the management on authentication, authorization, accounting, domains, and users.</text>
+  </description>
+  <revision date="2020-07-01">
+    <description>
+      <text>Add node constraint information.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-06-17">
+    <description>
+      <text>Add management-user-qrys node.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-02">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="aaa"/>
+  <container name="aaa">
+    <description>
+      <text>Security management, which includes the management on authentication, authorization, accounting, domains, and users.</text>
+    </description>
+    <container name="tasks">
+      <config value="false"/>
+      <description>
+        <text>List of tasks.</text>
+      </description>
+      <list name="task">
+        <key value="name"/>
+        <config value="false"/>
+        <description>
+          <text>Statistics of minimum unit for dividing rights on an NE. Tasks can be determined when an NE is delivered. Tasks cannot be customized.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Name of a task, it is not case sensitive.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="task-groups">
+      <description>
+        <text>List of task groups.</text>
+      </description>
+      <list name="task-group">
+        <key value="name"/>
+        <description>
+          <text>Configure a collection of certain tasks. The default task groups are set in the system before the NE delivery and cannot be deleted.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value='[^A-Z/\*":?&lt;&gt;|]+'/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Name of a task group.</text>
+          </description>
+        </leaf>
+        <container name="task-group-include-maps">
+          <description>
+            <text>List of the task groups included in a main task group.</text>
+          </description>
+          <list name="task-group-include-map">
+            <key value="include-task-group-name"/>
+            <max-elements value="1"/>
+            <description>
+              <text>Configure task group included in a main task group.</text>
+            </description>
+            <leaf name="include-task-group-name">
+              <type name="leafref">
+                <path value="../../../name"/>
+              </type>
+              <must condition="(../../../name!=../include-task-group-name)"/>
+              <description>
+                <text>Name of included task group, it is not case sensitive.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="task-group-task-maps">
+          <description>
+            <text>List of the tasks included in a task group.</text>
+          </description>
+          <list name="task-group-task-map">
+            <key value="task-name"/>
+            <description>
+              <text>Configure task in a task group. The default task group cannot be modified.</text>
+            </description>
+            <leaf name="task-name">
+              <type name="string">
+                <length value="1..32"/>
+                <pattern value="[^A-Z]+"/>
+              </type>
+              <ext:case-sensitivity value="lower-only"/>
+              <must condition="(../write='enable' or ../execute='enable' or ../debug='enable' or ../read='enable')"/>
+              <description>
+                <text>Name of a task. It must be an existing task.</text>
+              </description>
+            </leaf>
+            <leaf name="read">
+              <type name="aaa-enable-type"/>
+              <must condition="not(../write='disable' and ../execute='disable' and ../debug='disable') or (../write='disable' and ../execute='disable' and ../debug='disable' and ../read!=../write)"/>
+              <default value="disable"/>
+              <description>
+                <text>To determine whether a task has the read right.</text>
+              </description>
+            </leaf>
+            <leaf name="write">
+              <type name="aaa-enable-type"/>
+              <default value="disable"/>
+              <description>
+                <text>To determine whether a task has the write right.</text>
+              </description>
+            </leaf>
+            <leaf name="execute">
+              <type name="aaa-enable-type"/>
+              <default value="disable"/>
+              <description>
+                <text>To determine whether a task has the operation right.</text>
+              </description>
+            </leaf>
+            <leaf name="debug">
+              <type name="aaa-enable-type"/>
+              <default value="disable"/>
+              <description>
+                <text>To determine whether a task has the debug right.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="user-groups">
+      <description>
+        <text>List of user groups.</text>
+      </description>
+      <list name="user-group">
+        <key value="name"/>
+        <description>
+          <text>Configure a collection of certain users. Certain default user groups are set before an NE is delivered and cannot be deleted.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value='[^A-Z/\*":?&lt;&gt;|]+'/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Name of a user group.</text>
+          </description>
+        </leaf>
+        <container name="user-group-task-group-maps">
+          <description>
+            <text>List of the task groups included in a user group.</text>
+          </description>
+          <list name="user-group-task-group-map">
+            <key value="task-group-name"/>
+            <description>
+              <text>Configure task group in a user group.</text>
+            </description>
+            <leaf name="task-group-name">
+              <type name="leafref">
+                <path value="../../../../../task-groups/task-group/name"/>
+              </type>
+              <description>
+                <text>Name of a task group, it is not case sensitive.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="user-group-include-maps">
+          <description>
+            <text>List of the user groups included in a main user group.</text>
+          </description>
+          <list name="user-group-include-map">
+            <key value="include-user-group-name"/>
+            <max-elements value="1"/>
+            <description>
+              <text>Configure user group included in a main user group.</text>
+            </description>
+            <leaf name="include-user-group-name">
+              <type name="leafref">
+                <path value="../../../name"/>
+              </type>
+              <must condition="(../../../name!=../include-user-group-name)"/>
+              <description>
+                <text>Name of a task group, it is not case sensitive.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="authentication-schemes">
+      <description>
+        <text>List of authentication scheme.</text>
+      </description>
+      <list name="authentication-scheme">
+        <key value="authen-scheme-name"/>
+        <description>
+          <text>Configure authentication scheme. The default authentication scheme cannot be deleted.</text>
+        </description>
+        <leaf name="authen-scheme-name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value='[^A-Z/\*":?&lt;&gt;|]+'/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Name of an authentication scheme.</text>
+          </description>
+        </leaf>
+        <choice name="authen-mode-type">
+          <description>
+            <text>Sorting method of authentication mode.</text>
+          </description>
+          <case name="ordered-strictly">
+            <description>
+              <text>Ordered strictly case.</text>
+            </description>
+            <leaf name="first-authen-mode">
+              <type name="aaa-authen-mode"/>
+              <must condition="(../first-authen-mode!='invalid' )"/>
+              <default value="local"/>
+              <description>
+                <text>Preferred authentication mode. The second, third, or fourth authentication mode is used only when the first authentication mode does not respond. The first authentication mode cannot be set to unavailable.</text>
+              </description>
+            </leaf>
+            <leaf name="second-authen-mode">
+              <type name="aaa-authen-mode"/>
+              <must condition="(../second-authen-mode!='radius-proxy' and (((../first-authen-mode='none' or ../first-authen-mode='radius-proxy') and (../second-authen-mode='invalid')) or ((../first-authen-mode!='none' and ../first-authen-mode!='radius-proxy') and ../first-authen-mode!=../second-authen-mode)))"/>
+              <default value="invalid"/>
+              <description>
+                <text>Authentication mode with the preference lower than the first authentication mode. The second authentication mode is used when the first authentication mode does not respond. If the setting of the second authentication mode is unavailable, the third and fourth authentication modes fail to be set.</text>
+              </description>
+            </leaf>
+            <leaf name="third-authen-mode">
+              <type name="aaa-authen-mode"/>
+              <must condition="(../third-authen-mode!='radius-proxy' and ((../second-authen-mode ='none' or ../second-authen-mode='invalid') and (../third-authen-mode='invalid') ) or ((../second-authen-mode !='none' and ../second-authen-mode!='invalid'  and ../first-authen-mode!='radius-proxy') and ../third-authen-mode!=../second-authen-mode and ../third-authen-mode!=../first-authen-mode ))"/>
+              <default value="invalid"/>
+              <description>
+                <text>Authentication mode with the preference lower than the first and second authentication modes. The third authentication mode is used when the first and second authentication modes do not respond. If the setting of the third authentication mode is unavailable, the fourth authentication mode fails to be set.</text>
+              </description>
+            </leaf>
+            <leaf name="fourth-authen-mode">
+              <type name="aaa-authen-mode"/>
+              <must condition="(../fourth-authen-mode='none' and ../first-authen-mode!='invalid' and ../first-authen-mode!='none' and ../first-authen-mode!='radius-proxy' and ../second-authen-mode!='invalid' and ../second-authen-mode!='none' and ../third-authen-mode!='invalid' and ../third-authen-mode!='none' ) or ../fourth-authen-mode='invalid' "/>
+              <default value="invalid"/>
+              <description>
+                <text>Authentication mode with the least preference. The fourth authentication mode is used when the first, second, and third authentication modes do not respond. If the setting of the fourth authentication mode is unavailable or the fourth authentication mode does not respond, the authentication fails.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+      </list>
+    </container>
+    <container name="authorization-schemes">
+      <description>
+        <text>List of authorization scheme.</text>
+      </description>
+      <list name="authorization-scheme">
+        <key value="author-scheme-name"/>
+        <description>
+          <text>Configure authorization scheme. The default authorization scheme cannot be deleted.</text>
+        </description>
+        <leaf name="author-scheme-name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value='[^A-Z/\*":?&lt;&gt;|]+'/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Name of an authorization scheme. The name uniquely identifies the authorization scheme and can be used in the domain.</text>
+          </description>
+        </leaf>
+        <choice name="author-mode-type">
+          <description>
+            <text>Sorting method of authorization mode.</text>
+          </description>
+          <case name="ordered-strictly">
+            <description>
+              <text>Ordered strictly case.</text>
+            </description>
+            <leaf name="first-author-mode">
+              <type name="aaa-author-mode"/>
+              <must condition="../first-author-mode='local' or ../first-author-mode='hwtacacs' or ../first-author-mode='if-authenticated' or ../first-author-mode='none'"/>
+              <default value="local"/>
+              <description>
+                <text>Preferred authorization mode. The second, third, or fourth authorization mode can be used only when the first authorization mode does not respond. The first authorization mode must be available.</text>
+              </description>
+            </leaf>
+            <leaf name="second-author-mode">
+              <type name="aaa-author-mode"/>
+              <must condition="(../first-author-mode='none' and (../second-author-mode='invalid') ) or (../first-author-mode!='invalid' and ../first-author-mode!='none' and ../second-author-mode!=../first-author-mode)"/>
+              <default value="invalid"/>
+              <description>
+                <text>Authorization mode with the preference next to the first authorization mode. It is used when the first authorization mode does not respond. If the setting of the second authorization mode is unavailable, the third and fourth authorization modes fail to be set.</text>
+              </description>
+            </leaf>
+            <leaf name="third-author-mode">
+              <type name="aaa-author-mode"/>
+              <must condition="((../second-author-mode='none' or ../second-author-mode='invalid') and ../third-author-mode='invalid' ) or (../second-author-mode !='none' and ../second-author-mode!='invalid'  and ../first-author-mode!='none' and ../third-author-mode!=../second-author-mode and ../third-author-mode!=../first-author-mode ) or (../first-author-mode='none' and (../third-author-mode='invalid') )"/>
+              <default value="invalid"/>
+              <description>
+                <text>Authorization mode with the preference next to the first and second authorization modes. It is used when the first and second authorization modes do not respond. If the setting of the third authorization mode is unavailable, the fourth authorization mode fails to be set.</text>
+              </description>
+            </leaf>
+            <leaf name="fourth-author-mode">
+              <type name="aaa-author-mode"/>
+              <must condition="(../fourth-author-mode='none' and ../first-author-mode!='invalid' and ../first-author-mode!='none' and ../second-author-mode!='invalid' and ../second-author-mode!='none' and ../third-author-mode!='invalid' and ../third-author-mode!='none' ) or ../fourth-author-mode='invalid' "/>
+              <default value="invalid"/>
+              <description>
+                <text>Authorization mode with the least preference. It is used when the first, second, and third authorization modes do not respond. If the setting of the fourth authorization mode is unavailable or the fourth authorization mode does not respond, the authorization fails.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="no-lvl-first-cmd-author">
+          <type name="aaa-author-cmd-mode"/>
+          <must condition="../no-lvl-first-cmd-author='local' or ../no-lvl-first-cmd-author='hwtacacs'"/>
+          <default value="local"/>
+          <description>
+            <text>Configures the first authorization mode for users of user group.</text>
+          </description>
+        </leaf>
+        <leaf name="no-lvl-second-cmd-author">
+          <type name="aaa-author-cmd-mode"/>
+          <must condition="(../no-lvl-first-cmd-author='local' and (../no-lvl-second-cmd-author='invalid' or ../no-lvl-second-cmd-author='hwtacacs') ) or ((not(../no-lvl-first-cmd-author='local') and (../no-lvl-second-cmd-author='invalid' or ../no-lvl-second-cmd-author='local') ))"/>
+          <default value="invalid"/>
+          <description>
+            <text>Configures the second authorization mode for users of user group.</text>
+          </description>
+        </leaf>
+        <leaf name="no-response-policy">
+          <type name="author-no-res-policy-type"/>
+          <default value="online"/>
+          <description>
+            <text>Configures a policy for a scenario where no responses are obtained during command line-based authorization.</text>
+          </description>
+        </leaf>
+        <leaf name="no-response-times">
+          <when condition="../no-response-policy='offline'"/>
+          <type name="uint32">
+            <range value="1..10"/>
+          </type>
+          <default value="5"/>
+          <description>
+            <text>Configures the number of times of failed authorization.</text>
+          </description>
+        </leaf>
+        <container name="authorization-cmds">
+          <description>
+            <text>List of authorization cmd.</text>
+          </description>
+          <list name="authorization-cmd">
+            <key value="level"/>
+            <description>
+              <text>Configure authorization cmd.</text>
+            </description>
+            <leaf name="level">
+              <type name="uint32">
+                <range value="0..15"/>
+              </type>
+              <description>
+                <text>The level of authorization cmd.</text>
+              </description>
+            </leaf>
+            <choice name="cmd-author-mode-type">
+              <description>
+                <text>Sorting method of cmd authorization mode.</text>
+              </description>
+              <case name="ordered-strictly">
+                <description>
+                  <text>Ordered strictly case.</text>
+                </description>
+                <leaf name="first-cmd-author">
+                  <type name="aaa-author-cmd-mode"/>
+                  <must condition="../first-cmd-author='local' or ../first-cmd-author='hwtacacs'"/>
+                  <default value="local"/>
+                  <description>
+                    <text>First cmd authorization mode.</text>
+                  </description>
+                </leaf>
+                <leaf name="second-cmd-author">
+                  <type name="aaa-author-cmd-mode"/>
+                  <must condition="(../first-cmd-author='local' and (../second-cmd-author='invalid' or ../second-cmd-author='hwtacacs') ) or ((not(../first-cmd-author='local') and (../second-cmd-author='invalid' or ../second-cmd-author='local') ))"/>
+                  <default value="invalid"/>
+                  <description>
+                    <text>Second cmd authorization mode.</text>
+                  </description>
+                </leaf>
+              </case>
+            </choice>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="accounting-schemes">
+      <description>
+        <text>List of accounting scheme.</text>
+      </description>
+      <list name="accounting-scheme">
+        <key value="acct-scheme-name"/>
+        <description>
+          <text>Configure accounting scheme. The default accounting scheme cannot be deleted.</text>
+        </description>
+        <leaf name="acct-scheme-name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value='[^A-Z/\*":?&lt;&gt;|]+'/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Accounting scheme name.</text>
+          </description>
+        </leaf>
+        <leaf name="accounting-mode">
+          <type name="aaa-acct-mode"/>
+          <must condition="../accounting-mode='radius' or ../accounting-mode='hwtacacs' or ../accounting-mode='none'"/>
+          <default value="none"/>
+          <description>
+            <text>Accounting Mode.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="domains">
+      <description>
+        <text>List of domain.</text>
+      </description>
+      <list name="domain">
+        <key value="name"/>
+        <description>
+          <text>Configure in a domain, users apply the same authentication/authorization scheme or server. The default domain cannot be deleted.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..64"/>
+            <pattern value="([^A-Z*?&quot;']{3,})|[^A-Z*?&quot;'-]|([^A-Z*?&quot;'-][^A-Z*?&quot;'])|([^A-Z*?&quot;'][^A-Z*?&quot;'-])"/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Name of a domain.</text>
+          </description>
+        </leaf>
+        <leaf name="admin-level">
+          <type name="uint32">
+            <range value="0..15"/>
+          </type>
+          <description>
+            <text>The admin level of domain. If the command level adjustment function is disabled, the value of adminLevel ranges from 0 to 3. If the command level adjustment function is enabled, the value of adminLevel ranges from 0 to 15.</text>
+          </description>
+        </leaf>
+        <leaf name="authen-scheme-name">
+          <type name="leafref">
+            <path value="../../../authentication-schemes/authentication-scheme/authen-scheme-name"/>
+          </type>
+          <default value="default1"/>
+          <description>
+            <text>Name of the authentication scheme used by the domain, it is not case sensitive. The default value varies according to domains. The default value is restored when the node is deleted.</text>
+          </description>
+        </leaf>
+        <leaf name="author-scheme-name">
+          <type name="leafref">
+            <path value="../../../authorization-schemes/authorization-scheme/author-scheme-name"/>
+          </type>
+          <description>
+            <text>Name of the authorization scheme used by the domain, it is not case sensitive. The default value varies according to domains. The default value is restored when the node is deleted.</text>
+          </description>
+        </leaf>
+        <leaf name="acct-scheme-name">
+          <type name="leafref">
+            <path value="../../../accounting-schemes/accounting-scheme/acct-scheme-name"/>
+          </type>
+          <default value="default1"/>
+          <description>
+            <text>Name of the accounting scheme used by the domain, it is not case sensitive. The default value varies according to domains. The default value is restored when the node is deleted.</text>
+          </description>
+        </leaf>
+        <leaf name="access-limit">
+          <type name="int32">
+            <range value="0..2147483647"/>
+          </type>
+          <description>
+            <text>Domain max access number. The default value is defined in the PAF file and is restored when the node is deleted.</text>
+          </description>
+        </leaf>
+        <leaf name="radius-server-template">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Name of the RADIUS server used by the domain, it is not case sensitive.</text>
+          </description>
+        </leaf>
+        <leaf name="hwtacacs-server-template">
+          <type name="leafref">
+            <path value="/hwtacacs:hwtacacs/hwtacacs:templates/hwtacacs:template/hwtacacs:name"/>
+          </type>
+          <description>
+            <text>Name of the HWTACACS server used by the domain, it is not case sensitive.</text>
+          </description>
+        </leaf>
+        <leaf name="state">
+          <type name="aaa-state-type"/>
+          <default value="active"/>
+          <description>
+            <text>Activated state of the domain.</text>
+          </description>
+        </leaf>
+        <leaf name="time-range-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the time range function used by a domain.</text>
+          </description>
+        </leaf>
+        <leaf name="service-terminal">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in Terminal mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-telnet">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in Telnet mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-ftp">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in FTP mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-ppp">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in PPP mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-ssh">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in SSH mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-qx">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in QX mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-snmp">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in SNMP mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-mml">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in MML mode.</text>
+          </description>
+        </leaf>
+        <leaf name="service-http">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable users to log in HTTP mode.</text>
+          </description>
+        </leaf>
+        <leaf name="online-num">
+          <type name="int32">
+            <range value="0..2147483647"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Online number of the domain.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="login-alarm-threshold">
+      <description>
+        <text>Configure alarm when manager login failed frequently.</text>
+      </description>
+      <leaf name="report-times">
+        <type name="uint16">
+          <range value="0..100"/>
+        </type>
+        <units name="min"/>
+        <must condition="../resume-times&lt;=../report-times"/>
+        <default value="30"/>
+        <description>
+          <text>Login Alarm report times.</text>
+        </description>
+      </leaf>
+      <leaf name="resume-times">
+        <type name="uint16">
+          <range value="0..100"/>
+        </type>
+        <must condition="../resume-times&lt;=../report-times"/>
+        <default value="20"/>
+        <description>
+          <text>Login Alarm resume times.</text>
+        </description>
+      </leaf>
+      <leaf name="period">
+        <type name="uint16">
+          <range value="1..120"/>
+        </type>
+        <units name="min"/>
+        <default value="5"/>
+        <description>
+          <text>Login Alarm period.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="alive-user-qrys">
+      <config value="false"/>
+      <description>
+        <text>List of alive users.</text>
+      </description>
+      <list name="alive-user-qry">
+        <key value="user-id"/>
+        <config value="false"/>
+        <description>
+          <text>Statistics of active users.</text>
+        </description>
+        <leaf name="user-id">
+          <type name="uint32"/>
+          <config value="false"/>
+          <description>
+            <text>User ID.</text>
+          </description>
+        </leaf>
+        <leaf name="user-name">
+          <type name="string">
+            <length value="1..253"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Name of an access user, it is not case sensitive.</text>
+          </description>
+        </leaf>
+        <leaf name="level">
+          <type name="uint32">
+            <range value="0..15"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>User level.</text>
+          </description>
+        </leaf>
+        <leaf name="user-group-name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Specifies the name of a user group, it is not case sensitive.</text>
+          </description>
+        </leaf>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..64"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Name of a domain, it is not case sensitive.</text>
+          </description>
+        </leaf>
+        <leaf name="access-type">
+          <type name="aaa-user-access-type"/>
+          <config value="false"/>
+          <description>
+            <text>Access type.</text>
+          </description>
+        </leaf>
+        <leaf name="authen-type">
+          <type name="aaa-authen-access-type"/>
+          <config value="false"/>
+          <description>
+            <text>Authentication Type.</text>
+          </description>
+        </leaf>
+        <leaf name="authen-method">
+          <type name="aaa-authen-mode"/>
+          <config value="false"/>
+          <description>
+            <text>Alive user current authentication mode.</text>
+          </description>
+        </leaf>
+        <leaf name="authen-state">
+          <type name="aaa-authen-state-type"/>
+          <config value="false"/>
+          <description>
+            <text>Authentication state.</text>
+          </description>
+        </leaf>
+        <leaf name="author-method">
+          <type name="aaa-author-mode"/>
+          <config value="false"/>
+          <description>
+            <text>Currnet authorization mode.</text>
+          </description>
+        </leaf>
+        <leaf name="author-state">
+          <type name="aaa-author-state-type"/>
+          <config value="false"/>
+          <description>
+            <text>Author state.</text>
+          </description>
+        </leaf>
+        <leaf name="acct-method">
+          <type name="aaa-acct-mode"/>
+          <config value="false"/>
+          <description>
+            <text>Current accounting Mode.</text>
+          </description>
+        </leaf>
+        <leaf name="acct-state">
+          <type name="aaa-acct-state-type"/>
+          <config value="false"/>
+          <description>
+            <text>Accounting state.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="global-policy">
+      <description>
+        <text>Configure global policy.</text>
+      </description>
+      <leaf name="domain-location">
+        <type name="aaa-domain-location-type"/>
+        <default value="after-delimiter"/>
+        <description>
+          <text>Domain Location.</text>
+        </description>
+      </leaf>
+      <leaf name="domain-parse-direction">
+        <type name="aaa-parse-direction-type"/>
+        <default value="left-to-right"/>
+        <description>
+          <text>Domain Parse Direction.</text>
+        </description>
+      </leaf>
+      <leaf name="default-admin-domain">
+        <type name="leafref">
+          <path value="../../domains/domain/name"/>
+        </type>
+        <default value="default_admin"/>
+        <description>
+          <text>Admin user default domain.</text>
+        </description>
+      </leaf>
+      <leaf name="default-access-domain">
+        <type name="leafref">
+          <path value="../../domains/domain/name"/>
+        </type>
+        <default value="default1"/>
+        <description>
+          <text>Access user default domain.</text>
+        </description>
+      </leaf>
+      <leaf name="parse-priority">
+        <type name="aaa-parse-priority-type"/>
+        <default value="domain-first"/>
+        <description>
+          <text>Specifies priorities for parsing domain names.</text>
+        </description>
+      </leaf>
+      <leaf name="realm-location">
+        <type name="aaa-realm-location-type"/>
+        <default value="before-delimiter"/>
+        <description>
+          <text>Specifies a position for a realm domain name.</text>
+        </description>
+      </leaf>
+      <leaf name="real-name-delimiter">
+        <type name="string">
+          <length value="1"/>
+          <pattern value="[/:&lt;&gt;\|@%']"/>
+        </type>
+        <description>
+          <text>Specifies a realm name delimiter used to parse the user account. The value is a single character. It can be one of the following symbols: back-slant, /, :, &lt;, &gt;, |, @, %, '.</text>
+        </description>
+      </leaf>
+      <leaf name="real-name-parse-direction">
+        <type name="aaa-parse-direction-type"/>
+        <default value="left-to-right"/>
+        <description>
+          <text>Specifies a parsing direction for the realm name.</text>
+        </description>
+      </leaf>
+      <leaf name="roam-character">
+        <type name="string">
+          <length value="1"/>
+          <pattern value="[/:*&lt;&gt;\|]"/>
+        </type>
+        <default value=":"/>
+        <description>
+          <text>Specifies an identifier for a roaming user. The value is a single character. It can be one of the following symbols: back-slant, /, :, *, &lt;, &gt;, |.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="recording">
+      <description>
+        <text>Configure recording function.</text>
+      </description>
+      <container name="function">
+        <description>
+          <text>Configure recording function.</text>
+        </description>
+        <leaf name="cmd-record-scheme">
+          <type name="leafref">
+            <path value="../../schemes/scheme/name"/>
+          </type>
+          <description>
+            <text>The recording scheme used by cmd recording.</text>
+          </description>
+        </leaf>
+        <leaf name="system-record-scheme">
+          <type name="leafref">
+            <path value="../../schemes/scheme/name"/>
+          </type>
+          <description>
+            <text>Configures a solution to record system events. Currently, only events triggered by the reboot command are recorded.</text>
+          </description>
+        </leaf>
+        <leaf name="outbound-record-scheme">
+          <type name="leafref">
+            <path value="../../schemes/scheme/name"/>
+          </type>
+          <description>
+            <text>Records remote login operations for the device that functions as the client.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="schemes">
+        <description>
+          <text>List of recording scheme.</text>
+        </description>
+        <list name="scheme">
+          <key value="name"/>
+          <description>
+            <text>Configure recording scheme.</text>
+          </description>
+          <leaf name="name">
+            <type name="string">
+              <length value="1..32"/>
+              <pattern value='[^A-Z/\*":?&lt;&gt;|]+'/>
+            </type>
+            <ext:case-sensitivity value="lower-only"/>
+            <description>
+              <text>Recording scheme name.</text>
+            </description>
+          </leaf>
+          <leaf name="tacacs-group">
+            <type name="leafref">
+              <path value="/hwtacacs:hwtacacs/hwtacacs:templates/hwtacacs:template/hwtacacs:name"/>
+            </type>
+            <description>
+              <text>The binded HWTACACS server.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="online-offline-rec-switch">
+      <description>
+        <text>Configure whether to enable login failure and logout recording for management users.</text>
+      </description>
+      <leaf name="login-fail-rec-switch">
+        <type name="aaa-enable-type"/>
+        <default value="enable"/>
+        <description>
+          <text>Enables recording of login failures.</text>
+        </description>
+      </leaf>
+      <leaf name="logout-rec-switch">
+        <type name="aaa-enable-type"/>
+        <default value="enable"/>
+        <description>
+          <text>Enables recording of normal and abnormal logouts.</text>
+        </description>
+      </leaf>
+      <leaf name="abnormal-logout-rec-switch">
+        <type name="aaa-enable-type"/>
+        <default value="enable"/>
+        <description>
+          <text>Enables recording of abnormal logouts.</text>
+        </description>
+      </leaf>
+      <leaf name="normal-logout-rec-switch">
+        <type name="aaa-enable-type"/>
+        <default value="enable"/>
+        <description>
+          <text>Enables recording of normal logouts.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="abnormal-offline-hidens">
+      <description>
+        <text>List of the function that replaces the abnormal offline reason with 'the user requests to go offline'.</text>
+      </description>
+      <list name="abnormal-offline-hiden">
+        <key value="hidden-id"/>
+        <description>
+          <text>Configure the function that replaces the abnormal offline reason with 'the user requests to go offline'.</text>
+        </description>
+        <leaf name="hidden-id">
+          <type name="uint32">
+            <range value="2..18"/>
+          </type>
+          <description>
+            <text>Specifies an ID for an abnormal logout reason.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="lam">
+      <description>
+        <text>Configure the local account and related policy management functions.</text>
+      </description>
+      <uses name="aaa:aaa-lam-type"/>
+    </container>
+    <container name="local-server">
+      <description>
+        <text>Configure a local AAA server. You can perform access security configurations for local users.</text>
+      </description>
+      <uses name="aaa:aaa-local-server-type"/>
+    </container>
+  </container>
+</module>

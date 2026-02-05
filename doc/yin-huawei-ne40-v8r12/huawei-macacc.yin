@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-macacc"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:macacc="urn:huawei:yang:huawei-macacc"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:l2vpn="urn:huawei:yang:huawei-l2vpn"
+        xmlns:bd="urn:huawei:yang:huawei-bd"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type">
+  <namespace uri="urn:huawei:yang:huawei-macacc"/>
+  <prefix value="macacc"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-l2vpn">
+    <prefix value="l2vpn"/>
+  </import>
+  <import module="huawei-bd">
+    <prefix value="bd"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <ext:task-name value="mac"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>MAC accounting.</text>
+  </description>
+  <revision date="2021-03-01">
+    <description>
+      <text>Add MAC accounting containers.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-06-11">
+    <description>
+      <text>Add new containers.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-06">
+    <description>
+      <text>Change description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-15">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <rpc name="reset-mac-accounting-interface">
+    <description>
+      <text>Reset MAC accounting counters.</text>
+    </description>
+    <ext:node-ref value="/ifm:ifm/ifm:interfaces/ifm:interface"/>
+    <input>
+      <leaf name="interface-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Interface name.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-address">
+        <type name="pub-type:mac-address"/>
+        <description>
+          <text>MAC address.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:vpls">
+    <description>
+      <text>VSI MAC accounting.</text>
+    </description>
+    <container name="mac-accounting">
+      <when condition="../l2vpn:work-mode='normal'"/>
+      <description>
+        <text>Configure VSI MAC accounting.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the flag of VSI MAC accounting.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/bd:bd/bd:instances/bd:instance">
+    <description>
+      <text>BD MAC accounting.</text>
+    </description>
+    <container name="mac-accounting">
+      <description>
+        <text>Configure BD MAC accounting.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the flag of BD MAC accounting.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:main-interface">
+    <description>
+      <text>MAC accounting.</text>
+    </description>
+    <container name="mac-accounting">
+      <must condition="(../../../ifm:type='Ethernet' or ../../../ifm:type='GigabitEthernet' or ../../../ifm:type='Eth-Trunk' or ../../../ifm:type='100GE' or ../../../ifm:type='XGigabitEthernet' or ../../../ifm:type='40GE' or ../../../ifm:type='10GE' or ../../../ifm:type='400GE' or ../../../ifm:type='25GE' or ../../../ifm:type='FlexE' or ../../../ifm:type='50GE' or ../../../ifm:type='50|100GE')"/>
+      <description>
+        <text>Configure MAC accounting.</text>
+      </description>
+      <leaf name="enable">
+        <type name="empty"/>
+        <description>
+          <text>Enable/disable the flag of MAC accounting.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Interface MAC accounting.</text>
+    </description>
+    <container name="mac-accounting">
+      <description>
+        <text>Configure MAC accounting.</text>
+      </description>
+      <container name="mac-accounting-counters">
+        <config value="false"/>
+        <description>
+          <text>List of the statistics of interface MAC accounting.</text>
+        </description>
+        <list name="mac-accounting-counter">
+          <key value="mac-address"/>
+          <description>
+            <text>Statistics of the MAC accounting.</text>
+          </description>
+          <leaf name="mac-address">
+            <type name="pub-type:mac-address"/>
+            <description>
+              <text>MAC address.</text>
+            </description>
+          </leaf>
+          <leaf name="input-frames">
+            <type name="uint64"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of upstream packets.</text>
+            </description>
+          </leaf>
+          <leaf name="input-bytes">
+            <type name="uint64"/>
+            <units name="Byte"/>
+            <description>
+              <text>Number of upstream bytes.</text>
+            </description>
+          </leaf>
+          <leaf name="output-frames">
+            <type name="uint64"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of downstream packets.</text>
+            </description>
+          </leaf>
+          <leaf name="output-bytes">
+            <type name="uint64"/>
+            <units name="Byte"/>
+            <description>
+              <text>Number of downstream bytes.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

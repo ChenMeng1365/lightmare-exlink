@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bgp-rpd"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgp-rpd="urn:huawei:yang:huawei-bgp-rpd"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp"
+        xmlns:bgp-rt="urn:huawei:yang:huawei-bgp-routing-table">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bgp-rpd"/>
+  <prefix value="bgp-rpd"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <import module="huawei-bgp-routing-table">
+    <prefix value="bgp-rt"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Inter-AS routing protocol that exchanges Network Layer Reachability Information (NLRI) with other BGP systems.</text>
+  </description>
+  <revision date="2020-08-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bgp"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af">
+    <description>
+      <text>BGP RPD address family configuration.</text>
+    </description>
+    <container name="rpd">
+      <when condition="../bgp:type='rpd'"/>
+      <description>
+        <text>Configure RPD address family.</text>
+      </description>
+      <container name="common">
+        <description>
+          <text>Configure BGP RPD common options.</text>
+        </description>
+        <leaf name="router-id-filter">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable router ID filter.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:peers/bgp:peer/bgp:afs/bgp:af">
+    <description>
+      <text>BGP RPD address family configuration.</text>
+    </description>
+    <container name="rpd">
+      <when condition="../bgp:type = 'rpd'"/>
+      <description>
+        <text>Configure RPD options.</text>
+      </description>
+      <leaf name="graceful-restart-static-timer">
+        <type name="uint32">
+          <range value="3600..2147483647"/>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Specifies the maximum time during which a peer waits for a BGP session reestablishment.</text>
+        </description>
+      </leaf>
+      <uses name="bgp:path-attr-map-type"/>
+    </container>
+  </augment>
+  <augment target-node="/bgp:bgp/bgp:base-process/bgp-rt:bgp-route">
+    <description>
+      <text>BGP RPD address family routes information.</text>
+    </description>
+    <container name="rpd">
+      <config value="false"/>
+      <description>
+        <text>Statistics of RPD routes.</text>
+      </description>
+      <container name="statistic">
+        <description>
+          <text>Statistics of BGP routes information of RPD address family.</text>
+        </description>
+        <uses name="bgp-rt:route-total-st-type"/>
+      </container>
+    </container>
+  </augment>
+</module>

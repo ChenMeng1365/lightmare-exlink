@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-monitor-group"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:monitor-group="urn:huawei:yang:huawei-monitor-group"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-monitor-group"/>
+  <prefix value="monitor-group"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Global monitor group configuration.</text>
+  </description>
+  <revision date="2020-03-09">
+    <description>
+      <text>Fix trigger-up-delay units.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-28">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="interface-mgr"/>
+  <typedef name="status-type">
+    <type name="enumeration">
+      <enum name="inactive">
+        <value value="0"/>
+        <description>
+          <text>The status of monitor group is inactive.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="1"/>
+        <description>
+          <text>The status of monitor group is active.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Status type is like inactive/active.</text>
+    </description>
+  </typedef>
+  <container name="monitor-group">
+    <description>
+      <text>Global monitor group configuration.</text>
+    </description>
+    <container name="groups">
+      <description>
+        <text>List of monitor groups.</text>
+      </description>
+      <list name="group">
+        <key value="name"/>
+        <description>
+          <text>Configure this table to operate monitor groups on devices.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Specifies the name of an interface monitoring group.</text>
+          </description>
+        </leaf>
+        <leaf name="trigger-up-delay">
+          <type name="uint32">
+            <range value="0..4294967295"/>
+          </type>
+          <units name="s"/>
+          <default value="0"/>
+          <description>
+            <text>Delay for a track interface to go up.</text>
+          </description>
+        </leaf>
+        <leaf name="enable-status">
+          <type name="status-type"/>
+          <default value="inactive"/>
+          <description>
+            <text>Status of monitor group.</text>
+          </description>
+        </leaf>
+        <container name="binding-ifs">
+          <description>
+            <text>List of monitor group binding interfaces.</text>
+          </description>
+          <list name="binding-if">
+            <key value="if-name"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure monitor group binding interface.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <description>
+                <text>Name of monitor group binding interface.</text>
+              </description>
+            </leaf>
+            <leaf name="down-weight">
+              <type name="uint32">
+                <range value="1..1000"/>
+              </type>
+              <default value="10"/>
+              <description>
+                <text>Down weight of monitor group binding interface.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>A set of track interfaces.</text>
+    </description>
+    <container name="track-monitor-group">
+      <description>
+        <text>Configure a set of track interfaces.</text>
+      </description>
+      <leaf name="name">
+        <type name="leafref">
+          <path value="/monitor-group:monitor-group/monitor-group:groups/monitor-group:group/monitor-group:name"/>
+        </type>
+        <description>
+          <text>The monitoring group was tracked under the interface.</text>
+        </description>
+      </leaf>
+      <leaf name="down-weight">
+        <when condition="../name"/>
+        <type name="uint32">
+          <range value="1..1000"/>
+        </type>
+        <description>
+          <text>Trigger down weight of a track interface.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

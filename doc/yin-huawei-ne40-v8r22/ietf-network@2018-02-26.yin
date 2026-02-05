@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-network"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nw="urn:ietf:params:xml:ns:yang:ietf-network"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-network"/>
+  <prefix value="nw"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+    <reference>
+      <text>RFC 6991: Common YANG Data Types</text>
+    </reference>
+  </import>
+  <organization>
+    <text>IETF I2RS (Interface to the Routing System) Working Group</text>
+  </organization>
+  <contact>
+    <text>WG Web:    &lt;https://datatracker.ietf.org/wg/i2rs/&gt;
+WG List:   &lt;mailto:i2rs@ietf.org&gt;
+
+Editor:    Alexander Clemm
+           &lt;mailto:ludwig@clemm.org&gt;
+
+Editor:    Jan Medved
+           &lt;mailto:jmedved@cisco.com&gt;
+
+Editor:    Robert Varga
+           &lt;mailto:robert.varga@pantheon.tech&gt;
+
+Editor:    Nitin Bahadur
+           &lt;mailto:nitin_bahadur@yahoo.com&gt;
+
+Editor:    Hariharan Ananthakrishnan
+           &lt;mailto:hari@packetdesign.com&gt;
+
+Editor:    Xufeng Liu
+           &lt;mailto:xufeng.liu.ietf@gmail.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module defines a common base data model for a collection
+of nodes in a network.  Node definitions are further used
+in network topologies and inventories.
+
+Copyright (c) 2018 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(https://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC 8345;
+see the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2018-02-26">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>RFC 8345: A YANG Data Model for Network Topologies</text>
+    </reference>
+  </revision>
+  <typedef name="node-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Identifier for a node.  The precise structure of the node-id
+will be up to the implementation.  For example, some
+implementations MAY pick a URI that includes the network-id
+as part of the path.  The identifier SHOULD be chosen
+such that the same node in a real network topology will
+always be identified through the same identifier, even if
+the data model is instantiated in separate datastores.  An
+implementation MAY choose to capture semantics in the
+identifier -- for example, to indicate the type of node.</text>
+    </description>
+  </typedef>
+  <typedef name="network-id">
+    <type name="inet:uri"/>
+    <description>
+      <text>Identifier for a network.  The precise structure of the
+network-id will be up to the implementation.  The identifier
+SHOULD be chosen such that the same network will always be
+identified through the same identifier, even if the data model
+is instantiated in separate datastores.  An implementation MAY
+choose to capture semantics in the identifier -- for example,
+to indicate the type of network.</text>
+    </description>
+  </typedef>
+  <grouping name="network-ref">
+    <description>
+      <text>Contains the information necessary to reference a network --
+for example, an underlay network.</text>
+    </description>
+    <leaf name="network-ref">
+      <type name="leafref">
+        <path value="/nw:networks/nw:network/nw:network-id"/>
+        <require-instance value="false"/>
+      </type>
+      <description>
+        <text>Used to reference a network -- for example, an underlay
+network.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="node-ref">
+    <description>
+      <text>Contains the information necessary to reference a node.</text>
+    </description>
+    <leaf name="node-ref">
+      <type name="leafref">
+        <path value="/nw:networks/nw:network[nw:network-id=current()/../network-ref]/nw:node/nw:node-id"/>
+        <require-instance value="false"/>
+      </type>
+      <description>
+        <text>Used to reference a node.
+Nodes are identified relative to the network that
+contains them.</text>
+      </description>
+    </leaf>
+    <uses name="network-ref"/>
+  </grouping>
+  <container name="networks">
+    <description>
+      <text>Serves as a top-level container for a list of networks.</text>
+    </description>
+    <list name="network">
+      <key value="network-id"/>
+      <description>
+        <text>Describes a network.
+A network typically contains an inventory of nodes,
+topological information (augmented through the
+network-topology data model), and layering information.</text>
+      </description>
+      <leaf name="network-id">
+        <type name="network-id"/>
+        <description>
+          <text>Identifies a network.</text>
+        </description>
+      </leaf>
+      <container name="network-types">
+        <description>
+          <text>Serves as an augmentation target.
+The network type is indicated through corresponding
+presence containers augmented into this container.</text>
+        </description>
+      </container>
+      <list name="supporting-network">
+        <key value="network-ref"/>
+        <description>
+          <text>An underlay network, used to represent layered network
+topologies.</text>
+        </description>
+        <leaf name="network-ref">
+          <type name="leafref">
+            <path value="/nw:networks/nw:network/nw:network-id"/>
+            <require-instance value="false"/>
+          </type>
+          <description>
+            <text>References the underlay network.</text>
+          </description>
+        </leaf>
+      </list>
+      <list name="node">
+        <key value="node-id"/>
+        <description>
+          <text>The inventory of nodes of this network.</text>
+        </description>
+        <leaf name="node-id">
+          <type name="node-id"/>
+          <description>
+            <text>Uniquely identifies a node within the containing
+network.</text>
+          </description>
+        </leaf>
+        <list name="supporting-node">
+          <key value="network-ref node-ref"/>
+          <description>
+            <text>Represents another node that is in an underlay network
+and that supports this node.  Used to represent layering
+structure.</text>
+          </description>
+          <leaf name="network-ref">
+            <type name="leafref">
+              <path value="../../../nw:supporting-network/nw:network-ref"/>
+              <require-instance value="false"/>
+            </type>
+            <description>
+              <text>References the underlay network of which the
+underlay node is a part.</text>
+            </description>
+          </leaf>
+          <leaf name="node-ref">
+            <type name="leafref">
+              <path value="/nw:networks/nw:network/nw:node/nw:node-id"/>
+              <require-instance value="false"/>
+            </type>
+            <description>
+              <text>References the underlay node itself.</text>
+            </description>
+          </leaf>
+        </list>
+      </list>
+    </list>
+  </container>
+</module>

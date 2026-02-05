@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-ssh"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ssh="http://www.zte.com.cn/zxr10/netconf/schema/rosng/ssh"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/ssh"/>
+  <prefix value="ssh"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe the SSH(Secure Shell).</text>
+  </description>
+  <revision date="2020-08-27">
+    <description>
+      <text>1.Add container node '/configuration/ssh/ssh-server/hmac', add list node '/configuration/ssh/ssh-server/hmac/hmac-algorithm-disabled' add leaf node '/configuration/ssh/ssh-server/hmac/hmac-algorithm-disabled/hmac-algorithm'
+
+2.Add container node '/configuration/ssh/ssh-server/encryption', add list node '/configuration/ssh/ssh-server/encryption/encryption-algorithm-disabled' add leaf node '/configuration/ssh/ssh-server/encryption/encryption-algorithm-disabled/encryption-algorithm'
+
+3.Add container node '/configuration/ssh/ssh-server/diffie-hellman', add list node '/configuration/ssh/ssh-server/diffie-hellman/diffie-hellman-algorithm-disabled' add leaf node '/configuration/ssh/ssh-server/diffie-hellman/diffie-hellman-algorithm-disabled/diffie-hellman-algorithm'
+
+4.Add container node '/configuration/ssh/ssh-server/host-key', add list node '/configuration/ssh/ssh-server/host-key/host-key-algorithm-disabled' add leaf node '/configuration/ssh/ssh-server/host-key/host-key-algorithm-disabled/host-key-algorithm'</text>
+    </description>
+  </revision>
+  <revision date="2019-01-28">
+    <description>
+      <text>1.Add container node '/state/ssh/host-key/rsa', add leaf node '/state/ssh/host-key/rsa/key-modulus' and '/state/ssh/host-key/rsa/key-code'
+
+2.Add list node '/state/ssh/host-key/ecc', add leaf node '/state/ssh/host-key/ecc/curve-name', '/state/ssh/host-key/ecc/key-modulus' and '/state/ssh/host-key/ecc/key-code'
+
+3.Add choice node '/operation/ssh/generate/host-key', add case node '/operation/ssh/generate/host-key/rsa' and '/operation/ssh/generate/host-key/ecc', add leaf node '/operation/ssh/generate/host-key/rsa/rsa' and '/operation/ssh/generate/host-key/rsa/key-modulus' and '/operation/ssh/generate/host-key/ecc' and '/operation/ssh/generate/host-key/ecc/curve-name'
+
+4.Add feature node 'weak-host-key-algorithm' and 'strong-host-key-algorithm'</text>
+    </description>
+  </revision>
+  <revision date="2019-01-23">
+    <description>
+      <text>Support keyboard-interactive authentication.</text>
+    </description>
+  </revision>
+  <revision date="2014-05-06">
+    <description>
+      <text>Modify the default value of dscp.</text>
+    </description>
+  </revision>
+  <revision date="2014-01-24">
+    <description>
+      <text>1.Modified configuration/ssh/ssh-server/authentication/user/username node maximum length from 32 to 65.</text>
+    </description>
+  </revision>
+  <revision date="2013-11-01">
+    <description>
+      <text>1.Modified state/ssh/publick-key/key-code node maximum length from 512 to 2048.
+2.Remove mandatory attribute of configuration/ssh/ssh-server/server-valid/enable/enable node.</text>
+    </description>
+  </revision>
+  <revision date="2013-10-15">
+    <description>
+      <text>1.Add state for supporting get user authentication public-key information.
+2.Modified configuration/ssh/ssh-server/authentication/user/auth-type node and operation/ssh/generate/key/key-type node type from uint8 to enumeration.
+3.Add length range for string node.</text>
+    </description>
+  </revision>
+  <revision date="2013-09-25">
+    <description>
+      <text>Move the listen-port node to enable case.</text>
+    </description>
+  </revision>
+  <revision date="2013-07-17">
+    <description>
+      <text>Modified according to the specification, e.g. adding some descriptions and deleting capital letter of entity names.</text>
+    </description>
+  </revision>
+  <revision date="2013-06-19">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <feature name="strong-host-key-algorithm"/>
+  <feature name="weak-host-key-algorithm">
+    <description>
+      <text>Only RSA is supported, The modulus of the RSA key pair is 1024.</text>
+    </description>
+  </feature>
+  <container name="configuration">
+    <description>
+      <text>The configuration model of SSH.</text>
+    </description>
+    <container name="ssh">
+      <description>
+        <text>Configure the SSH parameters.</text>
+      </description>
+      <container name="ssh-server">
+        <description>
+          <text>Configure the SSH server parameters.</text>
+        </description>
+        <choice name="server-valid">
+          <description>
+            <text>To configure the SSH server enable or disable.</text>
+          </description>
+          <default value="disable"/>
+          <case name="disable">
+            <description>
+              <text>To configure the SSH server disable.</text>
+            </description>
+            <leaf name="disable">
+              <description>
+                <text>Disable the SSH server. After disable the snetconf server, then the SSH server can be disabled.</text>
+              </description>
+              <type name="empty"/>
+            </leaf>
+          </case>
+          <case name="enable">
+            <description>
+              <text>To configure the SSH server enable.</text>
+            </description>
+            <leaf name="enable">
+              <description>
+                <text>Enable the SSH server. After enable the SSH server, then the snetconf server can be enabled.</text>
+              </description>
+              <type name="empty"/>
+            </leaf>
+            <leaf name="listen-port">
+              <description>
+                <text>The listenning port of the SSH server. It can be configured as 22 or any integer between 49152 and 65535. It cannot be changed while SSH server has been enabled.</text>
+              </description>
+              <type name="uint16">
+                <range value="22 | 49152..65535"/>
+              </type>
+              <default value="22"/>
+            </leaf>
+          </case>
+        </choice>
+        <container name="acl">
+          <description>
+            <text>The ACL name which is binded to the SSH server.</text>
+          </description>
+          <leaf name="ipv4-acl">
+            <description>
+              <text>The IPv4 ACL name which is binded to the SSH server.</text>
+            </description>
+            <type name="string">
+              <length value="1..31">
+                <description>
+                  <text>The ACL name length must be between 1 and 31 characters.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+          <leaf name="ipv6-acl">
+            <description>
+              <text>The IPv6 ACL name which is binded to the SSH server.</text>
+            </description>
+            <type name="string">
+              <length value="1..31">
+                <description>
+                  <text>The ACL name length must be between 1 and 31 characters.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+        </container>
+        <leaf name="dscp">
+          <description>
+            <text>The DSCP value is used in packets of the SSH server. It can be configured any integer between 0 and 63.</text>
+          </description>
+          <type name="uint8">
+            <range value="0..63"/>
+          </type>
+        </leaf>
+        <leaf name="version">
+          <description>
+            <text>The protocol version of the SSH server. The value is 1 or 2. 
+1 : SSH version 1; 
+2 : SSH version 2.</text>
+          </description>
+          <type name="uint8">
+            <range value="1..2"/>
+          </type>
+          <default value="2"/>
+        </leaf>
+        <container name="authentication">
+          <description>
+            <text>Configure the authentication type of SSH server.</text>
+          </description>
+          <list name="user">
+            <description>
+              <text>Configure the authentication type of specified SSH user. SSH user should be configured on ADM_MGR at first.
+  If the SSH user only need password authentication, this node may be not configured. 
+  If the SSH user need public-key authentication, this node must be configured.</text>
+            </description>
+            <key value="username"/>
+            <leaf name="username">
+              <description>
+                <text>The name of a user.</text>
+              </description>
+              <type name="string">
+                <length value="1..65">
+                  <description>
+                    <text>The user name length must be between 1 and 65 characters.</text>
+                  </description>
+                </length>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="auth-type">
+              <description>
+                <text>The authentication type of the SSH server. Include: password authentication, pubblic-key authentication, password and public-key authentication, password or public-key authentication.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="password">
+                  <value value="1"/>
+                  <description>
+                    <text>Password authentication.</text>
+                  </description>
+                </enum>
+                <enum name="publickey">
+                  <value value="2"/>
+                  <description>
+                    <text>Public-key authentication.</text>
+                  </description>
+                </enum>
+                <enum name="password-publickey">
+                  <value value="3"/>
+                  <description>
+                    <text>Password and public-key authentication.</text>
+                  </description>
+                </enum>
+                <enum name="any">
+                  <value value="4"/>
+                  <description>
+                    <text>Password or public-key or keyboard-interactive authentication;</text>
+                  </description>
+                </enum>
+                <enum name="keyboard-interactive">
+                  <value value="7"/>
+                  <description>
+                    <text>Keyboard-interactive authentication.</text>
+                  </description>
+                </enum>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="key-name">
+              <description>
+                <text>The key name used by public-key authentication.</text>
+              </description>
+              <type name="string">
+                <length value="1..31">
+                  <description>
+                    <text>The public-key name length must be between 1 and 31 characters.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+          </list>
+        </container>
+        <container name="rekey">
+          <description>
+            <text>Configure the parameters of regenerate server key.</text>
+          </description>
+          <leaf name="interval">
+            <description>
+              <text>The interval of regenerate server key. The valid value is any integer between 0 and 720. 
+The value of 0 means no regeneration.</text>
+            </description>
+            <type name="uint16">
+              <range value="0..720"/>
+            </type>
+            <units name="hour"/>
+            <default value="1"/>
+          </leaf>
+        </container>
+        <container name="hmac">
+          <description>
+            <text>shield SSH hmac algorithm</text>
+          </description>
+          <list name="hmac-algorithm-disabled">
+            <description>
+              <text>hmac algorithm disabled</text>
+            </description>
+            <key value="hmac-algorithm"/>
+            <leaf name="hmac-algorithm">
+              <description>
+                <text>hmac algorithm</text>
+              </description>
+              <type name="enumeration">
+                <enum name="none">
+                  <value value="1"/>
+                  <description>
+                    <text>none algorithm</text>
+                  </description>
+                </enum>
+                <enum name="md5">
+                  <value value="2"/>
+                  <description>
+                    <text>md5 algorithm</text>
+                  </description>
+                </enum>
+                <enum name="sha1">
+                  <value value="11"/>
+                  <description>
+                    <text>sha1 algorithm</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+          </list>
+          <ncd:revise-date date="2020-08-27"/>
+        </container>
+        <container name="encryption">
+          <description>
+            <text>shield SSH encryption algorithm</text>
+          </description>
+          <list name="encryption-algorithm-disabled">
+            <description>
+              <text>encryption algorithm disabled</text>
+            </description>
+            <key value="encryption-algorithm"/>
+            <leaf name="encryption-algorithm">
+              <description>
+                <text>encryption algorithm</text>
+              </description>
+              <type name="enumeration">
+                <enum name="none">
+                  <value value="3"/>
+                  <description>
+                    <text>none algorithm</text>
+                  </description>
+                </enum>
+                <enum name="aes128-cbc">
+                  <value value="5"/>
+                  <description>
+                    <text>aes128-cbc algorithm</text>
+                  </description>
+                </enum>
+                <enum name="blowfish-cbc">
+                  <value value="6"/>
+                  <description>
+                    <text>blowfish-cbc algorithm</text>
+                  </description>
+                </enum>
+                <enum name="3des-cbc">
+                  <value value="7"/>
+                  <description>
+                    <text>3des-cbc algorithm</text>
+                  </description>
+                </enum>
+                <enum name="aes192-cbc">
+                  <value value="8"/>
+                  <description>
+                    <text>aes192-cbc algorithm</text>
+                  </description>
+                </enum>
+                <enum name="aes256-cbc">
+                  <value value="9"/>
+                  <description>
+                    <text>aes256-cbc algorithm</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+          </list>
+          <ncd:revise-date date="2020-08-27"/>
+        </container>
+        <container name="diffie-hellman">
+          <description>
+            <text>shield SSH diffie-hellman algorithm</text>
+          </description>
+          <list name="diffie-hellman-algorithm-disabled">
+            <description>
+              <text>diffie-hellman algorithm disabled</text>
+            </description>
+            <key value="diffie-hellman-algorithm"/>
+            <leaf name="diffie-hellman-algorithm">
+              <description>
+                <text>diffie-hellman algorithm</text>
+              </description>
+              <type name="enumeration">
+                <enum name="group1-sha1">
+                  <value value="4"/>
+                  <description>
+                    <text>group1-sha1 algorithm</text>
+                  </description>
+                </enum>
+                <enum name="group-exchange-sha1">
+                  <value value="13"/>
+                  <description>
+                    <text>group-exchange-sha1 algorithm</text>
+                  </description>
+                </enum>
+                <enum name="group-exchange-sha256">
+                  <value value="23"/>
+                  <description>
+                    <text>group-exchange-sha256 algorithm</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+          </list>
+          <ncd:revise-date date="2020-08-27"/>
+        </container>
+        <container name="host-key">
+          <description>
+            <text>shield SSH host-key algorithm</text>
+          </description>
+          <list name="host-key-algorithm-disabled">
+            <description>
+              <text>host-key algorithm disabled</text>
+            </description>
+            <key value="host-key-algorithm"/>
+            <leaf name="host-key-algorithm">
+              <description>
+                <text>host-key algorithm</text>
+              </description>
+              <type name="enumeration">
+                <enum name="dsa">
+                  <value value="28"/>
+                  <description>
+                    <text>dsa algorithm</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+          </list>
+          <ncd:revise-date date="2020-08-27"/>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <container name="ssh">
+      <description>
+        <text>SSH state parameters</text>
+      </description>
+      <list name="public-key">
+        <description>
+          <text>The the detail information of public-key.</text>
+        </description>
+        <key value="key-name"/>
+        <leaf name="key-name">
+          <description>
+            <text>The name of public key.</text>
+          </description>
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+        </leaf>
+        <leaf name="key-type">
+          <description>
+            <text>The type of public key.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="RSA">
+              <value value="1"/>
+              <description>
+                <text>RSA type</text>
+              </description>
+            </enum>
+            <enum name="DSA">
+              <value value="2"/>
+              <description>
+                <text>DSA type</text>
+              </description>
+            </enum>
+          </type>
+        </leaf>
+        <leaf name="key-module">
+          <description>
+            <text>The module of public key.</text>
+          </description>
+          <type name="uint16">
+            <range value="512..2048"/>
+          </type>
+        </leaf>
+        <leaf name="key-code">
+          <description>
+            <text>The code of public key.</text>
+          </description>
+          <type name="string">
+            <length value="1..2048"/>
+          </type>
+        </leaf>
+      </list>
+      <container name="host-key">
+        <description>
+          <text>The host key information</text>
+        </description>
+        <container name="rsa">
+          <description>
+            <text>RSA (Revest-Shamir-Adleman Algorithm) host key.</text>
+          </description>
+          <leaf name="key-modulus">
+            <description>
+              <text>The modulus of the RSA key pair, in bits.</text>
+            </description>
+            <type name="uint32">
+              <range value="256..2048"/>
+            </type>
+          </leaf>
+          <leaf name="key-code">
+            <description>
+              <text>RSA host public key information.</text>
+            </description>
+            <type name="string">
+              <length value="1..2048"/>
+            </type>
+          </leaf>
+        </container>
+        <list name="ecc">
+          <description>
+            <text>ECC (Elliptic Curves Cryptography) host key.</text>
+          </description>
+          <key value="curve-name"/>
+          <leaf name="curve-name">
+            <description>
+              <text>Elliptic curve name.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="nistp256">
+                <value value="1"/>
+                <description>
+                  <text>NISTP256 algorithm</text>
+                </description>
+              </enum>
+              <enum name="nistp384">
+                <value value="2"/>
+                <description>
+                  <text>NISTP384 algorithm</text>
+                </description>
+              </enum>
+              <enum name="nistp521">
+                <value value="3"/>
+                <description>
+                  <text>NISTP521 algorithm</text>
+                </description>
+              </enum>
+              <enum name="ed25519">
+                <value value="4"/>
+                <description>
+                  <text>ED25519 algorithm</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="key-modulus">
+            <description>
+              <text>The modulus of the ECC key pair, in bits.</text>
+            </description>
+            <type name="uint32">
+              <range value="256..2048"/>
+            </type>
+          </leaf>
+          <leaf name="key-code">
+            <description>
+              <text>ECC host public key information.</text>
+            </description>
+            <type name="string">
+              <length value="1..2048"/>
+            </type>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>The operation model of SSH.</text>
+    </description>
+    <container name="ssh">
+      <description>
+        <text>The parameters of SSH operation.</text>
+      </description>
+      <container name="import">
+        <description>
+          <text>The importing operation of SSH.</text>
+        </description>
+        <container name="public-key">
+          <description>
+            <text>Import public-key file to SSH.</text>
+          </description>
+          <presence value="The parameter key-name and key-file should be set at the same time."/>
+          <leaf name="key-name">
+            <description>
+              <text>The name of public key.</text>
+            </description>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="key-file">
+            <description>
+              <text>The key file and path that to be imported.</text>
+            </description>
+            <type name="string">
+              <length value="1..159"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+      </container>
+      <container name="clear">
+        <description>
+          <text>The clearing operation of SSH.</text>
+        </description>
+        <container name="public-key">
+          <description>
+            <text>Clear public-key of SSH.</text>
+          </description>
+          <leaf name="key-name">
+            <description>
+              <text>The public-key name that to be cleared.</text>
+            </description>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+          </leaf>
+        </container>
+      </container>
+      <container name="generate">
+        <description>
+          <text>The generating operation of SSH.</text>
+        </description>
+        <container name="key">
+          <description>
+            <text>Generate or update public/private key pairs of SSH.</text>
+          </description>
+          <leaf name="key-type">
+            <description>
+              <text>The type of public/private key pairs. Only RSA is supported now.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="RSA">
+                <value value="1"/>
+                <description>
+                  <text>RSA type.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+        </container>
+        <choice name="host-key">
+          <description>
+            <text>Generate or update public/private key pairs of SSH.</text>
+          </description>
+          <case name="rsa">
+            <description>
+              <text>RSA (Revest-Shamir-Adleman Algorithm) host key.</text>
+            </description>
+            <leaf name="rsa">
+              <description>
+                <text>RSA algorithm.</text>
+              </description>
+              <type name="empty"/>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="key-modulus">
+              <description>
+                <text>The modulus of the RSA key pair, in bits. default is 1024.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="1024">
+                  <value value="1024"/>
+                  <description>
+                    <text>The number of RSA modulus bits is 1024.</text>
+                  </description>
+                </enum>
+                <enum name="2048">
+                  <value value="2048"/>
+                  <description>
+                    <text>The number of RSA modulus bits is 2048.</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="1024"/>
+            </leaf>
+          </case>
+          <case name="ecc">
+            <description>
+              <text>ECC (Elliptic Curves Cryptography) host key.</text>
+            </description>
+            <leaf name="ecc">
+              <description>
+                <text>ECC algorithm.</text>
+              </description>
+              <type name="empty"/>
+              <mandatory value="true"/>
+            </leaf>
+            <leaf name="curve-name">
+              <description>
+                <text>Elliptic curve name.Default is nistp521.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="nistp256">
+                  <value value="1"/>
+                  <description>
+                    <text>nistp256 algorithm.</text>
+                  </description>
+                </enum>
+                <enum name="nistp384">
+                  <value value="2"/>
+                  <description>
+                    <text>nistp384 algorithm.</text>
+                  </description>
+                </enum>
+                <enum name="nistp521">
+                  <value value="3"/>
+                  <description>
+                    <text>nistp521 algorithm.</text>
+                  </description>
+                </enum>
+                <enum name="ed25519">
+                  <value value="4"/>
+                  <description>
+                    <text>ed25519 algorithm.</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="nistp521"/>
+            </leaf>
+          </case>
+        </choice>
+      </container>
+    </container>
+  </container>
+</module>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-aft-pf"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-aft="http://openconfig.net/yang/aft"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+           xmlns:oc-yang="http://openconfig.net/yang/types/yang"
+           xmlns:oc-mplst="http://openconfig.net/yang/mpls-types"
+           xmlns:oc-pkt-match-types="http://openconfig.net/yang/packet-match-types">
+  <belongs-to module="openconfig-aft">
+    <prefix value="oc-aft"/>
+  </belongs-to>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <import module="openconfig-mpls-types">
+    <prefix value="oc-mplst"/>
+  </import>
+  <import module="openconfig-packet-match-types">
+    <prefix value="oc-pkt-match-types"/>
+  </import>
+  <include module="openconfig-aft-common"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>Submodule containing definitions of groupings for the abstract
+forwarding table(s) for policy forwarding entries. These are
+defined to be forwarding tables that allow matches on
+fields other than the destination address that is used in
+other forwarding tables.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.4.0"/>
+  <revision date="2019-08-02">
+    <description>
+      <text>Add installing protocol for IPv[46] unicast entries.
+Add the ability to describe conditional next-hop groups
+outside of the policy forwarding module to allow for efficient
+handling of CBTS, where many prefixes may share the same next-hop
+criteria.</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-08-01">
+    <description>
+      <text>Add lsp-name leaf to AFT next-hop.</text>
+    </description>
+    <reference>
+      <text>0.3.3</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.3.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Formatting fixes</text>
+    </description>
+    <reference>
+      <text>0.3.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-05-10">
+    <description>
+      <text>Refactor to provide concretised per-AF schemas per AFT.</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <grouping name="aft-pf-structural">
+    <description>
+      <text>Structural grouping defining the schema for the policy
+forwarding abstract forwarding table.</text>
+    </description>
+    <list name="policy-forwarding-entry">
+      <key value="index"/>
+      <description>
+        <text>List of the policy forwarding entries within the abstract
+forwarding table. Each entry is uniquely identified by an
+index on the system, due to the arbitrary match conditions
+that may be implemented within the policy forwarding AFT.
+The index may change upon changes of the entry if, and only
+if, the device exporting the AFT replaces the entire entry
+by removing the previous entry and replacing it with a
+subsequent updated version.</text>
+      </description>
+      <leaf name="index">
+        <type name="leafref">
+          <path value="../config/index"/>
+        </type>
+        <description>
+          <text>Reference to the arbitary index for the policy forwarding
+AFT entry.</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for the Policy forwarding
+AFT entry.</text>
+        </description>
+        <uses name="aft-pf-entry-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state parameters for the Policy Forwarding
+AFT entry.</text>
+        </description>
+        <uses name="aft-pf-entry-config"/>
+        <uses name="aft-pf-entry-state"/>
+      </container>
+    </list>
+  </grouping>
+  <grouping name="aft-pf-entry-config">
+    <description>
+      <text>Configuration parameters for the Policy Forwarding
+AFT entry.</text>
+    </description>
+    <leaf name="index">
+      <type name="uint64"/>
+      <description>
+        <text>An arbitrary 64-bit index identifying the policy forwarding
+AFT entry.</text>
+      </description>
+    </leaf>
+    <leaf name="ip-prefix">
+      <type name="oc-inet:ip-prefix"/>
+      <description>
+        <text>The IP prefix that the forwarding entry matches.</text>
+      </description>
+    </leaf>
+    <leaf name="mac-address">
+      <type name="oc-yang:mac-address"/>
+      <description>
+        <text>The MAC address that the forwarding entry matches. Used for
+Layer 2 forwarding entries, e.g., within a VSI instance.</text>
+      </description>
+    </leaf>
+    <leaf name="mpls-label">
+      <type name="oc-mplst:mpls-label"/>
+      <description>
+        <text>The MPLS label that the forwarding entry matches. Used for
+MPLS forwarding entries, whereby the local device acts as an
+LSR.</text>
+      </description>
+    </leaf>
+    <leaf name="mpls-tc">
+      <type name="oc-mplst:mpls-tc"/>
+      <description>
+        <text>The value of the MPLS Traffic Class bits (formerly known as
+the MPLS experimental bits) that are to be matched by the AFT
+entry.</text>
+      </description>
+      <reference>
+        <text>RFC5462: Multiprotocol Label Switching (MPLS) Label Stack
+Entry: 'EXP' Field Renamed to 'Traffic Class' Field</text>
+      </reference>
+    </leaf>
+    <leaf name="ip-dscp">
+      <type name="oc-inet:dscp"/>
+      <description>
+        <text>The value of the differentiated services code point (DSCP) to
+be matched for the forwarding entry. The value is specified in
+cases where specific class-based forwarding based on IP is
+implemented by the device.</text>
+      </description>
+    </leaf>
+    <leaf name="ip-protocol">
+      <type name="oc-pkt-match-types:ip-protocol-type"/>
+      <description>
+        <text>The value of the IP protocol field of an IPv4 packet, or the
+next-header field of an IPv6 packet which is to be matched by
+the AFT entry. This field is utilised where forwarding is
+performed based on L4 information.</text>
+      </description>
+    </leaf>
+    <leaf name="l4-src-port">
+      <type name="oc-inet:port-number"/>
+      <description>
+        <text>The value of the source port field of the transport header
+that is to be matched by the AFT entry.</text>
+      </description>
+    </leaf>
+    <leaf name="l4-dst-port">
+      <type name="oc-inet:port-number"/>
+      <description>
+        <text>The value of the destination port field of the transport
+header that is to be matched by the AFT entry.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aft-pf-entry-state">
+    <description>
+      <text>Operational state parameters for the Policy Forwarding
+AFT entry.</text>
+    </description>
+    <uses name="aft-common-entry-state"/>
+  </grouping>
+</submodule>

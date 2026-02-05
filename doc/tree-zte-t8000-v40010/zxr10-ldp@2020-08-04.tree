@@ -1,0 +1,534 @@
+module: zxr10-ldp
+  +--rw configuration
+  |  +--rw ldp
+  |     +--rw ldp-configs
+  |     |  +--rw ldp-config* [inst-id]
+  |     |     +--rw inst-id     uint32
+  |     |     +--rw vrf-name?   string
+  |     |     +--rw ldp-bs!
+  |     |     |  +--rw holdtime
+  |     |     |  |  +--rw holdtime?   uint32
+  |     |     |  +--rw style
+  |     |     |  |  +--rw style?   uint8
+  |     |     |  +--rw backoff!
+  |     |     |  |  +--rw backoff-init    uint32
+  |     |     |  |  +--rw backoff-max     uint32
+  |     |     |  +--rw discovery
+  |     |     |  |  +--rw hello
+  |     |     |  |  |  +--rw hello-inv?    uint32
+  |     |     |  |  |  +--rw hello-life?   uint32
+  |     |     |  |  +--rw target-hello
+  |     |     |  |     +--rw target-hello-inv?    uint32
+  |     |     |  |     +--rw target-hello-life?   uint32
+  |     |     |  +--rw ipv6-target-tranaddr
+  |     |     |  |  +--rw (ipv6addr-or-ifname)?
+  |     |     |  |     +--:(ipv6-target-tranaddr)
+  |     |     |  |     |  +--rw ipv6-target-tranaddr?   ncd:ipv6-address
+  |     |     |  |     +--:(if-name)
+  |     |     |  |        +--rw if-name?                ncd:ifname
+  |     |     |  +--rw filter
+  |     |     |  |  +--rw filter-pak-acl?   string
+  |     |     |  +--rw igp-sync
+  |     |     |  |  +--rw igp-sync?   uint32
+  |     |     |  |  +--rw force?      uint8
+  |     |     |  +--rw capability
+  |     |     |  |  +--rw capability-acl?   string
+  |     |     |  +--rw auto-config-global
+  |     |     |  |  +--rw dis-autocfg-flag?        uint8
+  |     |     |  |  +--rw ipv6-dis-autocfg-flag?   uint8
+  |     |     |  +--rw passwords
+  |     |     |  |  +--rw global-password
+  |     |     |  |  |  +--rw (password-or-enpassword)?
+  |     |     |  |  |     +--:(password)
+  |     |     |  |  |     |  +--rw password?      string
+  |     |     |  |  |     +--:(en-password)
+  |     |     |  |  |        +--rw en-password?   string
+  |     |     |  |  +--rw password* [ip]
+  |     |     |  |     +--rw ip                ncd:ipv4-address
+  |     |     |  |     +--rw (password-or-enpassword)?
+  |     |     |  |        +--:(password)
+  |     |     |  |        |  +--rw pwd
+  |     |     |  |        |     +--rw password?   string
+  |     |     |  |        +--:(en-password)
+  |     |     |  |        |  +--rw en-pwd
+  |     |     |  |        |     +--rw en-password?   string
+  |     |     |  |        +--:(keychain)
+  |     |     |  |           +--rw keychain
+  |     |     |  |              +--rw keychain?   string
+  |     |     |  +--rw target-session
+  |     |     |  |  +--rw target-session-ipv4
+  |     |     |  |  |  +--rw ipv4* [ip]
+  |     |     |  |  |     +--rw ip                               ncd:ipv4-address
+  |     |     |  |  |     +--rw dod?                             uint8
+  |     |     |  |  |     +--rw (update-source)?
+  |     |     |  |  |     |  +--:(interface)
+  |     |     |  |  |     |  |  +--rw updatesource-ifname?       ncd:ifname
+  |     |     |  |  |     |  +--:(ip-address)
+  |     |     |  |  |     |  |  +--rw updatesource-ipaddress?    ncd:ipv4-address
+  |     |     |  |  |     |  +--:(update-source-choice-clear)
+  |     |     |  |  |     |     +--rw update-source-all-clear!
+  |     |     |  |  |     +--rw router-id?                       ncd:ifname
+  |     |     |  |  |     +--rw holdtime?                        uint32
+  |     |     |  |  |     +--rw hello-inv?                       uint32
+  |     |     |  |  |     +--rw hello-life?                      uint32
+  |     |     |  |  |     +--rw pw-only?                         uint8
+  |     |     |  |  |     +--rw dual-stack-prefer?               uint8
+  |     |     |  |  +--rw target-session-ipv6
+  |     |     |  |     +--rw ipv6* [ipv6]
+  |     |     |  |        +--rw ipv6                 ncd:ipv6-address
+  |     |     |  |        +--rw dod?                 uint8
+  |     |     |  |        +--rw router-id?           ncd:ifname
+  |     |     |  |        +--rw holdtime?            uint32
+  |     |     |  |        +--rw hello-inv?           uint32
+  |     |     |  |        +--rw hello-life?          uint32
+  |     |     |  |        +--rw dual-stack-prefer?   uint8
+  |     |     |  +--rw router-id
+  |     |     |  |  +--rw (router-id)?
+  |     |     |  |     +--:(interface)
+  |     |     |  |     |  +--rw if-name           ncd:ifname
+  |     |     |  |     +--:(ip-address)
+  |     |     |  |        +--rw router-id-addr    ncd:ipv4-address
+  |     |     |  +--rw gr
+  |     |     |  |  +--rw gr-enable?        uint8
+  |     |     |  |  +--rw max-recovery?     uint32
+  |     |     |  |  +--rw neigh-liveness?   uint32
+  |     |     |  +--rw interface
+  |     |     |  |  +--rw interface-ipv4
+  |     |     |  |  |  +--rw ipv4* [if-name]
+  |     |     |  |  |     +--rw if-name                                ncd:ifname
+  |     |     |  |  |     +--rw (discovery-transport)?
+  |     |     |  |  |     |  +--:(btran-intf)
+  |     |     |  |  |     |  |  +--rw btran-intf?                      uint8
+  |     |     |  |  |     |  +--:(tran-address)
+  |     |     |  |  |     |  |  +--rw tran-address?                    ncd:ipv4-address
+  |     |     |  |  |     |  +--:(tran-address-ipv6)
+  |     |     |  |  |     |  |  +--rw tran-address-ipv6?               ncd:ipv6-address
+  |     |     |  |  |     |  +--:(discovery-transport-choice-clear)
+  |     |     |  |  |     |     +--rw discovery-transport-all-clear!
+  |     |     |  |  |     +--rw holdtime?                              uint32
+  |     |     |  |  |     +--rw hello-inv?                             uint32
+  |     |     |  |  |     +--rw hello-life?                            uint32
+  |     |     |  |  |     +--rw dual-stack-prefer?                     uint8
+  |     |     |  |  |     +--rw direct-gtsm
+  |     |     |  |  |     |  +--rw gtsm-flag?   uint8
+  |     |     |  |  |     +--rw label-distribution
+  |     |     |  |  |        +--rw label-dod?   uint8
+  |     |     |  |  +--rw interface-ipv6
+  |     |     |  |     +--rw ipv6* [if-name]
+  |     |     |  |        +--rw if-name                                ncd:ifname
+  |     |     |  |        +--rw (discovery-transport)?
+  |     |     |  |        |  +--:(tran-address-ipv4)
+  |     |     |  |        |  |  +--rw tran-addr-ipv4?                  ncd:ipv4-address
+  |     |     |  |        |  +--:(tran-address-ipv6)
+  |     |     |  |        |  |  +--rw tran-addr-ipv6?                  ncd:ipv6-address
+  |     |     |  |        |  +--:(discovery-transport-choice-clear)
+  |     |     |  |        |     +--rw discovery-transport-all-clear!
+  |     |     |  |        +--rw holdtime?                              uint32
+  |     |     |  |        +--rw hello-inv?                             uint32
+  |     |     |  |        +--rw hello-life?                            uint32
+  |     |     |  |        +--rw dual-stack-prefer?                     uint8
+  |     |     |  |        +--rw label-distribution-ipv6
+  |     |     |  |           +--rw label-distribution-ipv6?   uint8
+  |     |     |  +--rw target-gtsms
+  |     |     |  |  +--rw target-gtsm* [ip]
+  |     |     |  |     +--rw ip         ncd:ipv4-address
+  |     |     |  |     +--rw hop-num    uint32
+  |     |     |  +--rw auto-config-interfaces
+  |     |     |  |  +--rw ipv4
+  |     |     |  |  |  +--rw auto-config-interface* [if-name]
+  |     |     |  |  |     +--rw if-name        ncd:ifname
+  |     |     |  |  |     +--rw disableflag    uint8
+  |     |     |  |  +--rw ipv6
+  |     |     |  |     +--rw ipv6-auto-config-interface* [if-name]
+  |     |     |  |        +--rw if-name        string
+  |     |     |  |        +--rw disableflag    uint8
+  |     |     |  +--rw igp-sync-interfaces!
+  |     |     |  |  +--rw igp-sync-interface* [if-name]
+  |     |     |  |     +--rw if-name    ncd:ifname
+  |     |     |  +--rw accept-targethello!
+  |     |     |  |  +--rw accept-enable     empty
+  |     |     |  |  +--rw accept-for-acl?   string
+  |     |     |  +--rw session-protection!
+  |     |     |     +--rw sess-protection-enable           empty
+  |     |     |     +--rw sess-protection-for-acl?         string
+  |     |     |     +--rw (duration-time)?
+  |     |     |        +--:(time)
+  |     |     |        |  +--rw time?                      uint32
+  |     |     |        +--:(infinite)
+  |     |     |        |  +--rw infinite?                  empty
+  |     |     |        +--:(duration-time-choice-clear)
+  |     |     |           +--rw duration-time-all-clear!
+  |     |     +--rw ldp-p2p
+  |     |     |  +--rw label-retention
+  |     |     |  |  +--rw conservative-mode?   uint8
+  |     |     |  +--rw lsp-control
+  |     |     |  |  +--rw lsp-control-mode?   lsp-control-mode
+  |     |     |  +--rw longest-match
+  |     |     |  |  +--rw ipv4-acl-name?   string
+  |     |     |  |  +--rw ipv6-acl-name?   string
+  |     |     |  +--rw access-fec
+  |     |     |  |  +--rw ipv4
+  |     |     |  |  |  +--rw bgp?                           uint8
+  |     |     |  |  |  +--rw (host-or-for)?
+  |     |     |  |  |  |  +--:(host-route-only)
+  |     |     |  |  |  |  |  +--rw host-route-only?         uint8
+  |     |     |  |  |  |  +--:(for-acl-name)
+  |     |     |  |  |  |  |  +--rw for-acl-name?            string
+  |     |     |  |  |  |  +--:(prefix-list)
+  |     |     |  |  |  |  |  +--rw prefix-list-name?        string
+  |     |     |  |  |  |  +--:(host-or-for-choice-clear)
+  |     |     |  |  |  |     +--rw host-or-for-all-clear!
+  |     |     |  |  |  +--rw cgn?                           uint8
+  |     |     |  |  +--rw ipv6
+  |     |     |  |     +--rw ipv6-bgp?                           uint8
+  |     |     |  |     +--rw (ipv6-host-or-for)?
+  |     |     |  |     |  +--:(ipv6-host-route-only)
+  |     |     |  |     |  |  +--rw ipv6-host-route-only?         uint8
+  |     |     |  |     |  +--:(ipv6-for-acl-name)
+  |     |     |  |     |  |  +--rw ipv6-for-acl-name?            string
+  |     |     |  |     |  +--:(ipv6-prefix-list)
+  |     |     |  |     |  |  +--rw ipv6-prefix-list-name?        string
+  |     |     |  |     |  +--:(ipv6-host-or-for-choice-clear)
+  |     |     |  |     |     +--rw ipv6-host-or-for-all-clear!
+  |     |     |  |     +--rw ipv6-cgn?                           uint8
+  |     |     |  +--rw egress
+  |     |     |  |  +--rw for-acl-name?            string
+  |     |     |  |  +--rw nexthop-acl-name?        string
+  |     |     |  |  +--rw ipv6-for-acl-name?       string
+  |     |     |  |  +--rw ipv6-nexthop-acl-name?   string
+  |     |     |  +--rw label-advertise
+  |     |     |  |  +--rw disable?     uint8
+  |     |     |  |  +--rw old-style?   uint8
+  |     |     |  +--rw label-request
+  |     |     |  |  +--rw for-acl-name?        string
+  |     |     |  |  +--rw ipv6-for-acl-name?   string
+  |     |     |  +--rw traffic-count-fec
+  |     |     |  |  +--rw acl-name?        string
+  |     |     |  |  +--rw ipv6-acl-name?   string
+  |     |     |  +--rw lsp-dod-req-queue
+  |     |     |  |  +--rw queue-mode?   uint8
+  |     |     |  +--rw lsp-policy
+  |     |     |  |  +--rw transit-noly?   uint8
+  |     |     |  +--rw label-withdraw-delay
+  |     |     |  |  +--rw delay-enable?   uint8
+  |     |     |  |  +--rw delay-time?     uint32
+  |     |     |  +--rw ldp-over-te
+  |     |     |  |  +--rw enableflag?   uint8
+  |     |     |  +--rw entropy-label
+  |     |     |  |  +--rw entropy-label-enable?   uint8
+  |     |     |  +--rw explicit-null
+  |     |     |  |  +--rw ipv4!
+  |     |     |  |  |  +--rw enable-explicit-null    uint8
+  |     |     |  |  |  +--rw to-acl-name?            string
+  |     |     |  |  |  +--rw for-acl-name?           string
+  |     |     |  |  +--rw ipv6!
+  |     |     |  |     +--rw ipv6-enable-explicit-null    uint8
+  |     |     |  |     +--rw ipv6-for-acl-name?           string
+  |     |     |  |     +--rw ipv6-to-acl-name?            string
+  |     |     |  +--rw label-adver-for
+  |     |     |  |  +--rw ipv4-label-advertise
+  |     |     |  |  |  +--rw label-advertise-for* [for-acl-name]
+  |     |     |  |  |     +--rw for-acl-name    string
+  |     |     |  |  |     +--rw to-acl-name?    string
+  |     |     |  |  +--rw ipv6-label-advertise
+  |     |     |  |     +--rw ipv6-label-advertise-for* [for-acl-name]
+  |     |     |  |        +--rw for-acl-name    string
+  |     |     |  |        +--rw to-acl-name?    string
+  |     |     |  +--rw lsp-dod-request
+  |     |     |     +--rw ipv4-lsp-dod-request
+  |     |     |     |  +--rw ipv4* [ip masklen]
+  |     |     |     |     +--rw ip         ncd:ipv4-address
+  |     |     |     |     +--rw masklen    uint8
+  |     |     |     +--rw ipv6-lsp-dod-request
+  |     |     |        +--rw ipv6* [ipv6 masklen]
+  |     |     |           +--rw ipv6       ncd:ipv6-address
+  |     |     |           +--rw masklen    uint8
+  |     |     +--rw ldp-mldp!
+  |     |        +--rw recursor-mfec
+  |     |        |  +--rw recursor-mfec-enable?   uint8
+  |     |        +--rw p2mp-bfd!
+  |     |        |  +--rw (bfd-config)?
+  |     |        |     +--:(time-config)
+  |     |        |     |  +--rw interval         uint32
+  |     |        |     |  +--rw multiplier       uint16
+  |     |        |     +--:(template)
+  |     |        |        +--rw template-name    string
+  |     |        +--rw mldp-mbb!
+  |     |           +--rw wait-time?   uint32
+  |     +--rw bfd
+  |     |  +--rw bfd-ipv4
+  |     |  |  +--rw ipv4* [instid ip masklen]
+  |     |  |     +--rw instid                 uint32
+  |     |  |     +--rw ip                     ncd:ipv4-address
+  |     |  |     +--rw masklen                uint8
+  |     |  |     +--rw (bfd-config)
+  |     |  |     |  +--:(time-config)
+  |     |  |     |  |  +--rw interval         uint32
+  |     |  |     |  |  +--rw min-rx           uint32
+  |     |  |     |  |  +--rw multiplier       uint16
+  |     |  |     |  +--:(template)
+  |     |  |     |     +--rw template-name    string
+  |     |  |     +--rw protect-unbinding?     uint8
+  |     |  |     +--rw source?                ncd:ipv4-address
+  |     |  +--rw bfd-ipv6
+  |     |     +--rw ipv6* [instid ipv6 masklen]
+  |     |        +--rw instid                 uint32
+  |     |        +--rw ipv6                   ncd:ipv6-address
+  |     |        +--rw masklen                uint8
+  |     |        +--rw (bfd-config)
+  |     |        |  +--:(time-config)
+  |     |        |  |  +--rw interval         uint32
+  |     |        |  |  +--rw min-rx           uint32
+  |     |        |  |  +--rw multiplier       uint16
+  |     |        |  +--:(template)
+  |     |        |     +--rw template-name    string
+  |     |        +--rw protect-unbinding?     uint8
+  |     |        +--rw source?                ncd:ipv6-address
+  |     +--rw peer-bfds
+  |     |  +--rw peer-bfd* [instid ip]
+  |     |     +--rw instid           uint32
+  |     |     +--rw ip               ncd:ipv4-address
+  |     |     +--rw delay?           uint8
+  |     |     +--rw time?            uint16
+  |     |     +--rw template-name?   string
+  |     o--rw ldp-debug-policy
+  |        +--rw hello-interfaces
+  |        |  +--rw hello-interface* [inst-id if-name]
+  |        |     +--rw inst-id    uint32
+  |        |     +--rw if-name    ncd:ifname
+  |        +--rw sessions
+  |        |  +--rw remote-routeid* [inst-id ip]
+  |        |     +--rw inst-id        uint32
+  |        |     +--rw ip             ncd:ipv4-address
+  |        |     o--rw labelspace?    label-space
+  |        |     +--rw label-space?   uint32
+  |        +--rw target-hellos
+  |        |  +--rw target-hello-ipv4
+  |        |  |  +--rw ipv4* [inst-id ipv4]
+  |        |  |     +--rw inst-id    uint32
+  |        |  |     +--rw ipv4       ncd:ipv4-address
+  |        |  +--rw target-hello-ipv6
+  |        |     +--rw ipv6* [inst-id ipv6]
+  |        |        +--rw inst-id    uint32
+  |        |        +--rw ipv6       ncd:ipv6-address
+  |        +--rw trans-conns
+  |           +--rw peer-tranaddr-ipv4
+  |           |  +--rw ipv4* [inst-id ipv4]
+  |           |     +--rw inst-id    uint32
+  |           |     +--rw ipv4       ncd:ipv4-address
+  |           +--rw peer-tranaddr-ipv6
+  |              +--rw ipv6* [inst-id ipv6]
+  |                 +--rw inst-id    uint32
+  |                 +--rw ipv6       ncd:ipv6-address
+  +--ro state
+     +--ro ldp* [inst-id]
+        +--ro inst-id                        uint32
+        +--ro vrf-name?                      string
+        +--ro session-states
+        |  +--ro session-state* [local-lsr-addr local-label-space peer-lsr-addr peer-label-space]
+        |     +--ro local-lsr-addr            ncd:ipv4-address
+        |     +--ro local-label-space         uint16
+        |     +--ro peer-lsr-addr             ncd:ipv4-address
+        |     +--ro peer-label-space          uint16
+        |     +--ro tcpconn-peeraddr-ipv4?    ncd:ipv4-address
+        |     +--ro tcpconn-peeraddr-ipv6?    ncd:ipv6-address
+        |     +--ro tcpconn-peerport?         uint16
+        |     +--ro tcpconn-localaddr-ipv4?   ncd:ipv4-address
+        |     +--ro tcpconn-localaddr-ipv6?   ncd:ipv6-address
+        |     +--ro tcpconn-localport?        uint16
+        |     +--ro keepalive-holdtime?       uint16
+        |     +--ro hello-num?                uint32
+        |     +--ro sess-state?               sess-state
+        |     +--ro gr-reconn-time?           uint32
+        |     +--ro gr-recovery-time?         uint32
+        |     +--ro sess-gr-state?            sess-gr-state
+        |     +--ro sess-uptime?              string
+        |     +--ro addr-num?                 uint32
+        |     +--ro outlabel-ipv4-num?        uint32
+        |     +--ro outlabel-ipv6-num?        uint32
+        |     +--ro sess-auth-type?           sess-auth-type
+        |     +--ro sess-gr-result?           sess-gr-result
+        |     +--ro gr-recovery-failcnt?      uint32
+        |     +--ro sess-link-type?           sess-link-type
+        +--ro hello-states
+        |  +--ro hello-state* [local-lsr-addr local-label-space peer-lsr-addr peer-label-space inf-name hello-ip-type]
+        |     +--ro local-lsr-addr           ncd:ipv4-address
+        |     +--ro local-label-space        uint16
+        |     +--ro peer-lsr-addr            ncd:ipv4-address
+        |     +--ro peer-label-space         uint16
+        |     +--ro inf-name                 string
+        |     +--ro hello-ip-type            addr-type
+        |     +--ro discovery-type?          hello-type
+        |     +--ro src-addr-ipv4?           ncd:ipv4-address
+        |     +--ro src-addr-ipv6?           ncd:ipv6-address
+        |     +--ro target-addr-ipv4?        ncd:ipv4-address
+        |     +--ro target-addr-ipv6?        ncd:ipv6-address
+        |     +--ro hello-hold-time?         uint32
+        |     +--ro hello-send-time?         uint32
+        |     +--ro bxmit?                   uint8
+        |     +--ro brecv?                   uint8
+        |     +--ro trans-addr-ipv4?         ncd:ipv4-address
+        |     +--ro trans-addr-ipv6?         ncd:ipv6-address
+        |     +--ro local-trans-addr-ipv4?   ncd:ipv4-address
+        |     +--ro local-trans-addr-ipv6?   ncd:ipv6-address
+        |     +--ro hello-prefer?            hello-prefer-type
+        +--ro peeraddr-states
+        |  +--ro peeraddr-state* [peer-lsr-addr peer-labelspace local-lsr-addr local-labelspace peer-addr-ipv4 peer-addr-ipv6]
+        |     +--ro peer-lsr-addr       ncd:ipv4-address
+        |     +--ro peer-labelspace     uint16
+        |     +--ro local-lsr-addr      ncd:ipv4-address
+        |     +--ro local-labelspace    uint16
+        |     +--ro peer-addr-ipv4      ncd:ipv4-address
+        |     +--ro peer-addr-ipv6      ncd:ipv6-address
+        +--ro fec-states
+        |  +--ro fec-state* [fec-addr-type fec-addr-ipv4 fec-addrlen fec-addr-ipv6]
+        |     +--ro fec-addr-type        addr-type
+        |     +--ro fec-addr-ipv4        ncd:ipv4-address
+        |     +--ro fec-addr-ipv6        ncd:ipv6-address
+        |     +--ro fec-addrlen          uint8
+        |     +--ro local-label-type?    label-type
+        |     +--ro local-label?         uint32
+        |     +--ro remote-ipaddr?       ncd:ipv4-address
+        |     +--ro remote-labelspace?   uint16
+        |     +--ro local-ipaddr?        ncd:ipv4-address
+        |     +--ro local-labelspace?    uint16
+        |     +--ro remote-label-type?   label-type
+        |     +--ro remote-label?        uint32
+        |     +--ro binuse?              uint8
+        |     +--ro adv-peer-count?      uint32
+        |     +--ro rmt-peer-count?      uint32
+        +--ro bindings-summary-states
+        |  +--ro prefix-count?             uint32
+        |  +--ro upcb-count?               uint32
+        |  +--ro downcb-count?             uint32
+        |  +--ro assigned-label-count?     uint32
+        |  +--ro learned-outlabel-count?   uint32
+        +--ro traffic-count-states
+        |  +--ro traffic-count-state* [fec-addr-type fec-addr-ipv4 fec-addr-ipv6 fec-addrlen]
+        |     +--ro fec-addr-type                 addr-type
+        |     +--ro fec-addr-ipv4                 ncd:ipv4-address
+        |     +--ro fec-addr-ipv6                 ncd:ipv6-address
+        |     +--ro fec-addrlen                   uint8
+        |     +--ro inflow-count-bytes?           uint64
+        |     +--ro inflow-count-packets?         uint64
+        |     +--ro inflow-lost-count-bytes?      uint64
+        |     +--ro inflow-lost-count-packets?    uint64
+        |     +--ro outflow-count-bytes?          uint64
+        |     +--ro outflow-count-packets?        uint64
+        |     +--ro outflow-lost-count-bytes?     uint64
+        |     +--ro outflow-lost-count-packets?   uint64
+        +--ro parameters-states
+        |  +--ro protocol-version?         uint8
+        |  +--ro session-holdtime?         uint16
+        |  +--ro keepalive-interval?       uint16
+        |  +--ro directhello-holdtime?     uint32
+        |  +--ro directhello-interval?     uint32
+        |  +--ro targethello-holdtime?     uint32
+        |  +--ro targethello-interval?     uint32
+        |  +--ro dod-max-hopcnt?           uint16
+        |  +--ro backoff-time-initial?     uint32
+        |  +--ro backoff-time-max?         uint32
+        |  +--ro lsp-ctrlmode-used?        lsp-control-mode
+        |  +--ro lsp-ctrlmode-cfg?         lsp-control-mode
+        |  +--ro lbl-retentionmode-used?   label-retention-mode
+        |  +--ro lbl-retentionmode-cfg?    label-retention-mode
+        |  +--ro loop-detection?           uint8
+        |  +--ro igpsync-delaytime?        uint32
+        |  +--ro lsp-req-queuemode-cfg?    uint8
+        |  +--ro entropy-label?            uint8
+        +--ro graceful-restart-states
+        |  +--ro graceful-restart-state* [peer-ldpid-addr peer-ldpid-labelspace local-ldpid-addr local-ldpid-labelspace]
+        |     +--ro b-gr-enable?                uint8
+        |     +--ro neighbour-liveness-timer?   uint32
+        |     +--ro max-recovery-timer?         uint32
+        |     +--ro peer-ldpid-addr             ncd:ipv4-address
+        |     +--ro peer-ldpid-labelspace       uint16
+        |     +--ro local-ldpid-addr            ncd:ipv4-address
+        |     +--ro local-ldpid-labelspace      uint16
+        |     +--ro session-state?              sess-state
+        o--ro igpsync-states
+        |  o--ro igpsync-state* [if-name peer-ldpid-addr peer-ldpid-labelspace]
+        |     o--ro if-name                  string
+        |     o--ro b-igpsync-enable?        uint8
+        |     o--ro sync-status?             sync-status
+        |     o--ro peer-ldpid-addr          ncd:ipv4-address
+        |     o--ro peer-ldpid-labelspace    uint16
+        |     o--ro b-gr-enable?             uint8
+        |     o--ro b-gr-process?            uint8
+        |     o--ro b-full?                  uint8
+        |     o--ro left-time?               uint32
+        +--ro igp-synchronism-states
+        |  +--ro igp-synchronism-state* [if-name peer-ldpid-addr peer-ldpid-labelspace if-type]
+        |     +--ro if-name                  string
+        |     +--ro b-igpsync-enable?        uint8
+        |     +--ro sync-status?             sync-status
+        |     +--ro peer-ldpid-addr          ncd:ipv4-address
+        |     +--ro peer-ldpid-labelspace    uint16
+        |     +--ro b-gr-enable?             uint8
+        |     +--ro b-gr-process?            uint8
+        |     +--ro b-full?                  uint8
+        |     +--ro left-time?               uint32
+        |     +--ro if-type                  interface-type
+        +--ro interface-states
+        |  +--ro interface-state* [if-name if-type]
+        |     +--ro if-name         string
+        |     +--ro if-type         interface-type
+        |     +--ro b-ip?           uint8
+        |     +--ro b-oper?         uint8
+        |     +--ro b-userconfig?   uint8
+        |     +--ro b-ospf?         uint8
+        |     +--ro b-isis?         uint8
+        +--ro backoff-states
+        |  +--ro backoff-state* [peer-ldpid-addr peer-ldpid-labelspace local-ldpid-addr local-ldpid-labelspace]
+        |     +--ro backoff-time-initial?     uint32
+        |     +--ro backoff-time-max?         uint32
+        |     +--ro backoff-cnt?              uint32
+        |     +--ro peer-ldpid-addr           ncd:ipv4-address
+        |     +--ro peer-ldpid-labelspace     uint16
+        |     +--ro local-ldpid-addr          ncd:ipv4-address
+        |     +--ro local-ldpid-labelspace    uint16
+        |     +--ro session-backoff-time?     uint32
+        |     +--ro session-waiting-time?     uint32
+        +--ro mldp-parameter-states
+        |  +--ro p2mp-enable?     uint8
+        |  +--ro mp2mp-enable?    uint8
+        |  +--ro mbb-enable?      uint8
+        |  +--ro mbb-wait-time?   uint32
+        +--ro mldp-mfec-states
+        |  +--ro mfec-states* [root-addr mfec-opaqueValue mfec-opaqueValue-type neighbor-addr]
+        |     +--ro root-addr                ncd:ipv4-address
+        |     +--ro mfec-opaqueValue         string
+        |     +--ro mfec-opaqueValue-type    mldp-mfec-opaqueValue-type
+        |     +--ro neighbor-addr            ncd:ipv4-address
+        |     +--ro local-label?             uint32
+        |     +--ro peer-label?              uint32
+        |     +--ro mfec-state?              mfec-state
+        |     +--ro adv-peer-cnt?            uint32
+        |     +--ro rmt-peer-cnt?            uint32
+        |     +--ro rmt-binding-state?       mdowncb-state
+        +--ro debug-policy-dhello
+        |  +--ro hello-interfaces* [if-name]
+        |     +--ro if-name    string
+        +--ro debug-policy-thello
+        |  +--ro target-hellos* [target-hello-ipv4 target-hello-ipv6]
+        |     +--ro target-hello-ipv4    ncd:ipv4-address
+        |     +--ro target-hello-ipv6    ncd:ipv6-address
+        +--ro debug-policy-session
+        |  +--ro sessions* [ip]
+        |     +--ro ip             ncd:ipv4-address
+        |     +--ro label-space?   uint32
+        +--ro debug-policy-connections
+        |  +--ro peer-tranaddrs* [peer-tranaddr-ipv4 peer-tranaddr-ipv6]
+        |     +--ro peer-tranaddr-ipv4    ncd:ipv4-address
+        |     +--ro peer-tranaddr-ipv6    ncd:ipv6-address
+        +--ro instance-statistic
+        |  +--ro session-cout?        uint32
+        |  +--ro session-oper-cout?   uint32
+        |  +--ro hello-cout?          uint32
+        |  +--ro binding-cout?        uint32
+        +--ro mldp-binding-summary-states
+           +--ro mfec-totalcnt?         uint32
+           +--ro upcb-totalcnt?         uint32
+           +--ro downcb-totalcnt?       uint32
+           +--ro assigned-inlabelcnt?   uint32
+           +--ro learned-outlabelcnt?   uint32

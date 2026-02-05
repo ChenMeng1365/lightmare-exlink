@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-esqm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:esqm="urn:huawei:yang:huawei-esqm"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-esqm"/>
+  <prefix value="esqm"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Enhanced stream quality monitor.</text>
+  </description>
+  <reference>
+    <text>Huawei private.</text>
+  </reference>
+  <revision date="2020-03-28">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="esqm"/>
+  <typedef name="esqm-direction">
+    <type name="enumeration">
+      <enum name="inbound">
+        <value value="0"/>
+        <description>
+          <text>Inbound.</text>
+        </description>
+      </enum>
+      <enum name="outbound">
+        <value value="1"/>
+        <description>
+          <text>Outbound.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>ESQM sampling direction.</text>
+    </description>
+  </typedef>
+  <typedef name="esqm-cfg-mode">
+    <type name="enumeration">
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>Disable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>ESQM configuration mode.</text>
+    </description>
+  </typedef>
+  <typedef name="aging-protocol-type">
+    <type name="enumeration">
+      <enum name="sctp">
+        <value value="1"/>
+        <description>
+          <text>SCTP protocol.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>ESQM session aging protocol type.</text>
+    </description>
+  </typedef>
+  <container name="esqm">
+    <description>
+      <text>Enhanced stream quality monitor.</text>
+    </description>
+    <container name="esqm-enable">
+      <presence value="Enable/disable enhanced stream quality monitor."/>
+      <description>
+        <text>Enable/disable enhanced stream quality monitor.</text>
+      </description>
+      <container name="protocol">
+        <description>
+          <text>Configure enhanced stream quality monitor protocol.</text>
+        </description>
+        <leaf name="tcp">
+          <type name="esqm-cfg-mode"/>
+          <default value="disable"/>
+          <description>
+            <text>TCP protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="sctp">
+          <type name="esqm-cfg-mode"/>
+          <default value="enable"/>
+          <description>
+            <text>SCTP protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="gtp">
+          <type name="esqm-cfg-mode"/>
+          <default value="enable"/>
+          <description>
+            <text>GTP protocol.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="vpn-samplings">
+        <description>
+          <text>List of configuring the flow sampling and monitoring function on the VPNs.</text>
+        </description>
+        <list name="vpn-sampling">
+          <key value="vpn-name"/>
+          <description>
+            <text>Configure the flow sampling and monitoring function on the VPN.</text>
+          </description>
+          <leaf name="vpn-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+            <description>
+              <text>VPN name for configuring traffic monitoring function.</text>
+            </description>
+          </leaf>
+          <leaf name="inbound">
+            <type name="esqm-cfg-mode"/>
+            <must condition="../inbound = 'enable' or ../outbound = 'enable'"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Configuration of inbound flow sampling.</text>
+            </description>
+          </leaf>
+          <leaf name="outbound">
+            <type name="esqm-cfg-mode"/>
+            <must condition="../inbound = 'enable' or ../outbound = 'enable'"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Configuration of outbound flow sampling.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="ip-filters">
+        <description>
+          <text>List of configuring IP filter function.</text>
+        </description>
+        <list name="ip-filter">
+          <key value="ip-address mask-length"/>
+          <description>
+            <text>Configure IP filter function.</text>
+          </description>
+          <leaf name="ip-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <description>
+              <text>IP address.</text>
+            </description>
+          </leaf>
+          <leaf name="mask-length">
+            <type name="uint8">
+              <range value="1..32"/>
+            </type>
+            <description>
+              <text>Mask length.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="session-aging-times">
+        <description>
+          <text>List of configuring distributed flow aging time.</text>
+        </description>
+        <list name="session-aging-time">
+          <key value="protocol"/>
+          <description>
+            <text>Configure distributed flow aging time.</text>
+          </description>
+          <ext:generated-by value="system">
+            <description>
+              <text>The all instances are generated by system automatically.</text>
+            </description>
+          </ext:generated-by>
+          <ext:operation-exclude value="create">
+            <description>
+              <text>The all instances cannot be created.</text>
+            </description>
+          </ext:operation-exclude>
+          <leaf name="protocol">
+            <type name="aging-protocol-type"/>
+            <description>
+              <text>Protocol type.</text>
+            </description>
+          </leaf>
+          <leaf name="aging-time">
+            <type name="uint16">
+              <range value="60..300"/>
+            </type>
+            <default value="300"/>
+            <description>
+              <text>Aging time.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="tcp-datas">
+      <config value="false"/>
+      <description>
+        <text>List of collect TCP/SCTP information.</text>
+      </description>
+      <list name="tcp-data">
+        <key value="src-ip-addr dst-ip-addr src-port dst-port protocol"/>
+        <description>
+          <text>Statistics of TCP/SCTP information. This node is used to telemetry and return null for YANG.</text>
+        </description>
+        <leaf name="src-ip-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Source IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="dst-ip-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Destination IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="src-port">
+          <type name="uint16"/>
+          <description>
+            <text>Source IP port.</text>
+          </description>
+        </leaf>
+        <leaf name="dst-port">
+          <type name="uint16"/>
+          <description>
+            <text>Destination IP port.</text>
+          </description>
+        </leaf>
+        <leaf name="protocol">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Protocol, TCP(6), SCTP(132).</text>
+          </description>
+        </leaf>
+        <leaf name="age-type">
+          <type name="enumeration">
+            <enum name="SCTP-ABORT">
+              <value value="6"/>
+              <description>
+                <text>SCTP, abort packet type.</text>
+              </description>
+            </enum>
+            <enum name="SCTP-SHUTDOWN-ACK">
+              <value value="5"/>
+              <description>
+                <text>SCTP, shutdown ACK packet type.</text>
+              </description>
+            </enum>
+            <enum name="SCTP-SHUTDOWN">
+              <value value="4"/>
+              <description>
+                <text>SCTP, shutdown packet type.</text>
+              </description>
+            </enum>
+            <enum name="TCP-RST">
+              <value value="3"/>
+              <description>
+                <text>TCP, TCP reset packet type.</text>
+              </description>
+            </enum>
+            <enum name="TCP-FIN">
+              <value value="2"/>
+              <description>
+                <text>TCP, FIN packet type.</text>
+              </description>
+            </enum>
+            <enum name="AGING-TIME">
+              <value value="1"/>
+              <description>
+                <text>All, aging type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Flow aging type.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-type">
+          <type name="enumeration">
+            <enum name="SCTP-INIT-ACK">
+              <value value="5"/>
+              <description>
+                <text>Packet of the SCTP INIT ACK type.</text>
+              </description>
+            </enum>
+            <enum name="SCTP-INIT">
+              <value value="4"/>
+              <description>
+                <text>Packet of the SCTP INIT type.</text>
+              </description>
+            </enum>
+            <enum name="SCTP-SACK">
+              <value value="3"/>
+              <description>
+                <text>Packet of the SCTP SACK type.</text>
+              </description>
+            </enum>
+            <enum name="TCP-SYN">
+              <value value="1"/>
+              <description>
+                <text>Packet of the TCP SYNC type.</text>
+              </description>
+            </enum>
+            <enum name="TCP-SYN-ACK">
+              <value value="2"/>
+              <description>
+                <text>Packet of the TCP SYNC ACK type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Flow type.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-direction">
+          <type name="enumeration">
+            <enum name="INGRESS">
+              <value value="0"/>
+              <description>
+                <text>Incoming direction.</text>
+              </description>
+            </enum>
+            <enum name="EGRESS">
+              <value value="1"/>
+              <description>
+                <text>Outgoing direction.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Flow direction on a device.</text>
+          </description>
+        </leaf>
+        <leaf name="port-if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Index of a port or an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="route-if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Index of a route.</text>
+          </description>
+        </leaf>
+        <leaf name="next-hop">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Next hop of a route.</text>
+          </description>
+        </leaf>
+        <leaf name="label">
+          <type name="uint32"/>
+          <description>
+            <text>Inner or outer label.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="pub-type:vrf-name"/>
+          <description>
+            <text>VPN instance name.</text>
+          </description>
+        </leaf>
+        <leaf name="created-timestamp-sec">
+          <type name="uint32"/>
+          <units name="s"/>
+          <description>
+            <text>Number of seconds since 1970.</text>
+          </description>
+        </leaf>
+        <leaf name="created-timestamp-nano-sec">
+          <type name="uint32"/>
+          <units name="ns"/>
+          <description>
+            <text>Number of nanoseconds.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-num">
+          <type name="uint64"/>
+          <description>
+            <text>Number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="retrans-num">
+          <type name="uint64"/>
+          <description>
+            <text>Number of retransmitted packets.</text>
+          </description>
+        </leaf>
+        <leaf name="retrans-radio">
+          <type name="uint64"/>
+          <description>
+            <text>Number of Retransmitted packets * 10 million/Total number of packets.</text>
+          </description>
+        </leaf>
+        <leaf name="address-family">
+          <type name="enumeration">
+            <enum name="IPV4">
+              <value value="0"/>
+              <description>
+                <text>IPv4 type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Address family.</text>
+          </description>
+        </leaf>
+        <leaf name="outer-vlan">
+          <type name="uint16">
+            <range value="0..4095"/>
+          </type>
+          <description>
+            <text>Outer VLAN.</text>
+          </description>
+        </leaf>
+        <leaf name="inner-vlan">
+          <type name="uint16">
+            <range value="0..4095"/>
+          </type>
+          <description>
+            <text>Inner VLAN.</text>
+          </description>
+        </leaf>
+        <leaf name="ttl">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Time To Live.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="gtp-datas">
+      <config value="false"/>
+      <description>
+        <text>List of collect GTP information.</text>
+      </description>
+      <list name="gtp-data">
+        <key value="src-ip-addr dst-ip-addr src-port dst-port protocol"/>
+        <description>
+          <text>Statistics of GTP information. This node is used to telemetry and return null for YANG.</text>
+        </description>
+        <leaf name="src-ip-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Source IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="dst-ip-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Destination IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="src-port">
+          <type name="uint16"/>
+          <description>
+            <text>Source IP port.</text>
+          </description>
+        </leaf>
+        <leaf name="dst-port">
+          <type name="uint16"/>
+          <description>
+            <text>Destination port of GTP is 2152.</text>
+          </description>
+        </leaf>
+        <leaf name="protocol">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Protocol number of GTP is 17.</text>
+          </description>
+        </leaf>
+        <leaf name="age-type">
+          <type name="enumeration">
+            <enum name="AGING-TIME">
+              <value value="1"/>
+              <description>
+                <text>All, aging type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Flow aging type.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-type">
+          <type name="enumeration">
+            <enum name="GTP">
+              <value value="6"/>
+              <description>
+                <text>Packet of the GTP type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Flow type.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-direction">
+          <type name="enumeration">
+            <enum name="INGRESS">
+              <value value="0"/>
+              <description>
+                <text>Incoming direction.</text>
+              </description>
+            </enum>
+            <enum name="EGRESS">
+              <value value="1"/>
+              <description>
+                <text>Outgoing direction.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Flow direction on a device.</text>
+          </description>
+        </leaf>
+        <leaf name="port-if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Index of a port or an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="route-if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Index of a route.</text>
+          </description>
+        </leaf>
+        <leaf name="next-hop">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Next hop of a route.</text>
+          </description>
+        </leaf>
+        <leaf name="label">
+          <type name="uint32"/>
+          <description>
+            <text>Inner or outer label.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="pub-type:vrf-name"/>
+          <description>
+            <text>VPN instance name.</text>
+          </description>
+        </leaf>
+        <leaf name="heartbeat-time-sec">
+          <type name="uint32"/>
+          <units name="s"/>
+          <description>
+            <text>Number of seconds since 1970.</text>
+          </description>
+        </leaf>
+        <leaf name="heartbeat-time-nano-sec">
+          <type name="uint32"/>
+          <units name="ns"/>
+          <description>
+            <text>Number of nanoseconds.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-num">
+          <type name="uint64"/>
+          <description>
+            <text>Number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-bytes">
+          <type name="uint64"/>
+          <description>
+            <text>Bytes number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-type">
+          <type name="enumeration">
+            <enum name="HEARTBEAT-RSQ">
+              <value value="1"/>
+              <description>
+                <text>Packet of the GTP heartbeat response type.</text>
+              </description>
+            </enum>
+            <enum name="HEARTBEAT-REQ">
+              <value value="0"/>
+              <description>
+                <text>Packet of the GTP heartbeat request type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Packet type.</text>
+          </description>
+        </leaf>
+        <leaf name="address-family">
+          <type name="enumeration">
+            <enum name="IPV4">
+              <value value="0"/>
+              <description>
+                <text>IPv4 type.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Address family.</text>
+          </description>
+        </leaf>
+        <leaf name="last-ip-id">
+          <type name="uint16"/>
+          <description>
+            <text>Last identification number of the IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="curr-ip-id">
+          <type name="uint16"/>
+          <description>
+            <text>Current identification number of the IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="outer-vlan">
+          <type name="uint16">
+            <range value="0..4095"/>
+          </type>
+          <description>
+            <text>Outer VLAN.</text>
+          </description>
+        </leaf>
+        <leaf name="inner-vlan">
+          <type name="uint16">
+            <range value="0..4095"/>
+          </type>
+          <description>
+            <text>Inner VLAN.</text>
+          </description>
+        </leaf>
+        <leaf name="ttl">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Time To Live.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Configure ESQM of interface.</text>
+    </description>
+    <container name="esqm">
+      <description>
+        <text>Configure ESQM of interface.</text>
+      </description>
+      <container name="interface-samplings">
+        <description>
+          <text>List of configuring the flow sampling and monitoring function on the interfaces.</text>
+        </description>
+        <list name="interface-sampling">
+          <must condition="/esqm:esqm/esqm:esqm-enable"/>
+          <key value="direction"/>
+          <description>
+            <text>Configure the flow sampling and monitoring function on the interface.</text>
+          </description>
+          <leaf name="direction">
+            <type name="esqm-direction"/>
+            <description>
+              <text>Configure ESQM flow sampling direction.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

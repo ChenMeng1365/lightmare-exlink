@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-msdp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:msdp="urn:huawei:yang:huawei-msdp"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3mc="urn:huawei:yang:huawei-l3-multicast"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:socket="urn:huawei:yang:huawei-socket">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-msdp"/>
+  <prefix value="msdp"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3-multicast">
+    <prefix value="l3mc"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-socket">
+    <prefix value="socket"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Multicast Source Discovery Protocol.</text>
+  </description>
+  <revision date="2021-03-04">
+    <description>
+      <text>Add nodes for TCP-AO. Modify the must conditions of some nodes that reference ACL.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-16">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="msdp-password-type">
+    <type name="enumeration">
+      <enum name="cipher">
+        <value value="0"/>
+        <description>
+          <text>A cipher password is used for MD5 authentication.</text>
+        </description>
+      </enum>
+      <enum name="simple">
+        <value value="1"/>
+        <status value="deprecated"/>
+        <description>
+          <text>A simple password is used for MD5 authentication. The simple type is deprecated. The cipher type is preferred instead of simple.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MSDP password type.</text>
+    </description>
+  </typedef>
+  <typedef name="msdp-peer-status">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="5"/>
+        <description>
+          <text>The MSDP peer is in the Up state.</text>
+        </description>
+      </enum>
+      <enum name="listen">
+        <value value="4"/>
+        <description>
+          <text>The MSDP peer is in the Listen state.</text>
+        </description>
+      </enum>
+      <enum name="connect">
+        <value value="3"/>
+        <description>
+          <text>The MSDP peer is in the Connect state.</text>
+        </description>
+      </enum>
+      <enum name="shutdown">
+        <value value="2"/>
+        <description>
+          <text>The MSDP peer is in the Shutdown state.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="1"/>
+        <description>
+          <text>The MSDP peer is in the Down state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MSDP peer status.</text>
+    </description>
+  </typedef>
+  <typedef name="msdp-encap-type">
+    <type name="enumeration">
+      <enum name="ENCAPNONE">
+        <value value="0"/>
+        <description>
+          <text>None encapsulation type.</text>
+        </description>
+      </enum>
+      <enum name="ENCAPTCP">
+        <value value="1"/>
+        <description>
+          <text>TCP encapsulation type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>MSDP encapsulation type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <when condition="./l3mc:multicast/l3mc:ipv4"/>
+    <description>
+      <text>Adds MSDP configuration to the L3vpn module.</text>
+    </description>
+    <container name="msdp">
+      <description>
+        <text>Configure MSDP configurations.</text>
+      </description>
+      <container name="global">
+        <presence value="msdp"/>
+        <description>
+          <text>Enable/disable MSDP.</text>
+        </description>
+        <leaf name="cache-sa-enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable SA cache to cache (S, G) entries in received SA messages.</text>
+          </description>
+        </leaf>
+        <leaf name="encap-data-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable a device to encapsulate multicast data messages into SA messages.</text>
+          </description>
+        </leaf>
+        <leaf name="originating-rp-interface">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+          <description>
+            <text>To replace the original RP address with the interface IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="retry-interval">
+          <type name="uint32">
+            <range value="1..60"/>
+          </type>
+          <units name="s"/>
+          <default value="30"/>
+          <description>
+            <text>Interval at which a connection request is sent.</text>
+          </description>
+        </leaf>
+        <leaf name="sa-cache-holdtime">
+          <type name="uint32">
+            <range value="150..3600"/>
+          </type>
+          <units name="s"/>
+          <default value="360"/>
+          <description>
+            <text>SA cache holdtime.</text>
+          </description>
+        </leaf>
+        <leaf name="import-source-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable prevent active source information carried in an SA message from being advertised when the SA message is created.</text>
+          </description>
+        </leaf>
+        <leaf name="import-source-policy-name">
+          <when condition="../import-source-enable='true'"/>
+          <type name="acl:acl4-identity"/>
+          <must condition="(/acl:acl/acl:groups/acl:group[acl:number=number(current())] and (/acl:acl/acl:groups/acl:group[acl:number=number(current())]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:number=number(current())]/acl:type='advance')) or (/acl:acl/acl:groups/acl:group[acl:identity=current()] and (/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'))"/>
+          <description>
+            <text>Policy for limiting source information that can be advertised through SA messages as well as multicast groups to which the source information can be advertised. The value is an integer ranging from 2000 to 3999, or a string. A number ranging from 2000 to 2999 specifies a basic ACL that filters only source addresses. A number ranging from 3000 to 3999 specifies an advanced ACL that filters both source and group addresses. If an ACL is not specified, no multicast source information can be advertised.</text>
+          </description>
+        </leaf>
+        <container name="peers">
+          <description>
+            <text>List of configure MSDP peer.</text>
+          </description>
+          <list name="peer">
+            <key value="address"/>
+            <description>
+              <text>Configure MSDP peer.</text>
+            </description>
+            <leaf name="address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Address of a peer.</text>
+              </description>
+            </leaf>
+            <leaf name="connect-interface">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="../../../../../ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Name of the local interface that establishes a connection.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-ttl">
+              <type name="uint32">
+                <range value="0..255"/>
+              </type>
+              <default value="0"/>
+              <description>
+                <text>TTL threshold for multicast data messages that can be encapsulated in SA message and forwarded to a specified MSDP peer.</text>
+              </description>
+            </leaf>
+            <leaf name="description">
+              <type name="string">
+                <length value="1..80"/>
+              </type>
+              <description>
+                <text>Description for an MSDP peer.</text>
+              </description>
+            </leaf>
+            <leaf name="mesh-group-name">
+              <type name="string">
+                <length value="1..32"/>
+              </type>
+              <description>
+                <text>Add an MSDP peer to a full-mesh group.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-cache-maximum">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <default value="8192"/>
+              <description>
+                <text>Limit the maximum number of (S, G) entries that are learned from the specified MSDP peer and cached in the router buffer. Setting such a limit for all MSDP peers on the network that is vulnerable to DoS attacks is recommended.</text>
+              </description>
+            </leaf>
+            <leaf name="request-sa-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable a router to immediately send an SA request message to the MSDP peer after receiving a new Join message from a group. By default, a router does not send an SA request message to MSDP peer immediately after receiving a new Join message, but waits to receive the next SA message.</text>
+              </description>
+            </leaf>
+            <leaf name="is-shutdown">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable a connection with a peer. By default, the connection with a peer does not torn down after being established.</text>
+              </description>
+            </leaf>
+            <choice name="authentication-type">
+              <description>
+                <text>Authentication attributes.</text>
+              </description>
+              <case name="keychain">
+                <description>
+                  <text>Reference to a keychain.</text>
+                </description>
+                <leaf name="keychain-name">
+                  <type name="string">
+                    <length value="1..47"/>
+                    <pattern value="[^A-Z]+"/>
+                  </type>
+                  <ext:case-sensitivity value="lower-only"/>
+                  <description>
+                    <text>Keychain name. Configuring keychain authentication can improve the TCP connection security. Keychain authentication takes effect only if it is configured on both ends of MSDP peers. Note that encryption algorithms and passwords configured for keychain authentication on both peers must be the same; otherwise, the TCP connection cannot be set up between MSDP peers and MSDP messages cannot be transmitted. Before configuring MSDP keychain authentication, ensure that the keychain specified by the keychain name has been configured. Otherwise, a TCP connection cannot be set up.</text>
+                  </description>
+                </leaf>
+              </case>
+              <case name="md5">
+                <description>
+                  <text>Password for MD5 authentication.</text>
+                </description>
+                <leaf name="md5-password">
+                  <type name="pub-type:password-extend"/>
+                  <must condition="(../md5-password and ../md5-simple-flag) or (not(../md5-password) and not(../md5-simple-flag))"/>
+                  <description>
+                    <text>Password for MD5 authentication. The value is a case-sensitive string of 1 to 255 characters in simple mode or of 20 to 392 characters in ciphertext mode. Configuring authentication improves the TCP connection security. Note that authentication passwords configured on the MSDP peers must be the same; otherwise, the TCP connection cannot be set up between MSDP peers and MSDP messages cannot be transmitted.</text>
+                  </description>
+                </leaf>
+                <leaf name="md5-simple-flag">
+                  <type name="msdp-password-type"/>
+                  <must condition="(../md5-password and ../md5-simple-flag) or (not(../md5-password) and not(../md5-simple-flag))"/>
+                  <description>
+                    <text>Flag indicating the password type, which can be simple or cipher. A cipher password is sent in ciphertext mode and a simple password is sent in plaintext mode.</text>
+                  </description>
+                </leaf>
+              </case>
+              <case name="tcp-ao">
+                <description>
+                  <text>Reference to a TCP-AO policy name.</text>
+                </description>
+                <leaf name="tcp-ao-name">
+                  <type name="leafref">
+                    <path value="/socket:socket/socket:tcp-aos/socket:tcp-ao/socket:name"/>
+                  </type>
+                  <description>
+                    <text>TCP-AO policy name. Configuring TCP-AO authentication can improve the TCP connection security. TCP-AO authentication takes effect only if it is configured on both ends of MSDP peers. Note that encryption algorithms and passwords configured for TCP-AO authentication on both peers must be the same; otherwise, the TCP connection cannot be set up between MSDP peers and MSDP messages cannot be transmitted. Before configuring MSDP tcpao authentication, ensure that the TCP-AO specified by the TCP-AO policy name has been configured. Otherwise, a TCP connection cannot be set up.</text>
+                  </description>
+                </leaf>
+              </case>
+            </choice>
+            <leaf name="static-rpf-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable RPF check.</text>
+              </description>
+            </leaf>
+            <leaf name="static-rpf-prefix-name">
+              <when condition="../static-rpf-enable='true'"/>
+              <type name="leafref">
+                <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+              </type>
+              <must condition="count(../../peer/static-rpf-enable[.='true'])=count(../../peer/static-rpf-prefix-name)"/>
+              <description>
+                <text>Name of a route filtering policy that is based on the IP prefix list of a peer/peer group, indicating an RP-address-based filter policy. SA messages are filtered based on source RP addresses in the messages.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-policy-export-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable forward SA messages to a specified MSDP peer. By default, SA messages to be forwarded are not filtered, which means that all (S, G) SA messages can be forwarded.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-policy-export-name">
+              <when condition="../sa-policy-export-enable='true'"/>
+              <type name="acl:acl4-identity"/>
+              <must condition="(/acl:acl/acl:groups/acl:group[acl:number=number(current())] and (/acl:acl/acl:groups/acl:group[acl:number=number(current())]/acl:type='advance')) or (/acl:acl/acl:groups/acl:group[acl:identity=current()] and (/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'))"/>
+              <description>
+                <text>SA export policy, which is an advanced IP ACL number. If an ACL is not specified, all SA messages carrying (S, G) entries will be filtered out.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-policy-local-export-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable send SA messages to a specified MSDP peer. By default, locally created SA messages to be sent are not filtered. That is, the device sends all locally created (S, G) messages.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-policy-local-export-name">
+              <when condition="../sa-policy-local-export-enable='true'"/>
+              <type name="acl:acl4-identity"/>
+              <must condition="(/acl:acl/acl:groups/acl:group[acl:number=number(current())] and (/acl:acl/acl:groups/acl:group[acl:number=number(current())]/acl:type='advance')) or (/acl:acl/acl:groups/acl:group[acl:identity=current()] and (/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'))"/>
+              <description>
+                <text>SA local export policy, which is an advanced IP ACL number. The value is an integer ranging from 3000 to 3999, or a string. If an ACL is not specified, all local SA messages carrying (S, G) entries will be filtered out.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-policy-import-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable receive SA messages from a specified MSDP peer. By default, SA messages to be received are not filtered, which means that all (S, G) SA messages can be received.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-policy-import-name">
+              <when condition="../sa-policy-import-enable='true'"/>
+              <type name="acl:acl4-identity"/>
+              <must condition="(/acl:acl/acl:groups/acl:group[acl:number=number(current())] and (/acl:acl/acl:groups/acl:group[acl:number=number(current())]/acl:type='advance')) or (/acl:acl/acl:groups/acl:group[acl:identity=current()] and (/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'))"/>
+              <description>
+                <text>SA import policy, which is an advanced IP ACL number. If an ACL is not specified, all SA messages carrying (S, G) entries will be filtered out.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-request-policy-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable configure a filtering policy used by a router to respond to SA Request messages received from a specified MSDP peer. Once an SA request message passes the filtering, the router responds to the SA message immediately. By default, a router responds to all SA Request messages sent by all MSDP peers.</text>
+              </description>
+            </leaf>
+            <leaf name="sa-request-policy-name">
+              <when condition="../sa-request-policy-enable='true'"/>
+              <type name="acl:acl4-identity"/>
+              <must condition="(/acl:acl/acl:groups/acl:group[acl:number=number(current())] and (/acl:acl/acl:groups/acl:group[acl:number=number(current())]/acl:type='basic')) or (/acl:acl/acl:groups/acl:group[acl:identity=current()] and (/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'))"/>
+              <description>
+                <text>SA request policy. By default, a router responds to all SA request messages sent by all MSDP peers.</text>
+              </description>
+            </leaf>
+            <leaf name="holdtime">
+              <type name="uint8">
+                <range value="3..150"/>
+              </type>
+              <units name="s"/>
+              <default value="90"/>
+              <description>
+                <text>Peer holdtime.</text>
+              </description>
+            </leaf>
+            <leaf name="keep-alive-interval">
+              <type name="uint8">
+                <range value="1..60"/>
+              </type>
+              <units name="s"/>
+              <default value="60"/>
+              <description>
+                <text>Peer keepalive interval.</text>
+              </description>
+            </leaf>
+            <container name="status">
+              <config value="false"/>
+              <description>
+                <text>Operational state of MSDP peer.</text>
+              </description>
+              <leaf name="as-num">
+                <type name="string">
+                  <length value="0..11"/>
+                </type>
+                <description>
+                  <text>AS number of an MSDP peer. A question mark indicates that the AS number cannot be obtained.</text>
+                </description>
+              </leaf>
+              <leaf name="state">
+                <type name="msdp-peer-status"/>
+                <description>
+                  <text>Status of an MSDP connection. Up: The connection is established. Listen: The local end acts as the server and is in the listening state. The connection is established. Connect: The local end acts as the client and is in the connection state. The connection is not established. Shutdown: The session between MSDP peers is shut down. Down: The connection fails to be established.</text>
+                </description>
+              </leaf>
+              <leaf name="up-or-down-time">
+                <type name="pub-type:time-tick"/>
+                <description>
+                  <text>Time when a connection becomes Up or Down, in seconds.</text>
+                </description>
+              </leaf>
+              <leaf name="connection-interface-address">
+                <type name="inet:ipv4-address-no-zone"/>
+                <description>
+                  <text>Address of a connect-interface. It is used to establish a TCP connection with the peer address.</text>
+                </description>
+              </leaf>
+              <leaf name="send-message-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of packets sent through the connection by MSDP.</text>
+                </description>
+              </leaf>
+              <leaf name="receive-message-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of packets received through the connection by MSDP.</text>
+                </description>
+              </leaf>
+              <leaf name="discard-message-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of discarded packets that are to be sent.</text>
+                </description>
+              </leaf>
+              <leaf name="elapsed-time">
+                <type name="pub-type:time-tick"/>
+                <description>
+                  <text>Difference between the current time and the last time when statistics, resetting information, and inputting and outputting information about the MSDP peer are cleared. The value is expressed in seconds.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-learned-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of cached entries for SA messages from an MSDP peer.</text>
+                </description>
+              </leaf>
+              <leaf name="input-queue-size">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Length of the data in the input cache.</text>
+                </description>
+              </leaf>
+              <leaf name="output-queue-size">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Length of the data in the output cache.</text>
+                </description>
+              </leaf>
+              <leaf name="rpf-check-fail-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of SA messages that are discarded because they do not pass the RPF check.</text>
+                </description>
+              </leaf>
+              <leaf name="receive-sa-message-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received SA messages.</text>
+                </description>
+              </leaf>
+              <leaf name="send-sa-message-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent SA messages.</text>
+                </description>
+              </leaf>
+              <leaf name="receive-sa-requeset-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received SA Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="send-sa-request-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent SA Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="receive-sa-response-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received SA Response messages.</text>
+                </description>
+              </leaf>
+              <leaf name="send-sa-response-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent SA Response messages.</text>
+                </description>
+              </leaf>
+              <leaf name="receive-data-packet-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received SA messages that carry encapsulated data.</text>
+                </description>
+              </leaf>
+              <leaf name="send-data-packet-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent SA messages that carry encapsulated data.</text>
+                </description>
+              </leaf>
+              <leaf name="reset-count">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Reset times, including the resets due to the receiving of notifications or the timeout of the holdtimer.</text>
+                </description>
+              </leaf>
+              <leaf name="fsm-estab-trans">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of times that the MSDP FSM enters the Established state.</text>
+                </description>
+              </leaf>
+              <leaf name="fsm-estab-time">
+                <type name="pub-type:time-tick"/>
+                <description>
+                  <text>Time when the MSDP FSM enters or quits the Established state.</text>
+                </description>
+              </leaf>
+              <leaf name="last-receive-message-time">
+                <type name="pub-type:time-tick"/>
+                <description>
+                  <text>Last time of receiving MSDP messages.</text>
+                </description>
+              </leaf>
+              <leaf name="remote-port">
+                <type name="uint32">
+                  <range value="0..65535"/>
+                </type>
+                <description>
+                  <text>Remote port.</text>
+                </description>
+              </leaf>
+              <leaf name="local-port">
+                <type name="uint32">
+                  <range value="0..65535"/>
+                </type>
+                <description>
+                  <text>Local port.</text>
+                </description>
+              </leaf>
+              <leaf name="encap-type">
+                <type name="msdp-encap-type"/>
+                <description>
+                  <text>Type of encapsulated data into SA messages.</text>
+                </description>
+              </leaf>
+              <leaf name="connect-attempts">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of connection attempts.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="control-message-counters">
+              <config value="false"/>
+              <description>
+                <text>Statistics of MSDP messages.</text>
+              </description>
+              <leaf name="sa-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Source-Active messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Source-Active messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Source-Active messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-request-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Source-Active Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-request-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Source-Active Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-request-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Source-Active Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-response-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Source-Active Response messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-response-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Source-Active Response messages.</text>
+                </description>
+              </leaf>
+              <leaf name="sa-response-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Source-Active Response messages.</text>
+                </description>
+              </leaf>
+              <leaf name="keep-alive-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Keepalive messages.</text>
+                </description>
+              </leaf>
+              <leaf name="keep-alive-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Keepalive messages.</text>
+                </description>
+              </leaf>
+              <leaf name="keep-alive-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Keepalive messages.</text>
+                </description>
+              </leaf>
+              <leaf name="notification-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Notification messages.</text>
+                </description>
+              </leaf>
+              <leaf name="notification-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Notification messages.</text>
+                </description>
+              </leaf>
+              <leaf name="notification-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Notification messages.</text>
+                </description>
+              </leaf>
+              <leaf name="traceroute-request-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Traceroute Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="traceroute-request-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Traceroute Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="traceroute-request-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Traceroute Request messages.</text>
+                </description>
+              </leaf>
+              <leaf name="traceroute-reply-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Traceroute Reply messages.</text>
+                </description>
+              </leaf>
+              <leaf name="traceroute-reply-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Traceroute Reply messages.</text>
+                </description>
+              </leaf>
+              <leaf name="traceroute-reply-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Traceroute Reply messages.</text>
+                </description>
+              </leaf>
+              <leaf name="data-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Data messages messages.</text>
+                </description>
+              </leaf>
+              <leaf name="data-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Data messages messages.</text>
+                </description>
+              </leaf>
+              <leaf name="data-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Data messages messages.</text>
+                </description>
+              </leaf>
+              <leaf name="unknown-received">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of received Unknown Type messages.</text>
+                </description>
+              </leaf>
+              <leaf name="unknown-sent">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of sent Unknown Type messages.</text>
+                </description>
+              </leaf>
+              <leaf name="unknown-invalid">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Number of invalid Unknown Type messages.</text>
+                </description>
+              </leaf>
+            </container>
+          </list>
+        </container>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="msdp"/>
+</module>

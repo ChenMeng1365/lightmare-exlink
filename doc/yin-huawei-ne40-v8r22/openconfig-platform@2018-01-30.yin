@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-platform"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-platform="http://openconfig.net/yang/platform"
+        xmlns:oc-platform-types="http://openconfig.net/yang/platform-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-alarm-types="http://openconfig.net/yang/alarms/types">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/platform"/>
+  <prefix value="oc-platform"/>
+  <import module="openconfig-platform-types">
+    <prefix value="oc-platform-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-alarm-types">
+    <prefix value="oc-alarm-types"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module defines a data model for representing a system
+component inventory, which can include hardware or software
+elements arranged in an arbitrary structure. The primary
+relationship supported by the model is containment, e.g.,
+components containing subcomponents.
+
+It is expected that this model reflects every field replacable
+unit on the device at a minimum (i.e., additional information
+may be supplied about non-replacable components).
+
+Every element in the inventory is termed a 'component' with each
+component expected to have a unique name and type, and optionally
+a unique system-assigned identifier and FRU number.  The
+uniqueness is guaranteed by the system within the device.
+
+Components may have properties defined by the system that are
+modeled as a list of key-value pairs. These may or may not be
+user-configurable.  The model provides a flag for the system
+to optionally indicate which properties are user configurable.
+
+Each component also has a list of 'subcomponents' which are
+references to other components. Appearance in a list of
+subcomponents indicates a containment relationship as described
+above.  For example, a linecard component may have a list of
+references to port components that reside on the linecard.
+
+This schema is generic to allow devices to express their own
+platform-specific structure.  It may be augmented by additional
+component type-specific schemas that provide a common structure
+for well-known component types.  In these cases, the system is
+expected to populate the common component schema, and may
+optionally also represent the component and its properties in the
+generic structure.
+
+The properties for each component may include dynamic values,
+e.g., in the 'state' part of the schema.  For example, a CPU
+component may report its utilization, temperature, or other
+physical properties.  The intent is to capture all platform-
+specific physical data in one location, including inventory
+(presence or absence of a component) and state (physical
+attributes or status).</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.9.0"/>
+  <revision date="2018-01-30">
+    <description>
+      <text>Amended approach for modelling CPU - rather than having
+a local CPU utilisation state variable, a component with
+a CPU should create a subcomponent of type CPU to report
+statistics.</text>
+    </description>
+    <reference>
+      <text>0.9.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-01-16">
+    <description>
+      <text>Added new per-component common data; add temp alarm;
+moved hardware-port reference to port model</text>
+    </description>
+    <reference>
+      <text>0.8.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-12-14">
+    <description>
+      <text>Added anchor containers for component data, added new
+component types</text>
+    </description>
+    <reference>
+      <text>0.7.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-16">
+    <description>
+      <text>Added power state enumerated type</text>
+    </description>
+    <reference>
+      <text>0.6.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-12-22">
+    <description>
+      <text>Added temperature state variable to component</text>
+    </description>
+    <reference>
+      <text>0.5.0</text>
+    </reference>
+  </revision>
+  <grouping name="platform-component-properties-config">
+    <description>
+      <text>System-defined configuration data for component properties</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>System-supplied name of the property -- this is typically
+non-configurable</text>
+      </description>
+    </leaf>
+    <leaf name="value">
+      <type name="union">
+        <type name="string"/>
+        <type name="boolean"/>
+        <type name="int64"/>
+        <type name="uint64"/>
+        <type name="decimal64">
+          <fraction-digits value="2"/>
+        </type>
+      </type>
+      <description>
+        <text>Property values can take on a variety of types.  Signed and
+unsigned integer types may be provided in smaller sizes,
+e.g., int8, uint16, etc.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-component-properties-state">
+    <description>
+      <text>Operational state data for component properties</text>
+    </description>
+    <leaf name="configurable">
+      <type name="boolean"/>
+      <description>
+        <text>Indication whether the property is user-configurable</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-component-properties-top">
+    <description>
+      <text>Top-level grouping </text>
+    </description>
+    <container name="properties">
+      <description>
+        <text>Enclosing container </text>
+      </description>
+      <list name="property">
+        <key value="name"/>
+        <description>
+          <text>List of system properties for the component</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to the property name.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for each property</text>
+          </description>
+          <uses name="platform-component-properties-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for each property</text>
+          </description>
+          <uses name="platform-component-properties-config"/>
+          <uses name="platform-component-properties-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="platform-subcomponent-ref-config">
+    <description>
+      <text>Configuration data for subcomponent references</text>
+    </description>
+    <leaf name="name">
+      <type name="leafref">
+        <path value="../../../../../component/config/name"/>
+      </type>
+      <description>
+        <text>Reference to the name of the subcomponent</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-subcomponent-ref-state">
+    <description>
+      <text>Operational state data for subcomponent references</text>
+    </description>
+  </grouping>
+  <grouping name="platform-subcomponent-ref-top">
+    <description>
+      <text>Top-level grouping for list of subcomponent references</text>
+    </description>
+    <container name="subcomponents">
+      <description>
+        <text>Enclosing container for subcomponent references</text>
+      </description>
+      <list name="subcomponent">
+        <key value="name"/>
+        <description>
+          <text>List of subcomponent references</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to the name list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for the subcomponent</text>
+          </description>
+          <uses name="platform-subcomponent-ref-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for the subcomponent</text>
+          </description>
+          <uses name="platform-subcomponent-ref-config"/>
+          <uses name="platform-subcomponent-ref-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="platform-component-config">
+    <description>
+      <text>Configuration data for components</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Device name for the component -- this will not be a
+configurable parameter on many implementations</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-component-state">
+    <description>
+      <text>Operational state data for device components.</text>
+    </description>
+    <leaf name="type">
+      <type name="union">
+        <type name="identityref">
+          <base name="oc-platform-types:OPENCONFIG_HARDWARE_COMPONENT"/>
+        </type>
+        <type name="identityref">
+          <base name="oc-platform-types:OPENCONFIG_SOFTWARE_COMPONENT"/>
+        </type>
+      </type>
+      <description>
+        <text>Type of component as identified by the system</text>
+      </description>
+    </leaf>
+    <leaf name="id">
+      <type name="string"/>
+      <description>
+        <text>Unique identifier assigned by the system for the
+component</text>
+      </description>
+    </leaf>
+    <leaf name="description">
+      <type name="string"/>
+      <description>
+        <text>System-supplied description of the component</text>
+      </description>
+    </leaf>
+    <leaf name="mfg-name">
+      <type name="string"/>
+      <description>
+        <text>System-supplied identifier for the manufacturer of the
+component.  This data is particularly useful when a
+component manufacturer is different than the overall
+device vendor.</text>
+      </description>
+    </leaf>
+    <leaf name="hardware-version">
+      <type name="string"/>
+      <description>
+        <text>For hardware components, this is the hardware revision of
+the component.</text>
+      </description>
+    </leaf>
+    <leaf name="firmware-version">
+      <type name="string"/>
+      <description>
+        <text>For hardware components, this is the version of associated
+firmware that is running on the component, if applicable.</text>
+      </description>
+    </leaf>
+    <leaf name="software-version">
+      <type name="string"/>
+      <description>
+        <text>For software components such as operating system or other
+software module, this is the version of the currently
+running software.</text>
+      </description>
+    </leaf>
+    <leaf name="serial-no">
+      <type name="string"/>
+      <description>
+        <text>System-assigned serial number of the component.</text>
+      </description>
+    </leaf>
+    <leaf name="part-no">
+      <type name="string"/>
+      <description>
+        <text>System-assigned part number for the component.  This should
+be present in particular if the component is also an FRU
+(field replacable unit)</text>
+      </description>
+    </leaf>
+    <leaf name="oper-status">
+      <type name="identityref">
+        <base name="oc-platform-types:COMPONENT_OPER_STATUS"/>
+      </type>
+      <description>
+        <text>If applicable, this reports the current operational status
+of the component.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-component-temp-alarm-state">
+    <description>
+      <text>Temperature alarm data for platform components</text>
+    </description>
+    <leaf name="alarm-status">
+      <type name="boolean"/>
+      <description>
+        <text>A value of true indicates the alarm has been raised or
+asserted.  The value should be false when the alarm is
+cleared.</text>
+      </description>
+    </leaf>
+    <leaf name="alarm-threshold">
+      <type name="uint32"/>
+      <description>
+        <text>The threshold value that was crossed for this alarm.</text>
+      </description>
+    </leaf>
+    <leaf name="alarm-severity">
+      <type name="identityref">
+        <base name="oc-alarm-types:OPENCONFIG_ALARM_SEVERITY"/>
+      </type>
+      <description>
+        <text>The severity of the current alarm.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-component-power-state">
+    <description>
+      <text>Power-related operational state for device components.</text>
+    </description>
+    <leaf name="allocated-power">
+      <type name="uint32"/>
+      <units name="watts"/>
+      <description>
+        <text>Power allocated by the system for the component.</text>
+      </description>
+    </leaf>
+    <leaf name="used-power">
+      <type name="uint32"/>
+      <units name="watts"/>
+      <description>
+        <text>Actual power used by the component.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="platform-component-temp-state">
+    <description>
+      <text>Temperature state data for device components</text>
+    </description>
+    <container name="temperature">
+      <description>
+        <text>Temperature in degrees Celsius of the component. Values include
+the instantaneous, average, minimum, and maximum statistics. If
+avg/min/max statistics are not supported, the target is expected
+to just supply the instant value</text>
+      </description>
+      <uses name="oc-platform-types:avg-min-max-instant-stats-precision1-celsius"/>
+      <uses name="platform-component-temp-alarm-state"/>
+    </container>
+  </grouping>
+  <grouping name="platform-component-memory-state">
+    <description>
+      <text>Per-component memory statistics</text>
+    </description>
+    <container name="memory">
+      <description>
+        <text>For components that have associated memory, these values
+report information about available and utilized memory.</text>
+      </description>
+      <leaf name="available">
+        <type name="uint64"/>
+        <units name="bytes"/>
+        <description>
+          <text>The available memory physically installed, or logically
+allocated to the component.</text>
+        </description>
+      </leaf>
+      <leaf name="utilized">
+        <type name="uint64"/>
+        <units name="bytes"/>
+        <description>
+          <text>The memory currently in use by processes running on
+the component, not considering reserved memory that is
+not available for use.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="platform-anchors-top">
+    <description>
+      <text>This grouping is used to add containers for components that
+are common across systems, but do not have a defined schema
+within the openconfig-platform module.  Containers should be
+added to this grouping for components that are expected to
+exist in multiple systems, with corresponding modules
+augmenting the config/state containers directly.</text>
+    </description>
+    <container name="chassis">
+      <description>
+        <text>Data for chassis components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for chassis components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for chassis components</text>
+        </description>
+      </container>
+    </container>
+    <container name="port">
+      <description>
+        <text>Data for physical port components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for physical port components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for physical port components</text>
+        </description>
+      </container>
+    </container>
+    <container name="power-supply">
+      <description>
+        <text>Data for power supply components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for power supply components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for power supply components</text>
+        </description>
+      </container>
+    </container>
+    <container name="fan">
+      <description>
+        <text>Data for fan components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for fan components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for fan components</text>
+        </description>
+      </container>
+    </container>
+    <container name="fabric">
+      <description>
+        <text>Data for fabric components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for fabric components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for fabric components</text>
+        </description>
+      </container>
+    </container>
+    <container name="storage">
+      <description>
+        <text>Data for storage components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for storage components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for storage components</text>
+        </description>
+      </container>
+    </container>
+    <container name="cpu">
+      <description>
+        <text>Data for cpu components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for cpu components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for cpu components</text>
+        </description>
+      </container>
+    </container>
+    <container name="integrated-circuit">
+      <description>
+        <text>Data for chip components, such as ASIC, NPUs, etc.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for chip components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for chip components</text>
+        </description>
+      </container>
+    </container>
+    <container name="backplane">
+      <description>
+        <text>Data for backplane components</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for backplane components</text>
+        </description>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for backplane components</text>
+        </description>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="platform-component-top">
+    <description>
+      <text>Top-level grouping for components in the device inventory</text>
+    </description>
+    <container name="components">
+      <description>
+        <text>Enclosing container for the components in the system.</text>
+      </description>
+      <list name="component">
+        <key value="name"/>
+        <description>
+          <text>List of components, keyed by component name.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>References the component name</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for each component</text>
+          </description>
+          <uses name="platform-component-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for each component</text>
+          </description>
+          <uses name="platform-component-config"/>
+          <uses name="platform-component-state"/>
+          <uses name="platform-component-temp-state"/>
+          <uses name="platform-component-memory-state"/>
+          <uses name="platform-component-power-state"/>
+        </container>
+        <uses name="platform-component-properties-top"/>
+        <uses name="platform-subcomponent-ref-top"/>
+        <uses name="platform-anchors-top"/>
+      </list>
+    </container>
+  </grouping>
+  <uses name="platform-component-top"/>
+</module>

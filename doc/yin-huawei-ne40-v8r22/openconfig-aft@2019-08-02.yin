@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-aft"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-aft="http://openconfig.net/yang/aft"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/aft"/>
+  <prefix value="oc-aft"/>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <include module="openconfig-aft-ipv4"/>
+  <include module="openconfig-aft-ipv6"/>
+  <include module="openconfig-aft-mpls"/>
+  <include module="openconfig-aft-pf"/>
+  <include module="openconfig-aft-ethernet"/>
+  <include module="openconfig-aft-common"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>A model describing the forwarding entries installed on a network
+element. It should be noted that this model is not expected to
+align 1:1 with the underlying structure used directly by a
+forwarding element (e.g., linecard), but rather provide an
+abstraction that can be consumed by an NMS to observe, and in some
+cases manipulate, the internal forwarding database in a simplified
+manner. Since the underlying model of the forwarding table is not
+expected to align with this model, the structure described herein
+is referred to as an Abstract Forwarding Table (AFT), rather than
+the FIB.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.4.0"/>
+  <revision date="2019-08-02">
+    <description>
+      <text>Add installing protocol for IPv[46] unicast entries.
+Add the ability to describe conditional next-hop groups
+outside of the policy forwarding module to allow for efficient
+handling of CBTS, where many prefixes may share the same next-hop
+criteria.</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-08-01">
+    <description>
+      <text>Add lsp-name leaf to AFT next-hop.</text>
+    </description>
+    <reference>
+      <text>0.3.3</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.3.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Formatting fixes</text>
+    </description>
+    <reference>
+      <text>0.3.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-05-10">
+    <description>
+      <text>Refactor to provide concretised per-AF schemas per AFT.</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="aft-top">
+    <description>
+      <text>Top-level grouping allowing per-protocol instantiation of the
+AFT.</text>
+    </description>
+    <container name="afts">
+      <description>
+        <text>The abstract forwarding tables (AFTs) that are associated
+with the network instance. An AFT is instantiated per-protocol
+running within the network-instance - such that one exists for
+IPv4 Unicast, IPv6 Unicast, MPLS, L2 forwarding entries, etc.
+A forwarding entry within the FIB has a set of next-hops,
+which may be a reference to an entry within another table -
+e.g., where a Layer 3 next-hop has an associated Layer 2
+forwarding entry.</text>
+      </description>
+      <container name="ipv4-unicast">
+        <description>
+          <text>The abstract forwarding table for IPv4 unicast. Entries
+within this table are uniquely keyed on the IPv4 unicast
+destination prefix which is matched by ingress packets.
+
+The data set represented by the IPv4 Unicast AFT is the set
+of entries from the IPv4 unicast RIB that have been selected
+for installation into the FIB of the device exporting the
+data structure.</text>
+        </description>
+        <uses name="aft-ipv4-unicast-structural"/>
+      </container>
+      <container name="ipv6-unicast">
+        <description>
+          <text>The abstract forwarding table for IPv6 unicast. Entries
+within this table are uniquely keyed on the IPv6 unicast
+destination prefix which is matched by ingress packets.
+
+The data set represented by the IPv6 Unicast AFTis the set
+of entries within the IPv6 RIB that </text>
+        </description>
+        <uses name="aft-ipv6-unicast-structural"/>
+      </container>
+      <container name="policy-forwarding">
+        <description>
+          <text>The abstract forwarding table for policy-based forwarding
+entries. Since multiple match criteria can be utilised
+within a policy-based forwarding rule, this AFT provides a
+flexible match criteria, and is indexed based on an
+arbitrary 64-bit index. Entries within the AFT may match on
+multiple field types (e.g., L4 header fields, as well as L2
+fields).
+
+Examples of entries within this table are:
+ - IPv4 policy-based routing based on DSCP.
+ - MPLS policy-based forwarding entries.</text>
+        </description>
+        <uses name="aft-pf-structural"/>
+      </container>
+      <container name="mpls">
+        <description>
+          <text>The abstract forwarding table for MPLS label based
+forwarding entries. Entries within the table are keyed based
+on the top-most MPLS label in the stack on the ingress
+packet.</text>
+        </description>
+        <uses name="aft-mpls-structural"/>
+      </container>
+      <container name="ethernet">
+        <description>
+          <text>The abstract forwarding table for Ethernet based forwarding
+entries. Entries within the table are keyed based on the
+destination MAC address on the ingress packet.</text>
+        </description>
+        <uses name="aft-ethernet-structural"/>
+      </container>
+      <uses name="aft-next-hop-groups-structural"/>
+      <uses name="aft-nhop-structural"/>
+    </container>
+  </grouping>
+</module>

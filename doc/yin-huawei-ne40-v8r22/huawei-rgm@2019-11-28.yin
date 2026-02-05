@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-rgm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rgm="urn:huawei:yang:huawei-rgm"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ip="urn:huawei:yang:huawei-ip"
+        xmlns:vrrp="urn:huawei:yang:huawei-vrrp"
+        xmlns:rmg="urn:huawei:yang:huawei-route-monitor-group">
+  <namespace uri="urn:huawei:yang:huawei-rgm"/>
+  <prefix value="rgm"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ip">
+    <prefix value="ip"/>
+  </import>
+  <import module="huawei-vrrp">
+    <prefix value="vrrp"/>
+  </import>
+  <import module="huawei-route-monitor-group">
+    <prefix value="rmg"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>IPv4 Direct Route Association.</text>
+  </description>
+  <revision date="2019-11-28">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="rgm"/>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ip:ipv4">
+    <description>
+      <text>Association between direct routes and a VRRP backup group.</text>
+    </description>
+    <container name="rgm">
+      <description>
+        <text>Configure IPv4 direct route track VRRP, PWs, virtual-access and so on under the ifm interface.</text>
+      </description>
+      <choice name="rgm-track">
+        <description>
+          <text>Association between direct routes and a VRRP backup group, PW status and delay for advertising direct routes.</text>
+        </description>
+        <case name="track-vrrp">
+          <description>
+            <text>Association between direct routes and a VRRP backup group.</text>
+          </description>
+          <container name="track-vrrp">
+            <description>
+              <text>Configure association between direct routes and a VRRP backup group.</text>
+            </description>
+            <leaf name="vrrp-id">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ip:ipv4/vrrp:vrrp/vrrp:groups/vrrp:group/vrrp:id"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Virtual router identifier.</text>
+              </description>
+            </leaf>
+            <leaf name="cost-change">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Value that is used as the cost of direct routes when the associated VRRP backup group status changes.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+        <case name="track-pw">
+          <description>
+            <text>Association between direct routes and PW status.</text>
+          </description>
+          <container name="track-pw">
+            <when condition="../../../ifm:type='Remote-Ap' or ../../../ifm:type='VBridge' or ../../../ifm:type='Virtual-Ethernet' or ../../../ifm:type='Global-VE'"/>
+            <description>
+              <text>Configure association between direct routes and PW status.</text>
+            </description>
+            <leaf name="cost-change">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Value that is used as the cost of direct routes when the associated PW status changes.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+        <case name="advertise-delay">
+          <description>
+            <text>Delay for advertising direct routes.</text>
+          </description>
+          <container name="advertise-delay">
+            <when condition="../../../ifm:type='Remote-Ap' or ../../../ifm:type='VBridge' or ../../../ifm:type='Virtual-Ethernet' or ../../../ifm:type='Eth-Trunk' or ../../../ifm:type='Global-VE'"/>
+            <presence value="Delay for advertising direct routes."/>
+            <description>
+              <text>Configure delay for advertising direct routes.</text>
+            </description>
+            <leaf name="cost-change">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Value that is used as the cost of direct routes when the associated object status changes.</text>
+              </description>
+            </leaf>
+            <leaf name="time-delay">
+              <type name="uint32">
+                <range value="1..3600"/>
+              </type>
+              <units name="s"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Delay for advertising direct routes.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+      </choice>
+      <container name="track-trunk">
+        <when condition="../../../ifm:type='Global-VE'"/>
+        <presence value="Track VRRP backup group under loopback interface."/>
+        <description>
+          <text>Configure association between direct routes and Interface status.</text>
+        </description>
+        <leaf name="if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Name of an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="cost-change">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Value that is used as the cost of direct routes when the associated Trunk interface status changes.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="track-rtmtg">
+        <presence value="Track route-monitor-group."/>
+        <description>
+          <text>Configure association between route-monitor-group routes and interface status.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/rmg:route-monitor-group/rmg:monitor-groups/rmg:monitor-group/rmg:group-name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>The route-monitor-group was tracked under the interface.</text>
+          </description>
+        </leaf>
+        <leaf name="down-weight">
+          <type name="uint32">
+            <range value="1..1000"/>
+          </type>
+          <description>
+            <text>Trigger down weight of a track interface.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ip:ipv6">
+    <description>
+      <text>Association between IPv6 direct route and a VRRP backup group.</text>
+    </description>
+    <container name="rgm6">
+      <description>
+        <text>Configure IPv6 direct route track VRRP6, PWs, virtual-access and so on under the ifm interface.</text>
+      </description>
+      <choice name="rgm6-track">
+        <description>
+          <text>Association between direct routes and a VRRP6 backup group, PW status and delay for advertising direct routes.</text>
+        </description>
+        <case name="track-vrrp6">
+          <description>
+            <text>Association between direct routes and a VRRP6 backup group.</text>
+          </description>
+          <container name="track-vrrp6s">
+            <description>
+              <text>Configure IPv6 direct route track VRRP6.</text>
+            </description>
+            <leaf name="vrrp-id">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ip:ipv6/vrrp:vrrp6/vrrp:group6s/vrrp:group6/vrrp:id"/>
+              </type>
+              <must condition="../../../vrrp:vrrp6/vrrp:group6s/vrrp:group6[vrrp:id=current()]/vrrp:id"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Virtual router identifier (VRID).</text>
+              </description>
+            </leaf>
+            <leaf name="cost-change">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>IPv6 direct route cost change.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+        <case name="track-pw">
+          <description>
+            <text>Association between direct routes and PW status.</text>
+          </description>
+          <container name="track-pw">
+            <when condition="../../../ifm:type='Virtual-Ethernet' or ../../../ifm:type='Global-VE'"/>
+            <description>
+              <text>Configure association between IPv6 direct route and PW status.</text>
+            </description>
+            <leaf name="cost-change">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Value that is used as the cost of IPv6 direct route when the associated PW status changes.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+        <case name="advertise-delay">
+          <description>
+            <text>Delay for advertising direct routes.</text>
+          </description>
+          <container name="advertise-delay">
+            <when condition="../../../ifm:type='Virtual-Ethernet' or ../../../ifm:type='Eth-Trunk' or ../../../ifm:type='Global-VE'"/>
+            <description>
+              <text>Configure delay for advertising IPv6 direct route.</text>
+            </description>
+            <leaf name="cost-change">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Value that is used as the cost of IPv6 direct route when the associated object status changes.</text>
+              </description>
+            </leaf>
+            <leaf name="time-delay">
+              <type name="uint32">
+                <range value="1..3600"/>
+              </type>
+              <units name="s"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Delay for advertising IPv6 direct route.</text>
+              </description>
+            </leaf>
+          </container>
+        </case>
+      </choice>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-l3vpn"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <namespace uri="urn:huawei:yang:huawei-l3vpn"/>
+  <prefix value="l3vpn"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-tunnel-management">
+    <prefix value="tnlm"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <include module="huawei-l3vpn-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This YANG module defines a YANG data model to configure and manage
+Layer3 VPNs. It augments the huawei-network-instance yang model
+to add L3VPN specific configuration.</text>
+  </description>
+  <revision date="2020-02-25">
+    <description>
+      <text>The YANG descriptions are modified according to new standards.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-07-05">
+    <description>
+      <text>Modify descriptions of the YANG file.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-27">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="l3vpn"/>
+  <container name="l3vpn">
+    <description>
+      <text>Layer 3 Virtual Private Network (L3VPN). An L3VPN is a virtual
+private network set up over public networks by Internet Service
+Providers (ISPs) and Network Service Providers (NSPs).</text>
+    </description>
+    <container name="statistics">
+      <config value="false"/>
+      <description>
+        <text>Statistics of L3VPN information.</text>
+      </description>
+      <leaf name="vpn-total-number">
+        <type name="uint32"/>
+        <description>
+          <text>VPN total number.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv4-vpn-number">
+        <type name="uint32"/>
+        <description>
+          <text>IPv4 unicast VPN number.</text>
+        </description>
+      </leaf>
+      <leaf name="ipv6-vpn-number">
+        <type name="uint32"/>
+        <description>
+          <text>IPv6 unicast VPN number.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Augment the huawei-network-instance model to add L3VPN specific configuration.</text>
+    </description>
+    <leaf name="traffic-statistic-enable">
+      <when condition="../ni:name!='_public_'"/>
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable L3VPN traffic statistics.</text>
+      </description>
+    </leaf>
+    <container name="parameter">
+      <when condition="../ni:name!='_public_'"/>
+      <description>
+        <text>Configure L3VPN instances information.</text>
+      </description>
+      <leaf name="identifier">
+        <type name="string">
+          <length value="3..15"/>
+          <pattern value="[1-9a-f][0-9a-f]{0,5}:[1-9a-f][0-9a-f]{0,7}|0:[1-9a-f][0-9a-f]{0,7}|[1-9a-f][0-9a-f]{0,5}:0"/>
+        </type>
+        <must condition="count(/ni:network-instance/ni:instances/ni:instance[l3vpn:parameter/l3vpn:identifier=current()])=1"/>
+        <description>
+          <text>Configures a globally unique identifier for a VPN instance. The format of a VPN identifier are follows:HEX&lt;0-ffffffff&gt;:HEX&lt;0-ffffffff&gt;, but not support 0:0.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="afs">
+      <description>
+        <text>List of VPN address families. A VPN instance supports the
+configurations and functions of an address family only
+after the address family is configured on the instance.</text>
+      </description>
+      <list name="af">
+        <key value="type"/>
+        <max-elements value="2"/>
+        <description>
+          <text>Configure address families of the VPN instance. A VPN instance
+supports the configurations and functions of an
+address family only after the address family is
+configured on the instance. Neither of the address
+families in the _public_ VPN instance can be deleted.
+If either of a VPN instance's IPv4 and IPv6 address
+families is referenced by BGP, the referenced address
+family cannot be deleted. If one of the address
+families is referenced by BGP, the non-referenced
+address family in the VPN instance can be deleted.
+If the VPN instance is referenced by BGP but its
+address families are not referenced by BGP, neither
+address family can be deleted.</text>
+        </description>
+        <leaf name="type">
+          <type name="af-type"/>
+          <description>
+            <text>Types of the VPN address families.</text>
+          </description>
+        </leaf>
+        <leaf name="route-distinguisher">
+          <when condition="../../../ni:name!='_public_'"/>
+          <type name="string">
+            <length value="3..21"/>
+          </type>
+          <description>
+            <text>A VPN address family takes effect only after it is
+configured with a RD.The object allows configuration
+and deletion, it cannot be modified. The format of
+an RD are as follows:
+(1) 16-bit AS number :32-bit user-defined number,
+    for example, 101:3. An AS number ranges from 0 to 65535,
+    and a user-defined number ranges from 0 to 4294967295.
+    The AS number and user-defined number cannot be both 0s.
+    This means that the RD value cannot be 0:0.
+(2) 32-bit IP address:16-bit user-defined number,
+    for example: 192.168.122.15:1.The IP address ranges from
+    0.0.0.0 to 255.255.255.255, and the user-defined number
+    ranges from 0 to 65535.
+(3) 32-bit AS number :16-bit user-defined number,
+    for example, 10.11:3. An AS number ranges from 0.0 to
+    65535.65535 or 0 to 4294967295, and a user-defined number
+    ranges from 0 to 65535. The AS number and user-defined
+    number cannot be both 0s. This means that the RD value
+    cannot be 0.0:0. If a VPN instance's IPv4 or IPv6 address
+    family to which the node belongs is referenced by BGP,
+    the node cannot be deleted. If the IPv4 or IPv6 address
+    family to which the node belongs is not referenced by
+    BGP and the other address family is referenced by BGP,
+    the node can be deleted. If the VPN instance is referenced
+    by BGP but its address families are not referenced by BGP,
+    the nodes in the address families cannot be deleted.</text>
+          </description>
+        </leaf>
+        <leaf name="effect-route-distinguisher">
+          <type name="string">
+            <length value="3..21"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Effective RD.</text>
+          </description>
+        </leaf>
+        <choice name="import-policy-type">
+          <description>
+            <text>Set route policy or filter.</text>
+          </description>
+          <case name="rtp-ref">
+            <description>
+              <text>Route policy.</text>
+            </description>
+            <leaf name="import-policy">
+              <when condition="../route-distinguisher"/>
+              <type name="leafref">
+                <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+              </type>
+              <description>
+                <text>Name of a route import policy. The policy is associating
+the VPN instance with an inbound routing policy. If a
+mode that is more accurate than the extended community
+attribute mode is required for filtering import VPN
+instance routes, the inbound routing policy can be
+adopted. The inbound routing policy can filter imported
+routes and set routing attributes for the qualified routes.
+If the inbound routing policy is not configured, all routes
+matching the VPN-target attribute are added to the VPN instance.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="export-policy-type">
+          <description>
+            <text>Set route policy or filter.</text>
+          </description>
+          <case name="rtp-ref">
+            <description>
+              <text>Route policy.</text>
+            </description>
+            <leaf name="export-policy">
+              <when condition="../route-distinguisher"/>
+              <type name="leafref">
+                <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+              </type>
+              <description>
+                <text>Name of a route export policy. The policy is associating
+the VPN instance with an outbound routing policy.
+If a mode that is more accurate than the extended
+community attribute mode is required to control
+the advertisement ofVPN instance routes, the outbound
+routing policy can be adopted. The outbound routing
+policy can filter the routes to be advertised and set
+routing attributes for the qualified routes. If the
+outbound routing policy is not configured, all routes
+can be advertised.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="export-policy-add-ert-first">
+          <when condition="../export-policy"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable advertise routes to VPNv4 add ERT first.</text>
+          </description>
+        </leaf>
+        <leaf name="label-mode">
+          <when condition="../route-distinguisher"/>
+          <type name="label-mode-type"/>
+          <default value="per-instance"/>
+          <description>
+            <text>Method of distributing labels to VPN instance routes.
+The way which assigns the label depends on the paf value.
+If there are a large number of routes in a VPN instance,
+assign a label for each instance. This allows all routes
+in the instance to use one label.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-frr">
+          <when condition="../route-distinguisher"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the VPN FRR function.</text>
+          </description>
+        </leaf>
+        <leaf name="tunnel-policy">
+          <when condition="../route-distinguisher"/>
+          <type name="leafref">
+            <path value="/tnlm:tunnel-management/tnlm:tunnel-policys/tnlm:tunnel-policy/tnlm:name"/>
+          </type>
+          <description>
+            <text>Name of a tunnel policy. It is used to associate the VPN
+instance with the specified tunnel policy. If no tunnel
+policy is configured, the default tunnel policy is used.
+Only LDP LSPs or static LSPs match the default tunnel policy,
+and load balancing is not performed for LSPs.</text>
+          </description>
+        </leaf>
+        <leaf name="transit-vpn">
+          <when condition="../route-distinguisher"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable keeping the VPN instance status up.</text>
+          </description>
+        </leaf>
+        <leaf name="lsp-operation">
+          <when condition="../route-distinguisher"/>
+          <type name="lsp-operation-type"/>
+          <must condition="../label-mode and ../label-mode!='per-instance' or ../lsp-operation='pop'"/>
+          <default value="pop"/>
+          <description>
+            <text>Label Operation Mode.</text>
+          </description>
+        </leaf>
+        <leaf name="default-color">
+          <when condition="../route-distinguisher"/>
+          <type name="uint32">
+            <range value="0..4294967295"/>
+          </type>
+          <description>
+            <text>Set default color for nexthop iteration.</text>
+          </description>
+        </leaf>
+        <container name="vpn-targets">
+          <when condition="../route-distinguisher"/>
+          <description>
+            <text>List of RTs. The number of RTs in the group ranges from 1 to 8.</text>
+          </description>
+          <list name="vpn-target">
+            <key value="value type"/>
+            <description>
+              <text>Configure RT (VPN Target) s to control route advertisement
+between network nodes. Before sending a VPN route to a PE,
+the local PE adds an Export RT to the route. After receiving
+a route from another PE, the local PE determines whether the
+route will be added to the VPN instance based on the local
+Import RT and the Export RT that is added to the VPN route.</text>
+            </description>
+            <leaf name="value">
+              <type name="string">
+                <length value="3..21"/>
+              </type>
+              <description>
+                <text>The formats of a VPN target value are as follows:
+(1) 16-bit AS number : 32-bit user-defined number,
+    for example, 1:3. An AS number ranges from 0
+    to 65535, and a user-defined number ranges from
+    0 to 4294967295. The AS number and user-defined
+    number cannot be both 0s. This means that the
+    VPN Target value cannot be 0:0.
+(2) 32-bit IP address: 16-bit user-defined number,
+    for example: 192.168.122.15:1.The IP address
+    ranges from 0.0.0.0 to 255.255.255.255, and
+    the user-defined number ranges from 0 to 65535.
+(3) 32-bit AS number :16-bit user-defined number,
+    for example, 10.11:3. An AS number ranges from
+    0.0 to 65535.65535 or 0 to 4294967295, and a
+    user-defined number ranges from 0 to 65535.
+    The AS number and user-defined number cannot
+    be both 0s. This means that the VPN Target
+    value cannot be 0.0:0.</text>
+              </description>
+            </leaf>
+            <leaf name="type">
+              <type name="vpn-target-type"/>
+              <description>
+                <text>RT types are as follows:
+export-extcommunity: Specifies the value of the
+  extended community attribute of the route from
+  an outbound interface to the destination VPN.
+import-extcommunity: Receives routes that carry
+  the specified extended community attribute value.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Statistics of address families of the VPN instance.</text>
+          </description>
+          <leaf name="create-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>The createtime of address families of the VPN instance.</text>
+            </description>
+          </leaf>
+          <leaf name="up-time">
+            <type name="pub-type:time-tick"/>
+            <description>
+              <text>The uptime of address families of the VPN instance.</text>
+            </description>
+          </leaf>
+          <leaf name="label">
+            <type name="uint32"/>
+            <description>
+              <text>The label of address families of the VPN instance.</text>
+            </description>
+          </leaf>
+          <leaf name="status">
+            <type name="vpn-status-type"/>
+            <description>
+              <text>VPN instance status. A VPN instance is up when there
+is at least one interface associated with the VRF
+whose ifOperStatus is up. A VRF is down when:
+a. There does not exist at least one interface whose
+   ifOperStatus is up.
+b. There are no interfaces associated with the VRF.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="tunnel-infos">
+          <config value="false"/>
+          <description>
+            <text>List of tunnel informations.</text>
+          </description>
+          <list name="tunnel-info">
+            <key value="type peer-ip id"/>
+            <description>
+              <text>Statistics of tunnel informations.</text>
+            </description>
+            <leaf name="type">
+              <type name="tnlm:tunnel-type"/>
+              <description>
+                <text>Tunnel's type.</text>
+              </description>
+            </leaf>
+            <leaf name="peer-ip">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Next Hop address through which the packet has to be sent.</text>
+              </description>
+            </leaf>
+            <leaf name="id">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <description>
+                <text>Tunnel's ID.</text>
+              </description>
+            </leaf>
+            <leaf name="color">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <description>
+                <text>Color information for tunnel.</text>
+              </description>
+            </leaf>
+            <leaf name="name">
+              <type name="string">
+                <length value="0..256"/>
+              </type>
+              <description>
+                <text>Tunnel's name.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </augment>
+</module>

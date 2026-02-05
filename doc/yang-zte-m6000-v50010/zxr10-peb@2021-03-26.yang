@@ -1,0 +1,112 @@
+module zxr10-peb {
+  namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/peb'
+            ;
+  prefix peb ;
+  yang-version 1 ;
+  import zxr10-netconf-defs {
+    prefix ncd ;
+  }
+  organization 'ZTE Corporation'
+               ;
+  contact 'ZTE Corporation  '+"\n"
+        + '   Nanjing Institute of ZTE Corporation '+"\n"
+        + '   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China '+"\n"
+        + '   Tel: +86-25-52870000'
+          ;
+  description 'The netconf module to describe the PEB.'
+              ;
+  revision 2021-03-26 {
+    description "1.Modify the enumerated value of node 'configuration/peb/globa"
+              + "l/role' from 'null' to 'none'."
+                ;
+  }
+  revision 2020-12-15 {
+    description 'Initial version.'
+                ;
+  }
+  container configuration {
+    description 'The configuration information of PEB.'
+                ;
+    container peb {
+      description 'The configuration information of PEB.'
+                  ;
+      container global {
+        description 'Global configuration.'
+                    ;
+        leaf role {
+          description 'Extended bridge role. None indicates no role, controller'
+                    + ' indicates the control bridge, and extender indicates th'
+                    + 'e control bridge.'
+                      ;
+          type enumeration {
+            enum none {
+              value 0 ;
+            }
+            enum controller {
+              value 3 ;
+            }
+            enum extender {
+              value 2 ;
+            }
+          }
+          default none ;
+        }
+        leaf enabled {
+          description 'Enables bridge port extension.'
+                      ;
+          type boolean ;
+          default false ;
+        }
+      }
+      container interfaces {
+        description 'Interface configuration.'
+                    ;
+        list interface {
+          description 'Interface configuration.'
+                      ;
+          key if-name ;
+          leaf if-name {
+            description 'Interface name.'
+                        ;
+            type ncd:ifname ;
+          }
+          leaf enabled {
+            description 'Enables bridge port extension.'
+                        ;
+            type boolean ;
+            default false ;
+          }
+          leaf cascade-priority {
+            description 'The priority of the port. When transmitted from a Port'
+                      + ' capable of operating as a cascade Port (e.g. Ports of'
+                      + ' a Controlling Bridge or Extended Ports of an Extended'
+                      + ' Bridge), indicates the cascade_port_priority used in '
+                      + 'determining which Port is to be used by a Bridge Port '
+                      + 'Extender as its Upstream Port. Valid values are the ra'
+                      + 'nge from 0 to 254. When transmitted from a Bridge Port'
+                      + ' Extender on an Upstream Port or a Port capable of bec'
+                      + 'oming an Upstream Port, this parameter shall be set to'
+                      + ' 255. The default value for is 100.'
+                        ;
+            type uint32 {
+              range 0..255 ;
+            }
+            default 100 ;
+          }
+          leaf pe-id {
+            description 'Port Extender ID.'
+                        ;
+            type uint32 {
+              range 1..255 ;
+            }
+          }
+          leaf pe-ip {
+            description 'IPv4 management address of the Port Extender.'
+                        ;
+            type ncd:ipv4-address-none-zero ;
+          }
+        }
+      }
+    }
+  }
+}

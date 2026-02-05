@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-sftp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sftp="http://www.zte.com.cn/zxr10/netconf/schema/rosng/sftp"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/sftp"/>
+  <prefix value="sftp"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe the SFTP.</text>
+  </description>
+  <revision date="2020-03-23">
+    <description>
+      <text>Add choice node:/operation/sftp/sftp-client/copy/trans-direction/upload/remote-dest-param.
+Add choice node:/operation/sftp/sftp-client/copy/trans-direction/download/remote-source-param.</text>
+    </description>
+  </revision>
+  <revision date="2019-06-12">
+    <description>
+      <text>1 Extend the length of node /sftp:operation/sftp:sftp/sftp:sftp-client/sftp:copy/sftp:trans-direction/sftp:upload/sftp:remote-dest-file
+2 Extend the length of node /sftp:operation/sftp:sftp/sftp:sftp-client/sftp:copy/sftp:trans-direction/sftp:download/sftp:remote-source-file</text>
+    </description>
+  </revision>
+  <revision date="2019-01-03">
+    <description>
+      <text>The feature node 'sftp-copt-dcn' support project OTN(7000/8700/9700)</text>
+    </description>
+  </revision>
+  <revision date="2018-06-20">
+    <description>
+      <text>1.Add container configuration/sftp/sftp-server/acl.
+2.Add container configuration/sftp/sftp-server/acl/acl-ipv4.
+3.Add container configuration/sftp/sftp-server/acl/acl-ipv6.
+4.Add leaf configuration/sftp/sftp-server/acl/acl-ipv4/acl-name.
+5.Add leaf configuration/sftp/sftp-server/acl/acl-ipv6/acl-name.
+6.Add container configuration/sftp/sftp-server/idle-timeout.
+7.Add leaf configuration/sftp/sftp-server/idle-timeout/idle-time.
+8.Obsolete leaf operation/sftp/sftp-client/copy/vrf-name.
+9.Add choice operation/sftp/sftp-client/copy/copy-mode,which contains the branches vrf and dcn.
+10.Add the leaf vrf of choice branch operation/sftp/sftp-client/copy/copy-mode/vrf.
+11.Add the leaf dcn of choice branch operation/sftp/sftp-client/copy/copy-mode/dcn.
+12.Add the leaf upload-cpu-node of the choice branch operation/sftp/sftp-client/copy/trans-direction/upload.
+13.Add the leaf download-cpu-node of the choice branch operation/sftp/sftp-client/copy/trans-direction/download.</text>
+    </description>
+  </revision>
+  <revision date="2018-06-06">
+    <description>
+      <text>Add performance parameter for configuration/sftp/sftp-server/top-directory/directory-name.</text>
+    </description>
+  </revision>
+  <revision date="2018-04-28">
+    <description>
+      <text>1.add container configuration/sftp/sftp-client.
+2.add container configuration/sftp/sftp-client/source-interface.
+3.add container configuration/sftp/sftp-client/source-ip.</text>
+    </description>
+  </revision>
+  <revision date="2018-03-28">
+    <description>
+      <text>1.Remove Mandatory of operation/sftp/sftp-client/copy/encrypt.
+2.Remove Mandatory of operation/sftp/sftp-client/copy/compress.
+3.Remove Mandatory of operation/sftp/sftp-client/copy/mac.</text>
+    </description>
+  </revision>
+  <revision date="2014-04-21">
+    <description>
+      <text>1.Modified configuration/sftp/sftp-server/top-directory/permission/write-copy/
+  write-copy/read-write node type from empty to enumeration.
+2.Modified configuration/sftp/sftp-server/top-directory//permission/write-copy/
+  write-copy/copy node type from empty to enumeration.
+3.Add MimFilter of /sftp/sftp-server/top-directory/permission/write-copy/write-copy.</text>
+    </description>
+  </revision>
+  <revision date="2014-03-02">
+    <description>
+      <text>1.Modified the length of state/sftp/sftp-server/user-state/user-name from 64 to 65.</text>
+    </description>
+  </revision>
+  <revision date="2013-09-23">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <feature name="sftp-copy-dcn"/>
+  <container name="configuration">
+    <description>
+      <text>The configuration model of SFTP.</text>
+    </description>
+    <container name="sftp">
+      <description>
+        <text>Configure the SFTP parameters.</text>
+      </description>
+      <container name="sftp-server">
+        <description>
+          <text>Configure the SFTP server parameters.</text>
+        </description>
+        <container name="top-directory">
+          <description>
+            <text>To configure the top directory of SFTP server and permission.</text>
+          </description>
+          <leaf name="directory-name">
+            <description>
+              <text>The SFTP server top directory name.</text>
+            </description>
+            <type name="string">
+              <length value="1..159"/>
+            </type>
+            <default value="/datadisk0/"/>
+          </leaf>
+          <choice name="permission">
+            <description>
+              <text>To configure the permission of the top directory</text>
+            </description>
+            <default value="write-copy"/>
+            <case name="read-only">
+              <description>
+                <text>To configure the permission of read-only.</text>
+              </description>
+              <leaf name="read-only">
+                <description>
+                  <text>To configure the permission of read-only.</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+            </case>
+            <case name="write-copy">
+              <description>
+                <text>To configure the permission of read-write,copy.</text>
+              </description>
+              <container name="write-copy">
+                <description>
+                  <text>To configure the permission of read-write,copy.</text>
+                </description>
+                <leaf name="read-write">
+                  <description>
+                    <text>To configure the permission of read-write.</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="no">
+                      <value value="0"/>
+                      <description>
+                        <text>To cancel the permission of SFTP top directory.</text>
+                      </description>
+                    </enum>
+                    <enum name="yes">
+                      <value value="1"/>
+                      <description>
+                        <text>To configure the permission of SFTP top directory.</text>
+                      </description>
+                    </enum>
+                  </type>
+                </leaf>
+                <leaf name="copy">
+                  <description>
+                    <text>To configure the permission of copy.</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="no">
+                      <value value="0"/>
+                      <description>
+                        <text>To cancel the permission of SFTP top directory.</text>
+                      </description>
+                    </enum>
+                    <enum name="yes">
+                      <value value="1"/>
+                      <description>
+                        <text>To configure the permission of SFTP top directory.</text>
+                      </description>
+                    </enum>
+                  </type>
+                </leaf>
+              </container>
+            </case>
+          </choice>
+        </container>
+        <container name="acl">
+          <description>
+            <text>To configure the ACL name which is binded to the SFTP server.</text>
+          </description>
+          <container name="acl-ipv4">
+            <description>
+              <text>To configure the IPv4 ACL name which is binded to the SFTP server.</text>
+            </description>
+            <leaf name="acl-name">
+              <description>
+                <text>The ACL name which is binded to the SFTP server.</text>
+              </description>
+              <type name="string">
+                <length value="1..31"/>
+              </type>
+            </leaf>
+          </container>
+          <container name="acl-ipv6">
+            <description>
+              <text>To configure the IPv6 ACL name which is binded to the SFTP server.</text>
+            </description>
+            <leaf name="acl-name">
+              <description>
+                <text>The ACL name which is binded to the SFTP server.</text>
+              </description>
+              <type name="string">
+                <length value="1..31"/>
+              </type>
+            </leaf>
+          </container>
+          <ncd:revise-date date="2018-06-20"/>
+        </container>
+        <container name="idle-timeout">
+          <description>
+            <text>To configure the idle timeout of SFTP.</text>
+          </description>
+          <leaf name="idle-time">
+            <description>
+              <text>To configure the idle timeout of SFTP.</text>
+            </description>
+            <type name="uint16">
+              <range value="0..1440"/>
+            </type>
+            <default value="0"/>
+          </leaf>
+          <ncd:revise-date date="2018-06-20"/>
+        </container>
+      </container>
+      <container name="sftp-client">
+        <description>
+          <text>Configure the SFTP client parameters.</text>
+        </description>
+        <container name="source-interface">
+          <description>
+            <text>To configure the source IP interface of SFTP client copy command.</text>
+          </description>
+          <presence value="Mandatory leaves are included."/>
+          <leaf name="interface-name">
+            <description>
+              <text>Interface name.</text>
+            </description>
+            <type name="ncd:ifname">
+              <length value="1..31"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <container name="source-ip">
+          <description>
+            <text>To configure the source IP address of SFTP client copy command.</text>
+          </description>
+          <container name="source-ipv4">
+            <description>
+              <text>To configure the source IPv4 address of SFTP client copy command.</text>
+            </description>
+            <presence value="Mandatory leaves are included."/>
+            <leaf name="ipv4-addr">
+              <description>
+                <text>IPv4 address.</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+              <mandatory value="true"/>
+            </leaf>
+          </container>
+          <container name="source-ipv6">
+            <choice name="ipv6-addr">
+              <description>
+                <text>The source IPv6 address of SFTP client copy command.</text>
+              </description>
+              <case name="unlink-local-addr">
+                <description>
+                  <text>unlink-local-addr</text>
+                </description>
+                <leaf name="ipv6-address">
+                  <description>
+                    <text>IPv6 address.</text>
+                  </description>
+                  <type name="ncd:ipv6-address"/>
+                  <mandatory value="true"/>
+                </leaf>
+              </case>
+              <case name="link-local-addr">
+                <description>
+                  <text>Link local address.</text>
+                </description>
+                <leaf name="link-local-address">
+                  <description>
+                    <text>Link local address.</text>
+                  </description>
+                  <type name="ncd:ipv6-address">
+                    <pattern value="^[Ff][Ee][8-9a-bA-B][0-9a-fA-F]"/>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="interface-name">
+                  <description>
+                    <text>Interface name.</text>
+                  </description>
+                  <type name="ncd:ifname">
+                    <length value="1..31"/>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+              </case>
+            </choice>
+          </container>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State model of SFTP.</text>
+    </description>
+    <container name="sftp">
+      <description>
+        <text>State model of SFTP.</text>
+      </description>
+      <container name="sftp-server">
+        <description>
+          <text>State model of SFTP server.</text>
+        </description>
+        <list name="user-state">
+          <description>
+            <text>Show SFTP user state.</text>
+          </description>
+          <key value="user-id"/>
+          <leaf name="user-id">
+            <description>
+              <text>User id.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..32"/>
+            </type>
+          </leaf>
+          <leaf name="user-name">
+            <description>
+              <text>User name.</text>
+            </description>
+            <type name="string">
+              <length value="1..65"/>
+            </type>
+          </leaf>
+          <leaf name="status">
+            <description>
+              <text>user current state.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="offline">
+                <value value="0"/>
+              </enum>
+              <enum name="online">
+                <value value="1"/>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="ip-type">
+            <description>
+              <text>The type of IP address.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="IPv4">
+                <value value="0"/>
+              </enum>
+              <enum name="IPv6">
+                <value value="1"/>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="ipv4-address">
+            <description>
+              <text>IPv4 address</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="ipv6-address">
+            <description>
+              <text>IPv6 address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+          </leaf>
+          <leaf name="port">
+            <description>
+              <text>Port number.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..65535"/>
+            </type>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>The operation model of SFTP.</text>
+    </description>
+    <container name="sftp">
+      <description>
+        <text>The operation model of SFTP.</text>
+      </description>
+      <container name="sftp-client">
+        <description>
+          <text>The operation of SFTP client.</text>
+        </description>
+        <container name="copy">
+          <description>
+            <text>To copy a file over the network.</text>
+          </description>
+          <presence value="The choice trans-direction is mandatory"/>
+          <leaf name="vrf-name">
+            <status value="obsolete">
+              <ncd:revise-date date="2018-06-20"/>
+            </status>
+            <description>
+              <text>To specify VRF name.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+          <choice name="copy-mode">
+            <description>
+              <text>To specify the mode of file transmition.</text>
+            </description>
+            <case name="vrf">
+              <description>
+                <text>To transmit file by VRF.</text>
+              </description>
+              <leaf name="vrf">
+                <description>
+                  <text>To specify VRF name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..32"/>
+                </type>
+              </leaf>
+            </case>
+            <case name="dcn">
+              <description>
+                <text>To transmit file by DCN.</text>
+              </description>
+              <leaf name="dcn">
+                <description>
+                  <text>DCN mode.</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+            </case>
+            <ncd:revise-date date="2018-06-20"/>
+          </choice>
+          <choice name="trans-direction">
+            <description>
+              <text>To specify transmition direction.</text>
+            </description>
+            <mandatory value="true"/>
+            <case name="upload">
+              <description>
+                <text>Upload.</text>
+              </description>
+              <leaf name="local-source-file">
+                <description>
+                  <text>To Specify the local source file name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..159"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <choice name="remote-dest-param">
+                <description>
+                  <text>Remote dest SFTP server param</text>
+                </description>
+                <mandatory value="true"/>
+                <case name="spliced-remote-param">
+                  <description>
+                    <text>Spliced remote param</text>
+                  </description>
+                  <leaf name="remote-dest-file">
+                    <description>
+                      <text>To Specify the remote destination params.the format is: 
+//ip-address/filename@username:password.</text>
+                    </description>
+                    <type name="string">
+                      <length value="1..230"/>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                </case>
+                <case name="splited-remote-param">
+                  <description>
+                    <text>Splited remote param</text>
+                  </description>
+                  <container name="splited-remote-dest-param">
+                    <description>
+                      <text>Splited remote param</text>
+                    </description>
+                    <choice name="ip-addr">
+                      <description>
+                        <text>IP address</text>
+                      </description>
+                      <mandatory value="true"/>
+                      <case name="ipv4">
+                        <description>
+                          <text>IPv4</text>
+                        </description>
+                        <leaf name="remote-ipv4-address">
+                          <description>
+                            <text>IPv4 address of SFTP server</text>
+                          </description>
+                          <type name="ncd:ipv4-address"/>
+                          <mandatory value="true"/>
+                        </leaf>
+                      </case>
+                      <case name="ipv6">
+                        <description>
+                          <text>IPv6</text>
+                        </description>
+                        <leaf name="remote-ipv6-address">
+                          <description>
+                            <text>IPv6 address of SFTP server</text>
+                          </description>
+                          <type name="ncd:ipv6-address"/>
+                          <mandatory value="true"/>
+                        </leaf>
+                      </case>
+                    </choice>
+                    <leaf name="username">
+                      <description>
+                        <text>Username</text>
+                      </description>
+                      <type name="string">
+                        <length value="1..65"/>
+                      </type>
+                      <mandatory value="true"/>
+                    </leaf>
+                    <leaf name="password">
+                      <description>
+                        <text>Password</text>
+                      </description>
+                      <type name="string">
+                        <length value="1..64"/>
+                      </type>
+                      <mandatory value="true"/>
+                    </leaf>
+                    <leaf name="path">
+                      <description>
+                        <text>path</text>
+                      </description>
+                      <type name="string">
+                        <length value="1..159"/>
+                      </type>
+                      <mandatory value="true"/>
+                    </leaf>
+                  </container>
+                  <ncd:revise-date date="2020-03-23"/>
+                </case>
+              </choice>
+              <leaf name="upload-cpu-node">
+                <description>
+                  <text>To specify the CPU node Information.</text>
+                </description>
+                <type name="ncd:cpu"/>
+                <ncd:revise-date date="2018-06-20"/>
+              </leaf>
+            </case>
+            <case name="download">
+              <description>
+                <text>Download.</text>
+              </description>
+              <choice name="remote-source-param">
+                <description>
+                  <text>Remote dest SFTP server param</text>
+                </description>
+                <mandatory value="true"/>
+                <case name="spliced-remote-param">
+                  <leaf name="remote-source-file">
+                    <description>
+                      <text>To Specify the remote source params.the format is: 
+//ip-address/filename@username:password.</text>
+                    </description>
+                    <type name="string">
+                      <length value="1..230"/>
+                    </type>
+                    <mandatory value="true"/>
+                  </leaf>
+                </case>
+                <case name="splited-remote-param">
+                  <description>
+                    <text>Splited remote param</text>
+                  </description>
+                  <container name="splited-remote-source-param">
+                    <description>
+                      <text>Splited remote param</text>
+                    </description>
+                    <choice name="ip-addr">
+                      <description>
+                        <text>IP address</text>
+                      </description>
+                      <mandatory value="true"/>
+                      <case name="ipv4">
+                        <description>
+                          <text>IPv4</text>
+                        </description>
+                        <leaf name="remote-ipv4-address">
+                          <description>
+                            <text>IPv4 address of SFTP server</text>
+                          </description>
+                          <type name="ncd:ipv4-address"/>
+                          <mandatory value="true"/>
+                        </leaf>
+                      </case>
+                      <case name="ipv6">
+                        <description>
+                          <text>IPv6</text>
+                        </description>
+                        <leaf name="remote-ipv6-address">
+                          <description>
+                            <text>IPv6 address of SFTP server</text>
+                          </description>
+                          <type name="ncd:ipv6-address"/>
+                          <mandatory value="true"/>
+                        </leaf>
+                      </case>
+                    </choice>
+                    <leaf name="username">
+                      <description>
+                        <text>Username</text>
+                      </description>
+                      <type name="string">
+                        <length value="1..65"/>
+                      </type>
+                      <mandatory value="true"/>
+                    </leaf>
+                    <leaf name="password">
+                      <description>
+                        <text>Password</text>
+                      </description>
+                      <type name="string">
+                        <length value="1..64"/>
+                      </type>
+                      <mandatory value="true"/>
+                    </leaf>
+                    <leaf name="path">
+                      <description>
+                        <text>path</text>
+                      </description>
+                      <type name="string">
+                        <length value="1..159"/>
+                      </type>
+                      <mandatory value="true"/>
+                    </leaf>
+                  </container>
+                  <ncd:revise-date date="2020-03-23"/>
+                </case>
+              </choice>
+              <leaf name="local-dest-file">
+                <description>
+                  <text>To Specify the local destination file name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..159"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="download-cpu-node">
+                <description>
+                  <text>To specify the CPU node Information.</text>
+                </description>
+                <type name="ncd:cpu"/>
+                <ncd:revise-date date="2018-06-20"/>
+              </leaf>
+            </case>
+          </choice>
+          <choice name="source-addr">
+            <description>
+              <text>To specify the source ip address.</text>
+            </description>
+            <case name="ipv4">
+              <description>
+                <text>IPv4 address.</text>
+              </description>
+              <leaf name="ipv4-address">
+                <description>
+                  <text>IPv4 address.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+                <mandatory value="true"/>
+              </leaf>
+            </case>
+            <case name="ipv6">
+              <description>
+                <text>IPv6 address.</text>
+              </description>
+              <leaf name="ipv6-address">
+                <description>
+                  <text>IPv6 address.</text>
+                </description>
+                <type name="ncd:ipv6-address"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="interface-name">
+                <description>
+                  <text>Interface name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..32"/>
+                </type>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="server-port">
+            <description>
+              <text>To specify the listen port of SFTP server.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..65535"/>
+            </type>
+            <default value="22"/>
+          </leaf>
+          <leaf name="encrypt">
+            <description>
+              <text>Encryption algorithm.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="none">
+                <value value="0"/>
+                <description>
+                  <text>No encryption.</text>
+                </description>
+              </enum>
+              <enum name="aes128">
+                <value value="1"/>
+                <description>
+                  <text>AES with a 128-bit key encryption.</text>
+                </description>
+              </enum>
+              <enum name="blowfish">
+                <value value="2"/>
+                <description>
+                  <text>Blowfish encryption.</text>
+                </description>
+              </enum>
+              <enum name="3des">
+                <value value="3"/>
+                <description>
+                  <text>Three-key triple-DES encryption</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="compress">
+            <description>
+              <text>Compress algorithm.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="none">
+                <value value="0"/>
+                <description>
+                  <text>No compression.</text>
+                </description>
+              </enum>
+              <enum name="zlib">
+                <value value="1"/>
+                <description>
+                  <text>ZLIB compression</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="mac">
+            <description>
+              <text>Mac check algorithm.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="none">
+                <value value="0"/>
+                <description>
+                  <text>No MAC check algorithm.</text>
+                </description>
+              </enum>
+              <enum name="sha1">
+                <value value="1"/>
+                <description>
+                  <text>SHA1 MAC check algorithm.</text>
+                </description>
+              </enum>
+              <enum name="md5">
+                <value value="2"/>
+                <description>
+                  <text>MD5 MAC check algorithm.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+        </container>
+      </container>
+    </container>
+  </container>
+</module>

@@ -1,0 +1,67 @@
+module: zxr10-inband-oam
+  +--rw configuration
+     +--rw inband-oam
+        +--rw global
+        |  +--rw label?   uint32
+        +--rw flows
+        |  +--rw flow* [flow-id]
+        |     +--rw flow-id                 uint32
+        |     +--rw alternate-status?       enumeration
+        |     +--rw period?                 alternate-marking-period
+        |     +--rw dm-dscp?                uint8 {dm}?
+        |     +--rw dm-exp?                 uint8 {dm}?
+        |     +--rw hop-by-hop-status?      enumeration
+        |     +--rw per-packet-dm-status?   enumeration {per-packet-dm}?
+        |     +--rw flow-type
+        |        +--rw (flow-type)
+        |           +--:(ip)
+        |           |  +--rw ip
+        |           |     +--rw ifname          ncd:ifname
+        |           |     +--rw member-port?    ncd:ifname
+        |           |     +--rw ipv4-or-ipv6
+        |           |     |  +--rw (ipv4-or-ipv6)?
+        |           |     |     +--:(ipv4)
+        |           |     |     |  +--rw ipv4
+        |           |     |     |     +--rw source-addr-ipv4?   ncd:ipv4-address-none-zero
+        |           |     |     |     +--rw dest-addr-ipv4?     ncd:ipv4-address-none-zero
+        |           |     |     +--:(ipv6)
+        |           |     |        +--rw ipv6
+        |           |     |           +--rw source-addr-ipv6?   ncd:ipv6-address
+        |           |     |           +--rw dest-addr-ipv6?     ncd:ipv6-address
+        |           |     +--rw protocol?       uint8
+        |           |     +--rw source-port?    uint16
+        |           |     +--rw dest-port?      uint16
+        |           |     +--rw dscp?           uint8
+        |           |     +--rw eth! {eth-flow}?
+        |           |        +--rw source-mac?         ncd:mac-address-none-zero
+        |           |        +--rw dest-mac?           ncd:mac-address-none-zero
+        |           |        +--rw vlan-id?            uint16
+        |           |        +--rw internal-vlan-id?   uint16
+        |           |        +--rw priority-8021p?     uint8
+        |           +--:(tunnel)
+        |              +--rw tunnel {tunnel-flow}?
+        |                 +--rw tunnel-id    uint32
+        +--rw decapsulation
+        |  +--rw decapsulation-no-ifname* [flow-id]
+        |  |  +--rw flow-id    uint32
+        |  +--rw decapsulation-with-ifname* [flow-id ifname]
+        |     +--rw flow-id    uint32
+        |     +--rw ifname     ncd:ifname
+        +--rw relations {relation}?
+           +--rw relation* [flow-id]
+              +--rw flow-id                 uint32
+              +--rw (vpn-type)?
+              |  +--:(vrf)
+              |  |  +--rw vrf-name          string
+              |  +--:(vpws)
+              |  |  +--rw vpws-name         string {vpws-name}?
+              |  +--:(evpn-vpws) {evpn-vpnws}?
+              |  |  +--rw evpn-vpws-name    string
+              |  |  +--rw ifname            ncd:ifname
+              |  +--:(vpls) {l2vpn-vpls}?
+              |     +--rw vpls-name?        string
+              +--rw period?                 uint32
+              +--rw per-packet-dm-status?   enumeration {per-packet-dm}?
+              +--rw interfaces
+                 +--rw interface* [ifname]
+                    +--rw ifname    ncd:ifname

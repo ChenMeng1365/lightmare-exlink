@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-nhrp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nhrp="http://www.zte.com.cn/zxr10/netconf/schema/rosng/nhrp"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/nhrp"/>
+  <prefix value="nhrp"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <revision date="2020-06-24">
+    <description>
+      <text>1:Modify mim data type from string to plaintext of leaf "configuration/nhrp/interfaces/interface/authentication-string/clear-string"
+2:Modify mim data type from string to ciphertext and modify length from 12 to 64 of leaf "configuration/nhrp/interfaces/interface/authentication-string/encrypted-string"</text>
+    </description>
+  </revision>
+  <revision date="2020-05-11">
+    <description>
+      <text>1.Delete default value of leaf "configuration/nhrp/interfaces/interface/authentication-string/clear-string"
+2.Delete default value of leaf "configuration/nhrp/interfaces/interface/authentication-string/encrypted-string"</text>
+    </description>
+  </revision>
+  <revision date="2019-07-05">
+    <description>
+      <text>1.Add container "authentication-string" under configuration/nhrp/interfaces/interface
+2.Delete an leaf node "configuration/nhrp/interfaces/interface/authentication"</text>
+    </description>
+  </revision>
+  <revision date="2018-03-06">
+    <description>
+      <text>Add mandatory attribute for /configuration/nhrp/interfaces/nhrp-maps/nhrp-map/nbma-ipv4-address.</text>
+    </description>
+  </revision>
+  <revision date="2018-01-04">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>Configuration</text>
+    </description>
+    <container name="nhrp">
+      <description>
+        <text>NHRP configuration</text>
+      </description>
+      <container name="interfaces">
+        <description>
+          <text>NHRP interfaces configuration</text>
+        </description>
+        <list name="interface">
+          <description>
+            <text>NHRP interface configuration</text>
+          </description>
+          <key value="if-name"/>
+          <leaf name="if-name">
+            <description>
+              <text>set interface name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="authentication">
+            <status value="obsolete">
+              <ncd:revise-date date="2019-07-05"/>
+            </status>
+            <description>
+              <text>authentication information</text>
+            </description>
+            <type name="string">
+              <length value="1..8"/>
+            </type>
+          </leaf>
+          <leaf name="holdtime">
+            <description>
+              <text>Set the number of seconds</text>
+            </description>
+            <type name="uint32">
+              <range value="60..65535"/>
+            </type>
+          </leaf>
+          <leaf name="map-multicast-dynamic">
+            <description>
+              <text>Set dynamic map flag</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+              </enum>
+              <enum name="disable">
+                <value value="0"/>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="network-id">
+            <description>
+              <text>Set network identification</text>
+            </description>
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+          </leaf>
+          <container name="nhrp-servers">
+            <description>
+              <text>Set NHRP server address</text>
+            </description>
+            <list name="nhrp-server">
+              <description>
+                <text>Set NHRP server address</text>
+              </description>
+              <key value="ipv4-address"/>
+              <leaf name="ipv4-address">
+                <description>
+                  <text>Set NHRP server address</text>
+                </description>
+                <type name="ncd:ipv4-address-none-zero"/>
+              </leaf>
+            </list>
+          </container>
+          <container name="nhrp-multicast-nbmas">
+            <description>
+              <text>Set IP NBMA address</text>
+            </description>
+            <list name="nhrp-multicast-nbma">
+              <description>
+                <text>Set IP NBMA address</text>
+              </description>
+              <key value="ipv4-address"/>
+              <leaf name="ipv4-address">
+                <description>
+                  <text>Set IP NBMA address</text>
+                </description>
+                <type name="ncd:ipv4-address-none-zero"/>
+              </leaf>
+            </list>
+          </container>
+          <container name="nhrp-maps">
+            <description>
+              <text>Set NHRP static maps</text>
+            </description>
+            <list name="nhrp-map">
+              <description>
+                <text>Set NHRP static map</text>
+              </description>
+              <key value="tunnel-ipv4-address"/>
+              <leaf name="tunnel-ipv4-address">
+                <description>
+                  <text>Set tunnel ipv4 address</text>
+                </description>
+                <type name="ncd:ipv4-address-none-zero"/>
+              </leaf>
+              <leaf name="nbma-ipv4-address">
+                <description>
+                  <text>Set NBMA address</text>
+                </description>
+                <type name="ncd:ipv4-address-none-zero"/>
+                <mandatory value="true"/>
+              </leaf>
+            </list>
+          </container>
+          <container name="authentication-string">
+            <description>
+              <text>authentication information</text>
+            </description>
+            <presence value="authentication-string"/>
+            <choice name="authentication-string">
+              <description>
+                <text>authentication information</text>
+              </description>
+              <case name="clear-string">
+                <description>
+                  <text>Set clear key</text>
+                </description>
+                <leaf name="clear-string">
+                  <description>
+                    <text>Set clear key</text>
+                  </description>
+                  <type name="string">
+                    <length value="1..8"/>
+                  </type>
+                </leaf>
+              </case>
+              <case name="encrypted-string">
+                <description>
+                  <text>Set encrypted key</text>
+                </description>
+                <leaf name="encrypted-string">
+                  <description>
+                    <text>Set encrypted key</text>
+                  </description>
+                  <type name="string">
+                    <length value="1..64"/>
+                  </type>
+                </leaf>
+              </case>
+            </choice>
+            <ncd:revise-date date="2019-07-05"/>
+          </container>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State</text>
+    </description>
+    <container name="nhrp">
+      <description>
+        <text>NHRP state</text>
+      </description>
+      <container name="nhrp-maps">
+        <description>
+          <text>NHRP maps</text>
+        </description>
+        <list name="nhrp-map">
+          <description>
+            <text>NHRP map</text>
+          </description>
+          <key value="ifname target-address"/>
+          <leaf name="ifname">
+            <description>
+              <text>Interface-name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="target-address">
+            <description>
+              <text>Target IP address</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="nbma-address">
+            <description>
+              <text>NBMA address</text>
+            </description>
+            <type name="ncd:ipv4-address"/>
+          </leaf>
+          <leaf name="mode">
+            <description>
+              <text>MAP mode</text>
+            </description>
+            <type name="enumeration">
+              <enum name="dynamic">
+                <value value="0"/>
+                <description>
+                  <text>mode dynamic</text>
+                </description>
+              </enum>
+              <enum name="static">
+                <value value="1"/>
+                <description>
+                  <text>mode static</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <ncd:select fields="ifname"/>
+          <ncd:select fields="ifname target-address"/>
+        </list>
+      </container>
+      <container name="nhrp-packets">
+        <description>
+          <text>NHRP packets statistics</text>
+        </description>
+        <list name="nhrp-packet">
+          <description>
+            <text>NHRP packets statistics</text>
+          </description>
+          <key value="ifname"/>
+          <leaf name="ifname">
+            <description>
+              <text>Interface-name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="recv-resolution-request">
+            <description>
+              <text>Number of received resolution request</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="recv-resolution-reply">
+            <description>
+              <text>Number of received resolution reply</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="recv-registration-request">
+            <description>
+              <text>Number of received registration request</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="recv-registration-reply">
+            <description>
+              <text>Number of received registration reply</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="recv-purge-request">
+            <description>
+              <text>Number of received purge request</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="recv-purge-reply">
+            <description>
+              <text>Number of received purge reply</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="recv-error-indication">
+            <description>
+              <text>Number of received error indication</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-resolution-request">
+            <description>
+              <text>Number of resolution request that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-resolution-reply">
+            <description>
+              <text>Number of resolution reply that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-registration-request">
+            <description>
+              <text>Number of registration request that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-registration-reply">
+            <description>
+              <text>Number of registration reply that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-purge-request">
+            <description>
+              <text>Number of purge request that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-purge-reply">
+            <description>
+              <text>Number of purge reply that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="send-error-indication">
+            <description>
+              <text>Number of error indication that has been sent out.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+</module>

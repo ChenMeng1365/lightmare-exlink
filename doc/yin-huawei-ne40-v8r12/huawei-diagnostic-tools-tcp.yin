@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="huawei-diagnostic-tools-tcp"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:diagnostic-tools="urn:huawei:yang:huawei-diagnostic-tools"
+           xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+           xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+           xmlns:ni="urn:huawei:yang:huawei-network-instance"
+           xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <belongs-to module="huawei-diagnostic-tools">
+    <prefix value="diagnostic-tools"/>
+  </belongs-to>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <include module="huawei-diagnostic-tools-common"/>
+  <include module="huawei-diagnostic-tools-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>TCP diagnosis tool.</text>
+  </description>
+  <revision date="2019-04-13">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <grouping name="tcp-test-result-type">
+    <description>
+      <text>TCP test results.</text>
+    </description>
+    <container name="ping-results">
+      <config value="false"/>
+      <description>
+        <text>List of TCP ping results.</text>
+      </description>
+      <list name="ping-result">
+        <key value="test-name"/>
+        <config value="false"/>
+        <description>
+          <text>Statistics of TCP ping result.</text>
+        </description>
+        <leaf name="test-name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>Test name.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-send">
+          <type name="uint32"/>
+          <units name="packet"/>
+          <config value="false"/>
+          <description>
+            <text>Total number of sent packets.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-receive">
+          <type name="uint32"/>
+          <units name="packet"/>
+          <config value="false"/>
+          <description>
+            <text>Total number of received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="loss-ratio">
+          <type name="pub-type:percent">
+            <range value="0..100"/>
+          </type>
+          <units name="%"/>
+          <config value="false"/>
+          <description>
+            <text>Packet loss ratio of a test.</text>
+          </description>
+        </leaf>
+        <leaf name="rtt-min">
+          <type name="uint32"/>
+          <units name="ms"/>
+          <config value="false"/>
+          <description>
+            <text>Minimum RTT of all test packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rtt-max">
+          <type name="uint32"/>
+          <units name="ms"/>
+          <config value="false"/>
+          <description>
+            <text>Maximum RTT of all test packets.</text>
+          </description>
+        </leaf>
+        <leaf name="rtt-average">
+          <type name="uint32"/>
+          <units name="ms"/>
+          <config value="false"/>
+          <description>
+            <text>Average RTT of all test packets.</text>
+          </description>
+        </leaf>
+        <leaf name="status">
+          <type name="dgntl-test-status-type"/>
+          <config value="false"/>
+          <description>
+            <text>Test status.</text>
+          </description>
+        </leaf>
+        <container name="probes">
+          <config value="false"/>
+          <description>
+            <text>List of ping results of all packets in a test.</text>
+          </description>
+          <list name="probe">
+            <key value="sequence"/>
+            <config value="false"/>
+            <description>
+              <text>Statistics of ping result of a single packet in a test.</text>
+            </description>
+            <leaf name="sequence">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Serial number of a test packet received.</text>
+              </description>
+            </leaf>
+            <leaf name="replier">
+              <type name="inet:ipv4-address-no-zone"/>
+              <config value="false"/>
+              <description>
+                <text>Destination address of the related hop in a test.</text>
+              </description>
+            </leaf>
+            <leaf name="rtt">
+              <type name="uint32"/>
+              <units name="ms"/>
+              <config value="false"/>
+              <description>
+                <text>RTT of test packets.</text>
+              </description>
+            </leaf>
+            <leaf name="result-type">
+              <type name="probe-result-type"/>
+              <config value="false"/>
+              <description>
+                <text>Result of packet sending.</text>
+              </description>
+            </leaf>
+            <leaf name="is-delete">
+              <type name="boolean"/>
+              <config value="false"/>
+              <description>
+                <text>Enable/disable the function of deleting test results.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <rpc name="tcp-start-ping">
+    <description>
+      <text>Start TCP ping.</text>
+    </description>
+    <input>
+      <leaf name="test-name">
+        <type name="string">
+          <length value="1..32"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Test name.</text>
+        </description>
+      </leaf>
+      <leaf name="destination">
+        <type name="pub-type:host-name"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Destination address of the string type.</text>
+        </description>
+      </leaf>
+      <leaf name="timeout">
+        <type name="uint32">
+          <range value="0..65535"/>
+        </type>
+        <units name="ms"/>
+        <default value="2000"/>
+        <description>
+          <text>Time to wait for a response packet after a test packet is sent.</text>
+        </description>
+      </leaf>
+      <leaf name="count">
+        <type name="uint32">
+          <range value="1..4294967295"/>
+        </type>
+        <units name="packet"/>
+        <default value="5"/>
+        <description>
+          <text>Number of sent test packets.</text>
+        </description>
+      </leaf>
+      <leaf name="interval">
+        <type name="uint32">
+          <range value="1..10000"/>
+        </type>
+        <units name="ms"/>
+        <default value="500"/>
+        <description>
+          <text>Interval for sending test packets.</text>
+        </description>
+      </leaf>
+      <leaf name="ttl">
+        <type name="uint32">
+          <range value="1..255"/>
+        </type>
+        <default value="30"/>
+        <description>
+          <text>Time to live.</text>
+        </description>
+      </leaf>
+      <leaf name="pass-route">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Send packet pass route.</text>
+        </description>
+      </leaf>
+      <leaf name="ni-name">
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+        </type>
+        <description>
+          <text>Name of a VPN instance.</text>
+        </description>
+      </leaf>
+      <leaf name="dest-port">
+        <type name="uint32">
+          <range value="1..65535"/>
+        </type>
+        <default value="7"/>
+        <description>
+          <text>Destination TCP port.</text>
+        </description>
+      </leaf>
+      <leaf name="source-address">
+        <type name="inet:ipv4-address-no-zone"/>
+        <description>
+          <text>Source address.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="tcp-stop-ping">
+    <description>
+      <text>Stop TCP ping.</text>
+    </description>
+    <ext:node-ref value="/diagnostic-tools:diagnostic-tools/diagnostic-tools:tcp/diagnostic-tools:ping-results/diagnostic-tools:ping-result"/>
+    <input>
+      <leaf name="test-name">
+        <type name="leafref">
+          <path value="/diagnostic-tools:diagnostic-tools/diagnostic-tools:tcp/diagnostic-tools:ping-results/diagnostic-tools:ping-result/diagnostic-tools:test-name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Test name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="tcp-delete-ping">
+    <description>
+      <text>Delete TCP ping.</text>
+    </description>
+    <ext:node-ref value="/diagnostic-tools:diagnostic-tools/diagnostic-tools:tcp/diagnostic-tools:ping-results/diagnostic-tools:ping-result"/>
+    <input>
+      <leaf name="test-name">
+        <type name="leafref">
+          <path value="/diagnostic-tools:diagnostic-tools/diagnostic-tools:tcp/diagnostic-tools:ping-results/diagnostic-tools:ping-result/diagnostic-tools:test-name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Test name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/diagnostic-tools:diagnostic-tools">
+    <description>
+      <text>List of TCP tests.</text>
+    </description>
+    <container name="tcp">
+      <config value="false"/>
+      <description>
+        <text>Statistics of TCP tests.</text>
+      </description>
+      <uses name="tcp-test-result-type"/>
+    </container>
+  </augment>
+</submodule>

@@ -1,0 +1,155 @@
+module: zxr10-tunnel-policy
+  +--rw configuration
+  |  +--rw tunnel-policy
+  |  |  +--rw policies
+  |  |     +--rw instance* [name]
+  |  |        +--rw name                    string
+  |  |        +--rw route-map-name?         string
+  |  |        +--rw (select-policy)?
+  |  |           +--:(preferred)
+  |  |           |  +--rw preferred
+  |  |           |     +--rw te-intf-name          string
+  |  |           |     +--rw fallback-flag?        enumeration
+  |  |           |     +--rw select-seq?           enumeration
+  |  |           |     +--rw ldp-lsp-pref?         enumeration
+  |  |           |     +--rw third-seq-lsp-type?   select-lsp-type
+  |  |           +--:(enforce)
+  |  |           |  +--rw enforce
+  |  |           |     +--rw te-intf-name    string
+  |  |           +--:(auto)
+  |  |           |  +--rw auto
+  |  |           |     +--rw select-seq?           enumeration
+  |  |           |     +--rw ldp-lsp-pref?         enumeration
+  |  |           |     +--rw third-seq-lsp-type?   select-lsp-type
+  |  |           +--:(te-ecmp)
+  |  |           |  +--rw te-ecmp
+  |  |           |     +--rw te-ecmp-id            uint32
+  |  |           |     +--rw down-switch?          boolean
+  |  |           |     +--rw select-seq?           enumeration
+  |  |           |     +--rw third-seq-lsp-type?   select-lsp-type
+  |  |           +--:(gre)
+  |  |           |  +--rw gre
+  |  |           |     +--rw gre-intf-name    ncd:ifname
+  |  |           +--:(srv6-te)
+  |  |           |  +--rw srv6-te
+  |  |           |     +--rw srv6-te-id    uint32
+  |  |           +--:(empty)
+  |  |           |  +--rw empty
+  |  |           |     +--rw empty-tag?   empty
+  |  |           +--:(lsp-sequence)
+  |  |           |  +--rw lsp-sequence
+  |  |           |     +--rw lsp-seq-tag?       empty
+  |  |           |     +--rw first-sel-type?    select-lsp-type
+  |  |           |     +--rw second-sel-type?   select-lsp-type
+  |  |           |     +--rw third-sel-type?    select-lsp-type
+  |  |           +--:(binding)
+  |  |              +--rw bind-peer-sets
+  |  |                 +--rw binding-tag?      empty
+  |  |                 +--rw ipv4-peer-sets
+  |  |                 |  +--rw ipv4-peer* [peer-address]
+  |  |                 |     +--rw peer-address            ncd:ipv4-address
+  |  |                 |     +--rw down-switch?            boolean
+  |  |                 |     +--rw ignore-dest-check?      boolean
+  |  |                 |     +--rw binding-srv6-tunnels
+  |  |                 |     |  +--rw srv6-tunnels* [srv6-te-id]
+  |  |                 |     |     +--rw srv6-te-id    uint32
+  |  |                 |     +--rw binding-tunnels
+  |  |                 |     |  +--rw tunnels* [te-intf-name]
+  |  |                 |     |     +--rw te-intf-name    string
+  |  |                 |     +--rw binding-policy
+  |  |                 |        +--rw policy-group!
+  |  |                 |           +--rw policy-group-id    uint32
+  |  |                 +--rw ipv6-peer-sets
+  |  |                    +--rw ipv6-peer* [peer-address]
+  |  |                       +--rw peer-address            ncd:ipv6-address
+  |  |                       +--rw down-switch?            boolean
+  |  |                       +--rw ignore-dest-check?      boolean
+  |  |                       +--rw binding-srv6-tunnels
+  |  |                       |  +--rw srv6-tunnels* [srv6-te-id]
+  |  |                       |     +--rw srv6-te-id    uint32
+  |  |                       +--rw binding-tunnels
+  |  |                       |  +--rw tunnels* [te-intf-name]
+  |  |                       |     +--rw te-intf-name    string
+  |  |                       +--rw binding-policy
+  |  |                          +--rw policy-group!
+  |  |                             +--rw policy-group-id    uint32
+  |  +--rw tunnel-selection!
+  |     +--rw bgp-label-unicast!
+  |     |  +--rw peer-sets
+  |     |     +--rw ipv4-peer* [peer-address]
+  |     |     |  +--rw peer-address    ncd:ipv4-address
+  |     |     |  +--rw policy-name     string
+  |     |     +--rw ipv6-peer* [peer-address]
+  |     |        +--rw peer-address    ncd:ipv6-address
+  |     |        +--rw policy-name     string
+  |     +--rw bgp-l2vpn-evpn!
+  |     |  +--rw rd-peer-sets
+  |     |     +--rw rd-peer-set* [rd-value]
+  |     |        +--rw rd-value          union
+  |     |        +--rw rd-description?   string
+  |     |        +--rw peer-sets
+  |     |           +--rw ipv4-peer* [peer-address]
+  |     |           |  +--rw peer-address    ncd:ipv4-address
+  |     |           |  +--rw policy-name     string
+  |     |           +--rw ipv6-peer* [peer-address]
+  |     |              +--rw peer-address    ncd:ipv6-address
+  |     |              +--rw policy-name     string
+  |     +--rw bgp-vpnv4!
+  |     |  +--rw rd-peer-sets
+  |     |     +--rw rd-peer-set* [rd-value]
+  |     |        +--rw rd-value          union
+  |     |        +--rw rd-description?   string
+  |     |        +--rw peer-sets
+  |     |           +--rw ipv4-peers
+  |     |           |  +--rw ipv4-peer* [peer-address]
+  |     |           |     +--rw peer-address    ncd:ipv4-address
+  |     |           |     +--rw policy-name     string
+  |     |           +--rw ipv6-peers
+  |     |              +--rw ipv6-peer* [peer-address]
+  |     |                 +--rw peer-address    ncd:ipv6-address
+  |     |                 +--rw policy-name     string
+  |     +--rw bgp-vpnv6!
+  |     |  +--rw rd-peer-sets
+  |     |     +--rw rd-peer-set* [rd-value]
+  |     |        +--rw rd-value          union
+  |     |        +--rw rd-description?   string
+  |     |        +--rw peer-sets
+  |     |           +--rw ipv4-peers
+  |     |           |  +--rw ipv4-peer* [peer-address]
+  |     |           |     +--rw peer-address    ncd:ipv4-address
+  |     |           |     +--rw policy-name     string
+  |     |           +--rw ipv6-peers
+  |     |              +--rw ipv6-peer* [peer-address]
+  |     |                 +--rw peer-address    ncd:ipv6-address
+  |     |                 +--rw policy-name     string
+  |     +--rw unicast-route!
+  |     |  +--rw peer-sets
+  |     |     +--rw ipv4-peer* [peer-address]
+  |     |     |  +--rw peer-address    ncd:ipv4-address
+  |     |     |  +--rw policy-name     string
+  |     |     +--rw ipv6-peer* [peer-address]
+  |     |        +--rw peer-address    ncd:ipv6-address
+  |     |        +--rw policy-name     string
+  |     +--rw bier!
+  |        +--rw peer-sets
+  |           +--rw ipv6-peer* [peer-address]
+  |              +--rw peer-address       ncd:ipv6-address
+  |              +--rw mapping-nexthop    ncd:ipv4-address
+  +--ro state
+     +--ro select-result
+        +--ro vrf-peer-select
+        |  +--ro vrf-peers* [vrf-name peer-ipaddr vrf-afi-type]
+        |     +--ro vrf-name            string
+        |     +--ro peer-ipaddr         string
+        |     +--ro vrf-afi-type        address-family-type
+        |     +--ro select-lsp-type?    result-lsp-type
+        |     +--ro select-te-id?       uint32
+        |     +--ro select-fwd-state?   result-fwd-state
+        |     +--ro policy-name?        string
+        +--ro policy-peer-select
+           +--ro policy-peers* [policy-name peer-ipaddr]
+              +--ro policy-name         string
+              +--ro peer-ipaddr         string
+              +--ro select-lsp-type?    result-lsp-type
+              +--ro select-te-id?       uint32
+              +--ro select-fwd-state?   result-fwd-state

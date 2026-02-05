@@ -1,0 +1,945 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bier"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bier="urn:huawei:yang:huawei-bier"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <namespace uri="urn:huawei:yang:huawei-bier"/>
+  <prefix value="bier"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Model for Bit Index Explicit Replication (BIER).</text>
+  </description>
+  <revision date="2019-09-06">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bier"/>
+  <typedef name="underlay-protocol-type">
+    <type name="enumeration">
+      <enum name="ospf">
+        <value value="1"/>
+        <description>
+          <text>OSPF.</text>
+        </description>
+      </enum>
+      <enum name="isis">
+        <value value="2"/>
+        <description>
+          <text>IS-IS.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>BIER underlay protocol type.</text>
+    </description>
+  </typedef>
+  <typedef name="bit-string-length">
+    <type name="enumeration">
+      <enum name="64-bit">
+        <value value="1"/>
+        <description>
+          <text>64-bit BitString.</text>
+        </description>
+      </enum>
+      <enum name="128-bit">
+        <value value="2"/>
+        <description>
+          <text>128-bit BitString.</text>
+        </description>
+      </enum>
+      <enum name="256-bit">
+        <value value="3"/>
+        <description>
+          <text>256-bit BitString.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Enumerated values of the BitString length.</text>
+    </description>
+  </typedef>
+  <typedef name="igp-algorithm-type">
+    <type name="enumeration">
+      <enum name="SPF">
+        <value value="0"/>
+        <description>
+          <text>Shortest Path First (SPF) algorithm based on link metric.</text>
+        </description>
+      </enum>
+      <enum name="SSPF">
+        <value value="1"/>
+        <description>
+          <text>Strict Shortest Path First (SPF) algorithm based on link metric.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>IGP algorithm type.</text>
+    </description>
+  </typedef>
+  <typedef name="bier-algorithm-type">
+    <type name="enumeration">
+      <enum name="no-specific">
+        <value value="0"/>
+        <description>
+          <text>No BIER-specific algorithm is used.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>BIER algorithm type.</text>
+    </description>
+  </typedef>
+  <typedef name="bier-encapsulation-type">
+    <type name="enumeration">
+      <enum name="mpls">
+        <value value="1"/>
+        <description>
+          <text>MPLS encapsulation for BIER.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Encapsulation types for BIER.</text>
+    </description>
+  </typedef>
+  <typedef name="address-family-type">
+    <type name="enumeration">
+      <enum name="ipv4-unicast">
+        <value value="1"/>
+        <description>
+          <text>IPv4 address family.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Address family.</text>
+    </description>
+  </typedef>
+  <typedef name="birt-nexthop-invalid-type">
+    <type name="enumeration">
+      <enum name="none">
+        <value value="0"/>
+        <description>
+          <text>Valid nexthop.</text>
+        </description>
+      </enum>
+      <enum name="missing-neighbor">
+        <value value="1"/>
+        <description>
+          <text>Invalid sub-domain configuration.</text>
+        </description>
+      </enum>
+      <enum name="lack-label">
+        <value value="2"/>
+        <description>
+          <text>Invalid BSL configuration.</text>
+        </description>
+      </enum>
+      <enum name="exceed-load-balance-number">
+        <value value="3"/>
+        <description>
+          <text>The value is larger than the maximum number of load balancing paths.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Reason for the invalid nexthop.</text>
+    </description>
+  </typedef>
+  <container name="bier">
+    <presence value="BIER enable."/>
+    <description>
+      <text>BIER configuration.</text>
+    </description>
+    <container name="sub-domains">
+      <description>
+        <text>List of BIER sub-domain.</text>
+      </description>
+      <list name="sub-domain">
+        <must condition="not(./bfr-id) or (not(./encapsulations/encapsulation[bsl='64-bit'][encapsulation-type='mpls']/max-si) or (./bfr-id &lt;= (./encapsulations/encapsulation[bsl='64-bit'][encapsulation-type='mpls']/max-si + 1) * 64))"/>
+        <must condition="not(./bfr-id) or (not(./encapsulations/encapsulation[bsl='128-bit'][encapsulation-type='mpls']/max-si) or (./bfr-id &lt;= (./encapsulations/encapsulation[bsl='128-bit'][encapsulation-type='mpls']/max-si + 1) * 128))"/>
+        <must condition="not(./bfr-id) or (not(./encapsulations/encapsulation[bsl='256-bit'][encapsulation-type='mpls']/max-si) or (./bfr-id &lt;= (./encapsulations/encapsulation[bsl='256-bit'][encapsulation-type='mpls']/max-si + 1) * 256))"/>
+        <key value="address-family sub-domain-id"/>
+        <description>
+          <text>Configure BIER sub-domain.</text>
+        </description>
+        <leaf name="address-family">
+          <type name="address-family-type"/>
+          <description>
+            <text>IPv4 or IPv6 address family.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain-id">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>BIER sub-domain ID.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-prefix-interface">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='LoopBack' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name='_public_'"/>
+          <description>
+            <text>BFR prefix interface.</text>
+          </description>
+        </leaf>
+        <leaf name="underlay-protocol">
+          <type name="underlay-protocol-type"/>
+          <description>
+            <text>BIER underlay protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-id">
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <description>
+            <text>BFR-ID.</text>
+          </description>
+        </leaf>
+        <leaf name="load-balance-num">
+          <type name="uint8">
+            <range value="1..16"/>
+          </type>
+          <default value="1"/>
+          <description>
+            <text>Maximum number of paths for multicast load balancing.</text>
+          </description>
+        </leaf>
+        <leaf name="mt-id">
+          <type name="uint16"/>
+          <config value="false"/>
+          <description>
+            <text>Multi-topology type identifier.</text>
+          </description>
+        </leaf>
+        <leaf name="igp-algorithm">
+          <type name="igp-algorithm-type"/>
+          <config value="false"/>
+          <description>
+            <text>IGP algorithm type.</text>
+          </description>
+        </leaf>
+        <leaf name="bier-algorithm">
+          <type name="bier-algorithm-type"/>
+          <config value="false"/>
+          <description>
+            <text>BIER algorithm type.</text>
+          </description>
+        </leaf>
+        <container name="encapsulations">
+          <description>
+            <text>List of BIER encapsulation.</text>
+          </description>
+          <list name="encapsulation">
+            <key value="bsl encapsulation-type"/>
+            <description>
+              <text>Configure BIER encapsulation.</text>
+            </description>
+            <leaf name="bsl">
+              <type name="bit-string-length"/>
+              <description>
+                <text>BIER BitString length, which is 64/128/256 bits. Multiple devices in a subdomain must have the same BSL.</text>
+              </description>
+            </leaf>
+            <leaf name="encapsulation-type">
+              <type name="bier-encapsulation-type"/>
+              <description>
+                <text>BIER encapsulation type configuration.</text>
+              </description>
+            </leaf>
+            <leaf name="max-si">
+              <type name="uint16">
+                <range value="0..255"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Maximum set identifier.</text>
+              </description>
+            </leaf>
+            <leaf name="bift-id">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <config value="false"/>
+              <description>
+                <text>BIFT ID base.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="local-infos">
+          <config value="false"/>
+          <description>
+            <text>BIER sub-domain state.</text>
+          </description>
+          <leaf name="igp-process-id">
+            <type name="uint32"/>
+            <description>
+              <text>Process ID of the underlay routing protocol.</text>
+            </description>
+          </leaf>
+          <leaf name="igp-sub-process-id">
+            <type name="uint32"/>
+            <description>
+              <text>Sub-process ID of the underlay routing protocol.</text>
+            </description>
+          </leaf>
+          <leaf name="bfr-prefix">
+            <type name="inet:ip-address-no-zone"/>
+            <description>
+              <text>BFR prefix address.</text>
+            </description>
+          </leaf>
+          <leaf name="bfr-prefix-mask-len">
+            <type name="uint8">
+              <range value="0..128"/>
+            </type>
+            <description>
+              <text>BFR prefix address mask length.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="routings">
+          <config value="false"/>
+          <description>
+            <text>List of BIER routing state.</text>
+          </description>
+          <list name="routing">
+            <key value="bsl destination-prefix"/>
+            <description>
+              <text>BIER routing state.</text>
+            </description>
+            <leaf name="bsl">
+              <type name="bit-string-length"/>
+              <description>
+                <text>BIER BitString length, which is 64/128/256 bits.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-prefix">
+              <type name="inet:ip-address-no-zone"/>
+              <description>
+                <text>Destination prefix.</text>
+              </description>
+            </leaf>
+            <leaf name="underlay-protocol">
+              <type name="underlay-protocol-type"/>
+              <description>
+                <text>Underlay IGP used by BIER.</text>
+              </description>
+            </leaf>
+            <choice name="prefix-igp-attribute">
+              <description>
+                <text>IGP attributes.</text>
+              </description>
+              <case name="ospf-protocol">
+                <description>
+                  <text>OSPF.</text>
+                </description>
+                <leaf name="router-id">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>OSPF router ID.</text>
+                  </description>
+                </leaf>
+              </case>
+              <case name="isis-protocol">
+                <description>
+                  <text>IS-IS.</text>
+                </description>
+                <leaf name="system-id">
+                  <type name="string">
+                    <length value="1..16"/>
+                  </type>
+                  <description>
+                    <text>IS-IS system ID.</text>
+                  </description>
+                </leaf>
+              </case>
+              <case name="local-system">
+                <description>
+                  <text>Local system.</text>
+                </description>
+                <leaf name="is-local-system">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Prefix is advertised by local system.</text>
+                  </description>
+                </leaf>
+              </case>
+            </choice>
+            <leaf name="bfr-id">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <description>
+                <text>BFR-ID.</text>
+              </description>
+            </leaf>
+            <leaf name="up-time">
+              <type name="pub-type:time-tick"/>
+              <description>
+                <text>Prefix survival time.</text>
+              </description>
+            </leaf>
+            <container name="nexthops">
+              <description>
+                <text>List of Next-hop state.</text>
+              </description>
+              <list name="nexthop">
+                <key value="next-hop-addr next-hop-outbound-if"/>
+                <description>
+                  <text>Next-hop state.</text>
+                </description>
+                <leaf name="next-hop-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Next-hop prefix address.</text>
+                  </description>
+                </leaf>
+                <leaf name="next-hop-outbound-if">
+                  <type name="pub-type:if-name"/>
+                  <description>
+                    <text>Next-hop outbound interface.</text>
+                  </description>
+                </leaf>
+                <leaf name="bfr-neighbor">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>BIER neighbor.</text>
+                  </description>
+                </leaf>
+                <leaf name="underlay-protocol">
+                  <type name="underlay-protocol-type"/>
+                  <description>
+                    <text>Underlay IGP used by BIER.</text>
+                  </description>
+                </leaf>
+                <choice name="igp-attribute">
+                  <description>
+                    <text>IGP attributes.</text>
+                  </description>
+                  <case name="ospf-protocol">
+                    <description>
+                      <text>OSPF.</text>
+                    </description>
+                    <leaf name="router-id">
+                      <type name="inet:ip-address-no-zone"/>
+                      <description>
+                        <text>OSPF router ID.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="isis-protocol">
+                    <description>
+                      <text>IS-IS.</text>
+                    </description>
+                    <leaf name="system-id">
+                      <type name="string">
+                        <length value="1..16"/>
+                      </type>
+                      <description>
+                        <text>IS-IS system ID.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="local-system">
+                    <description>
+                      <text>Local system.</text>
+                    </description>
+                    <leaf name="is-local-system">
+                      <type name="boolean"/>
+                      <description>
+                        <text>Prefix is advertised by local system.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+                <leaf name="up-time">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Neighbor relationship establishment time.</text>
+                  </description>
+                </leaf>
+                <leaf name="bift-id">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <description>
+                    <text>The BIFT-ID assigned by this nexthop node.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="invalid-nexthops">
+              <description>
+                <text>List of Next-hop state.</text>
+              </description>
+              <list name="invalid-nexthop">
+                <key value="next-hop-addr next-hop-outbound-if"/>
+                <description>
+                  <text>Next-hop state.</text>
+                </description>
+                <leaf name="next-hop-addr">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>Next-hop prefix address.</text>
+                  </description>
+                </leaf>
+                <leaf name="next-hop-outbound-if">
+                  <type name="pub-type:if-name"/>
+                  <description>
+                    <text>Next-hop outbound interface.</text>
+                  </description>
+                </leaf>
+                <leaf name="bfr-neighbor">
+                  <type name="inet:ip-address-no-zone"/>
+                  <description>
+                    <text>BIER neighbor.</text>
+                  </description>
+                </leaf>
+                <leaf name="underlay-protocol">
+                  <type name="underlay-protocol-type"/>
+                  <description>
+                    <text>Underlay IGP used by BIER.</text>
+                  </description>
+                </leaf>
+                <choice name="igp-attribute">
+                  <description>
+                    <text>IGP attributes.</text>
+                  </description>
+                  <case name="ospf-protocol">
+                    <description>
+                      <text>OSPF.</text>
+                    </description>
+                    <leaf name="router-id">
+                      <type name="inet:ip-address-no-zone"/>
+                      <description>
+                        <text>OSPF router ID.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="isis-protocol">
+                    <description>
+                      <text>IS-IS.</text>
+                    </description>
+                    <leaf name="system-id">
+                      <type name="string">
+                        <length value="1..16"/>
+                      </type>
+                      <description>
+                        <text>IS-IS system ID.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                  <case name="local-system">
+                    <description>
+                      <text>Local system.</text>
+                    </description>
+                    <leaf name="is-local-system">
+                      <type name="boolean"/>
+                      <description>
+                        <text>Prefix is advertised by local system.</text>
+                      </description>
+                    </leaf>
+                  </case>
+                </choice>
+                <leaf name="up-time">
+                  <type name="pub-type:time-tick"/>
+                  <description>
+                    <text>Neighbor relationship establishment time.</text>
+                  </description>
+                </leaf>
+                <leaf name="bift-id">
+                  <type name="uint32">
+                    <range value="0..4294967295"/>
+                  </type>
+                  <description>
+                    <text>The BIFT-ID assigned by this nexthop node.</text>
+                  </description>
+                </leaf>
+                <leaf name="invalid-reason">
+                  <type name="birt-nexthop-invalid-type"/>
+                  <description>
+                    <text>Invalid nexthop reason.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="prefixs">
+      <config value="false"/>
+      <description>
+        <text>List of BIER prefix state.</text>
+      </description>
+      <list name="prefix">
+        <key value="address-family sub-domain-id bfr-prefix bfr-prefix-mask-len underlay-protocol"/>
+        <description>
+          <text>BIER prefix state.</text>
+        </description>
+        <leaf name="address-family">
+          <type name="address-family-type"/>
+          <description>
+            <text>IPv4 or IPv6 address family.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-domain-id">
+          <type name="uint16">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>BIER sub-domain ID.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-prefix">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>BFR prefix address.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-prefix-mask-len">
+          <type name="uint8">
+            <range value="0..128"/>
+          </type>
+          <description>
+            <text>BFR prefix address mask length.</text>
+          </description>
+        </leaf>
+        <leaf name="underlay-protocol">
+          <type name="underlay-protocol-type"/>
+          <description>
+            <text>Underlay IGP used by BIER.</text>
+          </description>
+        </leaf>
+        <leaf name="bfr-id">
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>BFR-ID.</text>
+          </description>
+        </leaf>
+        <leaf name="igp-process-id">
+          <type name="uint32"/>
+          <description>
+            <text>Process ID of the underlay IGP.</text>
+          </description>
+        </leaf>
+        <leaf name="mt-id">
+          <type name="uint32"/>
+          <description>
+            <text>Multi-topology ID of the underlay IGP.</text>
+          </description>
+        </leaf>
+        <leaf name="igp-sub-process-id">
+          <type name="uint32"/>
+          <description>
+            <text>Sub-process ID of the underlay IGP.</text>
+          </description>
+        </leaf>
+        <choice name="igp-attribute">
+          <description>
+            <text>IGP attributes.</text>
+          </description>
+          <case name="ospf-protocol">
+            <description>
+              <text>OSPF.</text>
+            </description>
+            <leaf name="router-id">
+              <type name="inet:ip-address-no-zone"/>
+              <ext:support-filter value="true"/>
+              <description>
+                <text>OSPF router ID.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="isis-protocol">
+            <description>
+              <text>IS-IS.</text>
+            </description>
+            <leaf name="system-id">
+              <type name="string">
+                <length value="1..16"/>
+              </type>
+              <ext:support-filter value="true"/>
+              <description>
+                <text>IS-IS system ID.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="local-system">
+            <description>
+              <text>Local system.</text>
+            </description>
+            <leaf name="is-local-system">
+              <type name="boolean"/>
+              <description>
+                <text>Prefix is advertised by local system.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="prefix-igp-flags">
+          <type name="bits">
+            <bit name="local">
+              <description>
+                <text>Local prefix.</text>
+              </description>
+            </bit>
+            <bit name="intra">
+              <description>
+                <text>Intra-domain prefix.</text>
+              </description>
+            </bit>
+            <bit name="invalid">
+              <description>
+                <text>Invalid prefix.</text>
+              </description>
+            </bit>
+            <bit name="duplicate">
+              <description>
+                <text>Duplicate prefix.</text>
+              </description>
+            </bit>
+            <bit name="best">
+              <description>
+                <text>Best prefix.</text>
+              </description>
+            </bit>
+          </type>
+          <description>
+            <text>BIER prefix IGP state.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-sd-flags">
+          <type name="bits">
+            <bit name="duplicate-sd">
+              <description>
+                <text>Duplicate sub-domain ID.</text>
+              </description>
+            </bit>
+            <bit name="invalid-igp-cfg">
+              <description>
+                <text>Invalid IGP configuration.</text>
+              </description>
+            </bit>
+            <bit name="invalid-bar">
+              <description>
+                <text>Invalid BIER algorithm.</text>
+              </description>
+            </bit>
+            <bit name="invalid-ipa">
+              <description>
+                <text>Invalid IGP algorithm.</text>
+              </description>
+            </bit>
+            <bit name="duplicate-bfr-id">
+              <description>
+                <text>Duplicate BFR-ID.</text>
+              </description>
+            </bit>
+            <bit name="invalid-mt">
+              <description>
+                <text>Invalid multi-topology.</text>
+              </description>
+            </bit>
+            <bit name="supress-bfr-id-adv">
+              <description>
+                <text>BFR-ID advertisement suppression.</text>
+              </description>
+            </bit>
+          </type>
+          <description>
+            <text>BIER prefix sub-domain state.</text>
+          </description>
+        </leaf>
+        <leaf name="igp-algorithm">
+          <type name="igp-algorithm-type"/>
+          <description>
+            <text>IGP algorithm type.</text>
+          </description>
+        </leaf>
+        <leaf name="bier-algorithm">
+          <type name="bier-algorithm-type"/>
+          <description>
+            <text>BIER algorithm type.</text>
+          </description>
+        </leaf>
+        <container name="encapsulation-infos">
+          <description>
+            <text>BIER prefix encapsulation state.</text>
+          </description>
+          <container name="encapsulations">
+            <description>
+              <text>List of BIER prefix encapsulation state.</text>
+            </description>
+            <list name="encapsulation">
+              <key value="bsl encapsulation-type"/>
+              <description>
+                <text>BIER prefix encapsulation state.</text>
+              </description>
+              <leaf name="bsl">
+                <type name="bit-string-length"/>
+                <description>
+                  <text>BIER BitString length, which is 64/128/256 bits.</text>
+                </description>
+              </leaf>
+              <leaf name="encapsulation-type">
+                <type name="bier-encapsulation-type"/>
+                <description>
+                  <text>BIER encapsulation type.</text>
+                </description>
+              </leaf>
+              <leaf name="max-si">
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+                <description>
+                  <text>Maximum set identifier.</text>
+                </description>
+              </leaf>
+              <leaf name="up-time">
+                <type name="pub-type:time-tick"/>
+                <description>
+                  <text>Prefix survival time.</text>
+                </description>
+              </leaf>
+              <leaf name="bift-id-base">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Start BIFT-ID in the BIER encapsulation information.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+          <container name="invalid-encapsulations">
+            <description>
+              <text>List of BIER prefix encapsulation state.</text>
+            </description>
+            <list name="invalid-encapsulation">
+              <key value="bsl encapsulation-type"/>
+              <description>
+                <text>BIER prefix encapsulation state.</text>
+              </description>
+              <leaf name="bsl">
+                <type name="bit-string-length"/>
+                <description>
+                  <text>BIER BitString length, which is 64/128/256 bits.</text>
+                </description>
+              </leaf>
+              <leaf name="encapsulation-type">
+                <type name="bier-encapsulation-type"/>
+                <description>
+                  <text>BIER encapsulation type.</text>
+                </description>
+              </leaf>
+              <leaf name="max-si">
+                <type name="uint16">
+                  <range value="0..255"/>
+                </type>
+                <description>
+                  <text>Maximum set identifier.</text>
+                </description>
+              </leaf>
+              <leaf name="up-time">
+                <type name="pub-type:time-tick"/>
+                <description>
+                  <text>Prefix survival time.</text>
+                </description>
+              </leaf>
+              <leaf name="bift-id-base">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Start BIFT-ID in the BIER encapsulation information.</text>
+                </description>
+              </leaf>
+              <leaf name="invalid-reason">
+                <type name="bits">
+                  <bit name="unknown-sd">
+                    <description>
+                      <text>Unknown sub-domain ID.</text>
+                    </description>
+                  </bit>
+                  <bit name="duplicate-bsl">
+                    <description>
+                      <text>Duplicate BitString length.</text>
+                    </description>
+                  </bit>
+                  <bit name="invalid-bsl">
+                    <description>
+                      <text>Invalid BitString length.</text>
+                    </description>
+                  </bit>
+                  <bit name="unsupport-bsl">
+                    <description>
+                      <text>Unsupported BitString length.</text>
+                    </description>
+                  </bit>
+                  <bit name="invalid-label">
+                    <description>
+                      <text>Invalid MPLS label.</text>
+                    </description>
+                  </bit>
+                  <bit name="invalid-label-range">
+                    <description>
+                      <text>Invalid range of MPLS labels.</text>
+                    </description>
+                  </bit>
+                  <bit name="overlap-label-range">
+                    <description>
+                      <text>Overlap range of MPLS labels.</text>
+                    </description>
+                  </bit>
+                </type>
+                <description>
+                  <text>Invalid BSL reason.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

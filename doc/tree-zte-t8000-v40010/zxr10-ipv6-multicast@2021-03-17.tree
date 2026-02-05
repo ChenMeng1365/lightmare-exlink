@@ -1,0 +1,830 @@
+module: zxr10-ipv6-multicast
+  +--rw configuration
+  |  +--rw ipv6-multicast
+  |     +--rw v6-multicast!
+  |     |  +--rw global
+  |     |  |  +--rw mroute6-limit?                     uint32
+  |     |  |  +--rw nsf-time?                          int32
+  |     |  |  +--rw damping-threshold?                 uint32
+  |     |  |  +--rw damping-enable?                    empty
+  |     |  |  +--rw multipath?                         enumeration
+  |     |  |  +--rw dscp-tos?                          uint8
+  |     |  |  +--rw access-addr-scope?                 enumeration {access-addr-scope}?
+  |     |  |  +--rw mroute6-limit-p-instance?          uint32
+  |     |  |  +--rw multicast-address-rfc7371?         empty
+  |     |  |  +--rw ecmp-select-cost-first?            empty
+  |     |  |  +--rw longest-match?                     empty
+  |     |  |  +--rw static-first?                      empty
+  |     |  |  +--rw downstream-limit?                  int32
+  |     |  |  +--rw mvpn-frr-policy?                   enumeration
+  |     |  |  +--rw mvpn-frr-egress-wtr?               uint16
+  |     |  |  +--rw ecmp-select-reference-bandwidth?   empty
+  |     |  +--rw forward-policy!
+  |     |  |  +--rw acl?       string
+  |     |  |  +--rw options    enumeration
+  |     |  +--rw biers
+  |     |  |  +--rw bier* [subdomain-id]
+  |     |  |     +--rw subdomain-id    uint8
+  |     |  |     +--rw bsl?            enumeration
+  |     |  |     +--rw entropy?        empty
+  |     |  |     +--rw bfer-indexs
+  |     |  |        +--rw bfer-index* [index prefix]
+  |     |  |           +--rw index     uint32
+  |     |  |           +--rw prefix    ncd:ipv6-address
+  |     |  +--rw nexthops
+  |     |  |  +--rw nexthop* [intf-name ipv6-addr prefix-length nexthop-addr]
+  |     |  |     +--rw intf-name        ncd:ifname
+  |     |  |     +--rw ipv6-addr        ncd:ipv6-address
+  |     |  |     +--rw prefix-length    uint8
+  |     |  |     +--rw nexthop-addr     ncd:ipv6-address
+  |     |  |     +--rw slave?           empty
+  |     |  +--rw nexthop-fallbacks
+  |     |  |  +--rw nexthop-fallback* [ipv6-addr prefix-length]
+  |     |  |     +--rw ipv6-addr        ncd:ipv6-address
+  |     |  |     +--rw prefix-length    uint8
+  |     |  |     +--rw vrf-name         string
+  |     |  +--rw nexthop-path-lists
+  |     |  |  +--rw nexthop-path-list* [ipv6-addr prefix-length]
+  |     |  |     +--rw ipv6-addr        ncd:ipv6-address
+  |     |  |     +--rw prefix-length    uint8
+  |     |  |     +--rw rpf-path-name    string
+  |     |  +--rw smdms
+  |     |  |  +--rw smdm* [intf-name]
+  |     |  |     +--rw intf-name    ncd:ifname
+  |     |  +--rw boundarys
+  |     |  |  +--rw boundary* [intf-name]
+  |     |  |     +--rw intf-name    ncd:ifname
+  |     |  |     +--rw aclname      string
+  |     |  +--rw router-id!
+  |     |  |  +--rw router-id    ncd:ipv4-address
+  |     |  +--rw rpf-vector-path-lists
+  |     |  |  +--rw rpf-vector-path-list* [rpf-path-name rpf-path-index]
+  |     |  |     +--rw rpf-path-name     string
+  |     |  |     +--rw rpf-path-index    uint32
+  |     |  |     +--rw vector-address    ncd:ipv6-address
+  |     |  |     +--rw vector-type       enumeration
+  |     |  +--rw mvpn!
+  |     |  |  +--rw provider-tunnel    enumeration
+  |     |  |  +--rw sub-domain-id?     uint8
+  |     |  |  +--rw bfd-enable?        empty
+  |     |  |  +--rw bfd-template?      string
+  |     |  +--rw spmsi-bier-infos
+  |     |  |  +--rw spmsi-bier-info* [subdomain-id]
+  |     |  |     +--rw subdomain-id    uint8
+  |     |  |     +--rw acl-name        string
+  |     |  +--rw msid!
+  |     |     +--rw prefix-addr    ncd:ipv6-address
+  |     |     +--rw prefix-len     uint8
+  |     +--rw vrf-v6-multicasts
+  |        +--rw vrf-v6-multicast* [vrf-name]
+  |           +--rw vrf-name                              string
+  |           +--rw multipath?                            enumeration
+  |           +--rw mroute6-limit-c-instance?             uint32
+  |           +--rw mvpn-switchover-holdtime?             uint16
+  |           +--rw mvpn-switchover-interval?             uint16
+  |           +--rw mvpn-switchover-threshold-infinity?   string
+  |           +--rw ecmp-select-cost-first?               empty
+  |           +--rw mvpn-upstream-pe-select?              enumeration
+  |           +--rw mvpn-frr-policy?                      enumeration
+  |           +--rw mvpn-frr-detect-type?                 enumeration
+  |           +--rw mvpn-frr-ingress-wtr?                 uint16
+  |           +--rw mvpn-frr-egress-wtr?                  uint16
+  |           +--rw mvpn-wildcards-spmsi?                 empty
+  |           +--rw mvpn-spt-only?                        empty
+  |           +--rw mvpn-send-site-only?                  empty
+  |           +--rw mvpn-receive-site-only?               empty
+  |           +--rw mvpn-spmsi-tunnel?                    enumeration
+  |           +--rw longest-match?                        empty
+  |           +--rw static-first?                         empty
+  |           +--rw ecmp-select-reference-bandwidth?      empty
+  |           +--rw mvpn-switchover-threshold! {mvpn-switch-threshold}?
+  |           |  +--rw threshold    uint32
+  |           |  +--rw acl          string
+  |           +--rw mvpn!
+  |           |  +--rw provider-tunnel    enumeration
+  |           |  +--rw sub-domain-id?     uint8
+  |           |  +--rw bfd-enable?        empty
+  |           |  +--rw bfd-template?      string
+  |           +--rw forward-policy!
+  |           |  +--rw acl?       string
+  |           |  +--rw options    enumeration
+  |           +--rw nexthops
+  |           |  +--rw nexthop* [intf-name ipv6-addr prefix-length nexthop-addr]
+  |           |     +--rw intf-name        ncd:ifname
+  |           |     +--rw ipv6-addr        ncd:ipv6-address
+  |           |     +--rw prefix-length    uint8
+  |           |     +--rw nexthop-addr     ncd:ipv6-address
+  |           |     +--rw slave?           empty
+  |           +--rw nexthop-fallbacks
+  |           |  +--rw nexthop-fallback* [ipv6-addr prefix-length]
+  |           |     +--rw ipv6-addr        ncd:ipv6-address
+  |           |     +--rw prefix-length    uint8
+  |           |     +--rw instance
+  |           |        +--rw (instance)
+  |           |           +--:(p-instance)
+  |           |           |  +--rw global?     empty
+  |           |           +--:(c-instance)
+  |           |              +--rw vrf-name?   string
+  |           +--rw mtunnel!
+  |           |  +--rw intf-name    ncd:ifname
+  |           +--rw mdt-default
+  |           |  +--rw (mdt-default)?
+  |           |     +--:(mdt-default-group)
+  |           |     |  +--rw group           ncd:ipv4-address-none-zero
+  |           |     +--:(mpls-mldp)
+  |           |        +--rw mdt-defaults
+  |           |           +--rw mdt-default* [root-addr]
+  |           |              +--rw root-addr    ncd:ipv4-address-none-zero
+  |           +--rw mdt-data
+  |           |  +--rw (mdt-data)?
+  |           |     +--:(mdt-data-group)
+  |           |     |  +--rw acl?        string
+  |           |     |  +--rw group       ncd:ipv4-address-none-zero
+  |           |     |  +--rw mask        ncd:ipv4-imask
+  |           |     +--:(mpls-mldp)
+  |           |        +--rw num-tree    uint32
+  |           +--rw p2mp-template!
+  |           |  +--rw name    string
+  |           +--rw mvpn-frr-peer-bfd-ipv4s
+  |           |  +--rw mvpn-frr-peer-bfd-ipv4* [local-addr remote-addr]
+  |           |     +--rw local-addr     ncd:ipv4-address-none-zero
+  |           |     +--rw remote-addr    ncd:ipv4-address-none-zero
+  |           +--rw mvpn-spmsi-aggregation
+  |           |  +--rw (mvpn-spmsi-aggregation)?
+  |           |     +--:(type)
+  |           |     |  +--rw type     enumeration
+  |           |     +--:(count)
+  |           |        +--rw count    uint32
+  |           +--rw router-id!
+  |           |  +--rw router-id    ncd:ipv4-address
+  |           +--rw spmsi-bier-infos
+  |              +--rw spmsi-bier-info* [subdomain-id]
+  |                 +--rw subdomain-id    uint8
+  |                 +--rw acl-name        string
+  +--ro state
+  |  +--ro ipv6-multicast
+  |     +--ro public
+  |     |  +--ro mroutes
+  |     |  |  +--ro mroute* [group-addr source-addr]
+  |     |  |     +--ro group-addr            ncd:ipv6-address
+  |     |  |     +--ro source-addr           ncd:ipv6-address
+  |     |  |     +--ro rp-addr?              ncd:ipv6-address
+  |     |  |     +--ro iif-name?             ncd:string-all
+  |     |  |     +--ro secondary-rpf-intf?   ncd:string-all
+  |     |  |     +--ro mrt-flag?             ncd:string-all
+  |     |  |     +--ro mrt-type?             ncd:string-all
+  |     |  |     +--ro iif-flag?             ncd:string-all
+  |     |  |     +--ro fallback-vrf?         string
+  |     |  |     +--ro oif-list* [oif-name]
+  |     |  |     |  +--ro oif-name    ncd:string-all
+  |     |  |     |  +--ro oif-flag?   ncd:string-all
+  |     |  |     +--ro fallback-extranet* [vrf-name]
+  |     |  |     |  +--ro vrf-name    string
+  |     |  |     +--ro bier-info* [subdomain-id bfer-prefix]
+  |     |  |        +--ro subdomain-id    uint8
+  |     |  |        +--ro bfer-prefix     string
+  |     |  |        +--ro bfr-id?         uint16
+  |     |  +--ro summary
+  |     |  |  +--ro xg-count?       uint32
+  |     |  |  +--ro sg-count?       uint32
+  |     |  |  +--ro mroute-count?   uint32
+  |     |  +--ro briefs
+  |     |  |  +--ro brief* [group source]
+  |     |  |     +--ro group     ncd:ipv6-address
+  |     |  |     +--ro source    ncd:ipv6-address
+  |     |  |     +--ro type?     string
+  |     |  +--ro nexthops
+  |     |  |  +--ro nexthop* [dest-addr type]
+  |     |  |     +--ro dest-addr       ncd:ipv6-address
+  |     |  |     +--ro type            ncd:string-all
+  |     |  |     +--ro time?           ncd:string-all
+  |     |  |     +--ro user?           ncd:string-all
+  |     |  |     +--ro metric?         uint32
+  |     |  |     +--ro preference?     uint32
+  |     |  |     +--ro mask-len?       uint16
+  |     |  |     +--ro flag?           ncd:string-all
+  |     |  |     +--ro fallback-vrf?   string
+  |     |  |     +--ro ecmp* [nexthop oif-name]
+  |     |  |        +--ro nexthop         ncd:ipv6-address
+  |     |  |        +--ro oif-name        ncd:string-all
+  |     |  |        +--ro oif-flag?       ncd:string-all
+  |     |  |        +--ro real-nexthop?   ncd:ipv6-address
+  |     |  +--ro mvpn
+  |     |     +--ro mtunnels
+  |     |     |  +--ro mtunnel* [tunnel-id tunnel-type]
+  |     |     |     +--ro tunnel-id       uint32
+  |     |     |     +--ro tunnel-type     enumeration
+  |     |     |     +--ro tunnel-state?   enumeration
+  |     |     |     +--ro vrf-name?       ncd:string-all
+  |     |     |     +--ro mrts
+  |     |     |        +--ro mrt* [sub-vrf-name source group]
+  |     |     |           +--ro sub-vrf-name    ncd:string-all
+  |     |     |           +--ro source          ncd:ipv6-address
+  |     |     |           +--ro group           ncd:ipv6-address
+  |     |     +--ro protect-groups
+  |     |     |  +--ro protect-group* [protect-group-id m-subdomain-id m-bfir-id m-vpn-label s-subdomain-id s-bfir-id s-vpn-label]
+  |     |     |     +--ro protect-group-id    uint32
+  |     |     |     +--ro m-subdomain-id      uint8
+  |     |     |     +--ro m-bfir-id           uint16
+  |     |     |     +--ro m-vpn-label         uint32
+  |     |     |     +--ro s-subdomain-id      uint8
+  |     |     |     +--ro s-bfir-id           uint16
+  |     |     |     +--ro s-vpn-label         uint32
+  |     |     |     +--ro master-state?       ncd:string-all
+  |     |     |     +--ro egress-wtr?         ncd:string-all
+  |     |     |     +--ro vrf-name?           ncd:string-all
+  |     |     |     +--ro mrts
+  |     |     |        +--ro mrt* [source group]
+  |     |     |           +--ro source    ncd:ipv6-address
+  |     |     |           +--ro group     ncd:ipv6-address
+  |     |     +--ro instance
+  |     |     |  +--ro rd?                    string
+  |     |     |  +--ro import-rt?             string
+  |     |     |  +--ro origin-ip?             ncd:ipv4-address
+  |     |     |  +--ro te-id?                 ncd:ipv4-address
+  |     |     |  +--ro origin-state?          ncd:string-all
+  |     |     |  +--ro te-state?              ncd:string-all
+  |     |     |  +--ro mtunnel-type?          enumeration
+  |     |     |  +--ro route-state?           enumeration
+  |     |     |  +--ro mldp-state?            enumeration
+  |     |     |  +--ro p-pim-state?           enumeration
+  |     |     |  +--ro c-pim-state?           enumeration
+  |     |     |  +--ro us-protocol?           enumeration
+  |     |     |  +--ro mtunnel-name?          ncd:ifname
+  |     |     |  +--ro mtunnel-state?         ncd:string-all
+  |     |     |  +--ro mtunnel-addr?          ncd:ipv4-address
+  |     |     |  +--ro default-group?         ncd:ipv4-address
+  |     |     |  +--ro data-group?            ncd:ipv4-address
+  |     |     |  +--ro data-group-mask-len?   uint8
+  |     |     |  +--ro data-acl-name?         string
+  |     |     +--ro auto-discovery-route
+  |     |     |  +--ro intra-ases
+  |     |     |  |  +--ro intra-as* [rd origin-ip]
+  |     |     |  |     +--ro rd             string
+  |     |     |  |     +--ro origin-ip      ncd:ipv4-address
+  |     |     |  |     +--ro root-tunnel?   ncd:string-all
+  |     |     |  |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |  |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |  +--ro inter-ases
+  |     |     |  |  +--ro inter-as* [rd source-as]
+  |     |     |  |     +--ro rd             string
+  |     |     |  |     +--ro source-as      uint32
+  |     |     |  |     +--ro root-tunnel?   ncd:string-all
+  |     |     |  |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |  |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |  +--ro spmsi-ads
+  |     |     |  |  +--ro spmsi-ad* [rd source group origin-ip]
+  |     |     |  |     +--ro rd             string
+  |     |     |  |     +--ro source         ncd:ipv6-address
+  |     |     |  |     +--ro group          ncd:ipv6-address
+  |     |     |  |     +--ro origin-ip      ncd:ipv4-address
+  |     |     |  |     +--ro root-tunnel?   ncd:string-all
+  |     |     |  |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |  |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |  +--ro leaf-ads
+  |     |     |     +--ro leaf-ad* [type sub-rd sub-source sub-group sub-origin-ip sub-source-as origin-ip]
+  |     |     |        +--ro type             enumeration
+  |     |     |        +--ro sub-rd           string
+  |     |     |        +--ro sub-source       ncd:ipv6-address
+  |     |     |        +--ro sub-group        ncd:ipv6-address
+  |     |     |        +--ro sub-origin-ip    ncd:ipv4-address
+  |     |     |        +--ro sub-source-as    uint32
+  |     |     |        +--ro origin-ip        ncd:ipv4-address
+  |     |     |        +--ro p-tunnel?        ncd:string-all
+  |     |     +--ro public-auto-discovery-route
+  |     |     |  +--ro intra-ases
+  |     |     |  |  +--ro intra-as* [rd origin-ip]
+  |     |     |  |     +--ro rd             string
+  |     |     |  |     +--ro origin-ip      ncd:ipv4-address
+  |     |     |  |     +--ro root-tunnel?   ncd:string-all
+  |     |     |  |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |  |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |  +--ro inter-ases
+  |     |     |  |  +--ro inter-as* [rd source-as]
+  |     |     |  |     +--ro rd             string
+  |     |     |  |     +--ro source-as      uint32
+  |     |     |  |     +--ro root-tunnel?   ncd:string-all
+  |     |     |  |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |  |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |  +--ro spmsi-ads
+  |     |     |  |  +--ro spmsi-ad* [rd source group origin-ip]
+  |     |     |  |     +--ro rd             string
+  |     |     |  |     +--ro source         ncd:ipv6-address
+  |     |     |  |     +--ro group          ncd:ipv6-address
+  |     |     |  |     +--ro origin-ip      ncd:ipv4-address
+  |     |     |  |     +--ro root-tunnel?   ncd:string-all
+  |     |     |  |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |  |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |  +--ro leaf-ads
+  |     |     |  |  +--ro leaf-ad* [type sub-rd sub-source sub-group sub-origin-ip sub-source-as origin-ip]
+  |     |     |  |     +--ro type             enumeration
+  |     |     |  |     +--ro sub-rd           string
+  |     |     |  |     +--ro sub-source       ncd:ipv6-address
+  |     |     |  |     +--ro sub-group        ncd:ipv6-address
+  |     |     |  |     +--ro sub-origin-ip    ncd:ipv4-address
+  |     |     |  |     +--ro sub-source-as    uint32
+  |     |     |  |     +--ro origin-ip        ncd:ipv4-address
+  |     |     |  |     +--ro p-tunnel?        ncd:string-all
+  |     |     |  +--ro source-actives
+  |     |     |  |  +--ro source-active* [ad-state rd source group]
+  |     |     |  |     +--ro ad-state    enumeration
+  |     |     |  |     +--ro rd          string
+  |     |     |  |     +--ro source      ncd:ipv6-address
+  |     |     |  |     +--ro group       ncd:ipv6-address
+  |     |     |  |     +--ro nexthop?    ncd:ipv4-address
+  |     |     |  +--ro xg-joins
+  |     |     |  |  +--ro xg-join* [ad-state rd source-as rp-addr group]
+  |     |     |  |     +--ro ad-state     enumeration
+  |     |     |  |     +--ro rd           string
+  |     |     |  |     +--ro source-as    uint32
+  |     |     |  |     +--ro rp-addr      ncd:ipv6-address
+  |     |     |  |     +--ro group        ncd:ipv6-address
+  |     |     |  |     +--ro nexthop?     ncd:ipv4-address
+  |     |     |  +--ro sg-joins
+  |     |     |     +--ro sg-join* [ad-state rd source-as source group]
+  |     |     |        +--ro ad-state     enumeration
+  |     |     |        +--ro rd           string
+  |     |     |        +--ro source-as    uint32
+  |     |     |        +--ro source       ncd:ipv6-address
+  |     |     |        +--ro group        ncd:ipv6-address
+  |     |     |        +--ro nexthop?     ncd:ipv4-address
+  |     |     +--ro mtibs
+  |     |     |  +--ro mtib* [tunnel-id tunnel-type]
+  |     |     |     +--ro tunnel-id         uint32
+  |     |     |     +--ro tunnel-type       enumeration
+  |     |     |     +--ro tunnel-state?     enumeration
+  |     |     |     +--ro leaf-require?     enumeration
+  |     |     |     +--ro protocol-state?   enumeration
+  |     |     |     +--ro tunnel-label?     uint32
+  |     |     |     +--ro tunnel-attr?      ncd:string-all
+  |     |     |     +--ro leave-delay?      string
+  |     |     |     +--ro multi-imports
+  |     |     |        +--ro multi-import* [sub-vrf-name]
+  |     |     |           +--ro sub-vrf-name        ncd:string-all
+  |     |     |           +--ro sub-tunnel-state?   ncd:string-all
+  |     |     +--ro mribs
+  |     |     |  +--ro mrib* [source group]
+  |     |     |     +--ro source                    ncd:ipv6-address
+  |     |     |     +--ro group                     ncd:ipv6-address
+  |     |     |     +--ro intf-state?               string
+  |     |     |     +--ro upstream-tunnel?          ncd:string-all
+  |     |     |     +--ro upstream-pe?              ncd:ipv4-address
+  |     |     |     +--ro rpf-tunnel-id?            uint32
+  |     |     |     +--ro rpf-vrf-name?             string
+  |     |     |     +--ro downstream-tunnel?        ncd:string-all
+  |     |     |     +--ro switch-tunnel?            ncd:string-all
+  |     |     |     +--ro switch-time?              string
+  |     |     |     +--ro spmsi-auto-discoveries
+  |     |     |     |  +--ro spmsi-auto-discovery* [rd source group origin-ip]
+  |     |     |     |     +--ro rd             string
+  |     |     |     |     +--ro source         ncd:ipv6-address
+  |     |     |     |     +--ro group          ncd:ipv6-address
+  |     |     |     |     +--ro origin-ip      ncd:ipv4-address
+  |     |     |     |     +--ro ad-state?      enumeration
+  |     |     |     |     +--ro root-tunnel?   ncd:string-all
+  |     |     |     |     +--ro leaf-tunnel?   ncd:string-all
+  |     |     |     |     +--ro ir-tunnel?     ncd:string-all
+  |     |     |     |     +--ro uptime?        string
+  |     |     |     +--ro leaf-auto-discoveries
+  |     |     |     |  +--ro leaf-auto-discovery* [type sub-rd sub-source sub-group sub-origin-ip origin-ip]
+  |     |     |     |     +--ro type             enumeration
+  |     |     |     |     +--ro sub-rd           string
+  |     |     |     |     +--ro sub-source       ncd:ipv6-address
+  |     |     |     |     +--ro sub-group        ncd:ipv6-address
+  |     |     |     |     +--ro sub-origin-ip    ncd:ipv4-address
+  |     |     |     |     +--ro origin-ip        ncd:ipv4-address
+  |     |     |     |     +--ro ad-state?        enumeration
+  |     |     |     |     +--ro uptime?          string
+  |     |     |     +--ro source-actives
+  |     |     |     |  +--ro source-active* [ad-state rd source group]
+  |     |     |     |     +--ro ad-state    enumeration
+  |     |     |     |     +--ro rd          string
+  |     |     |     |     +--ro source      ncd:ipv6-address
+  |     |     |     |     +--ro group       ncd:ipv6-address
+  |     |     |     |     +--ro uptime?     string
+  |     |     |     +--ro xg-joins
+  |     |     |     |  +--ro xg-join* [ad-state rd source-as rp-addr group]
+  |     |     |     |     +--ro ad-state     enumeration
+  |     |     |     |     +--ro rd           string
+  |     |     |     |     +--ro source-as    uint32
+  |     |     |     |     +--ro rp-addr      ncd:ipv6-address
+  |     |     |     |     +--ro group        ncd:ipv6-address
+  |     |     |     |     +--ro uptime?      string
+  |     |     |     +--ro sg-joins
+  |     |     |        +--ro sg-join* [ad-state rd source-as source group]
+  |     |     |           +--ro ad-state     enumeration
+  |     |     |           +--ro rd           string
+  |     |     |           +--ro source-as    uint32
+  |     |     |           +--ro source       ncd:ipv6-address
+  |     |     |           +--ro group        ncd:ipv6-address
+  |     |     |           +--ro uptime?      string
+  |     |     +--ro ad-summary
+  |     |     |  +--ro intra-as-local?         uint32
+  |     |     |  +--ro intra-as-remote?        uint32
+  |     |     |  +--ro intra-as-all?           uint32
+  |     |     |  +--ro inter-as-local?         uint32
+  |     |     |  +--ro inter-as-remote?        uint32
+  |     |     |  +--ro inter-as-all?           uint32
+  |     |     |  +--ro spmsi-ad-local?         uint32
+  |     |     |  +--ro spmsi-ad-remote?        uint32
+  |     |     |  +--ro spmsi-ad-all?           uint32
+  |     |     |  +--ro leaf-ad-local?          uint32
+  |     |     |  +--ro leaf-ad-remote?         uint32
+  |     |     |  +--ro leaf-ad-all?            uint32
+  |     |     |  +--ro source-active-local?    uint32
+  |     |     |  +--ro source-active-remote?   uint32
+  |     |     |  +--ro source-active-all?      uint32
+  |     |     |  +--ro xg-join-local?          uint32
+  |     |     |  +--ro xg-join-remote?         uint32
+  |     |     |  +--ro xg-join-all?            uint32
+  |     |     |  +--ro sg-join-local?          uint32
+  |     |     |  +--ro sg-join-remote?         uint32
+  |     |     |  +--ro sg-join-all?            uint32
+  |     |     |  +--ro local-ad-all?           uint32
+  |     |     |  +--ro remote-ad-all?          uint32
+  |     |     |  +--ro ad-all?                 uint32
+  |     |     +--ro public-ad-summary
+  |     |        +--ro intra-as-local?         uint32
+  |     |        +--ro intra-as-remote?        uint32
+  |     |        +--ro intra-as-all?           uint32
+  |     |        +--ro inter-as-local?         uint32
+  |     |        +--ro inter-as-remote?        uint32
+  |     |        +--ro inter-as-all?           uint32
+  |     |        +--ro spmsi-ad-local?         uint32
+  |     |        +--ro spmsi-ad-remote?        uint32
+  |     |        +--ro spmsi-ad-all?           uint32
+  |     |        +--ro leaf-ad-local?          uint32
+  |     |        +--ro leaf-ad-remote?         uint32
+  |     |        +--ro leaf-ad-all?            uint32
+  |     |        +--ro source-active-local?    uint32
+  |     |        +--ro source-active-remote?   uint32
+  |     |        +--ro source-active-all?      uint32
+  |     |        +--ro xg-join-local?          uint32
+  |     |        +--ro xg-join-remote?         uint32
+  |     |        +--ro xg-join-all?            uint32
+  |     |        +--ro sg-join-local?          uint32
+  |     |        +--ro sg-join-remote?         uint32
+  |     |        +--ro sg-join-all?            uint32
+  |     |        +--ro local-ad-all?           uint32
+  |     |        +--ro remote-ad-all?          uint32
+  |     |        +--ro ad-all?                 uint32
+  |     +--ro private
+  |        +--ro mroutes
+  |        |  +--ro mroute* [vrf-name group-addr source-addr]
+  |        |     +--ro vrf-name              string
+  |        |     +--ro group-addr            ncd:ipv6-address
+  |        |     +--ro source-addr           ncd:ipv6-address
+  |        |     +--ro rp-addr?              ncd:ipv6-address
+  |        |     +--ro iif-name?             ncd:string-all
+  |        |     +--ro secondary-rpf-intf?   ncd:string-all
+  |        |     +--ro mrt-flag?             ncd:string-all
+  |        |     +--ro mrt-type?             ncd:string-all
+  |        |     +--ro iif-flag?             ncd:string-all
+  |        |     +--ro fallback-vrf?         ncd:string-all
+  |        |     +--ro oif-list* [oif-name]
+  |        |     |  +--ro oif-name    ncd:string-all
+  |        |     |  +--ro oif-flag?   ncd:string-all
+  |        |     +--ro fallback-extranet* [vrf-name]
+  |        |     |  +--ro vrf-name    ncd:string-all
+  |        |     +--ro vpn-extranet* [vrf-name]
+  |        |     |  +--ro vrf-name    ncd:string-all
+  |        |     +--ro bier-info* [subdomain-id bfer-prefix]
+  |        |        +--ro subdomain-id    uint8
+  |        |        +--ro bfer-prefix     string
+  |        |        +--ro bfr-id?         uint16
+  |        +--ro summarys
+  |        |  +--ro summary* [vrf-name]
+  |        |     +--ro vrf-name        string
+  |        |     +--ro xg-count?       uint32
+  |        |     +--ro sg-count?       uint32
+  |        |     +--ro mroute-count?   uint32
+  |        +--ro briefs
+  |        |  +--ro brief* [vrf-name group source]
+  |        |     +--ro vrf-name    string
+  |        |     +--ro group       ncd:ipv6-address
+  |        |     +--ro source      ncd:ipv6-address
+  |        |     +--ro type?       string
+  |        +--ro nexthops
+  |        |  +--ro nexthop* [vrf-name dest-addr type]
+  |        |     +--ro vrf-name        string
+  |        |     +--ro dest-addr       ncd:ipv6-address
+  |        |     +--ro type            ncd:string-all
+  |        |     +--ro time?           ncd:string-all
+  |        |     +--ro user?           ncd:string-all
+  |        |     +--ro metric?         uint32
+  |        |     +--ro preference?     uint32
+  |        |     +--ro mask-len?       uint16
+  |        |     +--ro flag?           ncd:string-all
+  |        |     +--ro fallback-vrf?   ncd:string-all
+  |        |     +--ro ecmp* [nexthop oif-name]
+  |        |        +--ro nexthop         ncd:ipv6-address
+  |        |        +--ro oif-name        ncd:string-all
+  |        |        +--ro oif-flag?       ncd:string-all
+  |        |        +--ro remote-pe?      ncd:ipv6-address
+  |        |        +--ro real-nexthop?   ncd:ipv6-address
+  |        +--ro mvpn
+  |           +--ro mdts
+  |           |  +--ro mdt* [vrf-name]
+  |           |     +--ro vrf-name               string
+  |           |     +--ro default-mode?          enumeration
+  |           |     +--ro data-mode?             enumeration
+  |           |     +--ro root-id?               ncd:ipv4-address
+  |           |     +--ro global-vpn-id?         string
+  |           |     +--ro data-tree-num?         uint16
+  |           |     +--ro next-spmsi-index?      uint16
+  |           |     +--ro mtunnel-addr?          ncd:ipv4-address
+  |           |     +--ro mtunnel-name?          ncd:ifname
+  |           |     +--ro mtunnel-state?         ncd:string-all
+  |           |     +--ro default-group?         ncd:ipv4-address
+  |           |     +--ro data-group?            ncd:ipv4-address
+  |           |     +--ro data-group-mask-len?   uint8
+  |           |     +--ro data-acl-name?         string
+  |           +--ro mdt-tlvs
+  |           |  +--ro mdt-tlv* [vrf-name source group mdt-sender mdt-data]
+  |           |     +--ro vrf-name       string
+  |           |     +--ro source         ncd:ipv6-address
+  |           |     +--ro group          ncd:ipv6-address
+  |           |     +--ro mdt-sender     ncd:string-with-blank
+  |           |     +--ro mdt-data       ncd:string-with-blank
+  |           |     +--ro expire-time?   string
+  |           +--ro instances
+  |           |  +--ro instance* [vrf-name]
+  |           |     +--ro vrf-name               string
+  |           |     +--ro rd?                    string
+  |           |     +--ro import-rt?             string
+  |           |     +--ro origin-ip?             ncd:ipv4-address
+  |           |     +--ro te-id?                 ncd:ipv4-address
+  |           |     +--ro origin-state?          ncd:string-all
+  |           |     +--ro te-state?              ncd:string-all
+  |           |     +--ro mtunnel-type?          enumeration
+  |           |     +--ro route-state?           enumeration
+  |           |     +--ro mldp-state?            enumeration
+  |           |     +--ro p-pim-state?           enumeration
+  |           |     +--ro c-pim-state?           enumeration
+  |           |     +--ro us-protocol?           enumeration
+  |           |     +--ro mtunnel-name?          ncd:ifname
+  |           |     +--ro mtunnel-state?         ncd:string-all
+  |           |     +--ro mtunnel-addr?          ncd:ipv4-address
+  |           |     +--ro default-group?         ncd:ipv4-address
+  |           |     +--ro data-group?            ncd:ipv4-address
+  |           |     +--ro data-group-mask-len?   uint8
+  |           |     +--ro data-acl-name?         string
+  |           o--ro ad-routes
+  |           |  +--ro ad-route* [vrf-name pe-addr]
+  |           |     +--ro vrf-name          string
+  |           |     +--ro pe-addr           ncd:ipv4-address
+  |           |     +--ro intra-ases
+  |           |     |  +--ro intra-as* [ad-state rd origin-ip]
+  |           |     |     +--ro ad-state        enumeration
+  |           |     |     +--ro rd              string
+  |           |     |     +--ro origin-ip       ncd:ipv4-address
+  |           |     |     +--ro tunnel-label?   uint32
+  |           |     |     +--ro tunnel-type?    enumeration
+  |           |     |     +--ro tunnel-state?   enumeration
+  |           |     |     +--ro tunnel-id?      string
+  |           |     +--ro spmsi-ads
+  |           |     |  +--ro spmsi-ad* [ad-state rd source group origin-ip]
+  |           |     |     +--ro ad-state        enumeration
+  |           |     |     +--ro rd              string
+  |           |     |     +--ro source          ncd:ipv6-address
+  |           |     |     +--ro group           ncd:ipv6-address
+  |           |     |     +--ro origin-ip       ncd:ipv4-address
+  |           |     |     +--ro tunnel-label?   uint32
+  |           |     |     +--ro tunnel-type?    enumeration
+  |           |     |     +--ro tunnel-state?   enumeration
+  |           |     |     +--ro leaf-require?   enumeration
+  |           |     |     +--ro tunnel-id?      string
+  |           |     +--ro leaf-ads
+  |           |     |  +--ro leaf-ad* [ad-state type spmsi-rd spmsi-source spmsi-group spmsi-origin-ip origin-ip]
+  |           |     |     +--ro ad-state           enumeration
+  |           |     |     +--ro type               enumeration
+  |           |     |     +--ro spmsi-rd           string
+  |           |     |     +--ro spmsi-source       ncd:ipv6-address
+  |           |     |     +--ro spmsi-group        ncd:ipv6-address
+  |           |     |     +--ro spmsi-origin-ip    ncd:ipv4-address
+  |           |     |     +--ro origin-ip          ncd:ipv4-address
+  |           |     |     +--ro nexthop?           ncd:ipv4-address
+  |           |     +--ro source-actives
+  |           |     |  +--ro source-active* [ad-state rd source group]
+  |           |     |     +--ro ad-state    enumeration
+  |           |     |     +--ro rd          string
+  |           |     |     +--ro source      ncd:ipv6-address
+  |           |     |     +--ro group       ncd:ipv6-address
+  |           |     |     +--ro nexthop?    ncd:ipv4-address
+  |           |     +--ro xg-joins
+  |           |     |  +--ro xg-join* [ad-state rd source-as rp-addr group]
+  |           |     |     +--ro ad-state     enumeration
+  |           |     |     +--ro rd           string
+  |           |     |     +--ro source-as    uint32
+  |           |     |     +--ro rp-addr      ncd:ipv6-address
+  |           |     |     +--ro group        ncd:ipv6-address
+  |           |     |     +--ro nexthop?     ncd:ipv4-address
+  |           |     +--ro sg-joins
+  |           |        +--ro sg-join* [ad-state rd source-as source group]
+  |           |           +--ro ad-state     enumeration
+  |           |           +--ro rd           string
+  |           |           +--ro source-as    uint32
+  |           |           +--ro source       ncd:ipv6-address
+  |           |           +--ro group        ncd:ipv6-address
+  |           |           +--ro nexthop?     ncd:ipv4-address
+  |           +--ro auto-discovery-routes
+  |           |  +--ro auto-discovery-route* [vrf-name]
+  |           |     +--ro vrf-name          string
+  |           |     +--ro intra-ases
+  |           |     |  +--ro intra-as* [rd origin-ip]
+  |           |     |     +--ro rd             string
+  |           |     |     +--ro origin-ip      ncd:ipv4-address
+  |           |     |     +--ro root-tunnel?   ncd:string-all
+  |           |     |     +--ro leaf-tunnel?   ncd:string-all
+  |           |     |     +--ro ir-tunnel?     ncd:string-all
+  |           |     +--ro inter-ases
+  |           |     |  +--ro inter-as* [rd source-as]
+  |           |     |     +--ro rd             string
+  |           |     |     +--ro source-as      uint32
+  |           |     |     +--ro root-tunnel?   ncd:string-all
+  |           |     |     +--ro leaf-tunnel?   ncd:string-all
+  |           |     |     +--ro ir-tunnel?     ncd:string-all
+  |           |     +--ro spmsi-ads
+  |           |     |  +--ro spmsi-ad* [rd source group origin-ip]
+  |           |     |     +--ro rd             string
+  |           |     |     +--ro source         ncd:ipv6-address
+  |           |     |     +--ro group          ncd:ipv6-address
+  |           |     |     +--ro origin-ip      ncd:ipv4-address
+  |           |     |     +--ro root-tunnel?   ncd:string-all
+  |           |     |     +--ro leaf-tunnel?   ncd:string-all
+  |           |     |     +--ro ir-tunnel?     ncd:string-all
+  |           |     +--ro leaf-ads
+  |           |     |  +--ro leaf-ad* [type sub-rd sub-source sub-group sub-origin-ip sub-source-as origin-ip]
+  |           |     |     +--ro type             enumeration
+  |           |     |     +--ro sub-rd           string
+  |           |     |     +--ro sub-source       ncd:ipv6-address
+  |           |     |     +--ro sub-group        ncd:ipv6-address
+  |           |     |     +--ro sub-origin-ip    ncd:ipv4-address
+  |           |     |     +--ro sub-source-as    uint32
+  |           |     |     +--ro origin-ip        ncd:ipv4-address
+  |           |     |     +--ro p-tunnel?        ncd:string-all
+  |           |     +--ro source-actives
+  |           |     |  +--ro source-active* [ad-state rd source group]
+  |           |     |     +--ro ad-state    enumeration
+  |           |     |     +--ro rd          string
+  |           |     |     +--ro source      ncd:ipv6-address
+  |           |     |     +--ro group       ncd:ipv6-address
+  |           |     |     +--ro nexthop?    ncd:ipv4-address
+  |           |     +--ro xg-joins
+  |           |     |  +--ro xg-join* [ad-state rd source-as rp-addr group]
+  |           |     |     +--ro ad-state     enumeration
+  |           |     |     +--ro rd           string
+  |           |     |     +--ro source-as    uint32
+  |           |     |     +--ro rp-addr      ncd:ipv6-address
+  |           |     |     +--ro group        ncd:ipv6-address
+  |           |     |     +--ro nexthop?     ncd:ipv4-address
+  |           |     +--ro sg-joins
+  |           |        +--ro sg-join* [ad-state rd source-as source group]
+  |           |           +--ro ad-state     enumeration
+  |           |           +--ro rd           string
+  |           |           +--ro source-as    uint32
+  |           |           +--ro source       ncd:ipv6-address
+  |           |           +--ro group        ncd:ipv6-address
+  |           |           +--ro nexthop?     ncd:ipv4-address
+  |           +--ro mtibs
+  |           |  +--ro mtib* [vrf-name tunnel-id tunnel-type]
+  |           |     +--ro vrf-name          string
+  |           |     +--ro tunnel-id         uint32
+  |           |     +--ro tunnel-type       enumeration
+  |           |     +--ro tunnel-state?     enumeration
+  |           |     +--ro leaf-require?     enumeration
+  |           |     +--ro protocol-state?   enumeration
+  |           |     +--ro tunnel-label?     uint32
+  |           |     +--ro tunnel-attr?      ncd:string-all
+  |           |     +--ro leave-delay?      string
+  |           |     +--ro multi-imports
+  |           |        +--ro multi-import* [sub-vrf-name]
+  |           |           +--ro sub-vrf-name        ncd:string-all
+  |           |           +--ro sub-tunnel-state?   ncd:string-all
+  |           +--ro mribs
+  |           |  +--ro mrib* [vrf-name source group]
+  |           |     +--ro vrf-name                  string
+  |           |     +--ro source                    ncd:ipv6-address
+  |           |     +--ro group                     ncd:ipv6-address
+  |           |     +--ro intf-state?               string
+  |           |     +--ro upstream-tunnel?          ncd:string-all
+  |           |     +--ro upstream-pe?              ncd:ipv4-address
+  |           |     +--ro rpf-tunnel-id?            uint32
+  |           |     +--ro rpf-vrf-name?             string
+  |           |     +--ro downstream-tunnel?        ncd:string-all
+  |           |     +--ro switch-tunnel?            ncd:string-all
+  |           |     +--ro switch-time?              string
+  |           |     o--ro spmsi-ads
+  |           |     |  +--ro spmsi-ad* [ad-state rd source group origin-ip]
+  |           |     |     +--ro ad-state        enumeration
+  |           |     |     +--ro rd              string
+  |           |     |     +--ro source          ncd:ipv6-address
+  |           |     |     +--ro group           ncd:ipv6-address
+  |           |     |     +--ro origin-ip       ncd:ipv4-address
+  |           |     |     +--ro spmsi-tunnel?   ncd:string-all
+  |           |     |     +--ro uptime?         string
+  |           |     o--ro leaf-ads
+  |           |     |  +--ro leaf-ad* [ad-state type spmsi-rd spmsi-source spmsi-group spmsi-origin-ip origin-ip]
+  |           |     |     +--ro ad-state           enumeration
+  |           |     |     +--ro type               enumeration
+  |           |     |     +--ro spmsi-rd           string
+  |           |     |     +--ro spmsi-source       ncd:ipv6-address
+  |           |     |     +--ro spmsi-group        ncd:ipv6-address
+  |           |     |     +--ro spmsi-origin-ip    ncd:ipv4-address
+  |           |     |     +--ro origin-ip          ncd:ipv4-address
+  |           |     |     +--ro uptime?            string
+  |           |     +--ro spmsi-auto-discoveries
+  |           |     |  +--ro spmsi-auto-discovery* [rd source group origin-ip]
+  |           |     |     +--ro rd             string
+  |           |     |     +--ro source         ncd:ipv6-address
+  |           |     |     +--ro group          ncd:ipv6-address
+  |           |     |     +--ro origin-ip      ncd:ipv4-address
+  |           |     |     +--ro ad-state?      enumeration
+  |           |     |     +--ro root-tunnel?   ncd:string-all
+  |           |     |     +--ro leaf-tunnel?   ncd:string-all
+  |           |     |     +--ro ir-tunnel?     ncd:string-all
+  |           |     |     +--ro uptime?        string
+  |           |     +--ro leaf-auto-discoveries
+  |           |     |  +--ro leaf-auto-discovery* [type sub-rd sub-source sub-group sub-origin-ip origin-ip]
+  |           |     |     +--ro type             enumeration
+  |           |     |     +--ro sub-rd           string
+  |           |     |     +--ro sub-source       ncd:ipv6-address
+  |           |     |     +--ro sub-group        ncd:ipv6-address
+  |           |     |     +--ro sub-origin-ip    ncd:ipv4-address
+  |           |     |     +--ro origin-ip        ncd:ipv4-address
+  |           |     |     +--ro ad-state?        enumeration
+  |           |     |     +--ro uptime?          string
+  |           |     +--ro source-actives
+  |           |     |  +--ro source-active* [ad-state rd source group]
+  |           |     |     +--ro ad-state    enumeration
+  |           |     |     +--ro rd          string
+  |           |     |     +--ro source      ncd:ipv6-address
+  |           |     |     +--ro group       ncd:ipv6-address
+  |           |     |     +--ro uptime?     string
+  |           |     +--ro xg-joins
+  |           |     |  +--ro xg-join* [ad-state rd source-as rp-addr group]
+  |           |     |     +--ro ad-state     enumeration
+  |           |     |     +--ro rd           string
+  |           |     |     +--ro source-as    uint32
+  |           |     |     +--ro rp-addr      ncd:ipv6-address
+  |           |     |     +--ro group        ncd:ipv6-address
+  |           |     |     +--ro uptime?      string
+  |           |     +--ro sg-joins
+  |           |        +--ro sg-join* [ad-state rd source-as source group]
+  |           |           +--ro ad-state     enumeration
+  |           |           +--ro rd           string
+  |           |           +--ro source-as    uint32
+  |           |           +--ro source       ncd:ipv6-address
+  |           |           +--ro group        ncd:ipv6-address
+  |           |           +--ro uptime?      string
+  |           +--ro ad-summarys
+  |              +--ro ad-summary* [vrf-name]
+  |                 +--ro vrf-name                string
+  |                 +--ro intra-as-local?         uint32
+  |                 +--ro intra-as-remote?        uint32
+  |                 +--ro intra-as-all?           uint32
+  |                 +--ro inter-as-local?         uint32
+  |                 +--ro inter-as-remote?        uint32
+  |                 +--ro inter-as-all?           uint32
+  |                 +--ro spmsi-ad-local?         uint32
+  |                 +--ro spmsi-ad-remote?        uint32
+  |                 +--ro spmsi-ad-all?           uint32
+  |                 +--ro leaf-ad-local?          uint32
+  |                 +--ro leaf-ad-remote?         uint32
+  |                 +--ro leaf-ad-all?            uint32
+  |                 +--ro source-active-local?    uint32
+  |                 +--ro source-active-remote?   uint32
+  |                 +--ro source-active-all?      uint32
+  |                 +--ro xg-join-local?          uint32
+  |                 +--ro xg-join-remote?         uint32
+  |                 +--ro xg-join-all?            uint32
+  |                 +--ro sg-join-local?          uint32
+  |                 +--ro sg-join-remote?         uint32
+  |                 +--ro sg-join-all?            uint32
+  |                 +--ro local-ad-all?           uint32
+  |                 +--ro remote-ad-all?          uint32
+  |                 +--ro ad-all?                 uint32
+  +--ro operation
+     +--ro ipv6-multicast
+        +--ro public
+        |  +--ro clear
+        |     +--ro mroutes
+        |        +--ro source-group* [group source]
+        |        |  +--ro group     ncd:ipv6-address
+        |        |  +--ro source    ncd:ipv6-address
+        |        +--ro group* [group]
+        |        |  +--ro group    ncd:ipv6-address
+        |        +--ro mroute
+        |           +--ro public?   empty
+        +--ro private
+           +--ro clear
+              +--ro mroutes
+                 +--ro source-group* [vrf-name group source]
+                 |  +--ro vrf-name    string
+                 |  +--ro group       ncd:ipv6-address
+                 |  +--ro source      ncd:ipv6-address
+                 +--ro group* [vrf-name group]
+                 |  +--ro vrf-name    string
+                 |  +--ro group       ncd:ipv6-address
+                 +--ro mroute* [vrf-name]
+                    +--ro vrf-name    string

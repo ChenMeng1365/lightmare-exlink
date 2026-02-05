@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-twamp-controller"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:twamp-controller="urn:huawei:yang:huawei-twamp-controller"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-twamp-controller"/>
+  <prefix value="twamp-controller"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>TWAMP Controller.</text>
+  </description>
+  <revision date="2020-03-14">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-27">
+    <description>
+      <text>Solve some errors.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-05">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="twampclient"/>
+  <typedef name="period-type">
+    <type name="enumeration">
+      <enum name="10ms">
+        <value value="1"/>
+        <description>
+          <text>The period of sending packets is 10ms.</text>
+        </description>
+      </enum>
+      <enum name="100ms">
+        <value value="2"/>
+        <description>
+          <text>The period of sending packets is 100ms.</text>
+        </description>
+      </enum>
+      <enum name="1000ms">
+        <value value="3"/>
+        <description>
+          <text>The period of sending packets is 1000ms.</text>
+        </description>
+      </enum>
+      <enum name="30000ms">
+        <value value="4"/>
+        <description>
+          <text>The period of sending packets is 30000ms.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The period of sending packets.</text>
+    </description>
+  </typedef>
+  <typedef name="padding-info">
+    <type name="enumeration">
+      <enum name="00">
+        <value value="0"/>
+        <description>
+          <text>Padding information is 00.</text>
+        </description>
+      </enum>
+      <enum name="aa">
+        <value value="170"/>
+        <description>
+          <text>Padding information is aa.</text>
+        </description>
+      </enum>
+      <enum name="55">
+        <value value="85"/>
+        <description>
+          <text>Padding information is 55.</text>
+        </description>
+      </enum>
+      <enum name="ff">
+        <value value="255"/>
+        <description>
+          <text>Padding information is ff.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Padding information.</text>
+    </description>
+  </typedef>
+  <container name="twamp-controller">
+    <description>
+      <text>TWAMP Controller.</text>
+    </description>
+    <container name="client">
+      <presence value="Enable client of TWAMP."/>
+      <description>
+        <text>Configure the client of TWAMP light.</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>List of configuration session.</text>
+        </description>
+        <list name="session">
+          <key value="id"/>
+          <unique tag="send-ip-addr ref-ip-addr send-port ref-port vrf-name"/>
+          <description>
+            <text>Configure the object of session.</text>
+          </description>
+          <leaf name="id">
+            <type name="uint32">
+              <range value="1..65535"/>
+            </type>
+            <description>
+              <text>The session ID of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="send-ip-addr">
+            <type name="inet:ip-address-no-zone"/>
+            <must condition="((../send-ip-addr) != (../ref-ip-addr))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>The sender IP address of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="ref-ip-addr">
+            <type name="inet:ip-address-no-zone"/>
+            <must condition="((../send-ip-addr) != (../ref-ip-addr))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>The reflector IP address of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="send-port">
+            <type name="uint16">
+              <range value="862..863|1025..65535"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The sender port of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="ref-port">
+            <type name="uint16">
+              <range value="862..863|1025..65535"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The reflector port of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="vrf-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="(contains(../send-ip-addr,':') and /ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']) or (not(contains(../send-ip-addr,':'))and /ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+            <description>
+              <text>The VRF name of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="dscp-value">
+            <type name="uint32">
+              <range value="0..63"/>
+            </type>
+            <default value="0"/>
+            <description>
+              <text>The DSCP value of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="padding-length">
+            <type name="uint32">
+              <range value="32..1454"/>
+            </type>
+            <default value="128"/>
+            <description>
+              <text>The padding length of configuration session. The value range is 32-1454 and 32-1434 in V4 and V6, respectively.</text>
+            </description>
+          </leaf>
+          <leaf name="padding-type">
+            <type name="padding-info"/>
+            <default value="00"/>
+            <description>
+              <text>Padding type.</text>
+            </description>
+          </leaf>
+          <leaf name="description">
+            <type name="string">
+              <length value="3..32"/>
+            </type>
+            <description>
+              <text>Session description.</text>
+            </description>
+          </leaf>
+          <container name="twoway-loss-threshold">
+            <description>
+              <text>Configure the twoway loss threshold of session.</text>
+            </description>
+            <leaf name="up-limit">
+              <type name="string">
+                <length value="1..7"/>
+                <pattern value="[0-1]{0,1}[0-9]{0,1}[0-9]{0,1}(\.[0-9]{1,4})?"/>
+              </type>
+              <units name="%"/>
+              <default value="0.1"/>
+              <description>
+                <text>Twoway loss threshold upper limit.</text>
+              </description>
+            </leaf>
+            <leaf name="low-limit">
+              <type name="string">
+                <length value="1..7"/>
+                <pattern value="[0-1]{0,1}[0-9]{0,1}[0-9]{0,1}(\.[0-9]{1,4})?"/>
+              </type>
+              <units name="%"/>
+              <default value="0.05"/>
+              <description>
+                <text>Twoway loss threshold lower limit.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="twoway-delay-threshold">
+            <description>
+              <text>Configure the twoway delay threshold of session.</text>
+            </description>
+            <leaf name="up-limit">
+              <type name="uint32">
+                <range value="2..1000"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="100"/>
+              <description>
+                <text>Twoway delay threshold upper limit.</text>
+              </description>
+            </leaf>
+            <leaf name="low-limit">
+              <type name="uint32">
+                <range value="1..999"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="80"/>
+              <description>
+                <text>Twoway delay threshold lower limit.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="twoway-jitter-threshold">
+            <description>
+              <text>Configure the twoway jitter threshold of session.</text>
+            </description>
+            <leaf name="up-limit">
+              <type name="uint32">
+                <range value="2..1000"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="10"/>
+              <description>
+                <text>Twoway jitter threshold upper limit.</text>
+              </description>
+            </leaf>
+            <leaf name="low-limit">
+              <type name="uint32">
+                <range value="1..999"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="8"/>
+              <description>
+                <text>Twoway jitter threshold lower limit.</text>
+              </description>
+            </leaf>
+          </container>
+        </list>
+      </container>
+    </container>
+    <container name="sender">
+      <presence value="Enable sender of TWAMP"/>
+      <description>
+        <text>Configure the sender of TWAMP light.</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>List of sender session.</text>
+        </description>
+        <list name="session">
+          <key value="id"/>
+          <description>
+            <text>Configure the object of sender session.</text>
+          </description>
+          <leaf name="id">
+            <type name="leafref">
+              <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+            </type>
+            <description>
+              <text>Configure the session ID of sender session.</text>
+            </description>
+          </leaf>
+          <leaf name="period">
+            <type name="period-type"/>
+            <units name="ms"/>
+            <default value="100ms"/>
+            <description>
+              <text>The period of sender session.</text>
+            </description>
+          </leaf>
+          <leaf name="timeout">
+            <type name="uint16">
+              <range value="1..10"/>
+            </type>
+            <units name="s"/>
+            <default value="5"/>
+            <description>
+              <text>The timeout of sender session.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="regular-sessions">
+        <description>
+          <text>List of sender regular session.</text>
+        </description>
+        <list name="regular-session">
+          <key value="id"/>
+          <description>
+            <text>Configure the object of sender regular session.</text>
+          </description>
+          <leaf name="id">
+            <type name="leafref">
+              <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+            </type>
+            <description>
+              <text>The session ID of regular sender session.</text>
+            </description>
+          </leaf>
+          <leaf name="regular-time">
+            <ext:operation-exclude value="update|delete"/>
+            <type name="uint16">
+              <range value="10..60"/>
+            </type>
+            <units name="s"/>
+            <default value="30"/>
+            <description>
+              <text>The regular time of sender regular session.</text>
+            </description>
+          </leaf>
+          <leaf name="packet-count">
+            <ext:operation-exclude value="update|delete"/>
+            <type name="uint32">
+              <range value="10..1000"/>
+            </type>
+            <default value="100"/>
+            <description>
+              <text>The packet count of sender regular session.</text>
+            </description>
+          </leaf>
+          <leaf name="timeout">
+            <ext:operation-exclude value="update|delete"/>
+            <type name="uint8">
+              <range value="1..10"/>
+            </type>
+            <units name="s"/>
+            <default value="5"/>
+            <description>
+              <text>The timeout of sender regular session.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+</module>

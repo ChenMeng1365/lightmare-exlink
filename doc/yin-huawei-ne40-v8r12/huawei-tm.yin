@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-tm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tm="urn:huawei:yang:huawei-tm"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-tm"/>
+  <prefix value="tm"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <include module="huawei-tm-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Time management (TM) component.</text>
+  </description>
+  <revision date="2019-04-10">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="system"/>
+  <container name="tm">
+    <description>
+      <text>Time management (TM) component.</text>
+    </description>
+    <container name="timezone-configuration">
+      <description>
+        <text>Configure time zone.</text>
+      </description>
+      <leaf name="timezone-name">
+        <type name="string">
+          <length value="1..32"/>
+        </type>
+        <default value="DefaultZoneName"/>
+        <description>
+          <text>Specify the name of a time zone. The length of string is from 1 to 32 characters.</text>
+        </description>
+      </leaf>
+      <leaf name="option">
+        <type name="tm-timezone-option"/>
+        <default value="add"/>
+        <description>
+          <text>Indicate whether to add or subtract the offset.</text>
+        </description>
+      </leaf>
+      <leaf name="timezone-offset">
+        <type name="pub-type:time"/>
+        <default value="00:00:00"/>
+        <description>
+          <text>Specify the offset between the time of the specified time zone and the UTC time. It is in the format of HH:MM:SS. HH indicates hours and its value ranges from 0 to 18. MM and SS indicate minutes and seconds and their value ranges from 0 to 59.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="dst-configuration">
+      <must condition="((type='OneYear' and start-year and start-month and start-day and start-time and end-year and end-month and end-day and end-time and dst-offset)&#10;or(type='Repeat-date' and start-month and start-day and start-time and end-month and end-day and end-time and dst-offset)&#10;or(type='Repeat-week' and start-month and start-weeknum and start-weekday and start-time and end-month and end-weeknum and end-weekday and end-time and dst-offset)&#10;or not(dst-name))"/>
+      <description>
+        <text>Configure daylight saving time (DST). The end date must be later than the start date.
+If the type is OneYear, the start date and end date must be within one year. If the start-year and end-year are in the same year, end-month and start-month must be different.
+If the type is Repeat-date, the end-month and start-month must be different, and the dates cannot be set to February 29.
+If the type is Repeat-week, end-month and start-month must be different.
+The dst-offset must be less than the time difference between the end time and the start time.</text>
+      </description>
+      <leaf name="dst-name">
+        <type name="string">
+          <length value="1..32"/>
+        </type>
+        <description>
+          <text>Specify a DST name. The length of string is from 1 to 32 characters.</text>
+        </description>
+      </leaf>
+      <leaf name="type">
+        <when condition="../dst-name"/>
+        <type name="tm-dst-type"/>
+        <description>
+          <text>Specify whether this setting is for one year or repeating.</text>
+        </description>
+      </leaf>
+      <leaf name="start-year">
+        <when condition="../dst-name"/>
+        <type name="uint16">
+          <range value="2000..2037"/>
+        </type>
+        <ext:dynamic-default>
+          <ext:default-value value="2000">
+            <when condition="../type='Repeat-date' or ../type='Repeat-week'"/>
+            <description>
+              <text>The start year default value is 2000 in repeat dst type.</text>
+            </description>
+          </ext:default-value>
+        </ext:dynamic-default>
+        <description>
+          <text>Specify the daylight saving start year.</text>
+        </description>
+      </leaf>
+      <leaf name="start-month">
+        <when condition="../dst-name"/>
+        <type name="tm-start-month"/>
+        <description>
+          <text>Specify the daylight saving start month.</text>
+        </description>
+      </leaf>
+      <leaf name="start-day">
+        <when condition="../type='OneYear' and ../dst-name or ../type='Repeat-date' and ../dst-name"/>
+        <type name="tm-date"/>
+        <description>
+          <text>Specify the daylight saving start date. It is in the format of DD.</text>
+        </description>
+      </leaf>
+      <leaf name="start-weeknum">
+        <when condition="../type='Repeat-week' and ../dst-name"/>
+        <type name="tm-weeknum"/>
+        <description>
+          <text>Specify the start week number in the specified month.</text>
+        </description>
+      </leaf>
+      <leaf name="start-weekday">
+        <when condition="../type='Repeat-week' and ../dst-name"/>
+        <type name="tm-start-weekday"/>
+        <description>
+          <text>Specify the start weekday.</text>
+        </description>
+      </leaf>
+      <leaf name="start-time">
+        <when condition="../dst-name"/>
+        <type name="pub-type:time-hhmm">
+          <pattern value="(([0-1][0-9])|(2[0-3])|[0-9]):([0-5][0-9]|[0-9])"/>
+        </type>
+        <description>
+          <text>Specify the daylight saving start time. It is in the format of HH:MM.</text>
+        </description>
+      </leaf>
+      <leaf name="end-year">
+        <when condition="../dst-name"/>
+        <type name="uint16">
+          <range value="2000..2037"/>
+        </type>
+        <ext:dynamic-default>
+          <ext:default-value value="2037">
+            <when condition="../type='Repeat-date' or ../type='Repeat-week'"/>
+            <description>
+              <text>The start year default value is 2037 in repeat dst type.</text>
+            </description>
+          </ext:default-value>
+        </ext:dynamic-default>
+        <description>
+          <text>Specify the daylight saving end year.</text>
+        </description>
+      </leaf>
+      <leaf name="end-month">
+        <when condition="../dst-name"/>
+        <type name="tm-end-month"/>
+        <description>
+          <text>Specify the daylight saving end month.</text>
+        </description>
+      </leaf>
+      <leaf name="end-day">
+        <when condition="../type='OneYear' and ../dst-name or ../type='Repeat-date' and ../dst-name"/>
+        <type name="tm-date"/>
+        <description>
+          <text>Specify the daylight saving end date.</text>
+        </description>
+      </leaf>
+      <leaf name="end-weeknum">
+        <when condition="../type='Repeat-week' and ../dst-name"/>
+        <type name="tm-weeknum"/>
+        <description>
+          <text>Specify the end week number in the specified month.</text>
+        </description>
+      </leaf>
+      <leaf name="end-weekday">
+        <when condition="../type='Repeat-week' and ../dst-name"/>
+        <type name="tm-end-weekday"/>
+        <description>
+          <text>Specify the end weekday.</text>
+        </description>
+      </leaf>
+      <leaf name="end-time">
+        <when condition="../dst-name"/>
+        <type name="pub-type:time-hhmm">
+          <pattern value="(([0-1][0-9])|(2[0-3])|[0-9]):([0-5][0-9]|[0-9])"/>
+        </type>
+        <description>
+          <text>Specify the daylight saving end time.</text>
+        </description>
+      </leaf>
+      <leaf name="dst-offset">
+        <when condition="../dst-name"/>
+        <type name="pub-type:time-hhmm">
+          <pattern value="(([0-1][0-9])|(2[0-3])|[0-9]):([0-5][0-9]|[0-9])"/>
+        </type>
+        <description>
+          <text>Specify the time added to the summer time.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="date-and-time">
+      <config value="false"/>
+      <description>
+        <text>Statistics of date and time.</text>
+      </description>
+      <leaf name="current-time">
+        <type name="yang:date-and-time"/>
+        <config value="false"/>
+        <description>
+          <text>Specify the current date and time.</text>
+        </description>
+      </leaf>
+      <leaf name="weekday">
+        <type name="tm-day-week"/>
+        <config value="false"/>
+        <description>
+          <text>Specify the day of a week.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <rpc name="date-time">
+    <description>
+      <text>Date and time information.</text>
+    </description>
+    <input>
+      <leaf name="date-time">
+        <type name="yang:date-and-time"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Date and time to be set.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

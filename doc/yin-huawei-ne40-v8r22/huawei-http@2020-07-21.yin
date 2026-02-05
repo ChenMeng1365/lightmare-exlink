@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-http"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:http="urn:huawei:yang:huawei-http"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ssl="urn:huawei:yang:huawei-ssl"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance">
+  <namespace uri="urn:huawei:yang:huawei-http"/>
+  <prefix value="http"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ssl">
+    <prefix value="ssl"/>
+  </import>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>HTTP server and client.</text>
+  </description>
+  <revision date="2020-07-21">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="http-server-type">
+    <type name="enumeration">
+      <enum name="restconf">
+        <value value="1"/>
+        <description>
+          <text>Restconf: restconf service type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>HTTP service type.</text>
+    </description>
+  </typedef>
+  <typedef name="httpc-trans-cmd-type">
+    <type name="enumeration">
+      <enum name="upload">
+        <value value="1"/>
+        <description>
+          <text>Upload local files to the remote server.</text>
+        </description>
+      </enum>
+      <enum name="download">
+        <value value="2"/>
+        <description>
+          <text>Download files from the remote server to the client.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>FTP client transfer command type.</text>
+    </description>
+  </typedef>
+  <typedef name="httpc-transfer-status-type">
+    <type name="enumeration">
+      <enum name="init">
+        <value value="0"/>
+        <description>
+          <text>Indicates that the transfer status is initializing.</text>
+        </description>
+      </enum>
+      <enum name="processing">
+        <value value="1"/>
+        <description>
+          <text>Indicates that the transfer status is transferring.</text>
+        </description>
+      </enum>
+      <enum name="failed">
+        <value value="2"/>
+        <description>
+          <text>Indicates that the transfer status is failed.</text>
+        </description>
+      </enum>
+      <enum name="canceled">
+        <value value="3"/>
+        <description>
+          <text>Indicates that the transfer status is canceled.</text>
+        </description>
+      </enum>
+      <enum name="succeeded">
+        <value value="4"/>
+        <description>
+          <text>Indicates that the transfer is successful.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>HTTP client download transfer-status type.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="https"/>
+  <container name="http">
+    <description>
+      <text>HTTP.</text>
+    </description>
+    <container name="comp-enable">
+      <description>
+        <text>Configure HTTP enable.</text>
+      </description>
+      <leaf name="comp-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable HTTP function.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="client">
+      <when condition="../comp-enable/comp-enable = 'true'"/>
+      <description>
+        <text>Configure HTTP client.</text>
+      </description>
+      <leaf name="ssl-policy-name">
+        <type name="leafref">
+          <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+        </type>
+        <description>
+          <text>SSL policy name.</text>
+        </description>
+      </leaf>
+      <leaf name="ssl-verify-type">
+        <when condition="../ssl-policy-name"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable SSL verify peer.</text>
+        </description>
+      </leaf>
+      <leaf name="source-interface-name">
+        <type name="pub-type:if-name"/>
+        <description>
+          <text>Users can configure the source interface for outgoing connections by specifying the source interface name.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="servers">
+      <when condition="../comp-enable/comp-enable = 'true'"/>
+      <description>
+        <text>List of HTTP server configuration.</text>
+      </description>
+      <list name="server">
+        <key value="server-type"/>
+        <description>
+          <text>Configure HTTP server.</text>
+        </description>
+        <leaf name="server-type">
+          <type name="http-server-type"/>
+          <description>
+            <text>HTTP server type.</text>
+          </description>
+        </leaf>
+        <leaf name="server-enable">
+          <type name="boolean"/>
+          <must condition="../secure-enable != 'true' or (../secure-enable = 'true' and ../server-enable = 'false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable HTTP server.</text>
+          </description>
+        </leaf>
+        <leaf name="secure-enable">
+          <type name="boolean"/>
+          <must condition="../server-enable != 'true' or (../server-enable = 'true' and ../secure-enable = 'false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable HTTP secure server.</text>
+          </description>
+        </leaf>
+        <leaf name="server-port">
+          <type name="uint32">
+            <range value="80 | 1025..65535"/>
+          </type>
+          <default value="80"/>
+          <description>
+            <text>HTTP server port.</text>
+          </description>
+        </leaf>
+        <leaf name="secure-port">
+          <type name="uint32">
+            <range value="443 | 1025..65535"/>
+          </type>
+          <default value="443"/>
+          <description>
+            <text>HTTP secure server port.</text>
+          </description>
+        </leaf>
+        <leaf name="acl-name">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+          <description>
+            <text>HTTP server ACL name or number for IPv4 connections.</text>
+          </description>
+        </leaf>
+        <leaf name="ssl-policy-name">
+          <type name="leafref">
+            <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+          </type>
+          <must condition="../secure-enable = 'true' "/>
+          <description>
+            <text>SSL policy name.</text>
+          </description>
+        </leaf>
+        <leaf name="ssl-verify-type">
+          <when condition="../secure-enable = 'true'  and ../ssl-policy-name"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable SSL verify.</text>
+          </description>
+        </leaf>
+        <leaf name="idle-timeout">
+          <type name="uint32">
+            <range value="1..60"/>
+          </type>
+          <default value="20"/>
+          <description>
+            <text>Idle timeout.</text>
+          </description>
+        </leaf>
+        <leaf name="max-tcp-num">
+          <type name="uint32">
+            <range value="1..30"/>
+          </type>
+          <default value="30"/>
+          <description>
+            <text>Maximum number of sessions can be connected to server for each IP address.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-source">
+      <when condition="../comp-enable/comp-enable = 'true' and count(../servers/server[server-type = 'restconf']) &gt; 0 "/>
+      <description>
+        <text>Configure http server interfaces.</text>
+      </description>
+      <leaf name="src-interface">
+        <when condition="../all-interface = 'false'"/>
+        <type name="pub-type:if-name"/>
+        <description>
+          <text>Specify the source interface name. The specified source interface must exist and an IP address must be configured on the interface.</text>
+        </description>
+      </leaf>
+      <leaf name="all-interface">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable specify all interfaces.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="httpc-transfer-results">
+      <config value="false"/>
+      <description>
+        <text>List of HTTP transfer file result.</text>
+      </description>
+      <list name="httpc-transfer-result">
+        <key value="operation-type file-url"/>
+        <max-elements value="40"/>
+        <description>
+          <text>HTTP transfer file result state.</text>
+        </description>
+        <leaf name="operation-type">
+          <type name="httpc-trans-cmd-type"/>
+          <description>
+            <text>Specify the type of the operation to be performed.</text>
+          </description>
+        </leaf>
+        <leaf name="file-url">
+          <type name="string">
+            <length value="1..255"/>
+          </type>
+          <description>
+            <text>Download/upload file URL.</text>
+          </description>
+        </leaf>
+        <leaf name="transfer-status">
+          <type name="httpc-transfer-status-type"/>
+          <description>
+            <text>Indicates that the transfer status.</text>
+          </description>
+        </leaf>
+        <leaf name="percentage">
+          <type name="uint32">
+            <range value="0..100"/>
+          </type>
+          <description>
+            <text>Show the transfer percentage.</text>
+          </description>
+        </leaf>
+        <leaf name="error-tag">
+          <type name="uint32"/>
+          <description>
+            <text>Show the error code when http transfer failed.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <rpc name="httpc-transfer-file">
+    <description>
+      <text>HTTP client transfer file.</text>
+    </description>
+    <input>
+      <leaf name="operation-type">
+        <type name="httpc-trans-cmd-type"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Specify the type of the operation to be performed.</text>
+        </description>
+      </leaf>
+      <leaf name="file-url">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Download/upload file URL.</text>
+        </description>
+      </leaf>
+      <leaf name="file-full-path">
+        <type name="string">
+          <length value="1..255"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Download/upload file full path including file name.</text>
+        </description>
+      </leaf>
+      <leaf name="ssl-policy-name">
+        <type name="leafref">
+          <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+        </type>
+        <description>
+          <text>SSL policy name.</text>
+        </description>
+      </leaf>
+      <leaf name="ssl-verify">
+        <type name="boolean"/>
+        <must condition="../ssl-policy-name"/>
+        <description>
+          <text>Enable/disable SSL verify.</text>
+        </description>
+      </leaf>
+      <leaf name="user-name">
+        <type name="string">
+          <length value="1..127"/>
+        </type>
+        <description>
+          <text>Specifies the authentication user name for file transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="password">
+        <type name="pub-type:password-extend"/>
+        <description>
+          <text>Specifies the authentication password for file transfer.</text>
+        </description>
+      </leaf>
+      <leaf name="source-ipv4-address">
+        <type name="inet:ipv4-address-no-zone"/>
+        <description>
+          <text>Specifies the source IPv4 address of the server connection.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-name">
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+        </type>
+        <description>
+          <text>Specifies the VPN name of the server connection.</text>
+        </description>
+      </leaf>
+      <leaf name="verify-dns">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable verify domain name.</text>
+        </description>
+      </leaf>
+      <leaf name="async">
+        <type name="boolean"/>
+        <must condition="../operation-type = 'download'"/>
+        <description>
+          <text>The async node specifies asynchronous transmission.</text>
+        </description>
+      </leaf>
+      <leaf name="cancel">
+        <type name="boolean"/>
+        <must condition="../operation-type = 'download'"/>
+        <description>
+          <text>The cancel node specifies the cancellation of an asynchronous transmission operation.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

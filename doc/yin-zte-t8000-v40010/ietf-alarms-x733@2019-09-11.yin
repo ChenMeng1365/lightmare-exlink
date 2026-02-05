@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-alarms-x733"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:x733="urn:ietf:params:xml:ns:yang:ietf-alarms-x733"
+        xmlns:al="urn:ietf:params:xml:ns:yang:ietf-alarms"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-alarms-x733"/>
+  <prefix value="x733"/>
+  <import module="ietf-alarms">
+    <prefix value="al"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+    <reference>
+      <text>RFC 6991: Common YANG Data Types</text>
+    </reference>
+  </import>
+  <organization>
+    <text>IETF CCAMP Working Group</text>
+  </organization>
+  <contact>
+    <text>WG Web:   &lt;https://trac.ietf.org/trac/ccamp&gt;
+WG List:  &lt;mailto:ccamp@ietf.org&gt;
+Editor:   Stefan Vallin
+          &lt;mailto:stefan@wallan.se&gt;
+Editor:   Martin Bjorklund
+          &lt;mailto:mbj@tail-f.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module augments the ietf-alarms module with X.733 alarm
+parameters.
+The following structures are augmented with the X.733 event type
+and probable cause:
+ 1) alarms/alarm-inventory: all possible alarm types
+ 2) alarms/alarm-list: every alarm in the system
+ 3) alarm-notification: notifications indicating alarm-state
+    changes
+ 4) alarms/shelved-alarms
+The module also optionally allows the alarm-management system
+to configure the mapping from the ietf-alarms' alarm keys
+to the ITU tuple (event-type, probable-cause).
+The mapping does not include a corresponding problem value
+specific to X.733.  The recommendation is to use the
+'alarm-type-qualifier' leaf, which serves the same purpose.
+The module uses an integer and a corresponding string for
+probable cause instead of a globally defined enumeration, in
+order to be able to manage conflicting enumeration definitions.
+A single globally defined enumeration is challenging to
+maintain.
+The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+'MAY', and 'OPTIONAL' in this document are to be interpreted as
+described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+they appear in all capitals, as shown here.
+Copyright (c) 2019 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject to
+the license terms contained in, the Simplified BSD License set
+forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(https://trustee.ietf.org/license-info).
+This version of this YANG module is part of RFC 8632; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <reference>
+    <text>ITU-T Recommendation X.733: Information Technology
+  - Open Systems Interconnection
+  - System Management: Alarm Reporting Function</text>
+  </reference>
+  <revision date="2019-09-11">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>RFC 8632: A YANG Data Model for Alarm Management</text>
+    </reference>
+  </revision>
+  <feature name="configure-x733-mapping">
+    <description>
+      <text>The system supports configurable X733 mapping from
+the ietf-alarms' alarm-type to X733 event-type
+and probable-cause.</text>
+    </description>
+  </feature>
+  <typedef name="event-type">
+    <type name="enumeration">
+      <enum name="other">
+        <value value="1"/>
+        <description>
+          <text>None of the below.</text>
+        </description>
+      </enum>
+      <enum name="communications-alarm">
+        <value value="2"/>
+        <description>
+          <text>An alarm of this type is principally associated with the
+procedures and/or processes required to convey
+information from one point to another.</text>
+        </description>
+      </enum>
+      <enum name="quality-of-service-alarm">
+        <value value="3"/>
+        <description>
+          <text>An alarm of this type is principally associated with a
+degradation in the quality of a service.</text>
+        </description>
+      </enum>
+      <enum name="processing-error-alarm">
+        <value value="4"/>
+        <description>
+          <text>An alarm of this type is principally associated with a
+software or processing fault.</text>
+        </description>
+      </enum>
+      <enum name="equipment-alarm">
+        <value value="5"/>
+        <description>
+          <text>An alarm of this type is principally associated with an
+equipment fault.</text>
+        </description>
+      </enum>
+      <enum name="environmental-alarm">
+        <value value="6"/>
+        <description>
+          <text>An alarm of this type is principally associated with a
+condition relating to an enclosure in which the equipment
+resides.</text>
+        </description>
+      </enum>
+      <enum name="integrity-violation">
+        <value value="7"/>
+        <description>
+          <text>An indication that information may have been illegally
+modified, inserted, or deleted.</text>
+        </description>
+      </enum>
+      <enum name="operational-violation">
+        <value value="8"/>
+        <description>
+          <text>An indication that the provision of the requested service
+was not possible due to the unavailability, malfunction,
+or incorrect invocation of the service.</text>
+        </description>
+      </enum>
+      <enum name="physical-violation">
+        <value value="9"/>
+        <description>
+          <text>An indication that a physical resource has been violated
+in a way that suggests a security attack.</text>
+        </description>
+      </enum>
+      <enum name="security-service-or-mechanism-violation">
+        <value value="10"/>
+        <description>
+          <text>An indication that a security attack has been detected by
+a security service or mechanism.</text>
+        </description>
+      </enum>
+      <enum name="time-domain-violation">
+        <value value="11"/>
+        <description>
+          <text>An indication that an event has occurred at an unexpected
+or prohibited time.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The event types as defined by X.733 and X.736.</text>
+    </description>
+    <reference>
+      <text>ITU-T Recommendation X.733: Information Technology
+  - Open Systems Interconnection
+  - System Management: Alarm Reporting Function
+ITU-T Recommendation X.736: Information Technology
+  - Open Systems Interconnection
+  - System Management: Security Alarm Reporting Function</text>
+    </reference>
+  </typedef>
+  <typedef name="trend">
+    <type name="enumeration">
+      <enum name="less-severe">
+        <description>
+          <text>There is at least one outstanding alarm of a
+severity higher (more severe) than that in the
+current alarm.</text>
+        </description>
+      </enum>
+      <enum name="no-change">
+        <description>
+          <text>The Perceived severity reported in the current
+alarm is the same as the highest (most severe)
+of any of the outstanding alarms</text>
+        </description>
+      </enum>
+      <enum name="more-severe">
+        <description>
+          <text>The Perceived severity in the current alarm is
+higher (more severe) than that reported in any
+of the outstanding alarms.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>This type is used to describe the
+severity trend of the alarming resource.</text>
+    </description>
+    <reference>
+      <text>ITU-T Recommendation X.721: Information Technology
+   - Open Systems Interconnection
+   - Structure of management information:
+     Definition of management information
+     Module Attribute-ASN1Module</text>
+    </reference>
+  </typedef>
+  <typedef name="value-type">
+    <type name="union">
+      <type name="int64"/>
+      <type name="uint64"/>
+      <type name="decimal64">
+        <fraction-digits value="2"/>
+      </type>
+    </type>
+    <description>
+      <text>A generic union type to match the ITU choice of
+integer and real.</text>
+    </description>
+  </typedef>
+  <grouping name="x733-alarm-parameters">
+    <description>
+      <text>Common X.733 parameters for alarms.</text>
+    </description>
+    <leaf name="event-type">
+      <type name="event-type"/>
+      <description>
+        <text>The X.733/X.736 event type for this alarm.</text>
+      </description>
+    </leaf>
+    <leaf name="probable-cause">
+      <type name="uint32"/>
+      <description>
+        <text>The X.733 probable cause for this alarm.</text>
+      </description>
+    </leaf>
+    <leaf name="probable-cause-string">
+      <type name="string"/>
+      <description>
+        <text>The user-friendly string matching
+the probable cause integer value.  The string
+SHOULD match the X.733 enumeration.  For example,
+value 27 is 'localNodeTransmissionError'.</text>
+      </description>
+    </leaf>
+    <container name="threshold-information">
+      <description>
+        <text>This parameter shall be present when the alarm
+is a result of crossing a threshold. </text>
+      </description>
+      <leaf name="triggered-threshold">
+        <type name="string"/>
+        <description>
+          <text>The identifier of the threshold attribute that
+caused the notification.</text>
+        </description>
+      </leaf>
+      <leaf name="observed-value">
+        <type name="value-type"/>
+        <description>
+          <text>The value of the gauge or counter that crossed
+the threshold.  This may be different from the
+threshold value if, for example, the gauge may
+only take on discrete values.</text>
+        </description>
+      </leaf>
+      <choice name="threshold-level">
+        <description>
+          <text>In the case of a gauge, the threshold level specifies
+a pair of threshold values: the first is the value
+of the crossed threshold, and the second is its
+corresponding hysteresis; in the case of a counter,
+the threshold level specifies only the threshold
+value.</text>
+        </description>
+        <case name="up">
+          <leaf name="up-high">
+            <type name="value-type"/>
+            <description>
+              <text>The going-up threshold for raising the alarm.</text>
+            </description>
+          </leaf>
+          <leaf name="up-low">
+            <type name="value-type"/>
+            <description>
+              <text>The going-down threshold for clearing the alarm.
+This is used for hysteresis functions for gauges.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="down">
+          <leaf name="down-low">
+            <type name="value-type"/>
+            <description>
+              <text>The going-down threshold for raising the alarm.</text>
+            </description>
+          </leaf>
+          <leaf name="down-high">
+            <type name="value-type"/>
+            <description>
+              <text>The going-up threshold for clearing the alarm.
+This is used for hysteresis functions for gauges.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <leaf name="arm-time">
+        <type name="yang:date-and-time"/>
+        <description>
+          <text>For a gauge threshold, it's the time at which the
+threshold was last re-armed; namely, it's the time after
+the previous threshold crossing at which the hysteresis
+value of the threshold was exceeded, thus again permitting
+the generation of notifications when the threshold is
+crossed.  For a counter threshold, it's the later of the
+time at which the threshold offset was last applied or the
+counter was last initialized (for resettable counters).</text>
+        </description>
+      </leaf>
+    </container>
+    <list name="monitored-attributes">
+      <uses name="attribute"/>
+      <key value="id"/>
+      <description>
+        <text>The Monitored attributes parameter, when present, defines
+one or more attributes of the resource and their
+corresponding values at the time of the alarm.</text>
+      </description>
+    </list>
+    <leaf-list name="proposed-repair-actions">
+      <type name="string"/>
+      <description>
+        <text>This parameter, when present, is used if the cause is
+known and the system being managed can suggest one or
+more solutions (such as switch in standby equipment,
+retry, and replace media).</text>
+      </description>
+    </leaf-list>
+    <leaf name="trend-indication">
+      <type name="trend"/>
+      <description>
+        <text>This parameter specifies the current severity
+trend of the resource.  If present, it indicates
+that there are one or more alarms ('outstanding
+alarms') that have not been cleared and that
+pertain to the same resource as this alarm
+('current alarm') does.  The possible values are:
+  more-severe: The Perceived severity in the current
+    alarm is higher (more severe) than that reported in
+    any of the outstanding alarms.
+  no-change: The Perceived severity reported in the
+    current alarm is the same as the highest (most severe)
+    of any of the outstanding alarms.
+  less-severe: There is at least one outstanding alarm
+    of a severity higher (more severe) than that in the
+    current alarm.</text>
+      </description>
+    </leaf>
+    <leaf name="backedup-status">
+      <type name="boolean"/>
+      <description>
+        <text>This parameter, when present, specifies whether or not the
+object emitting the alarm has been backed up; therefore, it
+is possible to know whether or not services provided to the
+user have been disrupted when this parameter is included.
+The use of this field in conjunction with the
+'perceived-severity' field provides information in an
+independent form to qualify the seriousness of the alarm and
+the ability of the system as a whole to continue to provide
+services.  If the value of this parameter is true, it
+indicates that the object emitting the alarm has been backed
+up; if false, the object has not been backed up.</text>
+      </description>
+    </leaf>
+    <leaf name="backup-object">
+      <type name="al:resource"/>
+      <description>
+        <text>This parameter SHALL be present when the 'backedup-status'
+parameter is present and has the value 'true'.  This
+parameter specifies the managed object instance that is
+providing back-up services for the managed object to which
+the notification pertains.  This parameter is useful, for
+example, when the back-up object is from a pool of objects,
+any of which may be dynamically allocated to replace a
+faulty object.</text>
+      </description>
+    </leaf>
+    <list name="additional-information">
+      <key value="identifier"/>
+      <description>
+        <text>This parameter allows the inclusion of an additional
+information set in the alarm.  It is a series of data
+structures, each of which contains three items of
+information: an identifier, a significance indicator,
+and the problem information.</text>
+      </description>
+      <leaf name="identifier">
+        <type name="string"/>
+        <description>
+          <text>Identifies the data type of the information parameter.</text>
+        </description>
+      </leaf>
+      <leaf name="significant">
+        <type name="boolean"/>
+        <description>
+          <text>Set to 'true' if the receiving system must be able to
+parse the contents of the information subparameter
+for the event report to be fully understood.</text>
+        </description>
+      </leaf>
+      <leaf name="information">
+        <type name="string"/>
+        <description>
+          <text>Additional information about the alarm.</text>
+        </description>
+      </leaf>
+    </list>
+    <leaf name="security-alarm-detector">
+      <type name="al:resource"/>
+      <description>
+        <text>This parameter identifies the detector of the security
+alarm.</text>
+      </description>
+    </leaf>
+    <leaf name="service-user">
+      <type name="al:resource"/>
+      <description>
+        <text>This parameter identifies the service-user whose request
+for service led to the generation of the security alarm.</text>
+      </description>
+    </leaf>
+    <leaf name="service-provider">
+      <type name="al:resource"/>
+      <description>
+        <text>This parameter identifies the intended service-provider
+of the service that led to the generation of the security
+alarm.</text>
+      </description>
+    </leaf>
+    <reference>
+      <text>ITU-T Recommendation X.733: Information Technology
+  - Open Systems Interconnection
+  - System Management: Alarm Reporting Function
+ITU-T Recommendation X.736: Information Technology
+  - Open Systems Interconnection
+  - System Management: Security Alarm Reporting Function</text>
+    </reference>
+  </grouping>
+  <grouping name="x733-alarm-definition-parameters">
+    <description>
+      <text>Common X.733 parameters for alarm definitions.
+This grouping is used to define those alarm
+attributes that can be mapped from the alarm-type
+mechanism in the ietf-alarms module.</text>
+    </description>
+    <leaf name="event-type">
+      <type name="event-type"/>
+      <description>
+        <text>The alarm type has this X.733/X.736 event type.</text>
+      </description>
+    </leaf>
+    <leaf name="probable-cause">
+      <type name="uint32"/>
+      <description>
+        <text>The alarm type has this X.733 probable cause value.
+This module defines probable cause as an integer
+and not as an enumeration.  The reason being that the
+primary use of probable cause is in the management
+application if it is based on the X.733 standard.
+However, most management applications have their own
+defined enum definitions and merging enums from
+different systems might create conflicts.  By using
+a configurable uint32, the system can be configured
+to match the enum values in the management application.</text>
+      </description>
+    </leaf>
+    <leaf name="probable-cause-string">
+      <type name="string"/>
+      <description>
+        <text>This string can be used to give a user-friendly string
+to the probable cause value.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="attribute">
+    <description>
+      <text>A grouping to match the ITU generic reference to
+an attribute.</text>
+    </description>
+    <leaf name="id">
+      <type name="al:resource"/>
+      <description>
+        <text>The resource representing the attribute.</text>
+      </description>
+    </leaf>
+    <leaf name="value">
+      <type name="string"/>
+      <description>
+        <text>The value represented as a string since it could
+be of any type.</text>
+      </description>
+    </leaf>
+    <reference>
+      <text>ITU-T Recommendation X.721: Information Technology
+   - Open Systems Interconnection
+   - Structure of management information:
+     Definition of management information
+Module Attribute-ASN1Module</text>
+    </reference>
+  </grouping>
+  <augment target-node="/al:alarms/al:alarm-inventory/al:alarm-type">
+    <description>
+      <text>Augment X.733 mapping information to the alarm inventory.</text>
+    </description>
+    <uses name="x733-alarm-definition-parameters"/>
+  </augment>
+  <augment target-node="/al:alarms/al:control">
+    <description>
+      <text>Add X.733 mapping capabilities. </text>
+    </description>
+    <list name="x733-mapping">
+      <if-feature name="configure-x733-mapping"/>
+      <key value="alarm-type-id alarm-type-qualifier-match"/>
+      <description>
+        <text>This list allows a management application to control the
+X.733 mapping for all alarm types in the system.  Any entry
+in this list will allow the alarm manager to override the
+default X.733 mapping in the system, and the final mapping
+will be shown in the alarm inventory.</text>
+      </description>
+      <leaf name="alarm-type-id">
+        <type name="al:alarm-type-id"/>
+        <description>
+          <text>Map the alarm type with this alarm type identifier.</text>
+        </description>
+      </leaf>
+      <leaf name="alarm-type-qualifier-match">
+        <type name="string"/>
+        <description>
+          <text>A W3C regular expression that is used when mapping an
+alarm type and alarm-type-qualifier to X.733 parameters.</text>
+        </description>
+      </leaf>
+      <uses name="x733-alarm-definition-parameters"/>
+    </list>
+  </augment>
+  <augment target-node="/al:alarms/al:alarm-list/al:alarm">
+    <description>
+      <text>Augment X.733 information to the alarm.</text>
+    </description>
+    <uses name="x733-alarm-parameters"/>
+  </augment>
+  <augment target-node="/al:alarms/al:shelved-alarms/al:shelved-alarm">
+    <description>
+      <text>Augment X.733 information to the alarm.</text>
+    </description>
+    <uses name="x733-alarm-parameters"/>
+  </augment>
+  <augment target-node="/al:alarm-notification">
+    <description>
+      <text>Augment X.733 information to the alarm notification.</text>
+    </description>
+    <uses name="x733-alarm-parameters"/>
+  </augment>
+</module>

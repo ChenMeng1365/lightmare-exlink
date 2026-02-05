@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-tunnel6"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tunnel6="urn:huawei:yang:huawei-tunnel6"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-tunnel6"/>
+  <prefix value="tunnel6"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-tunnel-management">
+    <prefix value="tnlm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>IP tunnel related configuration.</text>
+  </description>
+  <revision date="2020-05-09">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <container name="tunnel6">
+    <description>
+      <text>IP tunnel related configuration.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure global configuration of IP tunnel.</text>
+      </description>
+      <leaf name="encapsulation-limit">
+        <type name="uint8">
+          <range value="0..255"/>
+        </type>
+        <default value="4"/>
+        <description>
+          <text>Tunnel encapsulation limit carried in the destination option header extension option in the IPv6 header.</text>
+        </description>
+      </leaf>
+      <leaf name="flow-label">
+        <type name="uint32">
+          <range value="0..1048575"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>IPv6 flow-label.</text>
+        </description>
+      </leaf>
+      <leaf name="hop-limit">
+        <type name="uint8">
+          <range value="1..255"/>
+        </type>
+        <default value="64"/>
+        <description>
+          <text>IPv6 hop-limit.</text>
+        </description>
+      </leaf>
+      <leaf name="traffic-class">
+        <type name="uint16">
+          <range value="0..256"/>
+          <ext:value-meaning>
+            <ext:item value="256">
+              <ext:meaning value="Original"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>IPv6 traffic-class.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="ipip-4over6-bindings">
+      <description>
+        <text>List of interfaces bound to IPv4 over IPv6 tunnel. After an IPv4 over IPv6 tunnel interface is created, you need configure a source interface or a source IPv6 address for the tunnel interface. Then, configure a binding interface to enable IPv4 over IPv6 on the source interface or the interface to which the source IPv6 address belongs, so that packets can be transmitted from the source tunnel interface to the corresponding tunnel service boards for processing.</text>
+      </description>
+      <list name="ipip-4over6-binding">
+        <key value="bind-ifname"/>
+        <description>
+          <text>Configure a interface bound to IPv4 over IPv6 tunnel.</text>
+        </description>
+        <leaf name="bind-ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'LoopBack'"/>
+          <description>
+            <text>Name of the interface bound to a IPv4 Over IPv6 tunnel.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/tnlm:tunnel-protocol/tnlm:type">
+    <description>
+      <text>IP tunnel related configuration.</text>
+    </description>
+    <case name="ipip-6over4">
+      <description>
+        <text>6over4 tunnel related configuration.</text>
+      </description>
+      <container name="ipip-6over4-tunnel">
+        <presence value="Specifies tunnel-protocol IPv6 over IPv4."/>
+        <description>
+          <text>Configure IPv6 over IPv4 tunnel interface.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="address">
+            <description>
+              <text>Source address configuration.</text>
+            </description>
+            <leaf name="source-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source address of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="interface">
+            <description>
+              <text>Source interface configuration.</text>
+            </description>
+            <leaf name="source-ifname">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = '_public_' and ../../../ifm:name != ../source-ifname"/>
+              <description>
+                <text>Source interface name of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="destination">
+          <description>
+            <text>Destination configuration.</text>
+          </description>
+          <case name="ip">
+            <description>
+              <text>Destination address configuration.</text>
+            </description>
+            <leaf name="destination-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Destination address of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+      </container>
+    </case>
+    <case name="ipip-6to4">
+      <description>
+        <text>6to4 tunnel related configuration.</text>
+      </description>
+      <container name="ipip-6to4-tunnel">
+        <presence value="Specifies tunnel-protocol 6to4."/>
+        <description>
+          <text>Configure 6to4 tunnel interface.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="address">
+            <description>
+              <text>Source address configuration.</text>
+            </description>
+            <leaf name="source-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source address of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="interface">
+            <description>
+              <text>Source interface configuration.</text>
+            </description>
+            <leaf name="source-ifname">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = '_public_' and ../../../ifm:name != ../source-ifname"/>
+              <description>
+                <text>Source interface name of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+      </container>
+    </case>
+    <case name="ipip-6rd">
+      <description>
+        <text>6rd tunnel related configuration.</text>
+      </description>
+      <container name="ipip-6rd-tunnel">
+        <must condition="(ipv6-prefix and ipv6-prefix-length) or (not(ipv6-prefix) and not(ipv6-prefix-length))"/>
+        <must condition="(ipv6-prefix-length + (32 - ipv4-prefix-length) &lt;= 64) or not (ipv6-prefix-length) or not (ipv4-prefix-length)"/>
+        <presence value="Specifies tunnel-protocol 6rd."/>
+        <description>
+          <text>Configure IPv6 rapid deployment on IPv4 tunnel interface.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="address">
+            <description>
+              <text>Source address configuration.</text>
+            </description>
+            <leaf name="source-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Source address of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="interface">
+            <description>
+              <text>Source interface configuration.</text>
+            </description>
+            <leaf name="source-ifname">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = '_public_' and ../../../ifm:name != ../source-ifname"/>
+              <description>
+                <text>Source interface name of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="ipv6-prefix">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>IPv6 prefix of a tunnel.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv6-prefix-length">
+          <type name="uint8">
+            <range value="1..64"/>
+          </type>
+          <description>
+            <text>IPv6 prefix length of a tunnel.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv4-prefix-length">
+          <type name="uint8">
+            <range value="0..32"/>
+          </type>
+          <description>
+            <text>IPv4 Prefix Length of a tunnel.</text>
+          </description>
+        </leaf>
+        <leaf name="border-relay-ipv4-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Border-relay address of a tunnel.</text>
+          </description>
+        </leaf>
+      </container>
+    </case>
+    <case name="ipip-4over6">
+      <description>
+        <text>4over6 tunnel related configuration.</text>
+      </description>
+      <container name="ipip-4over6-tunnel">
+        <presence value="Specifies tunnel-protocol IPv4 over IPv6."/>
+        <description>
+          <text>Configure IPv4 Over IPv6 tunnel interface.</text>
+        </description>
+        <choice name="source">
+          <description>
+            <text>Source configuration.</text>
+          </description>
+          <case name="address">
+            <description>
+              <text>Source address configuration.</text>
+            </description>
+            <leaf name="source-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Source IPv6 address of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="interface">
+            <description>
+              <text>Source interface configuration.</text>
+            </description>
+            <leaf name="source-ifname">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'LoopBack' and ../../../ifm:name != ../source-ifname"/>
+              <description>
+                <text>Source interface name of a tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="destination">
+          <description>
+            <text>Destination configuration.</text>
+          </description>
+          <case name="ip">
+            <description>
+              <text>Destination address configuration.</text>
+            </description>
+            <leaf name="destination-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Destination IPv6 address of a tunnel.</text>
+              </description>
+            </leaf>
+            <leaf name="dest-vrf-name">
+              <type name="leafref">
+                <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+              </type>
+              <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']"/>
+              <default value="_public_"/>
+              <description>
+                <text>The VPN name of tunnel destination IPv6 address.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="domain">
+            <description>
+              <text>Destination domain configuration.</text>
+            </description>
+            <leaf name="domain-name">
+              <type name="pub-type:host-name"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Destination domain name of a tunnel.</text>
+              </description>
+            </leaf>
+            <leaf name="domain-vrf-name">
+              <type name="leafref">
+                <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+              </type>
+              <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']"/>
+              <default value="_public_"/>
+              <description>
+                <text>The VPN name of tunnel destination domain name.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="encapsulation-limit">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>Tunnel encapsulation limit carried in the destination option header extension option in the IPv6 header.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-label">
+          <type name="uint32">
+            <range value="0..1048575"/>
+          </type>
+          <description>
+            <text>Specifies a flow label value.</text>
+          </description>
+        </leaf>
+        <leaf name="hop-limit">
+          <type name="uint8">
+            <range value="1..255"/>
+          </type>
+          <description>
+            <text>Specifies a hop limit for IPv6 packets.</text>
+          </description>
+        </leaf>
+        <leaf name="traffic-class">
+          <type name="uint16">
+            <range value="0..256"/>
+            <ext:value-meaning>
+              <ext:item value="256">
+                <ext:meaning value="Original"/>
+              </ext:item>
+            </ext:value-meaning>
+          </type>
+          <description>
+            <text>Specifies the traffic class value of an IPv4 over IPv6 tunnel.</text>
+          </description>
+        </leaf>
+      </container>
+    </case>
+  </augment>
+  <ext:task-name value="tunnel6"/>
+</module>

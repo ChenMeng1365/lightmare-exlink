@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-dns"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dns="http://www.zte.com.cn/zxr10/netconf/schema/rosng/dns"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/dns"/>
+  <prefix value="dns"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe DNS.</text>
+  </description>
+  <revision date="2020-12-02">
+    <description>
+      <text>1.Add an leaf node "vrf-mng" under configuration/dns/global</text>
+    </description>
+  </revision>
+  <revision date="2019-07-16">
+    <description>
+      <text>1.Add an leaf node "server-name" under configuration/dns/nameservers/ipv4-servers/ipv4-servers-no-vrf/ipv4-server
+2.Add an leaf node "server-name" under configuration/dns/nameservers/ipv6-servers/ipv6-servers-no-vrf/ipv6-server
+3.add selects for list ipv4-server
+4.add selects for list ipv6-server</text>
+    </description>
+  </revision>
+  <revision date="2019-05-15">
+    <description>
+      <text>1.add selects for list hostname-ipv4
+2.add selects for list hostname-ipv6</text>
+    </description>
+  </revision>
+  <revision date="2018-04-23">
+    <description>
+      <text>1.Modify the length range of leaf host under state/dns/url-domain/ipv4-addr-info/detail.
+2.Modify the length range of leaf host under state/dns/url-domain/ipv6-addr-info/detail.
+3.Modify the length range of leaf url-name under operation/dns/instant-refresh/spec-url.</text>
+    </description>
+  </revision>
+  <revision date="2017-11-23">
+    <description>
+      <text>1.Add an container "snoop-urls" under configuration/dns/
+2.Add an leaf node "snoop-enable" under configuration/dns/global</text>
+    </description>
+  </revision>
+  <revision date="2017-02-09">
+    <description>
+      <text>add label MCG-5000</text>
+    </description>
+  </revision>
+  <revision date="2017-01-16">
+    <description>
+      <text>1.Add an leaf node "url-agetime" under configuration/dns/global
+2.Delete an leaf node "/configuration/dns/global/url-incremental-issue/url-incremental-issue-switch/url-incremental-issue-on/refresh-interval"
+3.Add an leaf node "/configuration/dns/global/url-incremental-issue/url-incremental-issue-switch/url-incremental-issue-on/incremental-refresh-interval"</text>
+    </description>
+  </revision>
+  <revision date="2016-06-07">
+    <description>
+      <text>1.Add container url-domain under this path:/state/dns/url-domain.
+2.Add container url-issue under this path:/configuration/dns/global.</text>
+    </description>
+  </revision>
+  <revision date="2016-03-28">
+    <description>
+      <text>1.Add container "source" under this path:/configuration/dns/.</text>
+    </description>
+  </revision>
+  <revision date="2016-02-15">
+    <description>
+      <text>1.Add two containers "hostnames-ipv4" and "hostnames-ipv6" under this path :/configuration/dns/hostnames.
+2.Add container "import-intfs" under this path:/configuration/dns/nameservers/.
+3.Add two containers "ipv4-servers-no-vrf" and "ipv4-servers-vrf" unser this path:/configuration/dns/nameservers/ipv4-servers.
+4.Add two containers "ipv6-servers-no-vrf" and "ipv6-servers-vrf" unser this path:/configuration/dns/nameservers/ipv6-servers.</text>
+    </description>
+  </revision>
+  <revision date="2015-08-11">
+    <description>
+      <text>Modify the config from true to false under the state and operation containers.</text>
+    </description>
+  </revision>
+  <revision date="2015-02-11">
+    <description>
+      <text>1.Change "resovle" to "resolve" in configuration/dns/global/resovle-type and its description. 2.Add an enumeration value(static-dynamic) for configuration/dns/global/resovle-type.</text>
+    </description>
+  </revision>
+  <revision date="2014-03-12">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>Configuration.</text>
+    </description>
+    <container name="dns">
+      <description>
+        <text>DNS config.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>DNS global common config.</text>
+        </description>
+        <leaf name="enable">
+          <description>
+            <text>Enable DNS process.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>DNS disable.</text>
+              </description>
+            </enum>
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>DNS enable.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="disable"/>
+        </leaf>
+        <leaf name="resolve-type">
+          <description>
+            <text>The resolve type of DNS.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="dynamic">
+              <value value="0"/>
+              <description>
+                <text>Dynamic lookup.</text>
+              </description>
+            </enum>
+            <enum name="static">
+              <value value="1"/>
+              <description>
+                <text>Static lookup.</text>
+              </description>
+            </enum>
+            <enum name="static-dynamic">
+              <value value="2"/>
+              <description>
+                <text>Static-dynamic lookup.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="dynamic"/>
+        </leaf>
+        <leaf name="retry-times">
+          <description>
+            <text>Times to retry sending a DNS query.[1,100].</text>
+          </description>
+          <type name="uint8">
+            <range value="1..100">
+              <description>
+                <text>Possible retry-times value range.</text>
+              </description>
+            </range>
+          </type>
+        </leaf>
+        <leaf name="timeout">
+          <description>
+            <text>Timeout waiting for response to a DNS query.[1,20].unit is seconds.</text>
+          </description>
+          <type name="uint8">
+            <range value="1..20">
+              <description>
+                <text>Timeout value range.</text>
+              </description>
+            </range>
+          </type>
+          <units name="second"/>
+        </leaf>
+        <leaf name="suffix">
+          <description>
+            <text>The suffix of DNS.</text>
+          </description>
+          <type name="string">
+            <length value="1..80">
+              <description>
+                <text>The length of the suffix.</text>
+              </description>
+            </length>
+          </type>
+        </leaf>
+        <container name="url-incremental-issue">
+          <description>
+            <text>DNS URL incremental issue configuration.</text>
+          </description>
+          <choice name="url-incremental-issue-switch">
+            <description>
+              <text>Set DNS URL incremental issue configuration.</text>
+            </description>
+            <case name="url-incremental-issue-on">
+              <description>
+                <text>Turn on DNS URL incremental issue.</text>
+              </description>
+              <leaf name="incremental-issue-on">
+                <description>
+                  <text>Turn on DNS URL incremental issue.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="on">
+                    <value value="1"/>
+                    <description>
+                      <text>Turn on DNS URL incremental issue.</text>
+                    </description>
+                  </enum>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="refresh-interval">
+                <status value="obsolete">
+                  <ncd:revise-date date="2017-01-16"/>
+                </status>
+                <description>
+                  <text>DNS URL incremental issue refresh interval</text>
+                </description>
+                <type name="uint8">
+                  <range value="5..60"/>
+                </type>
+                <default value="5"/>
+              </leaf>
+              <leaf name="incremental-refresh-interval">
+                <description>
+                  <text>DNS URL incremental issue refresh interval</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..1440"/>
+                </type>
+                <default value="5"/>
+                <ncd:revise-date date="2017-01-16"/>
+              </leaf>
+            </case>
+            <case name="url-incremental-issue-off">
+              <description>
+                <text>Turn off DNS URL incremental issue.</text>
+              </description>
+              <leaf name="incremental-issue-off">
+                <description>
+                  <text>Turn off DNS URL incremental issue.</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="off">
+                    <value value="0"/>
+                    <description>
+                      <text>Turn off DNS URL incremental issue.</text>
+                    </description>
+                  </enum>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+            </case>
+          </choice>
+          <ncd:revise-date date="2016-06-07"/>
+        </container>
+        <leaf name="url-agetime">
+          <description>
+            <text>DNS URL age time</text>
+          </description>
+          <type name="ncd:time"/>
+          <ncd:revise-date date="2017-01-16"/>
+        </leaf>
+        <leaf name="snoop-enable">
+          <description>
+            <text>Enable dns snoop system.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>DNS snoop enable.</text>
+              </description>
+            </enum>
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>DNS snoop disable.</text>
+              </description>
+            </enum>
+          </type>
+          <ncd:revise-date date="2017-11-23"/>
+        </leaf>
+        <leaf name="vrf-mng">
+          <description>
+            <text>Enable VRF MNG configuration</text>
+          </description>
+          <type name="enumeration">
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>Enable DNS VRF mng configure</text>
+              </description>
+            </enum>
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>Disable DNS VRF mng configure</text>
+              </description>
+            </enum>
+          </type>
+          <default value="disable"/>
+          <ncd:revise-date date="2020-12-02"/>
+        </leaf>
+      </container>
+      <container name="hostnames">
+        <description>
+          <text>Static hostnames of DNS.</text>
+        </description>
+        <container name="hostnames-ipv4">
+          <description>
+            <text>Static hostnames of DNS in ipv4 type.</text>
+          </description>
+          <list name="hostname-ipv4">
+            <description>
+              <text>Static hostnames of DNS in ipv4 type.</text>
+            </description>
+            <key value="name ipv4-addr"/>
+            <leaf name="name">
+              <description>
+                <text>The name of static hoatname.</text>
+              </description>
+              <type name="string">
+                <length value="1..128">
+                  <description>
+                    <text>The length of the name.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="ipv4-addr">
+              <description>
+                <text>The ipv4 address of DNS static hostname.</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+            </leaf>
+            <ncd:select fields="name"/>
+            <ncd:select fields="name ipv4-addr"/>
+          </list>
+          <ncd:revise-date date="2016-02-15"/>
+        </container>
+        <container name="hostnames-ipv6">
+          <description>
+            <text>Static hostnames of DNS in ipv6 type.</text>
+          </description>
+          <list name="hostname-ipv6">
+            <description>
+              <text>Static hostnames of DNS in ipv6 type.</text>
+            </description>
+            <key value="name ipv6-addr"/>
+            <leaf name="name">
+              <description>
+                <text>The name of static hoatname.</text>
+              </description>
+              <type name="string">
+                <length value="1..128">
+                  <description>
+                    <text>The lenght of the host name.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="ipv6-addr">
+              <description>
+                <text>The ipv6 address of DNS static hostname.</text>
+              </description>
+              <type name="ncd:ipv6-address"/>
+            </leaf>
+            <ncd:select fields="name"/>
+            <ncd:select fields="name ipv6-addr"/>
+          </list>
+          <ncd:revise-date date="2016-02-15"/>
+        </container>
+      </container>
+      <container name="nameservers">
+        <description>
+          <text>Nameservers of DNS.</text>
+        </description>
+        <container name="import-intfs">
+          <description>
+            <text>Get servers from imported interfaces.</text>
+          </description>
+          <list name="import-if">
+            <description>
+              <text>Get servers from imported interfaces.</text>
+            </description>
+            <key value="if-name"/>
+            <leaf name="if-name">
+              <description>
+                <text>Interface name.</text>
+              </description>
+              <type name="ncd:ifname">
+                <length value="1..31">
+                  <description>
+                    <text>The interface name length.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+          </list>
+          <ncd:revise-date date="2016-02-15"/>
+        </container>
+        <container name="ipv4-servers">
+          <description>
+            <text>Ipv4 servers.</text>
+          </description>
+          <container name="ipv4-servers-no-vrf">
+            <description>
+              <text>Ipv4 name server.</text>
+            </description>
+            <list name="ipv4-server">
+              <description>
+                <text>Ipv4 nameserver.</text>
+              </description>
+              <key value="ipv4-addr"/>
+              <leaf name="ipv4-addr">
+                <description>
+                  <text>Ipv4 address of the server.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="server-name">
+                <description>
+                  <text>The name of server.</text>
+                </description>
+                <type name="string">
+                  <length value="1..128">
+                    <description>
+                      <text>The length of the name.</text>
+                    </description>
+                  </length>
+                </type>
+                <ncd:revise-date date="2019-07-16"/>
+              </leaf>
+              <ncd:select fields="ipv4-addr"/>
+              <ncd:select fields="server-name"/>
+            </list>
+            <ncd:revise-date date="2016-02-15"/>
+          </container>
+          <container name="ipv4-servers-vrf">
+            <description>
+              <text>Ipv4 server with vrf.</text>
+            </description>
+            <list name="ipv4-server-vrf">
+              <description>
+                <text>Ipv4 server with vrf.</text>
+              </description>
+              <key value="ipv4-addr vrf-name"/>
+              <leaf name="ipv4-addr">
+                <description>
+                  <text>Ipv4 address of the server.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+              </leaf>
+              <leaf name="vrf-name">
+                <description>
+                  <text>VRF name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..32">
+                    <description>
+                      <text>Vrf name.</text>
+                    </description>
+                  </length>
+                </type>
+              </leaf>
+            </list>
+            <ncd:revise-date date="2016-02-15"/>
+          </container>
+        </container>
+        <container name="ipv6-servers">
+          <description>
+            <text>Ipv6 servers.</text>
+          </description>
+          <container name="ipv6-servers-no-vrf">
+            <description>
+              <text>Ipv6 name server.</text>
+            </description>
+            <list name="ipv6-server">
+              <description>
+                <text>Ipv6 nameserver.</text>
+              </description>
+              <key value="ipv6-addr"/>
+              <leaf name="ipv6-addr">
+                <description>
+                  <text>Ipv6 address.</text>
+                </description>
+                <type name="ncd:ipv6-address"/>
+              </leaf>
+              <leaf name="server-name">
+                <description>
+                  <text>The name of server.</text>
+                </description>
+                <type name="string">
+                  <length value="1..128">
+                    <description>
+                      <text>The length of the name.</text>
+                    </description>
+                  </length>
+                </type>
+                <ncd:revise-date date="2019-07-16"/>
+              </leaf>
+              <ncd:select fields="ipv6-addr"/>
+              <ncd:select fields="server-name"/>
+            </list>
+            <ncd:revise-date date="2016-02-15"/>
+          </container>
+          <container name="ipv6-servers-vrf">
+            <description>
+              <text>Ipv6 server with vrf.</text>
+            </description>
+            <list name="ipv6-server-vrf">
+              <description>
+                <text>Ipv6 server with vrf.</text>
+              </description>
+              <key value="ipv6-addr vrf-name"/>
+              <leaf name="ipv6-addr">
+                <description>
+                  <text>Ipv6 address.</text>
+                </description>
+                <type name="ncd:ipv6-address"/>
+              </leaf>
+              <leaf name="vrf-name">
+                <description>
+                  <text>VRF name.</text>
+                </description>
+                <type name="string">
+                  <length value="1..32">
+                    <description>
+                      <text>Vrf name.</text>
+                    </description>
+                  </length>
+                </type>
+              </leaf>
+            </list>
+            <ncd:revise-date date="2016-02-15"/>
+          </container>
+        </container>
+      </container>
+      <container name="proxy">
+        <description>
+          <text>DNS proxy/relay config.</text>
+        </description>
+        <leaf name="proxy-state">
+          <description>
+            <text>Enbale DNS proxy.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>DNS proxy disable.</text>
+              </description>
+            </enum>
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>DNS proxy enable.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="disable"/>
+        </leaf>
+        <leaf name="relay-state">
+          <description>
+            <text>Enbale DNS relay.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>DNS relay disable.</text>
+              </description>
+            </enum>
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>DNS relay enable.</text>
+              </description>
+            </enum>
+          </type>
+          <default value="disable"/>
+        </leaf>
+        <leaf name="retry-times">
+          <description>
+            <text>Max retry times of request for DNS relay/proxy server group.[5,20]</text>
+          </description>
+          <type name="uint32">
+            <range value="5..20">
+              <description>
+                <text>Retry times.</text>
+              </description>
+            </range>
+          </type>
+        </leaf>
+        <leaf name="peer-timeout">
+          <description>
+            <text>Deadtime of DNS relay/proxy server.[5,3600].Unit is seconds.</text>
+          </description>
+          <type name="uint32">
+            <range value="5..3600">
+              <description>
+                <text>Deadtime.</text>
+              </description>
+            </range>
+          </type>
+          <units name="second"/>
+        </leaf>
+      </container>
+      <container name="source">
+        <leaf name="source-ipv4-address">
+          <description>
+            <text>The ipv4 address of DNS source.</text>
+          </description>
+          <type name="ncd:ipv4-address"/>
+        </leaf>
+        <leaf name="source-ipv6-address">
+          <description>
+            <text>The ipv6 address of DNS source.</text>
+          </description>
+          <type name="ncd:ipv6-address"/>
+        </leaf>
+      </container>
+      <container name="snoop-urls">
+        <description>
+          <text>Set snoop url address.</text>
+        </description>
+        <list name="snoop-url">
+          <description>
+            <text>Set snoop url address.</text>
+          </description>
+          <key value="url-name"/>
+          <leaf name="url-name">
+            <type name="string">
+              <length value="1..127">
+                <description>
+                  <text>Set url name.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+        </list>
+        <ncd:revise-date date="2017-11-23"/>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State.</text>
+    </description>
+    <container name="dns">
+      <description>
+        <text>DNS state.</text>
+      </description>
+      <container name="cache-domain">
+        <description>
+          <text>DNS domain information in cache.</text>
+        </description>
+        <list name="detail">
+          <description>
+            <text>Show DNS cache domain info detail.</text>
+          </description>
+          <key value="host type record"/>
+          <leaf name="host">
+            <description>
+              <text>Host name.</text>
+            </description>
+            <type name="string">
+              <length value="1..255">
+                <description>
+                  <text>Host name length.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+          <leaf name="type">
+            <description>
+              <text>Type of the record.</text>
+            </description>
+            <type name="string">
+              <length value="1..10">
+                <description>
+                  <text>Type string length.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+          <leaf name="record">
+            <description>
+              <text>The record info.</text>
+            </description>
+            <type name="string">
+              <length value="1..255">
+                <description>
+                  <text>Record string length.</text>
+                </description>
+              </length>
+            </type>
+          </leaf>
+          <leaf name="age">
+            <description>
+              <text>Left ttl of the record.Unit is second.</text>
+            </description>
+            <type name="uint32">
+              <range value="0..524278">
+                <description>
+                  <text>Left ttl of records.</text>
+                </description>
+              </range>
+            </type>
+            <units name="second"/>
+          </leaf>
+          <ncd:select fields="host type record"/>
+        </list>
+      </container>
+      <container name="url-domain">
+        <description>
+          <text>DNS URL information.</text>
+        </description>
+        <container name="ipv4-addr-info">
+          <description>
+            <text>DNS URL IPv4 address information.</text>
+          </description>
+          <list name="detail">
+            <description>
+              <text>DNS URL IPv4 address information.</text>
+            </description>
+            <key value="host type ipv4-address"/>
+            <leaf name="host">
+              <description>
+                <text>Host name.</text>
+              </description>
+              <type name="string">
+                <length value="1..128">
+                  <description>
+                    <text>Host name length.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="type">
+              <description>
+                <text>Type of the record.</text>
+              </description>
+              <type name="string">
+                <length value="1..10">
+                  <description>
+                    <text>Type length.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="ipv4-address">
+              <description>
+                <text>IPv4 address.</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+            </leaf>
+            <leaf name="age">
+              <description>
+                <text>Left ttl of the record.Unit is second.</text>
+              </description>
+              <type name="uint32"/>
+              <units name="second"/>
+            </leaf>
+            <ncd:select fields="host"/>
+          </list>
+        </container>
+        <container name="ipv6-addr-info">
+          <description>
+            <text>DNS URL IPv6 address information.</text>
+          </description>
+          <list name="detail">
+            <description>
+              <text>DNS URL IPv6 address information.</text>
+            </description>
+            <key value="host type ipv6-address"/>
+            <leaf name="host">
+              <description>
+                <text>Host name.</text>
+              </description>
+              <type name="string">
+                <length value="1..128">
+                  <description>
+                    <text>Host name length.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="type">
+              <description>
+                <text>Type of the record.</text>
+              </description>
+              <type name="string">
+                <length value="1..10">
+                  <description>
+                    <text>Type length.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="ipv6-address">
+              <description>
+                <text>IPv6 address.</text>
+              </description>
+              <type name="ncd:ipv6-address"/>
+            </leaf>
+            <leaf name="age">
+              <description>
+                <text>Left ttl of the record.Unit is second.</text>
+              </description>
+              <type name="uint32"/>
+              <units name="second"/>
+            </leaf>
+            <ncd:select fields="host"/>
+          </list>
+        </container>
+        <ncd:revise-date date="2016-06-07"/>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>Operation.</text>
+    </description>
+    <container name="dns">
+      <description>
+        <text>DNS operation.</text>
+      </description>
+      <leaf name="flush-cache">
+        <description>
+          <text>Flush domain records in cache.</text>
+        </description>
+        <type name="enumeration">
+          <enum name="all">
+            <value value="1"/>
+          </enum>
+        </type>
+      </leaf>
+      <container name="instant-refresh">
+        <description>
+          <text>DNS refreshes urls.</text>
+        </description>
+        <choice name="instant-refresh">
+          <description>
+            <text>DNS sends queries to instantly refresh urls.</text>
+          </description>
+          <case name="all">
+            <description>
+              <text>DNS sends queries to instantly refresh all urls.</text>
+            </description>
+            <leaf name="all">
+              <description>
+                <text>Refresh all URLs.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="all">
+                  <value value="1"/>
+                  <description>
+                    <text>This value stand for refreshing all.</text>
+                  </description>
+                </enum>
+              </type>
+            </leaf>
+          </case>
+          <case name="spec-url">
+            <description>
+              <text>DNS sends queries to instantly refresh a specific url.</text>
+            </description>
+            <leaf name="url-name">
+              <description>
+                <text>The URL name.</text>
+              </description>
+              <type name="string">
+                <length value="1..128">
+                  <description>
+                    <text>The length of the url name.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+          </case>
+        </choice>
+      </container>
+    </container>
+  </container>
+</module>

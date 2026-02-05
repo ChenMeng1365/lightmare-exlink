@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-tcp-proxy"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tcp-proxy="http://www.zte.com.cn/zxr10/netconf/schema/rosng/tcp-proxy"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/tcp-proxy"/>
+  <prefix value="tcp-proxy"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>NETCONF of tcp-proxy module</text>
+  </description>
+  <revision date="2017-11-13">
+    <description>
+      <text>Obsolete container node:/configuration/tcp-proxy/global-config;
+Add contaniner node:/configuration/tcp-proxy/tcp-proxy-instances.</text>
+    </description>
+  </revision>
+  <revision date="2017-06-23">
+    <description>
+      <text>Add range of leaf node:/configuration/tcp-proxy/global-config/receive-window, from 32768 to 4194304.
+Add range of leaf node:/configuration/tcp-proxy/global-config/mss, from 512 to 8192.</text>
+    </description>
+  </revision>
+  <revision date="2017-03-20">
+    <description>
+      <text>Initial Version</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>Config node.</text>
+    </description>
+    <container name="tcp-proxy">
+      <description>
+        <text>TCP proxy module configuration entry.</text>
+      </description>
+      <container name="global-config">
+        <status value="obsolete">
+          <ncd:revise-date date="2017-11-13"/>
+        </status>
+        <description>
+          <text>Global TCP proxy configuration nodes.</text>
+        </description>
+        <leaf name="receive-window">
+          <description>
+            <text>Receive window size to set,in &lt;32768-4194304&gt; bytes.</text>
+          </description>
+          <type name="uint32">
+            <range value="32768..4194304"/>
+          </type>
+        </leaf>
+        <leaf name="mss">
+          <description>
+            <text>Maximum segment size to set,in &lt;512-8192&gt; bytes.</text>
+          </description>
+          <type name="uint16">
+            <range value="512..8192"/>
+          </type>
+        </leaf>
+        <leaf name="congestion-control">
+          <description>
+            <text>Congestion control algorithm to set.For example,"bic,cubic", etc.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="cubic">
+              <value value="0"/>
+            </enum>
+            <enum name="bic">
+              <value value="1"/>
+            </enum>
+            <enum name="reno">
+              <value value="2"/>
+            </enum>
+            <enum name="scalable">
+              <value value="7"/>
+            </enum>
+            <enum name="westwood">
+              <value value="10"/>
+            </enum>
+          </type>
+          <default value="cubic"/>
+        </leaf>
+        <container name="proxy-lists">
+          <description>
+            <text>Config TCP proxy list.</text>
+          </description>
+          <container name="public-proxy">
+            <description>
+              <text>Public proxy</text>
+            </description>
+            <list name="proxy-list">
+              <description>
+                <text>Config TCP proxy list.</text>
+              </description>
+              <key value="port address"/>
+              <leaf name="port">
+                <description>
+                  <text>Port number, support single port number value or range(max num:4;spacing mark:,) in &lt;1-65535&gt;. For example,"1,300-400,1000,2000-4000",etc.</text>
+                </description>
+                <type name="ncd:range"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="address">
+                <description>
+                  <text>SET TCP proxy address.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="cpu">
+                <description>
+                  <text>SET TCP proxy CPU infomation</text>
+                </description>
+                <type name="string">
+                  <length value="1..31"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+            </list>
+          </container>
+          <container name="private-proxy">
+            <description>
+              <text>Private proxy</text>
+            </description>
+            <list name="proxy-list">
+              <description>
+                <text>Config TCP proxy list.</text>
+              </description>
+              <key value="port address vrf-name"/>
+              <leaf name="port">
+                <description>
+                  <text>Port number, support single port number value or range(max num:4;spacing mark:,) in &lt;1-65535&gt;. For example,"1,300-400,1000,2000-4000",etc.</text>
+                </description>
+                <type name="ncd:range"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="address">
+                <description>
+                  <text>SET TCP proxy address.</text>
+                </description>
+                <type name="ncd:ipv4-address"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="vrf-name">
+                <description>
+                  <text>SET TCP proxy Vrf name</text>
+                </description>
+                <type name="string">
+                  <length value="1..35"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="cpu">
+                <description>
+                  <text>SET TCP proxy CPU infomation.</text>
+                </description>
+                <type name="string">
+                  <length value="1..31"/>
+                </type>
+                <mandatory value="true"/>
+              </leaf>
+            </list>
+          </container>
+        </container>
+      </container>
+      <container name="tcp-proxy-instances">
+        <description>
+          <text>TCP-PROXY instance configuration.</text>
+        </description>
+        <list name="tcp-proxy-instance">
+          <description>
+            <text>TCP-PROXY instance.</text>
+          </description>
+          <key value="instance-name"/>
+          <leaf name="instance-name">
+            <description>
+              <text>Instance name.</text>
+            </description>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="window-size">
+            <description>
+              <text>TCP-PROXY windown size.</text>
+            </description>
+            <type name="uint32">
+              <range value="32768..4194304"/>
+            </type>
+            <default value="524288"/>
+          </leaf>
+          <leaf name="mss">
+            <description>
+              <text>TCP-PROXY mss.</text>
+            </description>
+            <type name="uint16">
+              <range value="512..8192"/>
+            </type>
+            <default value="1460"/>
+          </leaf>
+          <leaf name="congestion-control">
+            <description>
+              <text>TCP-PROXY congestion-control.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="cubic">
+                <value value="0"/>
+                <description>
+                  <text>Cubic algorithm.</text>
+                </description>
+              </enum>
+              <enum name="bic">
+                <value value="1"/>
+                <description>
+                  <text>Bic algorithm.</text>
+                </description>
+              </enum>
+              <enum name="reno">
+                <value value="2"/>
+                <description>
+                  <text>Reno algorithm.</text>
+                </description>
+              </enum>
+              <enum name="scalable">
+                <value value="7"/>
+                <description>
+                  <text>Scalable algorithm.</text>
+                </description>
+              </enum>
+              <enum name="westwood">
+                <value value="10"/>
+                <description>
+                  <text>Westwood algorithm.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="cubic"/>
+          </leaf>
+          <leaf name="synwait-time">
+            <description>
+              <text>TCP-PROXY synwait time.</text>
+            </description>
+            <type name="uint8">
+              <range value="5..60"/>
+            </type>
+            <units name="second"/>
+            <default value="10"/>
+          </leaf>
+          <leaf name="keepalive-time">
+            <description>
+              <text>TCP-PROXY keepalive time.</text>
+            </description>
+            <type name="uint16">
+              <range value="10..7200"/>
+            </type>
+            <units name="second"/>
+            <default value="300"/>
+          </leaf>
+          <leaf name="ipv4-acl-name">
+            <description>
+              <text>TCP-PROXY ipv4 acl name.</text>
+            </description>
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+          </leaf>
+          <leaf name="session-limit">
+            <description>
+              <text>TCP-PROXY session limit.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..1000"/>
+            </type>
+            <default value="255"/>
+          </leaf>
+          <leaf name="session-log">
+            <description>
+              <text>TCP-PROXY session log function.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="disable">
+                <value value="0"/>
+                <description>
+                  <text>Disable session log function.</text>
+                </description>
+              </enum>
+              <enum name="enable">
+                <value value="1"/>
+                <description>
+                  <text>Enable session log function.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="disable"/>
+          </leaf>
+          <leaf name="bind-cpu-mode">
+            <description>
+              <text>TCP-PROXY bind-cpu mode.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="first">
+                <value value="0"/>
+                <description>
+                  <text>First mode.</text>
+                </description>
+              </enum>
+              <enum name="round-robin">
+                <value value="1"/>
+                <description>
+                  <text>Round-robin mode.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="first"/>
+          </leaf>
+        </list>
+        <ncd:revise-date date="2017-11-13"/>
+      </container>
+    </container>
+  </container>
+</module>

@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-dhcp-server"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-dhcp-server="urn:huawei:yang:huawei-bras-dhcp-server"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:huawei:yang:huawei-bras-dhcp-server"/>
+  <prefix value="bras-dhcp-server"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Configure the DHCP server.</text>
+  </description>
+  <revision date="2020-02-22">
+    <description>
+      <text>Description modification.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-10-17">
+    <description>
+      <text>Second revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="ippool"/>
+  <typedef name="dhcp-server-algorithm-type">
+    <type name="enumeration">
+      <enum name="master-backup">
+        <value value="1"/>
+        <description>
+          <text>The master-backup algorithm.</text>
+        </description>
+      </enum>
+      <enum name="loading-share">
+        <value value="2"/>
+        <description>
+          <text>The load sharing algorithm.</text>
+        </description>
+      </enum>
+      <enum name="polling">
+        <value value="3"/>
+        <description>
+          <text>The polling algorithm.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>DHCP server algorithm type.</text>
+    </description>
+  </typedef>
+  <grouping name="server-property">
+    <description>
+      <text>Configure dhcp-server property.</text>
+    </description>
+    <leaf name="dead-count">
+      <type name="uint8">
+        <range value="1..64"/>
+      </type>
+      <description>
+        <text>Specify the maximum number of times at which the DHCP server does not send response packets.</text>
+      </description>
+    </leaf>
+    <leaf name="timeout">
+      <type name="uint8">
+        <range value="1..60"/>
+      </type>
+      <units name="s"/>
+      <default value="25"/>
+      <description>
+        <text>Specify the timeout period for waiting for response packets from a DHCP server.</text>
+      </description>
+    </leaf>
+    <leaf name="dead-time">
+      <type name="uint16">
+        <range value="1..65535"/>
+      </type>
+      <units name="min"/>
+      <default value="3"/>
+      <description>
+        <text>Specify the recovery time of a DHCP server.</text>
+      </description>
+    </leaf>
+    <leaf name="nak-count">
+      <type name="uint8">
+        <range value="0..255"/>
+      </type>
+      <default value="10"/>
+      <description>
+        <text>Specify the maximum number of NAK packets a DHCP server can receive consecutively.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <container name="bras-dhcp-server">
+    <description>
+      <text>Configure the DHCP server.</text>
+    </description>
+    <container name="dhcp-servers">
+      <description>
+        <text>List of DHCP servers. A DHCP server must be bound to at least one dhcp-server group at the same time.</text>
+      </description>
+      <list name="dhcp-server">
+        <key value="ip-address vpn-instance"/>
+        <description>
+          <text>Configure a DHCP server and must bind it to at least one dhcp-server group at the same time.</text>
+        </description>
+        <leaf name="ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>The IP address of the DHCP server.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-instance">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <description>
+            <text>Define the vpn-instance of a DHCP server. If dhcp-server belongs to the public network, vpn-instance can be defined as '_public_'.</text>
+          </description>
+        </leaf>
+        <uses name="server-property"/>
+        <container name="statistics">
+          <config value="false"/>
+          <description>
+            <text>Display DHCPv4 server statistics.</text>
+          </description>
+          <leaf name="send-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of sent packets.</text>
+            </description>
+          </leaf>
+          <leaf name="receive-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of received packets.</text>
+            </description>
+          </leaf>
+          <leaf name="error-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of error packets.</text>
+            </description>
+          </leaf>
+          <leaf name="limit-number">
+            <type name="uint32"/>
+            <description>
+              <text>Number of packets discarded due to rate limiting.</text>
+            </description>
+          </leaf>
+          <leaf name="timeout-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that a DHCP server fails to respond to a DHCP request before the timer expires.</text>
+            </description>
+          </leaf>
+          <leaf name="latest-send-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Last time when a packet was sent.</text>
+            </description>
+          </leaf>
+          <leaf name="lastest-receive-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Last time when a packet was received.</text>
+            </description>
+          </leaf>
+          <leaf name="discover-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of discover messages.</text>
+            </description>
+          </leaf>
+          <leaf name="request-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of request messages.</text>
+            </description>
+          </leaf>
+          <leaf name="decline-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of decline messages.</text>
+            </description>
+          </leaf>
+          <leaf name="release-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of release messages.</text>
+            </description>
+          </leaf>
+          <leaf name="inform-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of inform messages.</text>
+            </description>
+          </leaf>
+          <leaf name="offer-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of offer messages.</text>
+            </description>
+          </leaf>
+          <leaf name="ack-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of ACK messages.</text>
+            </description>
+          </leaf>
+          <leaf name="nak-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of NAK messages.</text>
+            </description>
+          </leaf>
+          <leaf name="bootp-requset-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of BOOTP request packets.</text>
+            </description>
+          </leaf>
+          <leaf name="bootp-ack-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of BOOTP reply packets.</text>
+            </description>
+          </leaf>
+          <leaf name="force-renew-packets">
+            <type name="uint32"/>
+            <description>
+              <text>Number of force renew packets.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+    <container name="dhcp-server-groups">
+      <description>
+        <text>List of DHCPv4 server groups.</text>
+      </description>
+      <list name="dhcp-server-group">
+        <key value="name"/>
+        <max-elements value="4096"/>
+        <description>
+          <text>Configure the DHCPv4 server group.</text>
+        </description>
+        <leaf name="name">
+          <ext:case-sensitivity value="lower-only"/>
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[a-z0-9._-]{1,32}"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <description>
+            <text>Specify the name of the DHCPv4 server group.</text>
+          </description>
+        </leaf>
+        <leaf name="remote-backup-service-name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>Specify the backup service associated with the DHCPv4 server group.</text>
+          </description>
+        </leaf>
+        <container name="bind-servers">
+          <description>
+            <text>List of IP addresses of a DHCPv4 server and the weight of a specified DHCPv4 server when it performs load balancing.</text>
+          </description>
+          <list name="bind-server">
+            <key value="ip-address vpn-instance"/>
+            <max-elements value="8"/>
+            <description>
+              <text>Configure the IP address of a DHCPv4 server and the weight of a specified DHCPv4 server when it performs load balancing.</text>
+            </description>
+            <leaf name="ip-address">
+              <type name="leafref">
+                <path value="/bras-dhcp-server:bras-dhcp-server/bras-dhcp-server:dhcp-servers/bras-dhcp-server:dhcp-server/bras-dhcp-server:ip-address"/>
+              </type>
+              <description>
+                <text>Specify the IP address of the DHCPv4 server in the dotted decimal format.</text>
+              </description>
+            </leaf>
+            <leaf name="vpn-instance">
+              <type name="leafref">
+                <path value="/bras-dhcp-server:bras-dhcp-server/bras-dhcp-server:dhcp-servers/bras-dhcp-server:dhcp-server/bras-dhcp-server:vpn-instance"/>
+              </type>
+              <description>
+                <text>Specify the VPN instance name. If the dhcp-server belongs to the public netwaork, vpn-instance can be defined as '_public_'.</text>
+              </description>
+            </leaf>
+            <leaf name="weight">
+              <type name="uint32">
+                <range value="0..100"/>
+              </type>
+              <default value="5"/>
+              <description>
+                <text>Specify the weight of a DHCPv4 server.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="giaddr">
+          <must condition="not(./vpn-instance) or ./ip-address"/>
+          <description>
+            <text>Configure the giaddr address of packets sent by a DHCPv4 server group.</text>
+          </description>
+          <choice name="giaddr">
+            <description>
+              <text>Configure the giaddr address of packets sent by a DHCPv4 server group.</text>
+            </description>
+            <case name="if-name">
+              <description>
+                <text>Specify the interface whose IP address that is used as the GiAddr address.</text>
+              </description>
+              <leaf name="if-name">
+                <type name="leafref">
+                  <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                </type>
+                <description>
+                  <text>Specify the interface whose IP address that is used as the GiAddr address of packets sent by the DHCPv4 server group.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="ip-address">
+              <description>
+                <text>Specify the IP address that is used as the GiAddr address.</text>
+              </description>
+              <leaf name="ip-address">
+                <type name="inet:ipv4-address-no-zone"/>
+                <description>
+                  <text>Specify the IP address that is used as the GiAddr address of packets sent by the DHCPv4 server group. The address is in dotted decimal notation.</text>
+                </description>
+              </leaf>
+              <leaf name="vpn-instance">
+                <type name="leafref">
+                  <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+                </type>
+                <must condition="../vpn-instance!='_public_'"/>
+                <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+                <description>
+                  <text>Specify the VPN instance name.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="forward-rui-slave">
+            <when condition="../if-name or ../ip-address"/>
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable the slave device forwarding of RUI.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="server-algorithm">
+          <description>
+            <text>Configure an algorithm of DHCPv4 servers.</text>
+          </description>
+          <leaf name="type">
+            <type name="dhcp-server-algorithm-type"/>
+            <default value="master-backup"/>
+            <description>
+              <text>Specify the type of algorithm.</text>
+            </description>
+          </leaf>
+          <leaf name="loose-check">
+            <when condition="../type = 'polling'"/>
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable DHCPv4 server algorithm as check-loose when algorithmType is polling.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="server-forward">
+          <when condition="../server-algorithm/type = 'polling'"/>
+          <description>
+            <text>Configure the device to forward DHCP rebind messages to all DHCPv4 servers in a DHCPv4 server group.</text>
+          </description>
+          <leaf name="rebind-forward">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable the device to forward DHCP rebind messages to all DHCPv4 servers in a DHCPv4 server group.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="server-source">
+          <description>
+            <text>Configure the source IP address of the packets sent by a DHCPv4 server group.</text>
+          </description>
+          <choice name="config">
+            <description>
+              <text>Configure the source IP address of the packets sent by a DHCPv4 server group.</text>
+            </description>
+            <case name="gateway-mode">
+              <description>
+                <text>Indicate the gateway address of the user address pool as source address.</text>
+              </description>
+              <leaf name="gateway-mode">
+                <type name="empty"/>
+                <description>
+                  <text>Indicate that the source address of the packets sent by the DHCPv4 server group is the gateway address of the user address pool.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="if-name">
+              <description>
+                <text>Indicate the IP address of the interface as the source address.</text>
+              </description>
+              <leaf name="if-name">
+                <type name="leafref">
+                  <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                </type>
+                <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='GigabitEthernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='10GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='XGigabitEthernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='100GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Virtual-Ethernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='50GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='50|100GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='FlexE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='25GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Ethernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Eth-Trunk' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='LoopBack'"/>
+                <description>
+                  <text>Indicate that the source address of the packets sent by the DHCPv4 server group is the IP address of the interface.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+        </container>
+      </list>
+    </container>
+    <container name="server-global-property">
+      <description>
+        <text>Configure DHCP server global property.</text>
+      </description>
+      <uses name="server-property"/>
+    </container>
+  </container>
+</module>

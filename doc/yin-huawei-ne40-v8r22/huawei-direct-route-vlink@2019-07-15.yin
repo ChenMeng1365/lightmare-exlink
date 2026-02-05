@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-direct-route-vlink"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:directrtvlink="urn:huawei:yang:huawei-direct-route-vlink"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:ip="urn:huawei:yang:huawei-ip"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:xpl="urn:huawei:yang:huawei-xpl">
+  <namespace uri="urn:huawei:yang:huawei-direct-route-vlink"/>
+  <prefix value="directrtvlink"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="huawei-ip">
+    <prefix value="ip"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-xpl">
+    <prefix value="xpl"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for managing direct route VLINK.</text>
+  </description>
+  <revision date="2019-07-15">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="vlink-address-family">
+    <type name="enumeration">
+      <enum name="ipv4uni">
+        <value value="0"/>
+        <description>
+          <text>IPv4 unicast.</text>
+        </description>
+      </enum>
+      <enum name="ipv6uni">
+        <value value="1"/>
+        <description>
+          <text>IPv6 unicast.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of VLINK address family.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="eum"/>
+  <container name="direct-route-vlink">
+    <description>
+      <text>Configure VLINK routes.</text>
+    </description>
+    <container name="vlink-import-routes">
+      <description>
+        <text>List of configuration VLINK import routes.</text>
+      </description>
+      <list name="vlink-import-route">
+        <must condition="source-vpn-instance!=destination-vpn-instance"/>
+        <key value="address-family source-vpn-instance destination-vpn-instance"/>
+        <max-elements value="256"/>
+        <description>
+          <text>Configure VLINK import route.</text>
+        </description>
+        <leaf name="address-family">
+          <type name="vlink-address-family"/>
+          <description>
+            <text>Address family: IPv4 or IPv6 unicast address family.</text>
+          </description>
+        </leaf>
+        <leaf name="source-vpn-instance">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="((../address-family = 'ipv4uni') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])) or ((../address-family = 'ipv6uni') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']))"/>
+          <description>
+            <text>Source VPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-vpn-instance">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="((../address-family = 'ipv4uni') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])) or ((../address-family = 'ipv6uni') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']))"/>
+          <description>
+            <text>Destination VPN instance.</text>
+          </description>
+        </leaf>
+        <choice name="route-configuration">
+          <description>
+            <text>Configuring a routing policy or filter.</text>
+          </description>
+          <case name="route-policy">
+            <description>
+              <text>Configuring a routing policy.</text>
+            </description>
+            <leaf name="route-policy-name">
+              <type name="leafref">
+                <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+              </type>
+              <description>
+                <text>Set the name of a VLINK routing policy.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="route-filter">
+            <description>
+              <text>Configuring a routing policy or filter.</text>
+            </description>
+            <leaf name="route-filter-name">
+              <type name="leafref">
+                <path value="/xpl:xpl/xpl:route-filters/xpl:route-filter/xpl:name"/>
+              </type>
+              <description>
+                <text>Set the name of a VLINK routing filter.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Extend interface attribute.</text>
+    </description>
+    <container name="vlink-routes">
+      <must condition="../ifm:type = 'Vlanif' or ../ifm:type = 'Vbdif' or ../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination"/>
+      <description>
+        <text>List of configuration VLINK routes.</text>
+      </description>
+      <list name="vlink-route">
+        <key value="address-family"/>
+        <description>
+          <text>Configure VLINK routes.</text>
+        </description>
+        <leaf name="address-family">
+          <type name="vlink-address-family"/>
+          <must condition="(../address-family = 'ipv4uni' and not(../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination)) or&#10;(../address-family = 'ipv6uni' and ../../../ip:ipv6)"/>
+          <description>
+            <text>Address family: IPv4 or IPv6 unicast address family.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="vlink-configuration">
+      <description>
+        <text>Configure direct route attributes.</text>
+      </description>
+      <leaf name="preference">
+        <type name="uint8">
+          <range value="0..255"/>
+        </type>
+        <description>
+          <text>Preference value for VLINK routes.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Extend VPN attribute.</text>
+    </description>
+    <container name="vlink-vpns">
+      <when condition="../l3vpn:afs/l3vpn:af"/>
+      <description>
+        <text>List of configuration VLINK routes.</text>
+      </description>
+      <list name="vlink-vpn">
+        <key value="address-family"/>
+        <description>
+          <text>Configure VLINK routes.</text>
+        </description>
+        <leaf name="address-family">
+          <type name="vlink-address-family"/>
+          <must condition="((../address-family = 'ipv4uni') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()/../../../ni:name]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])) or ((../address-family = 'ipv6uni') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()/../../../ni:name]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']))"/>
+          <description>
+            <text>Address family: IPv4 or IPv6 unicast address family.</text>
+          </description>
+        </leaf>
+        <choice name="route-configuration">
+          <description>
+            <text>Configuring a routing policy or filter.</text>
+          </description>
+          <case name="route-policy">
+            <description>
+              <text>Configuring a routing policy.</text>
+            </description>
+            <leaf name="route-policy-name">
+              <type name="leafref">
+                <path value="/rtp:routing-policy/rtp:policy-definitions/rtp:policy-definition/rtp:name"/>
+              </type>
+              <description>
+                <text>Set the name of a VLINK routing policy.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="route-filter">
+            <description>
+              <text>Configuring a routing policy or filter.</text>
+            </description>
+            <leaf name="route-filter-name">
+              <type name="leafref">
+                <path value="/xpl:xpl/xpl:route-filters/xpl:route-filter/xpl:name"/>
+              </type>
+              <description>
+                <text>Set the name of a VLINK routing filter.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+      </list>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-cgn"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-cgn="urn:huawei:yang:huawei-bras-cgn"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access"
+        xmlns:bras-vas="urn:huawei:yang:huawei-bras-vas"
+        xmlns:bras-ipv4-address-manage="urn:huawei:yang:huawei-bras-ipv4-address-manage"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-bras-cgn"/>
+  <prefix value="bras-cgn"/>
+  <import module="huawei-aaa">
+    <prefix value="aaa"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <import module="huawei-bras-vas">
+    <prefix value="bras-vas"/>
+  </import>
+  <import module="huawei-bras-ipv4-address-manage">
+    <prefix value="bras-ipv4-address-manage"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras cgn.</text>
+  </description>
+  <revision date="2019-04-01">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="aaa-access"/>
+  <container name="bras-cgn">
+    <description>
+      <text>Bras cgn.</text>
+    </description>
+    <container name="pub-user-auto-cut">
+      <description>
+        <text>Configure automatic switchback from public IP address-based access to private IP address-based access for CGN public network users.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable automatic switchback from public IP address-based access to private IP address-based access for CGN public network users.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="access-radius-nat-update-speed">
+      <description>
+        <text>Configure the speed for instructing the RADIUS server to update NAT.</text>
+      </description>
+      <leaf name="speed-value">
+        <type name="uint32">
+          <range value="1..65535"/>
+        </type>
+        <default value="210"/>
+        <description>
+          <text>Speed value.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <augment target-node="/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas">
+    <description>
+      <text>Bras cgn in bas domain.</text>
+    </description>
+    <container name="bras-cgn">
+      <description>
+        <text>Configure Bras cgn in bas domain.</text>
+      </description>
+      <container name="public-address">
+        <must condition="not(./assign-first='true' and ./nat-instance-down='true')"/>
+        <description>
+          <text>Configure in distributed CGN scenarios.</text>
+        </description>
+        <leaf name="nat-enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable the NAT device to process traffic from public network IPv4 address users in distributed CGN scenarios before forwarding it based on the routing table.</text>
+          </description>
+        </leaf>
+        <leaf name="assign-first">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable public network IPv4 addresses to be preferentially allocated to users.</text>
+          </description>
+        </leaf>
+        <leaf name="nat-instance-down">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable CGN users to access a device using a public IP address if the CGN service board fails.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="ipv6-pool-domain">
+        <description>
+          <text>Configure IPv6 attribute configuration of an AAA domain.</text>
+        </description>
+        <leaf name="aftr-name">
+          <type name="string">
+            <length value="1..63"/>
+            <pattern value="[a-zA-Z0-9._-]{1,63}"/>
+          </type>
+          <must condition="../aftr-name != '-' and ../aftr-name != '--'"/>
+          <description>
+            <text>Specifies an AFTR (Address Family Transition Router) name.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="ds-lite-ipv4-portal">
+        <description>
+          <text>Configure captive portal in DS-Lite scenarios.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable captive portal in DS-Lite scenarios.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="user-group-bind-nats">
+        <description>
+          <text>List of NAT instance with a user group in a domain.</text>
+        </description>
+        <list name="user-group-bind-nat">
+          <must condition="not(../../user-group-bind-ds-lites/user-group-bind-ds-lite)"/>
+          <key value="user-group-name"/>
+          <max-elements value="8"/>
+          <description>
+            <text>Configure a NAT instance instance with a user group in a domain.</text>
+          </description>
+          <leaf name="user-group-name">
+            <type name="leafref">
+              <path value="/bras-basic-access:bras-basic-access/bras-basic-access:user-groups/bras-basic-access:user-group/bras-basic-access:name"/>
+            </type>
+            <must condition="count(/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas/bras-basic-access:ipv4-basic-access/bras-basic-access:user-group[bras-basic-access:name=current()])=0"/>
+            <must condition="count(/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas/bras-cgn:bras-cgn/bras-cgn:user-group-bind-ds-lites/bras-cgn:user-group-bind-ds-lite[bras-cgn:user-group-name=current()])=0"/>
+            <must condition="count(/bras-basic-access:bras-basic-access/bras-basic-access:user-group-lists/bras-basic-access:user-group-list/bras-basic-access:user-groups/bras-basic-access:user-group[bras-basic-access:name=current()])=0"/>
+            <description>
+              <text>Specifies the name of a user group, and the user group must not be added to a user group list or a domain without binding nat instance.</text>
+            </description>
+          </leaf>
+          <leaf name="instance-name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specifies the name of a NAT instance.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-pool-name">
+            <type name="leafref">
+              <path value="/bras-ipv4-address-manage:bras-ipv4-address-manage/bras-ipv4-address-manage:ipv4-pools/bras-ipv4-address-manage:ipv4-pool/bras-ipv4-address-manage:name"/>
+            </type>
+            <must condition="(/bras-ipv4-address-manage:bras-ipv4-address-manage/bras-ipv4-address-manage:ipv4-pools/bras-ipv4-address-manage:ipv4-pool[bras-ipv4-address-manage:name=current()]/bras-ipv4-address-manage:type = 'dynamic' or&#10;(/bras-ipv4-address-manage:bras-ipv4-address-manage/bras-ipv4-address-manage:ipv4-pools/bras-ipv4-address-manage:ipv4-pool[bras-ipv4-address-manage:name=current()]/bras-ipv4-address-manage:local/bras-ipv4-address-manage:gateway/bras-ipv4-address-manage:gate-ip or&#10;/bras-ipv4-address-manage:bras-ipv4-address-manage/bras-ipv4-address-manage:ipv4-pools/bras-ipv4-address-manage:ipv4-pool[bras-ipv4-address-manage:name=current()]/bras-ipv4-address-manage:remote/bras-ipv4-address-manage:gateway/bras-ipv4-address-manage:gate-ip))"/>
+            <description>
+              <text>Specifies the name of an IP address pool.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="user-group-bind-ds-lites">
+        <description>
+          <text>List of DS-Lite instance with a user group in a domain.</text>
+        </description>
+        <list name="user-group-bind-ds-lite">
+          <must condition="not(../../user-group-bind-nats/user-group-bind-nat)"/>
+          <must condition="not(../../../bras-basic-access:ipv4-basic-access/bras-basic-access:user-group/bras-basic-access:name)"/>
+          <key value="user-group-name"/>
+          <max-elements value="8"/>
+          <description>
+            <text>Configure a DS-Lite instance with a user group in a domain.</text>
+          </description>
+          <leaf name="user-group-name">
+            <type name="leafref">
+              <path value="/bras-basic-access:bras-basic-access/bras-basic-access:user-groups/bras-basic-access:user-group/bras-basic-access:name"/>
+            </type>
+            <must condition="count(/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas/bras-basic-access:ipv4-basic-access/bras-basic-access:user-group[bras-basic-access:name=current()])=0"/>
+            <must condition="count(/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas/bras-cgn:bras-cgn/bras-cgn:user-group-bind-nats/bras-cgn:user-group-bind-nat[bras-cgn:user-group-name=current()])=0"/>
+            <must condition="count(/bras-vas:bras-vas/bras-vas:vas-policys/bras-vas:vas-policy/bras-vas:user-group-bind-nats/bras-vas:user-group-bind-nat[bras-vas:user-group-name=current()])=0"/>
+            <must condition="count(/bras-basic-access:bras-basic-access/bras-basic-access:user-group-lists/bras-basic-access:user-group-list/bras-basic-access:user-groups/bras-basic-access:user-group[bras-basic-access:name=current()])=0"/>
+            <description>
+              <text>Specifies the name of a user group, and the user group must not be added to a user group list or a domain without binding ds-lite instance.</text>
+            </description>
+          </leaf>
+          <leaf name="instance-name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Specifies the name of a DS-Lite instance.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

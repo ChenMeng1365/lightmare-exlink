@@ -1,0 +1,514 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "openconfig-pf-forwarding-policies API generated from openconfig-pf-forwarding-policies.yang",
+        "version": "1.0.0",
+        "title": "openconfig-pf-forwarding-policies API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "pf-forwarding-policy-structural": {
+            "description": "Structural grouping defining forwarding policies under the\npolicy- forwarding module.",
+            "properties": {
+                "policies": {
+                    "description": "Forwarding policies defined to enact policy-based forwarding\non the local system.",
+                    "properties": {
+                        "policy": {
+                            "description": "A forwarding policy is defined to have a set of match\ncriteria, allowing particular fields of a packet's header to\nbe matched, and a set of forwarding actions which determines\nhow the local system should forward the packet.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "policy-id": {
+                                        "type": "string",
+                                        "x-path": "../config/policy-id",
+                                        "description": "Reference to the identifier for the forwarding-policy."
+                                    },
+                                    "config": {
+                                        "description": "Configuration options relating to the forwarding\npolicy.",
+                                        "$ref": "#/definitions/pf-forwarding-policy-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state parameters relating to the forwarding\npolicy.",
+                                        "$ref": "#/definitions/pf-forwarding-policy-config"
+                                    },
+                                    "rules": {
+                                        "description": "The criteria that should be matched for a packet to be\nforwarded according to the policy action.",
+                                        "properties": {
+                                            "rule": {
+                                                "description": "A match rule for the policy. In the case that multiple\ncriteria are specified within a single rule, all criteria\nmust be met for the rule to be applied to a packet.",
+                                                "type": "array",
+                                                "items": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/definitions/ethernet-header-top"
+                                                        },
+                                                        {
+                                                            "$ref": "#/definitions/ipv4-protocol-fields-top"
+                                                        },
+                                                        {
+                                                            "$ref": "#/definitions/ipv6-protocol-fields-top"
+                                                        },
+                                                        {
+                                                            "$ref": "#/definitions/transport-fields-top"
+                                                        },
+                                                        {
+                                                            "properties": {
+                                                                "sequence-id": {
+                                                                    "type": "string",
+                                                                    "x-path": "../config/sequence-id",
+                                                                    "description": "A unique sequence identifier for the match rule."
+                                                                },
+                                                                "config": {
+                                                                    "description": "Configuration parameters relating to the match\nrule.",
+                                                                    "$ref": "#/definitions/pf-forwarding-policy-rule-config"
+                                                                },
+                                                                "state": {
+                                                                    "description": "Operational state parameters relating to the match\nrule.",
+                                                                    "$ref": "#/definitions/pf-forwarding-policy-rule-state"
+                                                                },
+                                                                "action": {
+                                                                    "description": "The forwarding policy action to be applied for\npackets matching the rule.",
+                                                                    "allOf": [
+                                                                        {
+                                                                            "$ref": "#/definitions/pf-forwarding-policy-action-encapsulate-gre"
+                                                                        },
+                                                                        {
+                                                                            "properties": {
+                                                                                "config": {
+                                                                                    "description": "Configuration parameters relating to the forwarding\nrule's action.",
+                                                                                    "$ref": "#/definitions/pf-forwarding-policy-action-config"
+                                                                                },
+                                                                                "state": {
+                                                                                    "description": "Operational state parameters relating to the\nforwarding rule's action.",
+                                                                                    "$ref": "#/definitions/pf-forwarding-policy-action-config"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "x-key": "sequence-id"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "policy-id"
+                        }
+                    }
+                }
+            }
+        },
+        "pf-forwarding-policy-config": {
+            "description": "Configuration parameters relating to the forwarding policy.",
+            "properties": {
+                "policy-id": {
+                    "type": "string",
+                    "description": "A unique name identifying the forwarding policy. This name is\nused when applying the policy to a particular interface."
+                }
+            }
+        },
+        "pf-forwarding-policy-rule-config": {
+            "description": "Configuration parameters relating to a policy rule.",
+            "properties": {
+                "sequence-id": {
+                    "type": "string",
+                    "description": "Unique sequence number for the policy rule."
+                }
+            }
+        },
+        "pf-forwarding-policy-rule-state": {
+            "description": "Operational state parameters relating to a policy rule.",
+            "properties": {
+                "matched-pkts": {
+                    "type": "string",
+                    "description": "Number of packets matched by the rule."
+                },
+                "matched-octets": {
+                    "type": "string",
+                    "description": "Bytes matched by the rule."
+                }
+            }
+        },
+        "pf-forwarding-policy-action-config": {
+            "description": "Forwarding policy action configuration parameters.",
+            "properties": {
+                "discard": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, the local system should drop\npackets that match the rule."
+                },
+                "decapsulate-gre": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, the local system should remove\nthe GRE header from the packet matching the rule. Following\nthe decapsulation it should subsequently forward the\nencapsulated packet according to the relevant lookup (e.g., if\nthe encapsulated packet is IP, the packet should be routed\naccording to the IP destination)."
+                },
+                "network-instance": {
+                    "type": "string",
+                    "x-path": "../../../../../../../../config/name",
+                    "description": "When this leaf is set, packets matching the match criteria\nfor the forwarding rule should be looked up in the\nnetwork-instance that is referenced rather than the\nnetwork-instance with which the interface is associated.\nSuch configuration allows policy-routing into multiple\nsub-topologies from a single ingress access interface, or\ndifferent send and receive contexts for a particular\ninterface (sometimes referred to as half-duplex VRF)."
+                },
+                "path-selection-group": {
+                    "type": "string",
+                    "x-path": "../../../../../../../path-selection-groups/path-selection-group/config/group-id",
+                    "description": "When path-selection-group is set, packets matching the\nmatch criteria for the forwarding rule should be forwarded\nonly via one of the paths that is specified within the\nreferenced path-selection-group. The next-hop of the packet\nwithin the routing context should be used to determine between\nmultiple paths that are specified within the group."
+                },
+                "next-hop": {
+                    "type": "string",
+                    "description": "When an IP next-hop is specified in the next-hop field,\npackets matching the match criteria for the forwarding rule\nshould be forwarded to the next-hop IP address, bypassing any\nlookup on the local system."
+                }
+            }
+        },
+        "pf-forwarding-policy-action-encapsulate-gre": {
+            "description": "Structural grouping covering the encapsulate-gre action of the\npolicy forwarding rule.",
+            "properties": {
+                "encapsulate-gre": {
+                    "description": "Packets matching the policy rule should be GRE encapsulated\ntowards the set of targets defined within the target list. Where\nmore than one target is specified, or the target subnet expands\nto more than one endpoint, packets should be load-balanced across\nthe destination addresses within the subnets.",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters for the GRE encapsulation rules action.",
+                            "$ref": "#/definitions/pf-forwarding-policy-action-gre-config"
+                        },
+                        "state": {
+                            "description": "Operational state parameters for the GRE encapsulation rule\naction.",
+                            "$ref": "#/definitions/pf-forwarding-policy-action-gre-config"
+                        },
+                        "targets": {
+                            "description": "Surrounding container for the list of GRE tunnel targets that\nshould be encapsulated towards.",
+                            "properties": {
+                                "target": {
+                                    "description": "Each target specified within this list should be treated as a\nendpoint to which packets should be GRE encapsulated. Where the\nset of destinations described within a single entry expands to\nmore than one destination IP address, packets should be load\nshared across the destination using the local system's ECMP hashing\nmechanisms.",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "x-path": "../config/id",
+                                                "description": "Reference to the unique identifier for the target."
+                                            },
+                                            "config": {
+                                                "description": "Configuration parameters for the GRE target.",
+                                                "$ref": "#/definitions/pf-forwarding-policy-action-gre-target-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state parameters for the GRE target.",
+                                                "$ref": "#/definitions/pf-forwarding-policy-action-gre-target-config"
+                                            }
+                                        }
+                                    },
+                                    "x-key": "id"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "pf-forwarding-policy-action-gre-config": {
+            "description": "Configuration parameters for the encapsulate-gre forwarding\npolicy action.",
+            "properties": {
+                "identifying-prefix": {
+                    "type": "string",
+                    "description": "An IP prefix that can be used to identify the group of\nGRE endpoints that are being encapsulated towards. Systems\nthat require an IP identifier for the tunnel set\nshould use this prefix as the next-hop identifier."
+                }
+            }
+        },
+        "pf-forwarding-policy-action-gre-target-config": {
+            "description": "Configuration parameters for each target of a GRE Encapsulation\nrule",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "A unique identifier for the target."
+                },
+                "source": {
+                    "type": "string",
+                    "description": "The source IP address that should be used when encapsulating\npackets from the local system."
+                },
+                "destination": {
+                    "type": "string",
+                    "description": "The set of destination addresses that should be encapsulated towards.\nWhere a subnet is specified, each address within the subnet should be\ntreated as an independent destination for encapsulated traffic. Packets\nshould be distributed with ECMP across the set of tunnel destination\naddresses."
+                },
+                "ip-ttl": {
+                    "type": "string",
+                    "description": "The TTL that should be specified in the IP header of the GRE packet\nencapsulating the packet matching the rule."
+                }
+            }
+        },
+        "pf-path-groups-structural": {
+            "description": "Structural grouping containing the definition of path groups\nwithin the context of policy-based forwarding.",
+            "properties": {
+                "path-selection-groups": {
+                    "description": "Surrounding container for the path selection groups defined\nwithin the policy forwarding model.",
+                    "properties": {
+                        "path-selection-group": {
+                            "description": "A path selection group is a set of forwarding resources,\nwhich are grouped as eligible paths for a particular\npolicy-based forwarding rule. A policy rule may select a\npath-selection-group as the egress for a particular type of\ntraffic (e.g., DSCP value). The system then utilises its\nstandard forwarding lookup mechanism to select from the\npaths that are specified within the group - for IP packets,\nthe destination IP address is used such that the packet is\nrouted to the entity within the path-selection-group that\ncorresponds to the next-hop for the destination IP address\nof the packet; for L2 packets, the selection is based on the\ndestination MAC address. If multiple paths within the\nselection group are eligible to be used for forwarding,\nthe packets are load-balanced between them according to\nthe system's usual load balancing logic.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "group-id": {
+                                        "type": "string",
+                                        "x-path": "../config/group-id",
+                                        "description": "Reference to a unique identifier for the path selection\ngroup"
+                                    },
+                                    "config": {
+                                        "description": "Configuration parameters relating to the path selection\ngroup.",
+                                        "$ref": "#/definitions/pf-path-selection-group-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state parameters relating to the path\nselection group.",
+                                        "$ref": "#/definitions/pf-path-selection-group-config"
+                                    }
+                                }
+                            },
+                            "x-key": "group-id"
+                        }
+                    }
+                }
+            }
+        },
+        "pf-path-selection-group-config": {
+            "description": "Configuration parameters relating to a path selection group.",
+            "properties": {
+                "group-id": {
+                    "type": "string",
+                    "description": "A unique name for the path-selection-group"
+                },
+                "mpls-lsp": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "../../../../../mpls/lsps/constrained-path/tunnels/tunnel/config/name",
+                        "description": "A set of MPLS constrained-path LSPs which should be\nconsidered for the policy forwarding next-hop. In order to\nselect between the LSPs within the path-selection-group, the\nsystem should determine which LSP provides the best path to\nthe next-hop for the routed packet."
+                    }
+                }
+            }
+        },
+        "ethernet-header-config": {
+            "description": "Configuration data of fields in Ethernet header.",
+            "properties": {
+                "source-mac": {
+                    "type": "string",
+                    "description": "Source IEEE 802 MAC address."
+                },
+                "source-mac-mask": {
+                    "type": "string",
+                    "description": "Source IEEE 802 MAC address mask."
+                },
+                "destination-mac": {
+                    "type": "string",
+                    "description": "Destination IEEE 802 MAC address."
+                },
+                "destination-mac-mask": {
+                    "type": "string",
+                    "description": "Destination IEEE 802 MAC address mask."
+                },
+                "ethertype": {
+                    "type": "string",
+                    "description": "Ethertype field to match in Ethernet packets"
+                }
+            }
+        },
+        "ethernet-header-state": {
+            "description": "State information of fields in Ethernet header."
+        },
+        "ethernet-header-top": {
+            "description": "Top level container for fields in Ethernet header.",
+            "properties": {
+                "l2": {
+                    "description": "Ethernet header fields",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data",
+                            "$ref": "#/definitions/ethernet-header-config"
+                        },
+                        "state": {
+                            "description": "State Information.",
+                            "$ref": "#/definitions/ethernet-header-state"
+                        }
+                    }
+                }
+            }
+        },
+        "mpls-header-top": {
+            "description": "Top-level container for fields in an MPLS header.",
+            "properties": {
+                "mpls": {
+                    "description": "MPLS header fields",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration parameters relating to fields within\nthe MPLS header.",
+                            "$ref": "#/definitions/mpls-header-config"
+                        },
+                        "state": {
+                            "description": "Operational state parameters relating to fields\nwithin the MPLS header",
+                            "$ref": "#/definitions/mpls-header-config"
+                        }
+                    }
+                }
+            }
+        },
+        "mpls-header-config": {
+            "description": "Configuration parameters relating to matches within\nMPLS header fields.",
+            "properties": {
+                "traffic-class": {
+                    "type": "string",
+                    "description": "The value of the MPLS traffic class (TC) bits,\nformerly known as the EXP bits."
+                }
+            }
+        },
+        "ip-protocol-fields-common-config": {
+            "description": "IP protocol fields common to IPv4 and IPv6",
+            "properties": {
+                "dscp": {
+                    "type": "string",
+                    "description": "Value of diffserv codepoint."
+                },
+                "protocol": {
+                    "type": "string",
+                    "description": "The protocol carried in the IP packet, expressed either\nas its IP protocol number, or by a defined identity."
+                },
+                "hop-limit": {
+                    "type": "string",
+                    "description": "The IP packet's hop limit -- known as TTL (in hops) in\nIPv4 packets, and hop limit in IPv6"
+                }
+            }
+        },
+        "ipv4-protocol-fields-config": {
+            "description": "Configuration data of IP protocol fields\nfor IPv4",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ip-protocol-fields-common-config"
+                },
+                {
+                    "properties": {
+                        "source-address": {
+                            "type": "string",
+                            "description": "Source IPv4 address prefix."
+                        },
+                        "destination-address": {
+                            "type": "string",
+                            "description": "Destination IPv4 address prefix."
+                        }
+                    }
+                }
+            ]
+        },
+        "ipv4-protocol-fields-state": {
+            "description": "State information of IP header fields for IPv4"
+        },
+        "ipv4-protocol-fields-top": {
+            "description": "IP header fields for IPv4",
+            "properties": {
+                "ipv4": {
+                    "description": "Top level container for IPv4 match field data",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for IPv4 match fields",
+                            "$ref": "#/definitions/ipv4-protocol-fields-config"
+                        },
+                        "state": {
+                            "description": "State information for IPv4 match fields",
+                            "$ref": "#/definitions/ipv4-protocol-fields-state"
+                        }
+                    }
+                }
+            }
+        },
+        "ipv6-protocol-fields-config": {
+            "description": "Configuration data for IPv6 match fields",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ip-protocol-fields-common-config"
+                },
+                {
+                    "properties": {
+                        "source-address": {
+                            "type": "string",
+                            "description": "Source IPv6 address prefix."
+                        },
+                        "source-flow-label": {
+                            "type": "string",
+                            "description": "Source IPv6 Flow label."
+                        },
+                        "destination-address": {
+                            "type": "string",
+                            "description": "Destination IPv6 address prefix."
+                        },
+                        "destination-flow-label": {
+                            "type": "string",
+                            "description": "Destination IPv6 Flow label."
+                        }
+                    }
+                }
+            ]
+        },
+        "ipv6-protocol-fields-state": {
+            "description": "Operational state data for IPv6 match fields"
+        },
+        "ipv6-protocol-fields-top": {
+            "description": "Top-level grouping for IPv6 match fields",
+            "properties": {
+                "ipv6": {
+                    "description": "Top-level container for IPv6 match field data",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for IPv6 match fields",
+                            "$ref": "#/definitions/ipv6-protocol-fields-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for IPv6 match fields",
+                            "$ref": "#/definitions/ipv6-protocol-fields-state"
+                        }
+                    }
+                }
+            }
+        },
+        "transport-fields-config": {
+            "description": "Configuration data of transport-layer packet fields",
+            "properties": {
+                "source-port": {
+                    "type": "string",
+                    "description": "Source port or range"
+                },
+                "destination-port": {
+                    "type": "string",
+                    "description": "Destination port or range"
+                },
+                "tcp-flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "List of TCP flags to match"
+                    }
+                }
+            }
+        },
+        "transport-fields-state": {
+            "description": "State data of transport-fields"
+        },
+        "transport-fields-top": {
+            "description": "Destination transport-fields top level grouping",
+            "properties": {
+                "transport": {
+                    "description": "Transport fields container",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data",
+                            "$ref": "#/definitions/transport-fields-config"
+                        },
+                        "state": {
+                            "description": "State data",
+                            "$ref": "#/definitions/transport-fields-state"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

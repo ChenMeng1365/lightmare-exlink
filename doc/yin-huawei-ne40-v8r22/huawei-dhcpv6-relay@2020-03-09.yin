@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="huawei-dhcpv6-relay"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:dhcpv6="urn:huawei:yang:huawei-dhcpv6"
+           xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+           xmlns:ifm="urn:huawei:yang:huawei-ifm"
+           xmlns:ni="urn:huawei:yang:huawei-network-instance"
+           xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+           xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <belongs-to module="huawei-dhcpv6">
+    <prefix value="dhcpv6"/>
+  </belongs-to>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for managing DHCPv6 relay.</text>
+  </description>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-16">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="rapid-commit-flag-type">
+    <type name="enumeration">
+      <enum name="off">
+        <value value="0"/>
+        <description>
+          <text>Disable rapid commit.</text>
+        </description>
+      </enum>
+      <enum name="on">
+        <value value="1"/>
+        <description>
+          <text>Enable rapid commit.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of rapid commit flag.</text>
+    </description>
+  </typedef>
+  <typedef name="relay-table-status">
+    <type name="enumeration">
+      <enum name="init">
+        <value value="0"/>
+        <description>
+          <text>Init status.</text>
+        </description>
+      </enum>
+      <enum name="solicit">
+        <value value="1"/>
+        <description>
+          <text>Send solicit packet to server.</text>
+        </description>
+      </enum>
+      <enum name="advertise">
+        <value value="2"/>
+        <description>
+          <text>Send Advertise packet to client.</text>
+        </description>
+      </enum>
+      <enum name="request">
+        <value value="3"/>
+        <description>
+          <text>Send request packet to server.</text>
+        </description>
+      </enum>
+      <enum name="renewrebind">
+        <value value="4"/>
+        <description>
+          <text>Send renew or rebind packet to server.</text>
+        </description>
+      </enum>
+      <enum name="confirm">
+        <value value="5"/>
+        <description>
+          <text>Send confirm packet to server.</text>
+        </description>
+      </enum>
+      <enum name="decline">
+        <value value="6"/>
+        <description>
+          <text>Send decline packet to server.</text>
+        </description>
+      </enum>
+      <enum name="release">
+        <value value="7"/>
+        <description>
+          <text>Send release packet to server.</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <value value="8"/>
+        <description>
+          <text>Stable status.</text>
+        </description>
+      </enum>
+      <enum name="error">
+        <value value="9"/>
+        <description>
+          <text>Error status.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of relay table status.</text>
+    </description>
+  </typedef>
+  <typedef name="ia-type">
+    <type name="enumeration">
+      <enum name="iainvalid">
+        <value value="0"/>
+        <description>
+          <text>Invalid identity association.</text>
+        </description>
+      </enum>
+      <enum name="iana">
+        <value value="1"/>
+        <description>
+          <text>Identity association for non-temporary addresses.</text>
+        </description>
+      </enum>
+      <enum name="iata">
+        <value value="2"/>
+        <description>
+          <text>Identity association for temporary addresses.</text>
+        </description>
+      </enum>
+      <enum name="iapd">
+        <value value="3"/>
+        <description>
+          <text>Identity association for prefix delegation.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of identity association.</text>
+    </description>
+  </typedef>
+  <typedef name="relay-file-authentication-mode">
+    <type name="enumeration">
+      <enum name="check">
+        <value value="0"/>
+        <description>
+          <text>Check.</text>
+        </description>
+      </enum>
+      <enum name="no-check">
+        <value value="1"/>
+        <description>
+          <text>No-check.</text>
+        </description>
+      </enum>
+      <enum name="force-check">
+        <value value="2"/>
+        <description>
+          <text>Force-check.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of file authentication mode.</text>
+    </description>
+  </typedef>
+  <grouping name="dhcpv6-relay-type">
+    <description>
+      <text>DHCPv6 relay.</text>
+    </description>
+    <container name="pd-route">
+      <description>
+        <text>Configure DHCPv6 PD route.</text>
+      </description>
+      <leaf name="export">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DHCPv6 export PD route.</text>
+        </description>
+      </leaf>
+      <leaf name="save-file-name">
+        <type name="string">
+          <length value="12..69"/>
+          <pattern value="(\S+:\S*/dhcp/\S+\.pd)"/>
+        </type>
+        <description>
+          <text>Name of the file for saving PD routes. For example, the name can be in the format of cfcard:/dhcp/xxx.pd or home:/dhcp/xxx.pd, where xxx can be any characters.</text>
+        </description>
+      </leaf>
+      <leaf name="write-route-delay">
+        <type name="uint32">
+          <range value="1..1440"/>
+        </type>
+        <units name="min"/>
+        <default value="5"/>
+        <description>
+          <text>The delay time for saving PD routes.</text>
+        </description>
+      </leaf>
+      <leaf name="write-route-number">
+        <type name="uint32">
+          <range value="40960..1310720"/>
+        </type>
+        <default value="40960"/>
+        <description>
+          <text>The number for saving PD routes. Only 40960 userinfo table items can be written to a board with memory less than 16 GB, and other boards support 1310720 userinfo table items.</text>
+        </description>
+      </leaf>
+      <leaf name="access-limit">
+        <type name="uint32">
+          <range value="40960..655360"/>
+        </type>
+        <description>
+          <text>Maximum number of access users.</text>
+        </description>
+      </leaf>
+      <leaf name="file-authentication-mode">
+        <type name="relay-file-authentication-mode"/>
+        <default value="check"/>
+        <description>
+          <text>Set file authentication mode.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="server-groups">
+      <description>
+        <text>List of DHCPv6 relay server groups.</text>
+      </description>
+      <list name="server-group">
+        <key value="name"/>
+        <max-elements value="10"/>
+        <description>
+          <text>Configure a DHCPv6 relay server group.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <description>
+            <text>DHCPv6 relay server group name.</text>
+          </description>
+        </leaf>
+        <container name="server-addresses">
+          <description>
+            <text>List of DHCPv6 relay destination servers in a server group.</text>
+          </description>
+          <list name="server-address">
+            <key value="server"/>
+            <max-elements value="20"/>
+            <description>
+              <text>Configure a DHCPv6 relay destination server in a server group.</text>
+            </description>
+            <leaf name="server">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>DHCPv6 relay destination server address in a server group.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="global-packet-statistics">
+      <config value="false"/>
+      <description>
+        <text>Statistics of a DHCPv6 relay global packet.</text>
+      </description>
+      <leaf name="received-from-clients">
+        <type name="uint32"/>
+        <description>
+          <text>Packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="solicit-received">
+        <type name="uint32"/>
+        <description>
+          <text>Solicit packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="request-received">
+        <type name="uint32"/>
+        <description>
+          <text>Request packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="confirm-received">
+        <type name="uint32"/>
+        <description>
+          <text>Confirm packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="renew-received">
+        <type name="uint32"/>
+        <description>
+          <text>Renew packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="rebind-received">
+        <type name="uint32"/>
+        <description>
+          <text>Rebind packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="decline-received">
+        <type name="uint32"/>
+        <description>
+          <text>Decline packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="release-received">
+        <type name="uint32"/>
+        <description>
+          <text>Release packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="inform-received">
+        <type name="uint32"/>
+        <description>
+          <text>Information-request packets received from clients.</text>
+        </description>
+      </leaf>
+      <leaf name="received-from-relay-agents-or-servers">
+        <type name="uint32"/>
+        <description>
+          <text>Packets received from relay agents or servers.</text>
+        </description>
+      </leaf>
+      <leaf name="relay-forward-received">
+        <type name="uint32"/>
+        <description>
+          <text>Relay-forward packets received from relay agents or servers.</text>
+        </description>
+      </leaf>
+      <leaf name="relay-reply-received">
+        <type name="uint32"/>
+        <description>
+          <text>Relay-reply packets received from relay agents or servers.</text>
+        </description>
+      </leaf>
+      <leaf name="sent-to-clients">
+        <type name="uint32"/>
+        <description>
+          <text>Packets sent to clients.</text>
+        </description>
+      </leaf>
+      <leaf name="advertise-send">
+        <type name="uint32"/>
+        <description>
+          <text>Advertise packets sent to clients.</text>
+        </description>
+      </leaf>
+      <leaf name="reply-send">
+        <type name="uint32"/>
+        <description>
+          <text>Relay-reply packets sent to clients.</text>
+        </description>
+      </leaf>
+      <leaf name="reconfig-send">
+        <type name="uint32"/>
+        <description>
+          <text>Reconfigure packets sent to clients.</text>
+        </description>
+      </leaf>
+      <leaf name="sent-to-relay-agents-or-servers">
+        <type name="uint32"/>
+        <description>
+          <text>Packets sent to relay agents or servers.</text>
+        </description>
+      </leaf>
+      <leaf name="relay-forward-send">
+        <type name="uint32"/>
+        <description>
+          <text>Relay-forward packets sent to relay agents or servers.</text>
+        </description>
+      </leaf>
+      <leaf name="relay-reply-send">
+        <type name="uint32"/>
+        <description>
+          <text>Relay-reply packets sent to relay agents or servers.</text>
+        </description>
+      </leaf>
+      <leaf name="bad-packets-received">
+        <type name="uint32"/>
+        <description>
+          <text>Error packets received.</text>
+        </description>
+      </leaf>
+      <leaf name="total-drop-packets">
+        <type name="uint32"/>
+        <description>
+          <text>Total dropped packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-packets-for-table-full">
+        <type name="uint32"/>
+        <description>
+          <text>Packets discarded because the table is full.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-packets-for-general-error">
+        <type name="uint32"/>
+        <description>
+          <text>Packets discarded due to general errors.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-packets-for-ipsec-authentication-fail">
+        <type name="uint32"/>
+        <description>
+          <text>Packets discarded due to IPsec authentication failures.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="user-infos">
+      <config value="false"/>
+      <description>
+        <text>List of user informations.</text>
+      </description>
+      <list name="user-info">
+        <key value="index"/>
+        <description>
+          <text>Operational state of user informations.</text>
+        </description>
+        <leaf name="index">
+          <type name="uint32"/>
+          <description>
+            <text>User index.</text>
+          </description>
+        </leaf>
+        <leaf name="client-duid">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>Client DUID.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="iaid">
+          <type name="uint32"/>
+          <default value="0"/>
+          <description>
+            <text>Identity association identifier.</text>
+          </description>
+        </leaf>
+        <leaf name="ia-type">
+          <type name="ia-type"/>
+          <description>
+            <text>Identity association type.</text>
+          </description>
+        </leaf>
+        <leaf name="server-duid">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>Server DUID.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="server-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Server IPv6 address.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Interface name.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="pe-vlan">
+          <type name="uint16"/>
+          <default value="1"/>
+          <description>
+            <text>PE VLAN ID.</text>
+          </description>
+        </leaf>
+        <leaf name="ce-vlan">
+          <type name="uint16"/>
+          <description>
+            <text>CE VLAN ID.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <description>
+            <text>VPN name.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="client-mac">
+          <type name="pub-type:mac-address"/>
+          <description>
+            <text>Client MAC address.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="rapid-commit">
+          <type name="rapid-commit-flag-type"/>
+          <description>
+            <text>Rapid Commit option.</text>
+          </description>
+        </leaf>
+        <leaf name="transaction-id">
+          <type name="uint32"/>
+          <description>
+            <text>Transaction ID.</text>
+          </description>
+        </leaf>
+        <leaf name="info-transaction-id">
+          <type name="uint32"/>
+          <description>
+            <text>Info transaction ID.</text>
+          </description>
+        </leaf>
+        <container name="iana-infos">
+          <description>
+            <text>List of identifying association for non-temporary addresses.</text>
+          </description>
+          <list name="iana-info">
+            <key value="ipv6-address"/>
+            <description>
+              <text>Operational state of identifying association for non-temporary addresses.</text>
+            </description>
+            <leaf name="ipv6-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address.</text>
+              </description>
+              <ext:support-filter value="true"/>
+            </leaf>
+            <leaf name="server-duid">
+              <type name="string">
+                <length value="1..256"/>
+              </type>
+              <description>
+                <text>Server DUID.</text>
+              </description>
+            </leaf>
+            <leaf name="server-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Server IPv6 address.</text>
+              </description>
+            </leaf>
+            <leaf name="valid-time">
+              <type name="string">
+                <length value="0..30"/>
+              </type>
+              <description>
+                <text>Valid time.</text>
+              </description>
+            </leaf>
+            <leaf name="lease">
+              <type name="uint32"/>
+              <units name="s"/>
+              <description>
+                <text>Lease time.</text>
+              </description>
+            </leaf>
+            <leaf name="remain-lease">
+              <type name="uint32"/>
+              <units name="s"/>
+              <description>
+                <text>Remaining lease.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="relay-table-status"/>
+              <description>
+                <text>Table status.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="iapd-infos">
+          <description>
+            <text>List of identifying association for prefix delegation.</text>
+          </description>
+          <list name="iapd-info">
+            <key value="ipv6-address"/>
+            <description>
+              <text>Operational state of identifying association for prefix delegation.</text>
+            </description>
+            <leaf name="ipv6-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address.</text>
+              </description>
+              <ext:support-filter value="true"/>
+            </leaf>
+            <leaf name="prefix">
+              <type name="uint32"/>
+              <description>
+                <text>IPv6 address prefix.</text>
+              </description>
+            </leaf>
+            <leaf name="server-duid">
+              <type name="string">
+                <length value="1..256"/>
+              </type>
+              <description>
+                <text>Server DUID.</text>
+              </description>
+            </leaf>
+            <leaf name="server-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Server IPv6 address.</text>
+              </description>
+            </leaf>
+            <leaf name="valid-time">
+              <type name="string">
+                <length value="0..30"/>
+              </type>
+              <description>
+                <text>Valid time.</text>
+              </description>
+            </leaf>
+            <leaf name="lease">
+              <type name="uint32"/>
+              <units name="s"/>
+              <description>
+                <text>Lease time.</text>
+              </description>
+            </leaf>
+            <leaf name="remain-lease">
+              <type name="uint32"/>
+              <units name="s"/>
+              <description>
+                <text>Remaining lease.</text>
+              </description>
+            </leaf>
+            <leaf name="status">
+              <type name="relay-table-status"/>
+              <description>
+                <text>Table status.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </grouping>
+</submodule>

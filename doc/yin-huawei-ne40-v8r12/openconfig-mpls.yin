@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-mpls"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-mpls="http://openconfig.net/yang/mpls"
+        xmlns:oc-mplst="http://openconfig.net/yang/mpls-types"
+        xmlns:oc-rsvp="http://openconfig.net/yang/rsvp"
+        xmlns:oc-ldp="http://openconfig.net/yang/ldp"
+        xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-sr="http://openconfig.net/yang/sr">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/mpls"/>
+  <prefix value="oc-mpls"/>
+  <import module="openconfig-mpls-types">
+    <prefix value="oc-mplst"/>
+  </import>
+  <import module="openconfig-mpls-rsvp">
+    <prefix value="oc-rsvp"/>
+  </import>
+  <import module="openconfig-mpls-ldp">
+    <prefix value="oc-ldp"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-segment-routing">
+    <prefix value="oc-sr"/>
+  </import>
+  <include module="openconfig-mpls-te"/>
+  <include module="openconfig-mpls-igp"/>
+  <include module="openconfig-mpls-static"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This module provides data definitions for configuration of
+Multiprotocol Label Switching (MPLS) and associated protocols for
+signaling and traffic engineering.
+
+RFC 3031: Multiprotocol Label Switching Architecture
+
+The MPLS / TE data model consists of several modules and
+submodules as shown below.  The top-level MPLS module describes
+the overall framework.  Three types of LSPs are supported:
+
+i) traffic-engineered (or constrained-path)
+
+ii) IGP-congruent (LSPs that follow the IGP path)
+
+iii) static LSPs which are not signaled
+
+The structure of each of these LSP configurations is defined in
+corresponding submodules.  Companion modules define the relevant
+configuration and operational data specific to key signaling
+protocols used in operational practice.
+
+
+                         +-------+
+       +----------------&gt;| MPLS  |&lt;--------------+
+       |                 +-------+               |
+       |                     ^                   |
+       |                     |                   |
+  +----+-----+      +--------+-------+     +-----+-----+
+  | TE LSPs  |      | IGP-based LSPs |     |static LSPs|
+  |          |      |                |     |           |
+  +----------+      +----------------+     +-----------+
+      ^  ^                    ^  ^
+      |  +----------------+   |  +--------+
+      |                   |   |           |
+      |   +------+      +-+---+-+      +--+--+
+      +---+ RSVP |      |SEGMENT|      | LDP |
+          +------+      |ROUTING|      +-----+
+                        +-------+
+</text>
+  </description>
+  <oc-ext:openconfig-version semver="3.1.0"/>
+  <revision date="2019-03-26">
+    <description>
+      <text>Add Pseudowire encapsulation.</text>
+    </description>
+    <reference>
+      <text>3.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>3.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-07-02">
+    <description>
+      <text>Add new RSVP-TE statistics, remove associated-rsvp-session
+leaf. Remove use of date-and-time.</text>
+    </description>
+    <reference>
+      <text>3.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-16">
+    <description>
+      <text>Included attributes for base LDP configuration.</text>
+    </description>
+    <reference>
+      <text>2.6.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-13">
+    <description>
+      <text>Add ttl-propagation to global MPLS config</text>
+    </description>
+    <reference>
+      <text>2.5.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-05">
+    <description>
+      <text>Fixed bugs in when statements on RSVP-TE attributes</text>
+    </description>
+    <reference>
+      <text>2.4.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Minor formatting fixes.</text>
+    </description>
+    <reference>
+      <text>2.4.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-06-21">
+    <description>
+      <text>Add TC bits typedef.</text>
+    </description>
+    <reference>
+      <text>2.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-03-22">
+    <description>
+      <text>Add RSVP calculated-absolute-subscription-bw</text>
+    </description>
+    <reference>
+      <text>2.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-26">
+    <description>
+      <text>Add RSVP Tspec, clarify units for RSVP, remove unused LDP</text>
+    </description>
+    <reference>
+      <text>2.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-12-15">
+    <description>
+      <text>Add additional MPLS parameters</text>
+    </description>
+    <reference>
+      <text>2.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-09-01">
+    <description>
+      <text>Revisions based on implementation feedback</text>
+    </description>
+    <reference>
+      <text>2.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-08-08">
+    <description>
+      <text>Public release of MPLS models</text>
+    </description>
+    <reference>
+      <text>1.0.1</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="mpls-admin-group-config">
+    <description>
+      <text>configuration data for MPLS link admin groups</text>
+    </description>
+    <leaf name="admin-group-name">
+      <type name="string"/>
+      <description>
+        <text>name for mpls admin-group</text>
+      </description>
+    </leaf>
+    <leaf name="bit-position">
+      <type name="uint32"/>
+      <description>
+        <text>bit-position value for mpls admin-group. The value
+for the admin group is an integer that represents one
+of the bit positions in the admin-group bitmask. Values
+between 0 and 31 are interpreted as the original limit
+of 32 admin groups. Values &gt;=32 are interpreted as
+extended admin group values as per RFC7308.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="mpls-admin-groups-top">
+    <description>
+      <text>top-level mpls admin-groups config
+and state containers</text>
+    </description>
+    <container name="mpls-admin-groups">
+      <description>
+        <text>Top-level container for admin-groups configuration
+and state</text>
+      </description>
+      <list name="admin-group">
+        <key value="admin-group-name"/>
+        <description>
+          <text>configuration of value to name mapping
+for mpls affinities/admin-groups</text>
+        </description>
+        <leaf name="admin-group-name">
+          <type name="leafref">
+            <path value="../config/admin-group-name"/>
+          </type>
+          <description>
+            <text>name for mpls admin-group</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configurable items for admin-groups</text>
+          </description>
+          <uses name="mpls-admin-group-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state for admin-groups</text>
+          </description>
+          <uses name="mpls-admin-group-config"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="mpls-te-igp-flooding-bandwidth-config">
+    <description>
+      <text>Configurable items for igp flooding bandwidth
+threshold configuration.</text>
+    </description>
+    <leaf name="threshold-type">
+      <type name="enumeration">
+        <enum name="DELTA">
+          <description>
+            <text>DELTA indicates that the local
+system should flood IGP updates when a
+change in reserved bandwidth &gt;= the specified
+delta occurs on the interface.</text>
+          </description>
+        </enum>
+        <enum name="THRESHOLD_CROSSED">
+          <description>
+            <text>THRESHOLD-CROSSED indicates that
+the local system should trigger an update (and
+hence flood) the reserved bandwidth when the
+reserved bandwidth changes such that it crosses,
+or becomes equal to one of the threshold values.</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>The type of threshold that should be used to specify the
+values at which bandwidth is flooded. DELTA indicates that
+the local system should flood IGP updates when a change in
+reserved bandwidth &gt;= the specified delta occurs on the
+interface. Where THRESHOLD_CROSSED is specified, the local
+system should trigger an update (and hence flood) the
+reserved bandwidth when the reserved bandwidth changes such
+that it crosses, or becomes equal to one of the threshold
+values</text>
+      </description>
+    </leaf>
+    <leaf name="delta-percentage">
+      <when condition="../threshold-type = 'DELTA'">
+        <description>
+          <text>The percentage delta can only be specified when the
+threshold type is specified to be a percentage delta of
+the reserved bandwidth</text>
+        </description>
+      </when>
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The percentage of the maximum-reservable-bandwidth
+considered as the delta that results in an IGP update
+being flooded</text>
+      </description>
+    </leaf>
+    <leaf name="threshold-specification">
+      <when condition="../threshold-type = 'THRESHOLD_CROSSED'">
+        <description>
+          <text>The selection of whether mirrored or separate threshold
+values are to be used requires user specified thresholds to
+be set</text>
+        </description>
+      </when>
+      <type name="enumeration">
+        <enum name="MIRRORED_UP_DOWN">
+          <description>
+            <text>MIRRORED_UP_DOWN indicates that a single set of
+threshold values should be used for both increasing
+and decreasing bandwidth when determining whether
+to trigger updated bandwidth values to be flooded
+in the IGP TE extensions.</text>
+          </description>
+        </enum>
+        <enum name="SEPARATE_UP_DOWN">
+          <description>
+            <text>SEPARATE_UP_DOWN indicates that a separate
+threshold values should be used for the increasing
+and decreasing bandwidth when determining whether
+to trigger updated bandwidth values to be flooded
+in the IGP TE extensions.</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>This value specifies whether a single set of threshold
+values should be used for both increasing and decreasing
+bandwidth when determining whether to trigger updated
+bandwidth values to be flooded in the IGP TE extensions.
+MIRRORED-UP-DOWN indicates that a single value (or set of
+values) should be used for both increasing and decreasing
+values, where SEPARATE-UP-DOWN specifies that the increasing
+and decreasing values will be separately specified</text>
+      </description>
+    </leaf>
+    <leaf-list name="up-thresholds">
+      <when condition="../threshold-type = 'THRESHOLD_CROSSED'and ../threshold-specification = 'SEPARATE_UP_DOWN'">
+        <description>
+          <text>A list of up-thresholds can only be specified when the
+bandwidth update is triggered based on crossing a
+threshold and separate up and down thresholds are
+required</text>
+        </description>
+      </when>
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The thresholds (expressed as a percentage of the maximum
+reservable bandwidth) at which bandwidth updates are to be
+triggered when the bandwidth is increasing.</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="down-thresholds">
+      <when condition="../threshold-type = 'THRESHOLD_CROSSED'and ../threshold-specification = 'SEPARATE_UP_DOWN'">
+        <description>
+          <text>A list of down-thresholds can only be specified when the
+bandwidth update is triggered based on crossing a
+threshold and separate up and down thresholds are
+required</text>
+        </description>
+      </when>
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The thresholds (expressed as a percentage of the maximum
+reservable bandwidth) at which bandwidth updates are to be
+triggered when the bandwidth is decreasing.</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="up-down-thresholds">
+      <when condition="../threshold-type = 'THRESHOLD_CROSSED'and ../threshold-specification = 'MIRRORED_UP_DOWN'">
+        <description>
+          <text>A list of thresholds corresponding to both increasing
+and decreasing bandwidths can be specified only when an
+update is triggered based on crossing a threshold, and
+the same up and down thresholds are required.</text>
+        </description>
+      </when>
+      <type name="oc-types:percentage"/>
+      <description>
+        <text>The thresholds (expressed as a percentage of the maximum
+reservable bandwidth of the interface) at which bandwidth
+updates are flooded - used both when the bandwidth is
+increasing and decreasing</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="mpls-te-igp-flooding-bandwidth">
+    <description>
+      <text>Top level group for traffic engineering
+database flooding options</text>
+    </description>
+    <container name="igp-flooding-bandwidth">
+      <description>
+        <text>Interface bandwidth change percentages
+that trigger update events into the IGP traffic
+engineering database (TED)</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for TED
+update threshold </text>
+        </description>
+        <uses name="mpls-te-igp-flooding-bandwidth-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State parameters for TED update threshold </text>
+        </description>
+        <uses name="mpls-te-igp-flooding-bandwidth-config"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="te-lsp-delay-config">
+    <description>
+      <text>Group for the timers goerning the delay
+in installation and cleanup of TE LSPs</text>
+    </description>
+    <leaf name="install-delay">
+      <type name="uint16">
+        <range value="0..3600"/>
+      </type>
+      <units name="seconds"/>
+      <description>
+        <text>delay the use of newly installed te lsp for a
+specified amount of time.</text>
+      </description>
+    </leaf>
+    <leaf name="cleanup-delay">
+      <type name="uint16"/>
+      <units name="seconds"/>
+      <description>
+        <text>delay the removal of old te lsp for a specified
+amount of time</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="te-interface-attributes-top">
+    <description>
+      <text>Top level grouping for attributes
+for TE interfaces.</text>
+    </description>
+    <list name="interface">
+      <key value="interface-id"/>
+      <description>
+        <text>List of TE interfaces</text>
+      </description>
+      <leaf name="interface-id">
+        <type name="leafref">
+          <path value="../config/interface-id"/>
+        </type>
+        <description>
+          <text>Reference to the interface id list key</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>Configuration parameters related to TE interfaces:</text>
+        </description>
+        <uses name="te-interface-attributes-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State parameters related to TE interfaces</text>
+        </description>
+        <uses name="te-interface-attributes-config"/>
+      </container>
+      <uses name="oc-if:interface-ref"/>
+      <uses name="mpls-te-igp-flooding-bandwidth"/>
+    </list>
+  </grouping>
+  <grouping name="te-interface-attributes-config">
+    <description>
+      <text>global level definitions for interfaces
+on which TE is run</text>
+    </description>
+    <leaf name="interface-id">
+      <type name="oc-if:interface-id"/>
+      <description>
+        <text>Id of the interface</text>
+      </description>
+    </leaf>
+    <leaf name="te-metric">
+      <type name="uint32"/>
+      <description>
+        <text>TE specific metric for the link</text>
+      </description>
+    </leaf>
+    <leaf-list name="srlg-membership">
+      <type name="leafref">
+        <path value="../../../../te-global-attributes/srlgs/srlg/name"/>
+      </type>
+      <description>
+        <text>list of references to named shared risk link groups that the
+interface belongs to.</text>
+      </description>
+    </leaf-list>
+    <leaf-list name="admin-group">
+      <type name="string"/>
+      <description>
+        <text>list of admin groups (by name) on the interface</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="mpls-te-lsp-timers">
+    <description>
+      <text>Grouping for traffic engineering timers</text>
+    </description>
+    <container name="te-lsp-timers">
+      <description>
+        <text>Definition for delays associated with setup
+and cleanup of TE LSPs</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters related
+to timers for TE LSPs</text>
+        </description>
+        <uses name="te-lsp-delay-config"/>
+        <uses name="te-tunnel-reoptimize-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State related to timers for TE LSPs</text>
+        </description>
+        <uses name="te-lsp-delay-config"/>
+        <uses name="te-tunnel-reoptimize-config"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="mpls-global-config">
+    <description>
+      <text>Definition of global MPLS configuration parameters</text>
+    </description>
+    <leaf name="null-label">
+      <type name="identityref">
+        <base name="oc-mplst:NULL_LABEL_TYPE"/>
+      </type>
+      <default value="oc-mplst:IMPLICIT"/>
+      <description>
+        <text>The null-label type used, implicit or explicit</text>
+      </description>
+    </leaf>
+    <leaf name="ttl-propagation">
+      <type name="boolean"/>
+      <default value="true"/>
+      <description>
+        <text>Enables TTL propagation across the MPLS domain.
+When ttl-propagation is set to true, the IP TTL
+is copied into the MPLS header TTL when pushing
+a label to an IP packet. If false, the IP TTL is
+not copied into the MPLS header TTL and, therefore,
+the IP TTL is not updated in the MPLS domain.</text>
+      </description>
+    </leaf>
+    <leaf name="pw-encapsulation">
+      <type name="identityref">
+        <base name="oc-mplst:PSEUDOWIRE_ENCAPSULATION"/>
+      </type>
+      <description>
+        <text>The PDU type to use with pseudowires.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="mpls-global-top">
+    <description>
+      <text>Top level grouping for global MPLS configuration </text>
+    </description>
+    <container name="config">
+      <description>
+        <text>Top level global MPLS configuration</text>
+      </description>
+      <uses name="mpls-global-config"/>
+    </container>
+    <container name="state">
+      <config value="false"/>
+      <description>
+        <text>Top level global MPLS state</text>
+      </description>
+      <uses name="mpls-global-config"/>
+    </container>
+  </grouping>
+  <grouping name="mpls-interfaces-top">
+    <description>
+      <text>Top level grouping for attributes
+for MPLS-enabled interfaces.</text>
+    </description>
+    <container name="interface-attributes">
+      <description>
+        <text>Parameters related to MPLS interfaces</text>
+      </description>
+      <list name="interface">
+        <key value="interface-id"/>
+        <description>
+          <text>List of TE interfaces</text>
+        </description>
+        <leaf name="interface-id">
+          <type name="leafref">
+            <path value="../config/interface-id"/>
+          </type>
+          <description>
+            <text>Reference to the interface id list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration parameters related to MPLS interfaces:</text>
+          </description>
+          <uses name="mpls-interface-attributes-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State parameters related to TE interfaces</text>
+          </description>
+          <uses name="mpls-interface-attributes-config"/>
+        </container>
+        <uses name="oc-if:interface-ref"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="mpls-interface-attributes-config">
+    <description>
+      <text>global level definitions for interfaces
+on which MPLS is run</text>
+    </description>
+    <leaf name="interface-id">
+      <type name="oc-if:interface-id"/>
+      <description>
+        <text>Indentifier for the MPLS interface</text>
+      </description>
+    </leaf>
+    <leaf name="mpls-enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable MPLS forwarding on this interface</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="mpls-label-block-config">
+    <description>
+      <text>Configuration parameters relating to an MPLS label block.</text>
+    </description>
+    <leaf name="local-id">
+      <type name="string"/>
+      <description>
+        <text>A local identifier for the global label block allocation.</text>
+      </description>
+    </leaf>
+    <leaf name="lower-bound">
+      <type name="oc-mplst:mpls-label"/>
+      <description>
+        <text>Lower bound of the global label block. The block is defined to include
+this label.</text>
+      </description>
+    </leaf>
+    <leaf name="upper-bound">
+      <type name="oc-mplst:mpls-label"/>
+      <description>
+        <text>Upper bound for the global label block. The block is defined to include
+this label.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="mpls-label-blocks-top">
+    <description>
+      <text>Top-level configuration and operational state parameters corresponding
+to reserved label blocks.</text>
+    </description>
+    <container name="reserved-label-blocks">
+      <description>
+        <text>A range of labels starting with the start-label and up-to and including
+the end label that should be allocated as reserved. These labels should
+not be utilised by any dynamic label allocation on the local system unless
+the allocating protocol is explicitly configured to specify that
+allocation of labels should be out of the label block specified.</text>
+      </description>
+      <list name="reserved-label-block">
+        <key value="local-id"/>
+        <description>
+          <text>A range of labels starting with the start-label up to and including
+the end label that should be allocated for use by a specific protocol.</text>
+        </description>
+        <leaf name="local-id">
+          <type name="leafref">
+            <path value="../config/local-id"/>
+          </type>
+          <description>
+            <text>A reference to a unique local identifier for this label block.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration parameters relating to the label block.</text>
+          </description>
+          <uses name="mpls-label-block-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State parameters relating to the label block.</text>
+          </description>
+          <uses name="mpls-label-block-config"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="mpls-top">
+    <description>
+      <text>Top level grouping for MPLS configuration and state</text>
+    </description>
+    <container name="mpls">
+      <description>
+        <text>Anchor point for mpls configuration and operational
+data</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>general mpls configuration applicable to any
+type of LSP and signaling protocol - label ranges,
+entropy label supportmay be added here</text>
+        </description>
+        <uses name="mpls-global-top"/>
+        <uses name="mpls-interfaces-top"/>
+        <uses name="mpls-label-blocks-top"/>
+      </container>
+      <container name="te-global-attributes">
+        <description>
+          <text>traffic-engineering global attributes</text>
+        </description>
+        <uses name="mpls-te-srlg-top"/>
+        <uses name="mpls-admin-groups-top"/>
+        <uses name="mpls-te-lsp-timers"/>
+      </container>
+      <container name="te-interface-attributes">
+        <description>
+          <text>traffic engineering attributes specific
+for interfaces</text>
+        </description>
+        <uses name="te-interface-attributes-top"/>
+      </container>
+      <container name="signaling-protocols">
+        <description>
+          <text>top-level signaling protocol configuration</text>
+        </description>
+        <uses name="oc-rsvp:rsvp-global"/>
+        <uses name="oc-ldp:ldp-global"/>
+        <uses name="oc-sr:sr-mpls-top"/>
+      </container>
+      <container name="lsps">
+        <description>
+          <text>LSP definitions and configuration</text>
+        </description>
+        <container name="constrained-path">
+          <description>
+            <text>traffic-engineered LSPs supporting different
+path computation and signaling methods</text>
+          </description>
+          <uses name="explicit-paths-top"/>
+          <uses name="te-tunnels-top"/>
+        </container>
+        <container name="unconstrained-path">
+          <description>
+            <text>LSPs that use the IGP-determined path, i.e., non
+traffic-engineered, or non constrained-path</text>
+          </description>
+          <uses name="igp-lsp-common"/>
+          <uses name="igp-lsp-setup"/>
+        </container>
+        <container name="static-lsps">
+          <description>
+            <text>statically configured LSPs, without dynamic
+signaling</text>
+          </description>
+          <uses name="static-lsp-top"/>
+        </container>
+      </container>
+    </container>
+  </grouping>
+</module>

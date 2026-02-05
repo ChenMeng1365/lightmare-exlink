@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bfd-static-vpls"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bfd-static-vpls="urn:huawei:yang:huawei-bfd-static-vpls"
+        xmlns:bfd="urn:huawei:yang:huawei-bfd"
+        xmlns:l2vpn="urn:huawei:yang:huawei-l2vpn"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bfd-static-vpls"/>
+  <prefix value="bfd-static-vpls"/>
+  <import module="huawei-bfd">
+    <prefix value="bfd"/>
+  </import>
+  <import module="huawei-l2vpn">
+    <prefix value="l2vpn"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bidirectional Forwarding Detection (BFD) is a detection mechanism used uniformly on the entire network. BFD is used to rapidly detect and monitor the connectivity of links or IP routes on a network.</text>
+  </description>
+  <revision date="2020-03-13">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-30">
+    <description>
+      <text>Units correct.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-06-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bfd"/>
+  <augment target-node="/bfd:bfd/bfd:sessions/bfd:session/bfd:session-type/bfd:static/bfd:static-session-link-type">
+    <description>
+      <text>Configure BFD for VSI PW.</text>
+    </description>
+    <case name="vsi-pw">
+      <description>
+        <text>List of BFD statistic session configurations for VSI-PW.</text>
+      </description>
+      <leaf name="min-tx-interval-static-vsi-pw">
+        <type name="uint32">
+          <range value="3..20000"/>
+        </type>
+        <units name="ms"/>
+        <default value="10"/>
+        <description>
+          <text>Minimum interval between sending packets.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval-static-vsi-pw">
+        <type name="uint32">
+          <range value="3..20000"/>
+        </type>
+        <units name="ms"/>
+        <default value="10"/>
+        <description>
+          <text>Minimum interval between receiving packets.</text>
+        </description>
+      </leaf>
+      <leaf name="local-discriminator-static-vsi-pw">
+        <when condition="not(../is-group-static-vsi-pw='true')"/>
+        <type name="uint32">
+          <range value="1..16384"/>
+        </type>
+        <description>
+          <text>Local discriminator of a BFD session. Note that the local discriminator must correspond to the remote discriminator on the peer of the BFD session.</text>
+        </description>
+      </leaf>
+      <leaf name="remote-discriminator-static-vsi-pw">
+        <when condition="not(../is-group-static-vsi-pw='true')"/>
+        <type name="uint32">
+          <range value="1..4294967295"/>
+        </type>
+        <description>
+          <text>Remote discriminator of a BFD session. Note that the remote discriminator must correspond to the local discriminator on the peer of the BFD session.</text>
+        </description>
+      </leaf>
+      <leaf name="use-default-ip-static-vsi-pw">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable a multicast address to be used as the destination address for sending BFD packets. You must specify an outbound interface.</text>
+        </description>
+      </leaf>
+      <leaf name="vsi-name-static-vsi-pw">
+        <type name="leafref">
+          <path value="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Name of a VSI.</text>
+        </description>
+      </leaf>
+      <leaf name="peer-ip-static-vsi-pw">
+        <type name="leafref">
+          <path value="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:vpls/l2vpn:ldp-signaling/l2vpn:pws/l2vpn:pw/l2vpn:peer-ip"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Peer IP address of a VSI.</text>
+        </description>
+      </leaf>
+      <leaf name="vc-id-static-vsi-pw">
+        <type name="leafref">
+          <path value="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:vpls/l2vpn:ldp-signaling/l2vpn:pws/l2vpn:pw/l2vpn:negotiation-vc-id"/>
+        </type>
+        <description>
+          <text>Specify a VC ID.</text>
+        </description>
+      </leaf>
+      <leaf name="remote-peer-static-vsi-pw">
+        <when condition="../use-default-ip-static-vsi-pw='false'"/>
+        <type name="inet:ipv4-address-no-zone"/>
+        <description>
+          <text>Remote address of the VSI.</text>
+        </description>
+      </leaf>
+      <leaf name="auto-calc-ttl-static-vsi-pw">
+        <when condition="../remote-peer-static-vsi-pw"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable automatically calculate the VSI TTL.</text>
+        </description>
+      </leaf>
+      <leaf name="pw-ttl-static-vsi-pw">
+        <when condition="../remote-peer-static-vsi-pw and ../auto-calc-ttl-static-vsi-pw='false'"/>
+        <type name="uint16">
+          <range value="1..255"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Specify the VSI TTL.</text>
+        </description>
+      </leaf>
+      <leaf name="is-group-static-vsi-pw">
+        <when condition="../auto-calc-ttl-static-vsi-pw='false'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable session group.</text>
+        </description>
+      </leaf>
+    </case>
+  </augment>
+  <augment target-node="/bfd:bfd/bfd:sessions/bfd:session">
+    <description>
+      <text>Configure bfd group for vpls pw.</text>
+    </description>
+    <container name="vpls-groups">
+      <when condition="../is-group-static-vsi-pw='true'"/>
+      <description>
+        <text>List of BFD sub-session.</text>
+      </description>
+      <list name="vpls-group">
+        <key value="sub-local-discriminator"/>
+        <description>
+          <text>Configure BFD sub-session.</text>
+        </description>
+        <leaf name="sub-local-discriminator">
+          <type name="uint32">
+            <range value="1..16384"/>
+          </type>
+          <description>
+            <text>Local discriminator of a BFD session. When the BFD session is created in static auto-negotiation mode, you do not need to set this parameter. Note that the local discriminator must correspond to the remote discriminator on the peer of the BFD session. That is, the value of the local discriminator must be the same as the value of the remote discriminator.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-remote-discriminator">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Remote discriminator of a BFD session. When the BFD session is created in static auto-negotiation mode, you do not need to set this parameter. Note that the remote discriminator must correspond to the local discriminator on the peer of the BFD session. That is, the value of the remote discriminator must be the same as the value of the local discriminator.</text>
+          </description>
+        </leaf>
+        <leaf name="sub-select-slot-id">
+          <type name="string">
+            <length value="1..19"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>ID of the slot for forcible board selection.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-sflow"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sflow="http://www.zte.com.cn/zxr10/netconf/schema/rosng/sflow"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/sflow"/>
+  <prefix value="sflow"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>ZXR10 ROSNG:the netconf model for sflow.</text>
+  </description>
+  <revision date="2020-09-14">
+    <description>
+      <text>1.Add choice node mode:/sflow:configuration/sflow:sflow/sflow:receivers/sflow:receiver/sflow:rcvr-dst-addr/sflow:vrf-mode
+2.Add case mode:/sflow:configuration/sflow:sflow/sflow:receivers/sflow:receiver/sflow:rcvr-dst-addr/sflow:vrf-mode/sflow:vrf-common
+3.Add case mode:/sflow:configuration/sflow:sflow/sflow:receivers/sflow:receiver/sflow:rcvr-dst-addr/sflow:vrf-mode/sflow:vrf-dcn
+4.Add leaf mode:/sflow:configuration/sflow:sflow/sflow:receivers/sflow:receiver/sflow:rcvr-dst-addr/sflow:vrf-mode/sflow:vrf-dcn/sflow:dcn
+5.Add case mode:/sflow:configuration/sflow:sflow/sflow:receivers/sflow:receiver/sflow:rcvr-dst-addr/sflow:vrf-mode/sflow:vrf-config-choice-clear
+6.Add container mode:/sflow:configuration/sflow:sflow/sflow:receivers/sflow:receiver/sflow:rcvr-dst-addr/sflow:vrf-mode/sflow:vrf-config-choice-clear/sflow:vrf-config-all-clear</text>
+    </description>
+  </revision>
+  <revision date="2020-07-31">
+    <description>
+      <text>Support binding ACL on the interface.
+Add leaf node bind-acl: /configuration/sflow/intf-flow-samplers/intf-flow-sampler/bind-acl.</text>
+    </description>
+  </revision>
+  <revision date="2019-05-22">
+    <description>
+      <text>Support IPv6.
+1. Add choice node agent-address: /state/sflow/agent/agent-address.
+   Add case ipv4 in choice node agent-address, then move leaf /state/sflow/agent/agent-addr to case ipv4;
+   Add case ipv6 in choice node agent-address: /state/sflow/agent/agent-address/ipv6.
+2.Change node /configuration/sflow/agent/agent-address/ipv6/agent-addr-ipv6 value type from 16unipv6 to 16ipv6</text>
+    </description>
+  </revision>
+  <revision date="2019-04-25">
+    <description>
+      <text>Support IPv6.
+1. Add choice node agent-address: /configuration/sflow/agent/agent-address.
+Add case ipv4 in choice node agent-address, then move leaf /configuration/sflow/agent/agent-addr to case ipv4;
+Add case ipv6 in choice node agent-address: /configuration/sflow/agent/agent-address/ipv6.
+2. Add choice node address: /configuration/sflow/receivers/receiver/rcvr-dst-addr/address.
+Add case ipv4 in choice node address, then move leaf /configuration/sflow/receivers/receiver/rcvr-dst-addr/ipv4-addr to case ipv4;
+Add case ipv6 to choice node address.
+3. Add leaf node export-format-ipv4: /configuration/sflow/flow-samplers/flow-sampler/export-format-ipv4.
+4. Add container node export-formats: /configuration/sflow/flow-samplers/flow-sampler/export-formats.
+5. Change leaf status absolete:
+/configuration/sflow/agent/agent-addr-family;
+/configuration/sflow/receivers/receiver/rcvr-dst-addr/addr-family.</text>
+    </description>
+  </revision>
+  <revision date="2015-11-27">
+    <description>
+      <text>modefy rcvr-port range from 0 to 65535 into from 1 to 65535.</text>
+    </description>
+  </revision>
+  <revision date="2015-07-28">
+    <description>
+      <text>modify the config flag for the state node and its children.</text>
+    </description>
+  </revision>
+  <revision date="2013-12-23">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>SFLOW module configuration model</text>
+    </description>
+    <container name="sflow">
+      <description>
+        <text>SFLOW module configuration root node</text>
+      </description>
+      <container name="receivers">
+        <description>
+          <text>SFLOW receiver info</text>
+        </description>
+        <list name="receiver">
+          <description>
+            <text>SFLOW receiver info</text>
+          </description>
+          <key value="rcvr-name"/>
+          <leaf name="rcvr-name">
+            <description>
+              <text>SFLOW receiver name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+          <leaf name="rcvr-port">
+            <description>
+              <text>SFLOW receiver port</text>
+            </description>
+            <type name="uint16">
+              <range value="1..65535"/>
+            </type>
+            <default value="6343"/>
+          </leaf>
+          <container name="rcvr-dst-addr">
+            <description>
+              <text>SFLOW receiver destination address</text>
+            </description>
+            <presence value="receiver destination address"/>
+            <choice name="address">
+              <description>
+                <text>SFLOW receiver destination address</text>
+              </description>
+              <case name="ipv4">
+                <description>
+                  <text>SFLOW receiver destination IPv4 address</text>
+                </description>
+                <leaf name="ipv4-addr">
+                  <description>
+                    <text>SFLOW receiver destination address</text>
+                  </description>
+                  <type name="ncd:ipv4-address"/>
+                  <mandatory value="true"/>
+                </leaf>
+              </case>
+              <case name="ipv6">
+                <description>
+                  <text>SFLOW receiver destination IPv6 address</text>
+                </description>
+                <leaf name="ipv6-addr">
+                  <description>
+                    <text>SFLOW receiver destination IPv6 address</text>
+                  </description>
+                  <type name="ncd:ipv6-address"/>
+                  <mandatory value="true"/>
+                </leaf>
+                <ncd:revise-date date="2019-04-25"/>
+              </case>
+            </choice>
+            <leaf name="addr-family">
+              <status value="obsolete">
+                <ncd:revise-date date="2019-04-25"/>
+              </status>
+              <description>
+                <text>SFLOW receiver destination address family</text>
+              </description>
+              <type name="enumeration">
+                <enum name="ipv4">
+                  <value value="1"/>
+                </enum>
+              </type>
+            </leaf>
+            <choice name="vrf-mode">
+              <description>
+                <text>Specify the type and name of vrf.</text>
+              </description>
+              <case name="vrf-common">
+                <description>
+                  <text>Specify vrf name which is not reserved.</text>
+                </description>
+                <leaf name="vrf-name">
+                  <description>
+                    <text>SFLOW receiver vrf name.</text>
+                  </description>
+                  <type name="string">
+                    <length value="1..32"/>
+                  </type>
+                </leaf>
+              </case>
+              <case name="vrf-dcn">
+                <description>
+                  <text>Specify dcn vrf.</text>
+                </description>
+                <leaf name="dcn">
+                  <description>
+                    <text>Specify dcn vrf.</text>
+                  </description>
+                  <type name="empty"/>
+                </leaf>
+                <ncd:revise-date date="2020-09-14"/>
+              </case>
+              <case name="vrf-config-choice-clear">
+                <description>
+                  <text>Remove all VRF configuration within this choice.</text>
+                </description>
+                <container name="vrf-config-all-clear">
+                  <description>
+                    <text>Remove all VRF configuration of this instance.</text>
+                  </description>
+                  <presence value="vrf-config-all-clear"/>
+                </container>
+                <ncd:revise-date date="2020-09-14"/>
+              </case>
+            </choice>
+          </container>
+        </list>
+      </container>
+      <container name="flow-samplers">
+        <description>
+          <text>Flow sampler strategy</text>
+        </description>
+        <list name="flow-sampler">
+          <description>
+            <text>Flow sampler strategy</text>
+          </description>
+          <key value="fs-name"/>
+          <leaf name="fs-name">
+            <description>
+              <text>Flow sampler name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+          <leaf name="rcvr-name">
+            <description>
+              <text>Receiver name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+          <leaf name="sampler-rate">
+            <description>
+              <text>Sampler rate</text>
+            </description>
+            <type name="uint32">
+              <range value="128..65535"/>
+            </type>
+            <default value="400"/>
+          </leaf>
+          <leaf name="export-format-ipv4">
+            <description>
+              <text>Sflow export packet format IPv4</text>
+            </description>
+            <type name="empty"/>
+            <ncd:revise-date date="2019-04-25"/>
+          </leaf>
+          <container name="export-formats">
+            <description>
+              <text>Sflow export packet format</text>
+            </description>
+            <list name="export-format">
+              <description>
+                <text>Sflow export packet format</text>
+              </description>
+              <key value="export-type"/>
+              <leaf name="export-type">
+                <description>
+                  <text>Sflow export packet format type</text>
+                </description>
+                <type name="enumeration">
+                  <enum name="ipv6">
+                    <value value="2"/>
+                  </enum>
+                </type>
+              </leaf>
+            </list>
+            <ncd:revise-date date="2019-04-25"/>
+          </container>
+        </list>
+      </container>
+      <container name="intf-flow-samplers">
+        <description>
+          <text>Flow sampler on interface</text>
+        </description>
+        <list name="intf-flow-sampler">
+          <description>
+            <text>Flow sampler on interface</text>
+          </description>
+          <key value="intf-name"/>
+          <leaf name="intf-name">
+            <description>
+              <text>Interface name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="fs-name">
+            <description>
+              <text>Flow sampler name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+          <leaf name="direction">
+            <description>
+              <text>Flow sampler direction</text>
+            </description>
+            <type name="enumeration">
+              <enum name="input">
+                <value value="1"/>
+              </enum>
+              <enum name="output">
+                <value value="2"/>
+              </enum>
+              <enum name="all">
+                <value value="3"/>
+              </enum>
+            </type>
+            <default value="all"/>
+          </leaf>
+          <leaf name="bind-acl">
+            <description>
+              <text>Whether bind ACL on the interface</text>
+            </description>
+            <type name="boolean"/>
+            <ncd:revise-date date="2020-07-31"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="counter-pollers">
+        <description>
+          <text>Counter poller strategy</text>
+        </description>
+        <list name="counter-poller">
+          <description>
+            <text>Counter poller strategy</text>
+          </description>
+          <key value="cp-name"/>
+          <leaf name="cp-name">
+            <description>
+              <text>Counter poller name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+          <leaf name="rcvr-name">
+            <description>
+              <text>Receiver name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+          <leaf name="cp-interval">
+            <description>
+              <text>Counter poller interval</text>
+            </description>
+            <type name="uint32">
+              <range value="10..400"/>
+            </type>
+            <units name="second"/>
+            <default value="20"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="intf-counter-pollers">
+        <description>
+          <text>Counter poller on interface</text>
+        </description>
+        <list name="intf-counter-poller">
+          <description>
+            <text>Counter poller on interface</text>
+          </description>
+          <key value="intf-name"/>
+          <leaf name="intf-name">
+            <description>
+              <text>Interface name</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="cp-name">
+            <description>
+              <text>Counter poller name</text>
+            </description>
+            <type name="string">
+              <length value="1..35"/>
+            </type>
+          </leaf>
+        </list>
+      </container>
+      <container name="agent">
+        <description>
+          <text>SFLOW agent</text>
+        </description>
+        <presence value="sflow agent"/>
+        <leaf name="agent-addr-family">
+          <status value="obsolete">
+            <ncd:revise-date date="2019-04-25"/>
+          </status>
+          <description>
+            <text>Agent address family</text>
+          </description>
+          <type name="enumeration">
+            <enum name="ipv4">
+              <value value="1"/>
+            </enum>
+          </type>
+        </leaf>
+        <choice name="agent-address">
+          <description>
+            <text>SFLOW agent address</text>
+          </description>
+          <mandatory value="true"/>
+          <case name="ipv4">
+            <description>
+              <text>SFLOW agent IPv4 address</text>
+            </description>
+            <leaf name="agent-addr">
+              <description>
+                <text>Agent address</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+              <mandatory value="true"/>
+            </leaf>
+          </case>
+          <case name="ipv6">
+            <description>
+              <text>SFLOW agent IPv6 address</text>
+            </description>
+            <leaf name="agent-addr-ipv6">
+              <description>
+                <text>Agent IPv6 address</text>
+              </description>
+              <type name="ncd:ipv6-address"/>
+              <mandatory value="true"/>
+            </leaf>
+            <ncd:revise-date date="2019-04-25"/>
+          </case>
+        </choice>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>SFLOW module state model.</text>
+    </description>
+    <container name="sflow">
+      <description>
+        <text>SFLOW module query root node</text>
+      </description>
+      <container name="agent">
+        <description>
+          <text>SFLOW agent address</text>
+        </description>
+        <leaf name="sflow-version">
+          <description>
+            <text>SFLOW version</text>
+          </description>
+          <type name="ncd:string-all"/>
+        </leaf>
+        <leaf name="agent-addr-family">
+          <description>
+            <text>SFLOW agent address family</text>
+          </description>
+          <type name="enumeration">
+            <enum name="invaild">
+              <value value="0"/>
+            </enum>
+            <enum name="ipv4">
+              <value value="1"/>
+            </enum>
+            <enum name="ipv6">
+              <value value="2"/>
+            </enum>
+          </type>
+        </leaf>
+        <choice name="agent-address">
+          <description>
+            <text>SFLOW agent address</text>
+          </description>
+          <case name="ipv4">
+            <description>
+              <text>SFLOW agent IPv4 address</text>
+            </description>
+            <leaf name="agent-addr">
+              <description>
+                <text>Agent address</text>
+              </description>
+              <type name="ncd:ipv4-address"/>
+              <mandatory value="true"/>
+            </leaf>
+          </case>
+          <case name="ipv6">
+            <description>
+              <text>SFLOW agent IPv6 address</text>
+            </description>
+            <leaf name="agent-addr-ipv6">
+              <description>
+                <text>Agent IPv6 address</text>
+              </description>
+              <type name="ncd:ipv6-address"/>
+              <mandatory value="true"/>
+            </leaf>
+            <ncd:revise-date date="2019-05-22"/>
+          </case>
+        </choice>
+        <leaf name="agent-addr-from">
+          <description>
+            <text>SFLOW agent address user config flag</text>
+          </description>
+          <type name="enumeration">
+            <enum name="AutomaticAcquisition">
+              <value value="0"/>
+            </enum>
+            <enum name="MannualyConfiged">
+              <value value="1"/>
+            </enum>
+          </type>
+          <default value="AutomaticAcquisition"/>
+        </leaf>
+      </container>
+    </container>
+  </container>
+</module>

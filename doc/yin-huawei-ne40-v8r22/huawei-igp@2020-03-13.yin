@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-igp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:igp="urn:huawei:yang:huawei-igp"
+        xmlns:mpls-te="urn:huawei:yang:huawei-mpls-te"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-igp"/>
+  <prefix value="igp"/>
+  <import module="huawei-mpls-te">
+    <prefix value="mpls-te"/>
+  </import>
+  <import module="huawei-tunnel-management">
+    <prefix value="tnlm"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>IGP management.</text>
+  </description>
+  <revision date="2020-03-13">
+    <description>
+      <text>Modify the format specification.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-03">
+    <description>
+      <text>Reconstructing Yang file by yin mechanism.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-04">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="mpls-te"/>
+  <typedef name="shortcut-mode">
+    <type name="enumeration">
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>The IGP shortcut function is disabled.</text>
+        </description>
+      </enum>
+      <enum name="isis">
+        <value value="1"/>
+        <description>
+          <text>To enable the IGP shortcut mode as ISIS.</text>
+        </description>
+      </enum>
+      <enum name="ospf">
+        <value value="2"/>
+        <description>
+          <text>To enable the IGP shortcut mode as OSPF.</text>
+        </description>
+      </enum>
+      <enum name="both">
+        <value value="3"/>
+        <description>
+          <text>To enable the IGP shortcut mode as both.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Interface IGP short cut mode.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/tnlm:tunnel-protocol/tnlm:type/mpls-te:mpls-te/mpls-te:te-tunnel">
+    <description>
+      <text>IGP augment to MPLS TE.</text>
+    </description>
+    <container name="igp-attr">
+      <when condition="../mpls-te:common-attributes/mpls-te:signal-protocol!='cr-static'"/>
+      <description>
+        <text>Configure IGP attribute of tunnel interface.</text>
+      </description>
+      <leaf name="adv-enable">
+        <type name="boolean"/>
+        <must condition="../adv-enable='false' or (../../mpls-te:common-attributes/mpls-te:signal-protocol!='segment-routing' and ../shortcut-type!='ospf' and ../shortcut-type!='isis')"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable tunnel interface forwarding adjacency based on tunnel interfaces. An MPLE TE tunnel can be advertised as a virtual link over an IGP network. The virtual link can participate in route calculation.</text>
+        </description>
+      </leaf>
+      <leaf name="adv-ipv6-enable">
+        <type name="boolean"/>
+        <must condition="../adv-ipv6-enable='false' or ../adv-enable='true'"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable tunnel interface forwarding adjacency IPv6 based on tunnel interfaces. An MPLE TE tunnel can be advertised as a virtual link over an IGP network. The virtual link can participate in route calculation.</text>
+        </description>
+      </leaf>
+      <leaf name="hold-time">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <units name="ms"/>
+        <must condition="../hold-time=0 or ../adv-enable='true' or ../shortcut-type='isis'"/>
+        <default value="0"/>
+        <description>
+          <text>When tunnel get down, the time of notifying tunnel as virtual link to other routers.</text>
+        </description>
+      </leaf>
+      <leaf name="shortcut-type">
+        <type name="shortcut-mode"/>
+        <must condition="../shortcut-type='disable' or ../adv-enable!='true'"/>
+        <default value="disable"/>
+        <description>
+          <text>Tunnel interface shortcut types.</text>
+        </description>
+      </leaf>
+      <choice name="metric-type">
+        <description>
+          <text>IGP metric types of tunnel interfaces. Relative metric type and absolute metric type.</text>
+        </description>
+        <case name="relative">
+          <description>
+            <text>IGP relative metric value of a tunnel interface.</text>
+          </description>
+          <leaf name="relative">
+            <type name="int32">
+              <range value="-10..10"/>
+            </type>
+            <description>
+              <text>IGP relative metric value of a tunnel interface.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="absolute">
+          <description>
+            <text>IGP absolute metric value of a tunnel interface.</text>
+          </description>
+          <leaf name="absolute">
+            <type name="int32">
+              <range value="1..65535"/>
+            </type>
+            <description>
+              <text>IGP absolute metric value of a tunnel interface.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+    </container>
+  </augment>
+</module>

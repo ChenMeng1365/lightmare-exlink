@@ -1,0 +1,1337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-pcc"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pcc="urn:huawei:yang:huawei-pcc"
+        xmlns:ssl="urn:huawei:yang:huawei-ssl"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:huawei:yang:huawei-pcc"/>
+  <prefix value="pcc"/>
+  <import module="huawei-ssl">
+    <prefix value="ssl"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Path Computation Client (PCC).</text>
+  </description>
+  <revision date="2020-09-25">
+    <description>
+      <text>Added DSCP for connect-server.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-08-18">
+    <description>
+      <text>Added PCC nodes for srv6 te policy.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-07-15">
+    <description>
+      <text>Added private syntax to the keychain name.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-24">
+    <description>
+      <text>Fixed some problems.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-10">
+    <description>
+      <text>Fixed some nodes description and condition.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-06-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="pce"/>
+  <typedef name="pce-client-fsm-state">
+    <type name="enumeration">
+      <enum name="idle">
+        <value value="0"/>
+        <description>
+          <text>The FSM status of a PCE client is idle.</text>
+        </description>
+      </enum>
+      <enum name="tcp-pending">
+        <value value="1"/>
+        <description>
+          <text>The FSM status of a PCE client is pending.</text>
+        </description>
+      </enum>
+      <enum name="open-wait">
+        <value value="2"/>
+        <description>
+          <text>The FSM status of a PCE client is open-wait.</text>
+        </description>
+      </enum>
+      <enum name="keep-wait">
+        <value value="3"/>
+        <description>
+          <text>The FSM status of a PCE client is keep-wait.</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <value value="4"/>
+        <description>
+          <text>The FSM status of a PCE client is Up.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>PCE FSM state.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-ssn-down-reason-type">
+    <type name="enumeration">
+      <enum name="none">
+        <value value="0"/>
+        <description>
+          <text>None.</text>
+        </description>
+      </enum>
+      <enum name="no-explaination">
+        <value value="1"/>
+        <description>
+          <text>No explanation.</text>
+        </description>
+      </enum>
+      <enum name="hold-timer-expired">
+        <value value="2"/>
+        <description>
+          <text>Hold timer expired.</text>
+        </description>
+      </enum>
+      <enum name="malformed-msg-received">
+        <value value="3"/>
+        <description>
+          <text>Malformed message received.</text>
+        </description>
+      </enum>
+      <enum name="max-unknow-req-received">
+        <value value="4"/>
+        <description>
+          <text>Maximum unknown request/reply messages received.</text>
+        </description>
+      </enum>
+      <enum name="max-unknow-msg-received">
+        <value value="5"/>
+        <description>
+          <text>Maximum unknown messages received.</text>
+        </description>
+      </enum>
+      <enum name="reset-session-received">
+        <value value="6"/>
+        <description>
+          <text>Reset session received from administrator.</text>
+        </description>
+      </enum>
+      <enum name="session-source-address-change">
+        <value value="7"/>
+        <description>
+          <text>Session source address changed.</text>
+        </description>
+      </enum>
+      <enum name="protocol-error-msg-received">
+        <value value="8"/>
+        <description>
+          <text>Protocol error message received.</text>
+        </description>
+      </enum>
+      <enum name="protocol-close-msg-received">
+        <value value="9"/>
+        <description>
+          <text>Protocol close message received.</text>
+        </description>
+      </enum>
+      <enum name="sock-error-msg-received">
+        <value value="10"/>
+        <description>
+          <text>Socket close/error message received.</text>
+        </description>
+      </enum>
+      <enum name="open-msg-up-session">
+        <value value="11"/>
+        <description>
+          <text>Protocol open message received during session Up.</text>
+        </description>
+      </enum>
+      <enum name="mandatory-tlv-miss">
+        <value value="12"/>
+        <description>
+          <text>Mandatory TLV/object missing.</text>
+        </description>
+      </enum>
+      <enum name="multiple-connections-received">
+        <value value="13"/>
+        <description>
+          <text>Multiple connections received.</text>
+        </description>
+      </enum>
+      <enum name="association-format-changed">
+        <value value="14"/>
+        <description>
+          <text>Association Format Changed.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Time when session became active.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-server-status-type">
+    <type name="enumeration">
+      <enum name="normal">
+        <value value="0"/>
+        <description>
+          <text>PCE Server Status is Normal.</text>
+        </description>
+      </enum>
+      <enum name="overloaded">
+        <value value="1"/>
+        <description>
+          <text>PCE Server Status is Overloaded.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>PCE server status.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-lsp-delegate-state">
+    <type name="enumeration">
+      <enum name="no">
+        <value value="0"/>
+        <description>
+          <text>LSP is not delegated.</text>
+        </description>
+      </enum>
+      <enum name="yes">
+        <value value="1"/>
+        <description>
+          <text>LSP is delegated.</text>
+        </description>
+      </enum>
+      <enum name="returned">
+        <value value="2"/>
+        <description>
+          <text>LSP delegation is returned.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LSP Delegate State.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-lsp-state-type">
+    <type name="enumeration">
+      <enum name="down">
+        <value value="0"/>
+        <description>
+          <text>Down.</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>Up.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="2"/>
+        <description>
+          <text>Active.</text>
+        </description>
+      </enum>
+      <enum name="going-down">
+        <value value="3"/>
+        <description>
+          <text>Going Down.</text>
+        </description>
+      </enum>
+      <enum name="going-up">
+        <value value="4"/>
+        <description>
+          <text>Going Up.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LSP State.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-lsp-init-type">
+    <type name="enumeration">
+      <enum name="pcc-initiated">
+        <value value="0"/>
+        <description>
+          <text>LSP is created by PCC.</text>
+        </description>
+      </enum>
+      <enum name="pce-initiated">
+        <value value="1"/>
+        <description>
+          <text>LSP is created by PCE.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>LSP Creator Type.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-segment-type">
+    <type name="enumeration">
+      <enum name="node">
+        <value value="0"/>
+        <description>
+          <text>Node.</text>
+        </description>
+      </enum>
+      <enum name="adjacency">
+        <value value="1"/>
+        <description>
+          <text>Adjacency.</text>
+        </description>
+      </enum>
+      <enum name="none">
+        <value value="2"/>
+        <description>
+          <text>None.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Segment Type.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-sr-policy-protocol-origin-type">
+    <type name="enumeration">
+      <enum name="pcep">
+        <value value="10"/>
+        <description>
+          <text>PCEP.</text>
+        </description>
+      </enum>
+      <enum name="bgp">
+        <value value="20"/>
+        <description>
+          <text>BGP.</text>
+        </description>
+      </enum>
+      <enum name="configuration">
+        <value value="30"/>
+        <description>
+          <text>Manual config.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SR Policy protocol origin type.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-cpath-state-type">
+    <type name="enumeration">
+      <enum name="down">
+        <value value="0"/>
+        <description>
+          <text>Down.</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>Up.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="2"/>
+        <description>
+          <text>Active.</text>
+        </description>
+      </enum>
+      <enum name="going-down">
+        <value value="3"/>
+        <description>
+          <text>Going down.</text>
+        </description>
+      </enum>
+      <enum name="going-up">
+        <value value="4"/>
+        <description>
+          <text>Going up.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Candidate path state.</text>
+    </description>
+  </typedef>
+  <typedef name="pce-client-segment-list-state-type">
+    <type name="enumeration">
+      <enum name="down">
+        <value value="0"/>
+        <description>
+          <text>Down.</text>
+        </description>
+      </enum>
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>Up.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="2"/>
+        <description>
+          <text>Active.</text>
+        </description>
+      </enum>
+      <enum name="going-down">
+        <value value="3"/>
+        <description>
+          <text>Going down.</text>
+        </description>
+      </enum>
+      <enum name="going-up">
+        <value value="4"/>
+        <description>
+          <text>Going up.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Segment list state.</text>
+    </description>
+  </typedef>
+  <container name="pcc">
+    <presence value="Enter pce-client view."/>
+    <description>
+      <text>Path Computation Client (PCC).</text>
+    </description>
+    <container name="attribute">
+      <description>
+        <text>Configure attribute of a PCE client.</text>
+      </description>
+      <leaf name="sr-capability">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable segment routing capability.</text>
+        </description>
+      </leaf>
+      <leaf name="srv6-capability">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable segment routing IPv6 capability.</text>
+        </description>
+      </leaf>
+      <leaf name="multi-delegate">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Multi-delegate support.</text>
+        </description>
+      </leaf>
+      <leaf name="stitch-label-capability">
+        <when condition="../sr-capability='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Label Stitch capability.</text>
+        </description>
+      </leaf>
+      <leaf name="initiated-capability">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable PCE initiated capability.</text>
+        </description>
+      </leaf>
+      <leaf name="association-type-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable New Association based on IETF.</text>
+        </description>
+      </leaf>
+      <leaf name="ppag-standard">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable PPAG standard protocol.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="timer">
+      <must condition="hold-time&gt;=keepalive-time"/>
+      <description>
+        <text>Configure timer of PCE client.</text>
+      </description>
+      <leaf name="hold-time">
+        <type name="uint16">
+          <range value="0..255"/>
+        </type>
+        <units name="s"/>
+        <default value="120"/>
+        <description>
+          <text>Time to declare PCE session dead.</text>
+        </description>
+      </leaf>
+      <leaf name="keepalive-time">
+        <type name="uint16">
+          <range value="0..255"/>
+        </type>
+        <units name="s"/>
+        <default value="30"/>
+        <description>
+          <text>Time to send Keepalive messages on active PCE sessions.</text>
+        </description>
+      </leaf>
+      <leaf name="delegate-hold-time">
+        <type name="uint16">
+          <range value="30..255"/>
+        </type>
+        <units name="s"/>
+        <default value="30"/>
+        <description>
+          <text>LSP delegate timer sets the LSP delegate keep
+time when the connection with server is break or when the higher preference server session is Up.</text>
+        </description>
+      </leaf>
+      <leaf name="state-timeout-time">
+        <type name="uint16">
+          <range value="0..1800"/>
+        </type>
+        <units name="s"/>
+        <default value="30"/>
+        <description>
+          <text>Time to declare PCE learnt LSP state as invalid.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="connect-servers">
+      <description>
+        <text>List of connect-servers of a PCE client.</text>
+      </description>
+      <list name="connect-server">
+        <key value="ip-address"/>
+        <description>
+          <text>Configure connect-server of a PCE client.</text>
+        </description>
+        <leaf name="ip-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>IP address of a PCE.</text>
+          </description>
+        </leaf>
+        <leaf name="preference">
+          <type name="uint32">
+            <range value="0..7"/>
+          </type>
+          <default value="0"/>
+          <description>
+            <text>Configure preference of connect-server.</text>
+          </description>
+        </leaf>
+        <leaf name="dscp">
+          <type name="uint32">
+            <range value="0..63"/>
+          </type>
+          <must condition="contains(../ip-address,':') or (not(contains(../ip-address,':')) and ../dscp&gt;=0 and ../dscp&lt;=7)"/>
+          <default value="6"/>
+          <description>
+            <text>Differentiated services code point. When the ip-address type is IPv4, the value of dscp node ranges from 0 to 7.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..80"/>
+            <pattern value="([^?]*)"/>
+          </type>
+          <description>
+            <text>Configure description of connect-server.</text>
+          </description>
+        </leaf>
+        <leaf name="ssl-policy-name">
+          <type name="leafref">
+            <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+          </type>
+          <description>
+            <text>Specify the name of an SSL policy to bind an SSL policy to the PCE client.</text>
+          </description>
+        </leaf>
+        <leaf name="source-interface">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='LoopBack'"/>
+          <description>
+            <text>The name of source interface.</text>
+          </description>
+        </leaf>
+        <container name="authentication">
+          <description>
+            <text>Configure authentication on PCE client.</text>
+          </description>
+          <choice name="auth-type-selection">
+            <description>
+              <text>Options for expressing authentication setting.</text>
+            </description>
+            <case name="auth-key-chain">
+              <description>
+                <text>Auth key chain.</text>
+              </description>
+              <leaf name="keychain-name">
+                <type name="string">
+                  <length value="1..47"/>
+                  <pattern value="[^A-Z]+"/>
+                </type>
+                <ext:case-sensitivity value="lower-only"/>
+                <description>
+                  <text>Keychain name.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+        </container>
+      </list>
+    </container>
+    <container name="threshold-alarm">
+      <description>
+        <text>Configure alarm threshold.</text>
+      </description>
+      <container name="pce-initiated-lsp-number">
+        <must condition="upper-value&gt;lower-value"/>
+        <description>
+          <text>Configure alarm threshold for PCEP-initiated LSPs.</text>
+        </description>
+        <leaf name="upper-value">
+          <type name="uint32">
+            <range value="2..100"/>
+          </type>
+          <default value="85"/>
+          <description>
+            <text>Upper threshold.</text>
+          </description>
+        </leaf>
+        <leaf name="lower-value">
+          <type name="uint32">
+            <range value="1..99"/>
+          </type>
+          <default value="75"/>
+          <description>
+            <text>Lower threshold.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+    <container name="lsps">
+      <config value="false"/>
+      <description>
+        <text>List of PCE LSP information on client.</text>
+      </description>
+      <list name="lsp">
+        <key value="symbolic-path-name plsp-id"/>
+        <description>
+          <text>Operational data of PCE LSP information on client.</text>
+        </description>
+        <leaf name="symbolic-path-name">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>Symbolic path name.</text>
+          </description>
+        </leaf>
+        <leaf name="plsp-id">
+          <type name="uint32">
+            <range value="1..1048574"/>
+          </type>
+          <description>
+            <text>PLSP ID.</text>
+          </description>
+        </leaf>
+        <leaf name="tunnel-id">
+          <type name="uint16"/>
+          <description>
+            <text>Tunnel ID.</text>
+          </description>
+        </leaf>
+        <leaf name="lsp-id">
+          <type name="uint16"/>
+          <description>
+            <text>LSP ID.</text>
+          </description>
+        </leaf>
+        <leaf name="state">
+          <type name="pce-client-lsp-state-type"/>
+          <description>
+            <text>LSP state.</text>
+          </description>
+        </leaf>
+        <leaf name="initiated-type">
+          <type name="pce-client-lsp-init-type"/>
+          <description>
+            <text>LSP init type.</text>
+          </description>
+        </leaf>
+        <leaf name="ingress-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>Ingress IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="egress-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>Egress IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="delegate-flag">
+          <type name="pce-client-lsp-delegate-state"/>
+          <description>
+            <text>Delegation state.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="sessions">
+      <config value="false"/>
+      <description>
+        <text>List of PCE session information on client.</text>
+      </description>
+      <list name="session">
+        <key value="ip-address"/>
+        <description>
+          <text>Operational data of PCE session information on client.</text>
+        </description>
+        <leaf name="ip-address">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>IP address of a PCE session.</text>
+          </description>
+        </leaf>
+        <leaf name="msd">
+          <type name="uint8"/>
+          <description>
+            <text>Maximum segment depth.</text>
+          </description>
+        </leaf>
+        <leaf name="state">
+          <type name="pce-client-fsm-state"/>
+          <description>
+            <text>PCE session status.</text>
+          </description>
+        </leaf>
+        <leaf name="pce-status">
+          <type name="pce-server-status-type"/>
+          <description>
+            <text>PCE server status.</text>
+          </description>
+        </leaf>
+        <leaf name="session-id">
+          <type name="uint8"/>
+          <description>
+            <text>ID of a PCE session.</text>
+          </description>
+        </leaf>
+        <leaf name="ssl-policy-name">
+          <type name="string">
+            <length value="1..23"/>
+          </type>
+          <description>
+            <text>Ssl policy name.</text>
+          </description>
+        </leaf>
+        <leaf name="is-preferred">
+          <type name="boolean"/>
+          <description>
+            <text>Preferred session.</text>
+          </description>
+        </leaf>
+        <leaf name="hold-time">
+          <type name="uint8"/>
+          <units name="s"/>
+          <description>
+            <text>Hold time of PCE sessions.</text>
+          </description>
+        </leaf>
+        <leaf name="keepalive-time">
+          <type name="uint8"/>
+          <units name="s"/>
+          <description>
+            <text>Keepalive time of PCE sessions.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-hold-time">
+          <type name="uint8"/>
+          <units name="s"/>
+          <description>
+            <text>Hold time of PCE sessions on peer.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-keepalive-time">
+          <type name="uint8"/>
+          <units name="s"/>
+          <description>
+            <text>Keepalive time of PCE sessions on peer.</text>
+          </description>
+        </leaf>
+        <leaf name="session-active-time">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>Time when session became active.</text>
+          </description>
+        </leaf>
+        <leaf name="session-preference">
+          <type name="uint8"/>
+          <description>
+            <text>Session preference value.</text>
+          </description>
+        </leaf>
+        <leaf name="stitch-label-base">
+          <type name="uint32"/>
+          <description>
+            <text>Label base value.</text>
+          </description>
+        </leaf>
+        <leaf name="stitch-label-size">
+          <type name="uint32"/>
+          <description>
+            <text>Number of stitch labels.</text>
+          </description>
+        </leaf>
+        <leaf name="last-down-reason">
+          <type name="pce-client-ssn-down-reason-type"/>
+          <description>
+            <text>Reason of PCE session down.</text>
+          </description>
+        </leaf>
+        <container name="statistics">
+          <description>
+            <text>Statistics of PCE sessions.</text>
+          </description>
+          <leaf name="open-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of open messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="open-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of open messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="keepalive-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of keepalive messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="keepalive-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of keepalive messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="lsp-update-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of LSP update messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="lsp-update-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of LSP update messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="lsp-report-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of LSP report messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="lsp-report-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of LSP report messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="lsp-init-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of LSP initiate messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="lsp-init-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of LSP initiate messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="pce-error-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation error messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="pce-error-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation error messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="close-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of close messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="close-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of close messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="unknown-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of unknown messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="unknown-msg-req-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of unknown request messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="total-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of all messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="total-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of all messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="max-computation-time">
+            <type name="string">
+              <length value="1..15"/>
+              <pattern value="([^?]*)"/>
+            </type>
+            <description>
+              <text>Maximum time taken for computation.</text>
+            </description>
+          </leaf>
+          <leaf name="min-computation-time">
+            <type name="string">
+              <length value="1..15"/>
+              <pattern value="([^?]*)"/>
+            </type>
+            <description>
+              <text>Minimum time taken for computation.</text>
+            </description>
+          </leaf>
+          <leaf name="label-report-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of label report sent.</text>
+            </description>
+          </leaf>
+          <leaf name="label-update-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of label update received.</text>
+            </description>
+          </leaf>
+          <leaf name="path-request-timeout-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation request timeouts.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-success-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of successful path computations.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-fail-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation failures.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-req-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation request messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-req-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation request messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-reply-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation reply messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-reply-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of path computation reply messages sent.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-notify-msg-recv-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of notification messages received.</text>
+            </description>
+          </leaf>
+          <leaf name="path-compute-notify-msg-sent-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of notification messages sent.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="capability">
+          <description>
+            <text>Operational data of PCE session capability.</text>
+          </description>
+          <leaf name="stateful">
+            <type name="boolean"/>
+            <description>
+              <text>Stateful capability of PCE session.</text>
+            </description>
+          </leaf>
+          <leaf name="stitch-label">
+            <type name="boolean"/>
+            <description>
+              <text>Stitch label capability of PCE session.</text>
+            </description>
+          </leaf>
+          <leaf name="segment-routing">
+            <type name="boolean"/>
+            <description>
+              <text>Segmant routing capability of PCE session.</text>
+            </description>
+          </leaf>
+          <leaf name="pce-initiated-lsp">
+            <type name="boolean"/>
+            <description>
+              <text>PCE initiated LSP capability of PCE session.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+    <container name="stitch-labels">
+      <config value="false"/>
+      <description>
+        <text>List of PCE Stitch Label information on client.</text>
+      </description>
+      <list name="stitch-label">
+        <key value="stitch-label-value"/>
+        <description>
+          <text>Operational data of PCE Stitch LSP information on client.</text>
+        </description>
+        <leaf name="stitch-label-value">
+          <type name="uint32">
+            <range value="1..1048575"/>
+          </type>
+          <description>
+            <text>Stitch label value.</text>
+          </description>
+        </leaf>
+        <leaf name="symbolic-path-name">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>Symbolic path name.</text>
+          </description>
+        </leaf>
+        <leaf name="plsp-id">
+          <type name="uint32">
+            <range value="1..1048574"/>
+          </type>
+          <description>
+            <text>PLSP ID.</text>
+          </description>
+        </leaf>
+        <leaf name="tunnel-id">
+          <type name="uint16"/>
+          <description>
+            <text>Tunnel ID.</text>
+          </description>
+        </leaf>
+        <leaf name="ingress-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>Ingress IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="egress-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>Egress IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="state">
+          <type name="pce-client-lsp-state-type"/>
+          <description>
+            <text>Label state.</text>
+          </description>
+        </leaf>
+        <container name="stitch-stacks">
+          <description>
+            <text>List of Stitch Stack information on client.</text>
+          </description>
+          <list name="stitch-stack">
+            <key value="node-address local-address remote-address label segment-type"/>
+            <description>
+              <text>Operational data of Stitch Stack information on client.</text>
+            </description>
+            <leaf name="node-address">
+              <type name="inet:ip-address"/>
+              <description>
+                <text>Node address.</text>
+              </description>
+            </leaf>
+            <leaf name="local-address">
+              <type name="inet:ip-address"/>
+              <description>
+                <text>Link local address.</text>
+              </description>
+            </leaf>
+            <leaf name="remote-address">
+              <type name="inet:ip-address"/>
+              <description>
+                <text>Link remote address.</text>
+              </description>
+            </leaf>
+            <leaf name="label">
+              <type name="uint32">
+                <range value="1..1048575"/>
+              </type>
+              <description>
+                <text>Node or link label.</text>
+              </description>
+            </leaf>
+            <leaf name="segment-type">
+              <type name="pce-client-segment-type"/>
+              <description>
+                <text>Stitch segment type.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="srv6-te-policy-cpaths">
+      <config value="false"/>
+      <description>
+        <text>List of SRv6 TE Policy candidate paths.</text>
+      </description>
+      <list name="srv6-te-policy-cpath">
+        <key value="symbolic-path-name plsp-id"/>
+        <description>
+          <text>Operational state of SRv6 TE Policy candidate path.</text>
+        </description>
+        <leaf name="symbolic-path-name">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>Symbolic path name.</text>
+          </description>
+        </leaf>
+        <leaf name="plsp-id">
+          <type name="uint32"/>
+          <description>
+            <text>PLSP ID.</text>
+          </description>
+        </leaf>
+        <leaf name="endpoint">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>SRv6 TE Policy endpoint address.</text>
+          </description>
+        </leaf>
+        <leaf name="color">
+          <type name="uint32"/>
+          <description>
+            <text>SRv6 TE Policy color.</text>
+          </description>
+        </leaf>
+        <leaf name="protocol-origin">
+          <type name="pce-client-sr-policy-protocol-origin-type"/>
+          <description>
+            <text>Candidate path protocol origin.</text>
+          </description>
+        </leaf>
+        <leaf name="asn">
+          <type name="uint32"/>
+          <description>
+            <text>Candidate path AS No.</text>
+          </description>
+        </leaf>
+        <leaf name="node-address">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Candidate path node address.</text>
+          </description>
+        </leaf>
+        <leaf name="discriminator">
+          <type name="uint32"/>
+          <description>
+            <text>Candidate path discriminator.</text>
+          </description>
+        </leaf>
+        <leaf name="preference">
+          <type name="uint32"/>
+          <description>
+            <text>Candidate path preference.</text>
+          </description>
+        </leaf>
+        <leaf name="path-state">
+          <type name="pce-client-cpath-state-type"/>
+          <description>
+            <text>Candidate path state.</text>
+          </description>
+        </leaf>
+        <leaf name="binding-sid">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Candidate path binding SID.</text>
+          </description>
+        </leaf>
+        <container name="segment-lists">
+          <description>
+            <text>List of Segment lists information.</text>
+          </description>
+          <list name="segment-list">
+            <key value="index"/>
+            <description>
+              <text>Operational state of segment list information.</text>
+            </description>
+            <leaf name="index">
+              <type name="uint32"/>
+              <description>
+                <text>Segment list index.</text>
+              </description>
+            </leaf>
+            <leaf name="path-id">
+              <type name="uint32"/>
+              <description>
+                <text>Segment list path ID.</text>
+              </description>
+            </leaf>
+            <leaf name="weight">
+              <type name="uint32"/>
+              <description>
+                <text>Segment list weighted loadshare.</text>
+              </description>
+            </leaf>
+            <leaf name="state">
+              <type name="pce-client-segment-list-state-type"/>
+              <description>
+                <text>Segment list state.</text>
+              </description>
+            </leaf>
+            <container name="hops">
+              <description>
+                <text>List of hops information.</text>
+              </description>
+              <list name="hop">
+                <key value="index"/>
+                <description>
+                  <text>Operational state of hop information.</text>
+                </description>
+                <leaf name="index">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Hop index.</text>
+                  </description>
+                </leaf>
+                <leaf name="value">
+                  <type name="inet:ipv6-address-no-zone"/>
+                  <description>
+                    <text>Hop value.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+  <rpc name="reset-pce-statistics">
+    <description>
+      <text>Reset session statistics on a PCE client.</text>
+    </description>
+    <ext:node-ref value="/pcc:pcc/pcc:sessions/pcc:session/pcc:statistics"/>
+    <input>
+      <leaf name="ip-address">
+        <type name="inet:ip-address"/>
+        <description>
+          <text>IP address of a PCE.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

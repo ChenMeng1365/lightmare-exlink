@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-messages"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-messages="http://openconfig.net/yang/messages"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-log="http://openconfig.net/yang/system/logging">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/messages"/>
+  <prefix value="oc-messages"/>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-system-logging">
+    <prefix value="oc-log"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module defines configuration and operational state data
+related to Syslog messages that a device may generate.
+
+These messages are historically obtained through the Syslog
+transport, however this module allows for obtaining them through
+an alternative transport, such as a Subscribe operation over an
+RPC.
+
+This module does not usurp traditional syslog servers, which may
+still be configured through the
+/yang/system/openconfig-system.yang model, rather it provies the
+Operator with an alternative method of consuming messages.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.0.1"/>
+  <revision date="2018-08-13">
+    <description>
+      <text>Initial draft.</text>
+    </description>
+    <reference>
+      <text>0.0.1</text>
+    </reference>
+  </revision>
+  <identity name="DEBUG_SERVICE">
+    <description>
+      <text>Base identity for debug services. Identities within this base
+identity are to be augmented in by vendors.</text>
+    </description>
+  </identity>
+  <grouping name="messages-config">
+    <description>
+      <text>Configuration data for defining Syslog message severity.</text>
+    </description>
+    <leaf name="severity">
+      <type name="oc-log:syslog-severity"/>
+      <description>
+        <text>Specifies that only messages of the given severity (or
+greater severity) are sent over the RPC.
+
+This is analogous to differentiating which severity is to be
+sent to legacy Syslog servers, as opposed to local buffer or
+files.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="messages-state">
+    <description>
+      <text>Operational state data for Syslog messages.</text>
+    </description>
+    <container name="message">
+      <oc-ext:telemetry-atomic/>
+      <config value="false"/>
+      <description>
+        <text>Syslog messages the client is Subscribing to. This is all
+messages currently configured to be sent according to
+syslog-severity.</text>
+      </description>
+      <reference>
+        <text>IETF RFC 5424 - The Syslog Protocol</text>
+      </reference>
+      <leaf name="msg">
+        <type name="string"/>
+        <description>
+          <text>Message payload. If other leafs within this container not
+supported, this leaf MAY include the entire message,
+inclding pri, procid, app-name etc..</text>
+        </description>
+      </leaf>
+      <leaf name="priority">
+        <type name="uint8"/>
+        <description>
+          <text>The Priority value (PRIVAL) represents both the
+Facility and Severity.</text>
+        </description>
+        <reference>
+          <text>IETF RFC 5424, Section 6.2.1</text>
+        </reference>
+      </leaf>
+      <leaf name="app-name">
+        <type name="string"/>
+        <description>
+          <text>The APP-NAME field SHOULD identify the device or
+application that originated the message.</text>
+        </description>
+        <reference>
+          <text>IETF RFC 5424, Section 6.2.5.</text>
+        </reference>
+      </leaf>
+      <leaf name="procid">
+        <type name="string"/>
+        <description>
+          <text>PROCID is a value that is included in the message, having
+no interoperable meaning, except that a change in the value
+indicates there has been a discontinuity in syslog
+reporting.</text>
+        </description>
+        <reference>
+          <text>IETF RFC 5424, Section 6.2.6.</text>
+        </reference>
+      </leaf>
+      <leaf name="msgid">
+        <type name="string"/>
+        <description>
+          <text>The MSGID SHOULD identify the type of message. For
+example, a firewall might use the MSGID 'TCPIN' for
+incoming TCP traffic and the MSGID 'TCPOUT' for outgoing
+TCP traffic.</text>
+        </description>
+        <reference>
+          <text>IETF RFC 5424, Section 6.2.7.</text>
+        </reference>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="debug-messages-config">
+    <description>
+      <text>Configuration data for enabling debug messages.</text>
+    </description>
+    <leaf name="service">
+      <type name="identityref">
+        <base name="DEBUG_SERVICE"/>
+      </type>
+      <description>
+        <text>Enumeration of all services which can have debugging enabled.
+Vendors are to augment this base identity with their platform
+or OS specific debug options.</text>
+      </description>
+    </leaf>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable and disable debugging.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="debug-messages-top">
+    <description>
+      <text>Configuration data for enabling Syslog debug messages.</text>
+    </description>
+    <container name="debug-entries">
+      <description>
+        <text>Enclosing container for list of debugs to enable.</text>
+      </description>
+      <list name="debug-service">
+        <key value="service"/>
+        <description>
+          <text>List of debugging entries.</text>
+        </description>
+        <leaf name="service">
+          <type name="leafref">
+            <path value="../config/service"/>
+          </type>
+          <description>
+            <text>Reference to the debug-enable service key.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for debug service entries.</text>
+          </description>
+          <uses name="debug-messages-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for enabled debugs.</text>
+          </description>
+          <uses name="debug-messages-config"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="messages-top">
+    <description>
+      <text>Top-level grouping for Syslog messages.</text>
+    </description>
+    <container name="messages">
+      <description>
+        <text>Top-level container for Syslog messages.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for Syslog messages.</text>
+        </description>
+        <uses name="messages-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for a Syslog messages.</text>
+        </description>
+        <uses name="messages-config"/>
+        <uses name="messages-state"/>
+      </container>
+      <uses name="debug-messages-top"/>
+    </container>
+  </grouping>
+  <uses name="messages-top"/>
+</module>

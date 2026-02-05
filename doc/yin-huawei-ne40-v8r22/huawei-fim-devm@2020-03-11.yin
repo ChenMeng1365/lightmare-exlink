@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-fim-devm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:fim-devm="urn:huawei:yang:huawei-fim-devm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:devm="urn:huawei:yang:huawei-devm"
+        xmlns:fim-ifm="urn:huawei:yang:huawei-fim-ifm"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <namespace uri="urn:huawei:yang:huawei-fim-devm"/>
+  <prefix value="fim-devm"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-devm">
+    <prefix value="devm"/>
+  </import>
+  <import module="huawei-fim-ifm">
+    <prefix value="fim-ifm"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Global configuration.</text>
+  </description>
+  <revision date="2020-03-11">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="forwarding"/>
+  <typedef name="enable-type">
+    <type name="enumeration">
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>Disable.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Enable type.</text>
+    </description>
+  </typedef>
+  <typedef name="forward-mode-type">
+    <type name="enumeration">
+      <enum name="loopback">
+        <value value="0"/>
+        <description>
+          <text>Loopback forward type.</text>
+        </description>
+      </enum>
+      <enum name="through">
+        <value value="1"/>
+        <description>
+          <text>Through forward type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Slot forward mode.</text>
+    </description>
+  </typedef>
+  <augment target-node="/devm:devm/devm:lpu-boards/devm:lpu-board">
+    <description>
+      <text>FIM configuration to the DEVM lpu-board module.</text>
+    </description>
+    <container name="fim">
+      <description>
+        <text>Configure the forward configuration to the DEVM lpu-board module.</text>
+      </description>
+      <leaf name="forward-mode">
+        <type name="forward-mode-type"/>
+        <default value="loopback"/>
+        <description>
+          <text>Forward mode.</text>
+        </description>
+      </leaf>
+      <leaf name="vlan-miss-enable">
+        <type name="enable-type"/>
+        <default value="disable"/>
+        <description>
+          <text>VLAN-miss to-cpu enable.</text>
+        </description>
+      </leaf>
+      <leaf name="scan-period">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="2..720"/>
+        </type>
+        <units name="min"/>
+        <default value="60"/>
+        <description>
+          <text>Scan period.</text>
+        </description>
+      </leaf>
+      <leaf name="cpu-threshold">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="10..100"/>
+        </type>
+        <units name="%"/>
+        <default value="60"/>
+        <description>
+          <text>CPU usage threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="cpu-detect">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="1..10"/>
+        </type>
+        <units name="min"/>
+        <default value="10"/>
+        <description>
+          <text>CPU usage detection period.</text>
+        </description>
+      </leaf>
+      <leaf name="cpu-restore">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="10..100"/>
+        </type>
+        <units name="%"/>
+        <default value="55"/>
+        <description>
+          <text>Restore dynamically adjusted CPU usage threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="statistics">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="60..600"/>
+        </type>
+        <units name="s"/>
+        <default value="60"/>
+        <description>
+          <text>Statistics period (seconds).</text>
+        </description>
+      </leaf>
+      <leaf name="precision">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="1..100"/>
+        </type>
+        <units name="%"/>
+        <default value="5"/>
+        <description>
+          <text>Restore dynamically adjusted precision threshold (%).</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="macmtu-discard-statistics">
+      <config value="false"/>
+      <description>
+        <text>MAC&amp;MTU error statistics.</text>
+      </description>
+      <leaf name="mtu-ipv4">
+        <type name="uint64"/>
+        <description>
+          <text>IPv4 MTU error statistics.</text>
+        </description>
+      </leaf>
+      <leaf name="mtu-ipv6">
+        <type name="uint64"/>
+        <description>
+          <text>IPv6 MTU error statistics.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-ipv4">
+        <type name="uint64"/>
+        <description>
+          <text>IPv4 MAC error statistics.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-ipv6">
+        <type name="uint64"/>
+        <description>
+          <text>IPv6 MAC error statistics.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="ve-mac-address">
+      <description>
+        <text>Configure the VE MAC address.</text>
+      </description>
+      <leaf name="l2-ve-mac">
+        <type name="pub-type:mac-address"/>
+        <description>
+          <text>L2 VE MAC address.</text>
+        </description>
+      </leaf>
+      <leaf name="access-ve-mac">
+        <type name="pub-type:mac-address"/>
+        <description>
+          <text>Access VE MAC address.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/devm:devm/devm:mpu-boards/devm:mpu-board">
+    <description>
+      <text>FIM configuration to the DEVM mpu-board module.</text>
+    </description>
+    <container name="fim">
+      <description>
+        <text>Configure the forward configuration to the DEVM mpu-board module.</text>
+      </description>
+      <leaf name="forward-mode">
+        <type name="forward-mode-type"/>
+        <default value="loopback"/>
+        <description>
+          <text>Forward mode.</text>
+        </description>
+      </leaf>
+      <leaf name="vlan-miss-enable">
+        <type name="enable-type"/>
+        <default value="disable"/>
+        <description>
+          <text>VLAN-miss to-cpu enable.</text>
+        </description>
+      </leaf>
+      <leaf name="scan-period">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="2..720"/>
+        </type>
+        <units name="min"/>
+        <default value="60"/>
+        <description>
+          <text>Scan period.</text>
+        </description>
+      </leaf>
+      <leaf name="cpu-threshold">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="10..100"/>
+        </type>
+        <units name="%"/>
+        <default value="60"/>
+        <description>
+          <text>CPU usage threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="cpu-detect">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="1..10"/>
+        </type>
+        <units name="min"/>
+        <default value="10"/>
+        <description>
+          <text>CPU usage detection period.</text>
+        </description>
+      </leaf>
+      <leaf name="cpu-restore">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="10..100"/>
+        </type>
+        <units name="%"/>
+        <default value="55"/>
+        <description>
+          <text>Restore dynamically adjusted CPU usage threshold.</text>
+        </description>
+      </leaf>
+      <leaf name="statistics">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="60..600"/>
+        </type>
+        <units name="s"/>
+        <default value="60"/>
+        <description>
+          <text>Statistics period (seconds).</text>
+        </description>
+      </leaf>
+      <leaf name="precision">
+        <when condition="/ifm:ifm/ifm:global/fim-ifm:fim-ifm-global/fim-ifm:trunk-adjust-enable='enable'"/>
+        <type name="uint32">
+          <range value="1..100"/>
+        </type>
+        <units name="%"/>
+        <default value="5"/>
+        <description>
+          <text>Restore dynamically adjusted precision threshold (%).</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="macmtu-discard-statistics">
+      <config value="false"/>
+      <description>
+        <text>MAC&amp;MTU error statistics.</text>
+      </description>
+      <leaf name="mtu-ipv4">
+        <type name="uint64"/>
+        <description>
+          <text>IPv4 MTU error statistics.</text>
+        </description>
+      </leaf>
+      <leaf name="mtu-ipv6">
+        <type name="uint64"/>
+        <description>
+          <text>IPv6 MTU error statistics.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-ipv4">
+        <type name="uint64"/>
+        <description>
+          <text>IPv4 MAC error statistics.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-ipv6">
+        <type name="uint64"/>
+        <description>
+          <text>IPv6 MAC error statistics.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="ve-mac-address">
+      <description>
+        <text>Configure the VE MAC address.</text>
+      </description>
+      <leaf name="l2-ve-mac">
+        <type name="pub-type:mac-address"/>
+        <description>
+          <text>L2 VE MAC address.</text>
+        </description>
+      </leaf>
+      <leaf name="access-ve-mac">
+        <type name="pub-type:mac-address"/>
+        <description>
+          <text>Access VE MAC address.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

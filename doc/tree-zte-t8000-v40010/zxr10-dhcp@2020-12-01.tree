@@ -1,0 +1,576 @@
+module: zxr10-dhcp
+  +--rw configuration
+  |  +--rw dhcp
+  |     +--rw global
+  |     |  +--rw enable?                                       enumeration
+  |     |  +--rw ramble?                                       enumeration
+  |     |  +--rw check-option82?                               enumeration
+  |     |  +--rw max-hops?                                     uint32
+  |     |  +--rw suppress-nak?                                 enumeration
+  |     |  +--rw log?                                          enumeration
+  |     |  +--rw force-reply-broadcast?                        enumeration
+  |     |  +--rw upgrade-leasetime!
+  |     |  |  +--rw lease-days       uint16
+  |     |  |  +--rw lease-hours      uint8
+  |     |  |  +--rw lease-minutes    uint8
+  |     |  +--rw vxlan-config {vxlan-config}?
+  |     |  |  +--rw vxlan* [vxlan-id]
+  |     |  |     +--rw vxlan-id          uint32
+  |     |  |     +--rw interface-name    ncd:ifname
+  |     |  +--rw user-identifier-format?                       enumeration {user-identifier-format}?
+  |     |  +--rw online-user-reonline-suppression-time?        uint32
+  |     |  +--rw suppress-packet!
+  |     |  |  +--rw packet-type        enumeration
+  |     |  |  +--rw packet-count       uint32
+  |     |  |  +--rw check-period       uint32
+  |     |  |  +--rw suppress-period    uint32
+  |     |  +--rw non-online-user-mismatched-option54-delete?   enumeration
+  |     |  +--rw user-interact?                                enumeration
+  |     |  +--rw authen-templates
+  |     |  |  +--rw authen-template* [template-name]
+  |     |  |     +--rw template-name               string
+  |     |  |     +--rw radius-group-name?          string
+  |     |  |     +--rw authen-radius-attributes
+  |     |  |        +--rw authen-radius-attribute* [attribute-type]
+  |     |  |           +--rw attribute-type      enumeration
+  |     |  |           +--rw attribute-source?   enumeration
+  |     |  +--rw option-templates
+  |     |     +--rw option-template* [template-name]
+  |     |        +--rw template-name    string
+  |     |        +--rw options-conf
+  |     |           +--rw options
+  |     |              +--rw option* [code]
+  |     |                 +--rw code               uint8
+  |     |                 +--rw (type)?
+  |     |                    +--:(ascii)
+  |     |                    |  +--rw ascii-str?   string
+  |     |                    +--:(hex)
+  |     |                    |  +--rw hex-str?     string
+  |     |                    +--:(ip)
+  |     |                       +--rw ip-addr1?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr2?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr3?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr4?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr5?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr6?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr7?    ncd:ipv4-address-none-zero
+  |     |                       +--rw ip-addr8?    ncd:ipv4-address-none-zero
+  |     +--rw interfaces
+  |     |  +--rw interface* [name]
+  |     |     +--rw name           ncd:ifname
+  |     |     +--rw mode?          enumeration
+  |     |     +--rw user-quota?    uint32
+  |     |     +--rw access-list?   string
+  |     |     +--rw relay-if!
+  |     |     |  +--rw relay-agent?           ncd:ipv4-address
+  |     |     |  +--rw server-group?          uint32
+  |     |     |  +--rw source-ip?             ncd:ipv4-address
+  |     |     |  +--rw relay-policy?          enumeration
+  |     |     |  +--rw link-ip?               ncd:ipv4-address
+  |     |     |  +--rw remote-id?             ncd:string-with-blank
+  |     |     |  +--rw circuit-id?            ncd:string-with-blank
+  |     |     |  +--rw forward-mode?          enumeration
+  |     |     |  +--rw relay-agent-indexs
+  |     |     |  |  +--rw relay-agent-index* [index]
+  |     |     |  |     +--rw index             uint8
+  |     |     |  |     +--rw relay-agent-IP    ncd:ipv4-address
+  |     |     |  |     +--rw option-code?      uint8
+  |     |     |  |     +--rw option-content!
+  |     |     |  |        +--rw option-type    uint8
+  |     |     |  |        +--rw option-text    ncd:string-with-blank
+  |     |     |  +--rw server-list {intf-server-list}?
+  |     |     |  |  +--rw server* [server-index]
+  |     |     |  |     +--rw server-index    uint32
+  |     |     |  |     +--rw server-ip       ncd:ipv4-address
+  |     |     |  |     +--rw dscp?           uint8
+  |     |     |  +--rw packet
+  |     |     |  |  +--rw packet-list* [packet-type]
+  |     |     |  |     +--rw packet-type    enumeration
+  |     |     |  |     +--rw action?        enumeration
+  |     |     |  +--rw bind-relay-instance?   string
+  |     |     +--rw server-if!
+  |     |     |  +--rw server-policy?          string
+  |     |     |  +--rw dest-port?              enumeration
+  |     |     |  +--rw dscp?                   uint8
+  |     |     |  +--rw nak-client-offline?     enumeration
+  |     |     |  +--rw detect-client-IP! {detect-client-ip}?
+  |     |     |  |  +--rw detect-type    enumeration
+  |     |     |  |  +--rw detect-time?   uint8
+  |     |     |  o--rw arp-detect! {arp-detect}?
+  |     |     |  |  o--rw arp-detect-switch    enumeration
+  |     |     |  |  o--rw arp-detect-time?     uint8
+  |     |     |  +--rw bind-server-instance?   string
+  |     |     +--rw client-if!
+  |     |        +--rw client-switch
+  |     |        |  +--rw switch?   enumeration
+  |     |        +--rw client-policy?             string
+  |     |        +--rw default-router-priority?   uint32
+  |     +--rw access-lists
+  |     |  +--rw access-list* [name]
+  |     |     +--rw name            string
+  |     |     +--rw default-rule
+  |     |     |  +--rw action?   enumeration
+  |     |     +--rw rules
+  |     |        +--rw rule* [rule-no]
+  |     |           +--rw rule-no          uint8
+  |     |           +--rw (rule-oper)
+  |     |           |  +--:(rule-deny)
+  |     |           |  |  +--rw deny?      enumeration
+  |     |           |  +--:(rule-permit)
+  |     |           |     +--rw permit?    enumeration
+  |     |           +--rw (rule-content)
+  |     |              +--:(rule-opt60)
+  |     |              |  +--rw partial?   enumeration
+  |     |              |  +--rw opt60?     ncd:string-with-blank
+  |     |              +--:(rule-any)
+  |     |                 +--rw any?       enumeration
+  |     +--rw relay
+  |     |  +--rw interfaces
+  |     |  |  +--rw interface* [name]
+  |     |  |     +--rw name                  ncd:ifname
+  |     |  |     +--rw relay-agent?          ncd:ipv4-address
+  |     |  |     +--rw server-group?         uint32
+  |     |  |     +--rw source-ip?            ncd:ipv4-address
+  |     |  |     +--rw relay-policy?         enumeration
+  |     |  |     +--rw link-ip?              ncd:ipv4-address
+  |     |  |     +--rw circuit-id?           ncd:string-with-blank
+  |     |  |     +--rw remote-id?            ncd:string-with-blank
+  |     |  |     +--rw relay-agent-indexs
+  |     |  |        +--rw relay-agent-index* [index]
+  |     |  |           +--rw index             uint8
+  |     |  |           +--rw relay-agent-IP    ncd:ipv4-address
+  |     |  |           +--rw option-code       uint8
+  |     |  |           +--rw option-type?      uint8
+  |     |  |           +--rw option-text?      ncd:string-with-blank
+  |     |  +--rw server-groups
+  |     |  |  +--rw server-group* [group-no]
+  |     |  |     +--rw group-no                         uint32
+  |     |  |     +--rw algorithm?                       enumeration
+  |     |  |     +--rw dead-time?                       uint32
+  |     |  |     +--rw retry?                           uint32
+  |     |  |     +--rw max-timeout?                     uint8
+  |     |  |     +--rw description?                     string
+  |     |  |     +--rw local-server?                    enumeration
+  |     |  |     +--rw verify-server-id?                enumeration
+  |     |  |     +--rw servers
+  |     |  |     |  +--rw server* [index]
+  |     |  |     |     +--rw index             uint32
+  |     |  |     |     +--rw ip                ncd:ipv4-address
+  |     |  |     |     +--rw forward-mode?     enumeration
+  |     |  |     |     +--rw master?           enumeration
+  |     |  |     |     +--rw dscp?             uint8
+  |     |  |     |     +--rw (vpn)?
+  |     |  |     |        +--:(public)
+  |     |  |     |        |  +--rw public?     boolean
+  |     |  |     |        +--:(vrf)
+  |     |  |     |           +--rw vrf-name?   string
+  |     |  |     +--rw online-user-forward-algorithm!
+  |     |  |     |  +--rw forward-algorithm    enumeration
+  |     |  |     |  +--rw packet-type
+  |     |  |     |     +--rw renew-request?       uint8
+  |     |  |     |     +--rw rebinding-request?   uint8
+  |     |  |     |     +--rw release?             uint8
+  |     |  |     |     +--rw decline?             uint8
+  |     |  |     +--rw cos?                             uint8
+  |     |  +--rw policy-groups
+  |     |  |  +--rw policy-group* [policy-no]
+  |     |  |     +--rw policy-no          uint32
+  |     |  |     +--rw server-group-no?   uint32
+  |     |  |     +--rw vclass-id?         ncd:string-with-blank
+  |     |  |     +--rw policy-vlans
+  |     |  |     |  +--rw policy-vlan* [index]
+  |     |  |     |     +--rw index            uint32
+  |     |  |     |     +--rw ex-vlan-range    ncd:range
+  |     |  |     |     +--rw in-vlan-range?   ncd:range
+  |     |  |     +--rw options!
+  |     |  |        +--rw option* [code]
+  |     |  |           +--rw code               uint32
+  |     |  |           +--rw (type)
+  |     |  |              +--:(ascii)
+  |     |  |              |  +--rw ascii-str    string
+  |     |  |              +--:(hex)
+  |     |  |                 +--rw hex-str      string
+  |     |  +--rw global-config
+  |     |  |  +--rw max-user?                     uint32
+  |     |  |  +--rw forbid-send-release?          enumeration
+  |     |  |  +--rw proxy-lease-time?             uint32
+  |     |  |  +--rw update-arp?                   enumeration
+  |     |  |  +--rw forward-unrestrict?           enumeration
+  |     |  |  +--rw fwd-unrstrctd-opt82-plcy?     enumeration
+  |     |  |  +--rw check-server-packet?          enumeration
+  |     |  |  +--rw report-user-info?             enumeration
+  |     |  |  +--rw forward-release-unrestrict?   enumeration
+  |     |  +--rw opt82-config
+  |     |  |  +--rw option?           enumeration
+  |     |  |  +--rw format?           enumeration
+  |     |  |  +--rw operate-policy?   enumeration
+  |     |  |  +--rw user-policy?      enumeration
+  |     |  |  +--rw circuit-id?       ncd:string-with-blank
+  |     |  |  +--rw remote-id?        ncd:string-with-blank
+  |     |  +--rw instances
+  |     |  |  +--rw instance* [instance-name]
+  |     |  |     +--rw instance-name         string
+  |     |  |     +--rw link-ip?              ncd:ipv4-address
+  |     |  |     +--rw circuit-id?           ncd:string-with-blank
+  |     |  |     +--rw remote-id?            ncd:string-with-blank
+  |     |  |     +--rw server-group?         uint32
+  |     |  |     +--rw short-leasetime?      uint32
+  |     |  |     +--rw relay-agent-indexs
+  |     |  |     |  +--rw relay-agent-index* [index]
+  |     |  |     |     +--rw index             uint32
+  |     |  |     |     +--rw relay-agent-IP    ncd:ipv4-address
+  |     |  |     |     +--rw option-code       uint32
+  |     |  |     |     +--rw option-content!
+  |     |  |     |        +--rw option-type    enumeration
+  |     |  |     |        +--rw option-text    ncd:string-with-blank
+  |     |  |     +--rw relay-agent?          ncd:ipv4-address
+  |     |  |     +--rw source-ip-config!
+  |     |  |     |  +--rw (source-ip)?
+  |     |  |     |     +--:(ip)
+  |     |  |     |     |  +--rw ip-addr           ncd:ipv4-address
+  |     |  |     |     +--:(interface)
+  |     |  |     |        +--rw interface-name    ncd:ifname
+  |     |  |     +--rw relay-policy!
+  |     |  |     |  +--rw (policy-type)?
+  |     |  |     |     +--:(vclass)
+  |     |  |     |     |  +--rw vclass-id             empty
+  |     |  |     |     +--:(vlan)
+  |     |  |     |     |  +--rw vlan-id               empty
+  |     |  |     |     +--:(option)
+  |     |  |     |        +--rw option-code           empty
+  |     |  |     |        +--rw option-code-number    uint32
+  |     |  |     +--rw relay-agent-mask?     ncd:ipv4-mask
+  |     |  |     +--rw packet
+  |     |  |        +--rw packet-list* [packet-type]
+  |     |  |           +--rw packet-type    enumeration
+  |     |  |           +--rw action?        enumeration
+  |     |  +--rw interface-based-instances
+  |     |  |  +--rw instance* [instance-name]
+  |     |  |     +--rw instance-name           string
+  |     |  |     +--rw description?            string
+  |     |  |     +--rw authen-template-name?   string
+  |     |  +--rw option-configs
+  |     |  |  +--rw option-config* [packet-direction packet-type option-code]
+  |     |  |     +--rw packet-direction     enumeration
+  |     |  |     +--rw packet-type          enumeration
+  |     |  |     +--rw option-code          uint8
+  |     |  |     +--rw (oper-type)?
+  |     |  |        +--:(set)
+  |     |  |        |  +--rw set            enumeration
+  |     |  |        |  +--rw set-hex-str    string
+  |     |  |        +--:(add)
+  |     |  |        |  +--rw add            enumeration
+  |     |  |        |  +--rw add-hex-str    string
+  |     |  |        +--:(remove)
+  |     |  |        |  +--rw remove         enumeration
+  |     |  |        +--:(keep)
+  |     |  |           +--rw keep           enumeration
+  |     |  +--rw leasetime-configs
+  |     |     +--rw leasetime-config* [packet-direction packet-type leasetime]
+  |     |        +--rw packet-direction    enumeration
+  |     |        +--rw packet-type         enumeration
+  |     |        +--rw leasetime           enumeration
+  |     |        +--rw (oper-type)?
+  |     |           +--:(set)
+  |     |           |  +--rw set           enumeration
+  |     |           |  +--rw set-value     uint32
+  |     |           +--:(add)
+  |     |           |  +--rw add           enumeration
+  |     |           |  +--rw add-value     uint32
+  |     |           +--:(remove)
+  |     |           |  +--rw remove        enumeration
+  |     |           +--:(keep)
+  |     |              +--rw keep          enumeration
+  |     +--rw server
+  |     |  +--rw interfaces
+  |     |  |  +--rw interface* [name]
+  |     |  |     +--rw name             ncd:ifname
+  |     |  |     +--rw server-policy?   string
+  |     |  |     +--rw dest-port?       enumeration
+  |     |  |     +--rw dscp?            uint8
+  |     |  +--rw policys
+  |     |  |  +--rw policy* [name priority]
+  |     |  |     +--rw name                 string
+  |     |  |     +--rw priority             uint32
+  |     |  |     +--rw pool-name?           string
+  |     |  |     +--rw vrf-name?            string
+  |     |  |     +--rw reserved-vrf-name?   enumeration
+  |     |  |     +--rw relay-agent?         ncd:ipv4-address
+  |     |  |     +--rw option60
+  |     |  |        +--rw (match-type)?
+  |     |  |           +--:(opt60-str)
+  |     |  |           |  +--rw partial?   enumeration
+  |     |  |           |  +--rw string     ncd:string-with-blank
+  |     |  |           +--:(opt60-any)
+  |     |  |              +--rw any?       enumeration
+  |     |  +--rw global-config
+  |     |  |  +--rw max-user?     uint32
+  |     |  |  +--rw update-arp?   enumeration
+  |     |  |  +--rw keep-opt82?   enumeration
+  |     |  +--rw pools
+  |     |  |  +--rw pool* [name]
+  |     |  |     +--rw name                   string
+  |     |  |     +--rw ippool-name?           string
+  |     |  |     +--rw ignore-request-list?   enumeration {ignore-request-list}?
+  |     |  |     +--rw static-pool-conf
+  |     |  |     |  +--rw static-pool-vrfs
+  |     |  |     |  |  +--rw static-pool-vrf* [vrf-name mac-addr]
+  |     |  |     |  |     +--rw vrf-name           string
+  |     |  |     |  |     +--rw mac-addr           ncd:mac-address
+  |     |  |     |  |     +--rw client-ip          ncd:ipv4-address
+  |     |  |     |  |     +--rw client-mask        ncd:ipv4-mask
+  |     |  |     |  |     +--rw option-template?   string
+  |     |  |     |  +--rw static-pools
+  |     |  |     |     +--rw static-pool* [mac-addr]
+  |     |  |     |        +--rw mac-addr           ncd:mac-address
+  |     |  |     |        +--rw client-ip          ncd:ipv4-address
+  |     |  |     |        +--rw client-mask        ncd:ipv4-mask
+  |     |  |     |        +--rw option-template?   string
+  |     |  |     +--rw default-routers
+  |     |  |     |  +--rw default-router* [router-ip]
+  |     |  |     |     +--rw router-ip    ncd:ipv4-address
+  |     |  |     +--rw dns-servers
+  |     |  |     |  +--rw dns-server* [server-ip]
+  |     |  |     |     +--rw server-ip    ncd:ipv4-address
+  |     |  |     +--rw options-conf
+  |     |  |     |  +--rw sub-options!
+  |     |  |     |  |  +--rw sub-option* [code sub-code]
+  |     |  |     |  |     +--rw code               uint32
+  |     |  |     |  |     +--rw sub-code           uint32
+  |     |  |     |  |     +--rw (type)
+  |     |  |     |  |        +--:(ascii)
+  |     |  |     |  |        |  +--rw ascii-str    string
+  |     |  |     |  |        +--:(hex)
+  |     |  |     |  |        |  +--rw hex-str      string
+  |     |  |     |  |        +--:(ip)
+  |     |  |     |  |           +--rw ip-addr1     ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr2?    ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr3?    ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr4?    ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr5?    ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr6?    ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr7?    ncd:ipv4-address
+  |     |  |     |  |           +--rw ip-addr8?    ncd:ipv4-address
+  |     |  |     |  +--rw options!
+  |     |  |     |     +--rw option* [code]
+  |     |  |     |        +--rw code                         uint32
+  |     |  |     |        +--rw (type)
+  |     |  |     |           +--:(ascii)
+  |     |  |     |           |  +--rw ascii-str              string
+  |     |  |     |           +--:(hex)
+  |     |  |     |           |  +--rw hex-str                string
+  |     |  |     |           +--:(ip)
+  |     |  |     |           |  +--rw ip-addr1               ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr2?              ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr3?              ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr4?              ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr5?              ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr6?              ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr7?              ncd:ipv4-address
+  |     |  |     |           |  +--rw ip-addr8?              ncd:ipv4-address
+  |     |  |     |           +--:(from-request-packet)
+  |     |  |     |              +--rw from-request-packet?   enumeration
+  |     |  |     +--rw opt212-6rd!
+  |     |  |     |  +--rw ipv6-prefix    ncd:ipv6-address
+  |     |  |     |  +--rw prefix-len     uint32
+  |     |  |     |  +--rw mask-len       uint32
+  |     |  |     |  +--rw br-addr1       ncd:ipv4-address
+  |     |  |     |  +--rw br-addr2?      ncd:ipv4-address
+  |     |  |     |  +--rw br-addr3?      ncd:ipv4-address
+  |     |  |     |  +--rw br-addr4?      ncd:ipv4-address
+  |     |  |     |  +--rw br-addr5?      ncd:ipv4-address
+  |     |  |     +--rw leasetime
+  |     |  |     |  +--rw (type)?
+  |     |  |     |     +--:(finite)
+  |     |  |     |     |  +--rw lease-item!
+  |     |  |     |     |     +--rw lease-days       uint32
+  |     |  |     |     |     +--rw lease-hours      uint8
+  |     |  |     |     |     +--rw lease-minutes    uint8
+  |     |  |     |     |     +--rw lease-seconds?   uint8
+  |     |  |     |     +--:(infinite)
+  |     |  |     |        +--rw lease-infinite?   enumeration
+  |     |  |     +--rw import!
+  |     |  |     |  +--rw ifname    ncd:ifname
+  |     |  |     |  +--rw dns       enumeration
+  |     |  |     +--rw option125-conf
+  |     |  |        +--rw option125* [enterprise sub-code]
+  |     |  |           +--rw enterprise         uint32
+  |     |  |           +--rw sub-code           uint32
+  |     |  |           +--rw (type)
+  |     |  |              +--:(ascii)
+  |     |  |              |  +--rw ascii-str    string
+  |     |  |              +--:(hex)
+  |     |  |              |  +--rw hex-str      string
+  |     |  |              +--:(ip)
+  |     |  |                 +--rw ip-addr1     ncd:ipv4-address
+  |     |  |                 +--rw ip-addr2?    ncd:ipv4-address
+  |     |  |                 +--rw ip-addr3?    ncd:ipv4-address
+  |     |  |                 +--rw ip-addr4?    ncd:ipv4-address
+  |     |  |                 +--rw ip-addr5?    ncd:ipv4-address
+  |     |  |                 +--rw ip-addr6?    ncd:ipv4-address
+  |     |  |                 +--rw ip-addr7?    ncd:ipv4-address
+  |     |  |                 +--rw ip-addr8?    ncd:ipv4-address
+  |     |  +--rw instances
+  |     |  |  +--rw instance* [instance-name]
+  |     |  |     +--rw instance-name             string
+  |     |  |     +--rw pool-name?                string
+  |     |  |     +--rw relay-destination-port?   enumeration
+  |     |  |     +--rw nak-client-offline?       enumeration
+  |     |  +--rw interface-based-instances
+  |     |     +--rw instance* [instance-name]
+  |     |        +--rw instance-name           string
+  |     |        +--rw description?            string
+  |     |        +--rw authen-template-name?   string
+  |     +--rw client
+  |        +--rw interfaces
+  |        |  +--rw interface* [name]
+  |        |     +--rw name             ncd:ifname
+  |        |     +--rw client-policy?   string
+  |        |     +--rw client-switch
+  |        |        +--rw switch?   enumeration
+  |        +--rw policys
+  |        |  +--rw policy* [name]
+  |        |     +--rw name              string
+  |        |     +--rw broadcast-flag?   enumeration
+  |        |     +--rw opt60-format?     enumeration
+  |        |     +--rw opt61-format?     enumeration
+  |        |     +--rw host-name?        string
+  |        |     +--rw request-lists
+  |        |     |  +--rw request-list* [req-opt-code]
+  |        |     |     +--rw req-opt-code    enumeration
+  |        |     +--rw options
+  |        |        +--rw option* [opt-code]
+  |        |           +--rw opt-code              enumeration
+  |        |           +--rw (type)
+  |        |              +--:(ascii)
+  |        |              |  +--rw ascii-string    string
+  |        |              +--:(hex)
+  |        |                 +--rw hex-string      string
+  |        +--rw global-config
+  |           +--rw client-switch?   enumeration
+  |           +--rw client-policy?   string
+  |           +--rw client-write?    enumeration
+  +--ro state
+  |  +--ro dhcp
+  |     +--ro relay
+  |     |  +--ro user-connect-statistics
+  |     |  |  +--ro detail* [board-name start-time]
+  |     |  |     +--ro board-name        string
+  |     |  |     +--ro start-time        ncd:string-with-blank
+  |     |  |     +--ro end-time?         ncd:string-with-blank
+  |     |  |     +--ro user-capacity?    uint32
+  |     |  |     +--ro current-online?   uint32
+  |     |  |     +--ro failed-times?     uint32
+  |     |  +--ro relay-user
+  |     |  |  +--ro detail* [board-name mac]
+  |     |  |  |  +--ro board-name    string
+  |     |  |  |  +--ro mac           ncd:mac-address
+  |     |  |  |  +--ro interface?    string
+  |     |  |  |  +--ro ip?           ncd:ipv4-address
+  |     |  |  |  +--ro mask?         ncd:ipv4-mask
+  |     |  |  |  +--ro state?        enumeration
+  |     |  |  |  +--ro lease-time?   uint32
+  |     |  |  |  +--ro vrf?          string
+  |     |  |  |  +--ro slot?         uint32
+  |     |  |  |  +--ro total?        uint32
+  |     |  |  +--ro total-user?   uint32
+  |     |  +--ro dead-server
+  |     |     +--ro detail* [board-name server-ip]
+  |     |        +--ro board-name         string
+  |     |        +--ro server-ip          ncd:ipv4-address
+  |     |        +--ro vrf?               string
+  |     |        +--ro expiration-time?   uint32
+  |     +--ro server
+  |     |  +--ro server-user
+  |     |     +--ro detail* [board-name mac]
+  |     |     |  +--ro board-name    string
+  |     |     |  +--ro mac           ncd:mac-address
+  |     |     |  +--ro ip?           ncd:ipv4-address
+  |     |     |  +--ro mask?         ncd:ipv4-mask
+  |     |     |  +--ro state?        enumeration
+  |     |     |  +--ro lease-time?   uint32
+  |     |     |  +--ro interface?    string
+  |     |     |  +--ro vrf?          string
+  |     |     |  +--ro slot?         uint32
+  |     |     |  +--ro total?        uint32
+  |     |     +--ro total-user?   uint32
+  |     +--ro client
+  |     |  +--ro client-user
+  |     |     +--ro detail* [ifname]
+  |     |        +--ro ifname             string
+  |     |        +--ro mac?               ncd:mac-address
+  |     |        +--ro ip?                ncd:ipv4-address
+  |     |        +--ro lease-server?      ncd:ipv4-address
+  |     |        +--ro mask?              ncd:ipv4-mask
+  |     |        +--ro default-gateway?   ncd:ipv4-address
+  |     |        +--ro state?             enumeration
+  |     |        +--ro lease?             uint32
+  |     |        +--ro renewal?           uint32
+  |     |        +--ro rebind?            uint32
+  |     |        +--ro expiration?        ncd:string-with-blank
+  |     +--ro global
+  |        +--ro packet-statistics
+  |           +--ro packet-statistic* [board-name]
+  |              +--ro board-name     string
+  |              +--ro if-name?       string
+  |              +--ro discover?      uint32
+  |              +--ro offer?         uint32
+  |              +--ro request?       uint32
+  |              +--ro ack?           uint32
+  |              +--ro nak?           uint32
+  |              +--ro decline?       uint32
+  |              +--ro release?       uint32
+  |              +--ro inform?        uint32
+  |              +--ro request-all?   uint32
+  |              +--ro reply-all?     uint32
+  +--ro operation
+     +--ro dhcp
+        +--ro relay-kick-user
+        |  +--ro (type)?
+        |     +--:(all)
+        |     |  +--ro all-user?   enumeration
+        |     +--:(interface)
+        |     |  +--ro if-user?    ncd:ifname
+        |     +--:(mac)
+        |     |  +--ro mac-user?   ncd:mac-address
+        |     +--:(ip)
+        |        +--ro ip-user     ncd:ipv4-address
+        |        +--ro vrf?        string
+        +--ro server-kick-user
+        |  +--ro (type)?
+        |     +--:(all)
+        |     |  +--ro all-user?   enumeration
+        |     +--:(interface)
+        |     |  +--ro if-user?    ncd:ifname
+        |     +--:(mac)
+        |     |  +--ro mac-user?   ncd:mac-address
+        |     +--:(ip)
+        |        +--ro ip-user     ncd:ipv4-address
+        |        +--ro vrf?        string
+        +--ro clear-pkt-stat
+        |  +--ro board-name?       string
+        |  +--ro (type)?
+        |     +--:(global)
+        |     |  +--ro glb-stat?   enumeration
+        |     +--:(interface)
+        |        +--ro if-stat?    ncd:ifname
+        +--ro clear-dead-server
+           +--ro (type)?
+              +--:(all)
+              |  +--ro all-dead-svr?   enumeration
+              +--:(special)
+                 +--ro board-name?     string
+                 +--ro ip-addr?        ncd:ipv4-address
+                 +--ro ip-vrf?         string
+
+  notifications:
+    +---n relay-user-report
+       +--ro detail* [board-name mac]
+          +--ro board-name       string
+          +--ro mac              ncd:mac-address
+          +--ro pkt-if?          string
+          +--ro phy-if?          string
+          +--ro internal-vlan?   uint16
+          +--ro external-vlan?   uint16
+          +--ro ip?              ncd:ipv4-address
+          +--ro mask?            ncd:ipv4-mask

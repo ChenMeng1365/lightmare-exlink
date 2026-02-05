@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-vsm"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vsm="urn:huawei:yang:huawei-vsm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-vsm"/>
+  <prefix value="vsm"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for Configurations of value-added service management module.</text>
+  </description>
+  <revision date="2021-07-20">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="engine-id">
+    <type name="enumeration">
+      <enum name="engine0">
+        <value value="1"/>
+        <description>
+          <text>Engine ID 0.</text>
+        </description>
+      </enum>
+      <enum name="engine1">
+        <value value="2"/>
+        <description>
+          <text>Engine ID 1.</text>
+        </description>
+      </enum>
+      <enum name="engine2">
+        <value value="3"/>
+        <description>
+          <text>Engine ID 2.</text>
+        </description>
+      </enum>
+      <enum name="engine3">
+        <value value="4"/>
+        <description>
+          <text>Engine ID 3.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>CGN engine ID.</text>
+    </description>
+  </typedef>
+  <typedef name="card-id">
+    <type name="enumeration">
+      <enum name="card0">
+        <value value="1"/>
+        <description>
+          <text>Card ID 0.</text>
+        </description>
+      </enum>
+      <enum name="card1">
+        <value value="2"/>
+        <description>
+          <text>Card ID 1.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>CGN card ID.</text>
+    </description>
+  </typedef>
+  <container name="vsm">
+    <description>
+      <text>Value-added service management.</text>
+    </description>
+    <container name="service-locations">
+      <description>
+        <text>List of service-location.</text>
+      </description>
+      <list name="service-location">
+        <key value="service-id"/>
+        <description>
+          <text>Configure service location.</text>
+        </description>
+        <leaf name="service-id">
+          <type name="uint16">
+            <range value="1..255"/>
+          </type>
+          <description>
+            <text>Service location Id.</text>
+          </description>
+        </leaf>
+        <container name="location">
+          <presence value="Enable/Disable the location configuration for the service."/>
+          <description>
+            <text>Configure location.</text>
+          </description>
+          <leaf name="slot">
+            <type name="string">
+              <length value="1..16"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Slot ID. If the slot is a VSU, you must specify the engine or card. If backup-slot is configured, backup-slot must be a VSU and backup-engine or backup-card must be specified. If the slot is a LPU, the engine and card cannot be specified. If backup-slot is configured, backup-slot must be a LPU and backup-engine and backup-card cannot be specified.</text>
+            </description>
+          </leaf>
+          <choice name="location">
+            <description>
+              <text>Location on slot.</text>
+            </description>
+            <case name="engine">
+              <description>
+                <text>Engine type.</text>
+              </description>
+              <leaf name="engine-id">
+                <type name="engine-id"/>
+                <description>
+                  <text>Engine ID.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="card">
+              <description>
+                <text>Card type.</text>
+              </description>
+              <leaf name="card-id">
+                <type name="card-id"/>
+                <description>
+                  <text>Card ID.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="backup-slot">
+            <type name="string">
+              <length value="1..16"/>
+            </type>
+            <description>
+              <text>Backup Slot ID.</text>
+            </description>
+          </leaf>
+          <choice name="backup-location">
+            <when condition="backup-slot and (engine-id or card-id)"/>
+            <description>
+              <text>Location on backup slot.</text>
+            </description>
+            <case name="engine">
+              <description>
+                <text>Engine type.</text>
+              </description>
+              <leaf name="backup-engine-id">
+                <type name="engine-id"/>
+                <description>
+                  <text>Backup engine ID.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="card">
+              <description>
+                <text>Card type.</text>
+              </description>
+              <leaf name="backup-card-id">
+                <type name="card-id"/>
+                <description>
+                  <text>Backup card ID.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+        </container>
+      </list>
+    </container>
+    <container name="service-instance-groups">
+      <description>
+        <text>List of service instance group.</text>
+      </description>
+      <list name="service-instance-group">
+        <key value="group-name"/>
+        <description>
+          <text>Configure service-instance-group, used to bind VSMHA and remote-backup-service.</text>
+        </description>
+        <leaf name="group-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Service-instance-group name.</text>
+          </description>
+        </leaf>
+        <container name="binded-service-locations">
+          <description>
+            <text>List of service-location binded.</text>
+          </description>
+          <list name="binded-service-location">
+            <key value="service-id"/>
+            <description>
+              <text>Configure service-location binded.</text>
+            </description>
+            <leaf name="service-id">
+              <type name="leafref">
+                <path value="/vsm:vsm/vsm:service-locations/vsm:service-location/vsm:service-id"/>
+              </type>
+              <must condition="/vsm:vsm/vsm:service-locations/vsm:service-location[vsm:service-id=current()]/vsm:location/vsm:slot"/>
+              <description>
+                <text>Service location Id.</text>
+              </description>
+            </leaf>
+            <leaf name="weight">
+              <type name="uint8">
+                <range value="1..40"/>
+              </type>
+              <description>
+                <text>Service location weight.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="on-board-mode">
+      <description>
+        <text>Configure vsm-on-board mode.</text>
+      </description>
+      <leaf name="mode">
+        <type name="enumeration">
+          <enum name="centralized-board">
+            <value value="0"/>
+            <description>
+              <text>Centralized-board.</text>
+            </description>
+          </enum>
+          <enum name="on-board">
+            <value value="1"/>
+            <description>
+              <text>On-board.</text>
+            </description>
+          </enum>
+        </type>
+        <default value="centralized-board"/>
+        <description>
+          <text>Specify vsm mode.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="ha">
+      <description>
+        <text>Configure ha.</text>
+      </description>
+      <leaf name="hot-backup">
+        <type name="enumeration">
+          <enum name="warm-backup">
+            <value value="0"/>
+            <description>
+              <text>Warm backup.</text>
+            </description>
+          </enum>
+          <enum name="hot-backup">
+            <value value="1"/>
+            <description>
+              <text>Hot backup.</text>
+            </description>
+          </enum>
+        </type>
+        <default value="warm-backup"/>
+        <description>
+          <text>Specify HA backup mode in the inter-board or inter-chassis hot backup scenario.</text>
+        </description>
+      </leaf>
+      <leaf name="preempt-time">
+        <type name="uint16">
+          <range value="120..3600"/>
+        </type>
+        <units name="s"/>
+        <default value="360"/>
+        <description>
+          <text>Specifies the switchback period for inter-board backup.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <ext:task-name value="nat"/>
+</module>

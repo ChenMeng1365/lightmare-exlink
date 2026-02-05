@@ -1,0 +1,385 @@
+module: huawei-multicast-forward
+  +--rw multicast-forward
+     +--rw global
+     |  +--rw shaping-enable?               boolean
+     |  +--rw bw-car-enable?                boolean
+     |  +--rw monitor-frr-cycle?            cycle
+     |  +--rw frr-revert-disable?           boolean
+     |  +--rw reliability-enhance-enable?   boolean
+     |  +--rw fragment-enable?              boolean
+     +--rw nat!
+     |  +--rw ttl-decrease-disable?   boolean
+     |  +--rw inbound-interfaces
+     |  |  +--rw inbound-interface* [interface-name]
+     |  |     +--rw interface-name    -> /ifm:ifm/interfaces/interface/name
+     |  |     +--rw igmp-enable?      boolean
+     |  +--rw instances
+     |  |  +--rw instance* [instance-id]
+     |  |     +--rw instance-id      uint32
+     |  |     +--rw instance-name?   string
+     |  |     +--ro behavior-name?   string
+     |  |     +--ro outbounds
+     |  |        +--ro outbound* [outbound-id]
+     |  |           +--ro outbound-id                   uint32
+     |  |           +--ro outbound-name?                string
+     |  |           +--ro src-mac-trans-mode?           string
+     |  |           +--ro src-address-trans-mode?       string
+     |  |           +--ro source-address?               inet:ipv4-address-no-zone
+     |  |           +--ro dst-address-trans-mode?       string
+     |  |           +--ro destination-address?          inet:ipv4-address-no-zone
+     |  |           +--ro source-udp-trans-mode?        string
+     |  |           +--ro source-udp-port?              uint32
+     |  |           +--ro dst-udp-trans-mode?           string
+     |  |           +--ro dst-udp-port?                 uint32
+     |  |           +--ro rtp-ssrc-trans-mode?          string
+     |  |           +--ro rtp-seq-num-trans-mode?       string
+     |  |           +--ro rtp-ext-seq-num-trans-mode?   string
+     |  |           +--ro interface-name?               pub-type:if-name
+     |  +--rw outbounds
+     |  |  +--rw outbound* [interface-name outbound-id]
+     |  |     +--rw interface-name                    -> /ifm:ifm/interfaces/interface/name
+     |  |     +--rw outbound-id                       uint32
+     |  |     +--rw outbound-name?                    string
+     |  |     +--rw source-mac-trans-mode?            source-mac-change-type
+     |  |     +--rw source-address-trans-mode?        boolean
+     |  |     +--rw destination-address-trans-mode?   boolean
+     |  |     +--rw source-udp-trans-mode?            boolean
+     |  |     +--rw destination-udp-trans-mode?       boolean
+     |  |     +--rw rtp-ssrc-trans-mode?              rtp-ssrc-change-type
+     |  |     +--rw rtp-seq-num-trans-mode?           rtp-seq-num-change-type
+     |  |     +--rw rtp-ext-seq-num-trans-mode?       rtp-ext-seq-num-change-type
+     |  |     +--rw source-address                    inet:ipv4-address-no-zone
+     |  |     +--rw destination-address               inet:ipv4-address-no-zone
+     |  |     +--rw source-udp-port                   uint32
+     |  |     +--rw destination-udp-port              uint32
+     |  +--rw instance-groups
+     |  |  +--rw instance-group* [group-id]
+     |  |     +--rw group-id          uint32
+     |  |     +--rw group-name?       string
+     |  |     +--rw part-instances
+     |  |        +--rw part-instance* [part-id]
+     |  |           +--rw part-id          uint32
+     |  |           +--rw instance-id      -> /multicast-forward/nat/instances/instance/instance-id
+     |  |           +--rw instance-name?   -> /multicast-forward/nat/instances/instance[instance-id=current()/../instance-id]/instance-name
+     |  |           +--rw stream-type?     stream-type
+     |  +--rw outbound-groups
+     |  |  +--rw outbound-group* [group-id]
+     |  |     +--rw group-id          uint32
+     |  |     +--rw group-name?       string
+     |  |     +--rw part-outbounds
+     |  |        +--rw part-outbound* [part-id]
+     |  |           +--rw part-id          uint32
+     |  |           +--rw outbound-id      -> /multicast-forward/nat/outbounds/outbound/outbound-id
+     |  |           +--rw outbound-name?   -> /multicast-forward/nat/outbounds/outbound[outbound-id=current()/../outbound-id]/outbound-name
+     |  |           +--rw stream-type?     stream-type
+     |  +--rw bind!
+     |     +--rw single-binds
+     |     |  +--rw single-bind* [outbound-id]
+     |     |     +--rw outbound-id          -> /multicast-forward/nat/outbounds/outbound/outbound-id
+     |     |     +--rw fast-mode-enable?    boolean
+     |     |     +--rw outbound-name?       -> /multicast-forward/nat/outbounds/outbound[outbound-id=current()/../outbound-id]/outbound-name
+     |     |     +--rw instance-id          -> /multicast-forward/nat/instances/instance/instance-id
+     |     |     +--rw instance-name?       -> /multicast-forward/nat/instances/instance[instance-id=current()/../instance-id]/instance-name
+     |     |     +--rw switch-mode?         switch-mode
+     |     |     +--rw switch-field-type?   switch-field-type
+     |     +--rw group-binds
+     |        +--rw group-bind* [outbound-group-id]
+     |           +--rw outbound-group-id      -> /multicast-forward/nat/outbound-groups/outbound-group/group-id
+     |           +--rw fast-mode-enable?      boolean
+     |           +--rw outbound-group-name?   -> /multicast-forward/nat/outbound-groups/outbound-group[group-id=current()/../outbound-group-id]/group-name
+     |           +--rw instance-group-id      -> /multicast-forward/nat/instance-groups/instance-group/group-id
+     |           +--rw instance-group-name?   -> /multicast-forward/nat/instance-groups/instance-group[group-id=current()/../instance-group-id]/group-name
+     |           +--rw switch-mode?           switch-mode
+     |           +--rw switch-field-type?     switch-field-type
+     +--rw egress-forward-mode
+     |  +--rw global
+     |  |  +--rw enable?   empty
+     |  +--rw slot*     string
+     +--ro mcfwd-entrys
+     |  +--ro mcfwd-entry* [vrf-name address-family]
+     |     +--ro vrf-name          -> /ni:network-instance/instances/instance/name
+     |     +--ro address-family    af-type
+     |     +--ro forward-infors
+     |        +--ro forward-infor* [source-address group-address oif-name]
+     |           +--ro source-address         inet:ip-address-no-zone
+     |           +--ro group-address          inet:ip-address-no-zone
+     |           +--ro oif-name               string
+     |           +--ro mid?                   uint32
+     |           +--ro flag?                  string
+     |           +--ro sg-up-time?            string
+     |           +--ro sg-up-exp-time?        string
+     |           +--ro sg-iif-name?           string
+     |           +--ro sg-up-neighbor?        inet:ip-address-no-zone
+     |           +--ro mtoken?                pub-type:hex-binary
+     |           +--ro active-time?           string
+     |           +--ro token?                 pub-type:hex-binary
+     |           +--ro forward-rate-pps?      uint64
+     |           +--ro forward-rate-bps?      uint64
+     |           +--ro match-packet?          uint64
+     |           +--ro match-byte?            uint64
+     |           +--ro wrongif-packet?        uint64
+     |           +--ro forward-packet?        uint64
+     |           +--ro forward-byte?          uint64
+     |           +--ro bas-flag?              uint32
+     |           +--ro clone-source-adress?   inet:ip-address-no-zone
+     +--ro multicast-speed-states
+     |  +--ro multicast-speed-state* [source-address group-address interface-name flow-direction vlan-id pe-vid ce-vid]
+     |     +--ro source-address          inet:ipv4-address-no-zone
+     |     +--ro group-address           inet:ipv4-address-no-zone
+     |     +--ro interface-name          -> /ifm:ifm/interfaces/interface/name
+     |     +--ro flow-direction          rule-direction
+     |     +--ro vlan-id                 uint32
+     |     +--ro pe-vid                  uint32
+     |     +--ro ce-vid                  uint32
+     |     +--ro interface-statistics
+     |        +--ro receive-byte?          uint64
+     |        +--ro receive-byte-rate?     uint64
+     |        +--ro receive-packet?        uint64
+     |        +--ro receive-packet-rate?   uint64
+     +--rw spatial-multicast!
+     |  +--rw ipv4-multicast-bandwidths
+     |  |  +--rw ipv4-multicast-bandwidth* [vrf-name group-address group-address-mask source-address]
+     |  |     +--rw vrf-name              -> /ni:network-instance/instances/instance/name
+     |  |     +--rw group-address         inet:ipv4-address-no-zone
+     |  |     +--rw group-address-mask    uint32
+     |  |     +--rw source-address        inet:ipv4-address-no-zone
+     |  |     +--rw bandwidth             uint64
+     |  +--rw vlan-multicast-bandwidths
+     |  |  +--rw vlan-multicast-bandwidth* [vlan-id group-address group-address-mask source-address]
+     |  |     +--rw vlan-id               -> /vlan:vlan/vlans/vlan/id
+     |  |     +--rw group-address         inet:ipv4-address-no-zone
+     |  |     +--rw group-address-mask    uint32
+     |  |     +--rw source-address        inet:ipv4-address-no-zone
+     |  |     +--rw bandwidth             uint64
+     |  +--rw vsi-multicast-bandwidths
+     |  |  +--rw vsi-multicast-bandwidth* [vsi-name group-address group-address-mask source-address]
+     |  |     +--rw vsi-name              string
+     |  |     +--rw group-address         inet:ipv4-address-no-zone
+     |  |     +--rw group-address-mask    uint32
+     |  |     +--rw source-address        inet:ipv4-address-no-zone
+     |  |     +--rw bandwidth             uint64
+     |  +--rw mpls-bandwidths
+     |  |  +--rw mpls-bandwidth* [service-type]
+     |  |     +--rw service-type    mpls-type
+     |  |     +--rw bandwidth       uint64
+     |  +--rw board-enables
+     |  |  +--rw board-enable* [slot]
+     |  |     +--rw slot    -> /devm:devm/lpu-boards/lpu-board/position
+     |  +--ro channel-bandwiths
+     |  |  +--ro channel-bandwith* [sc-id]
+     |  |     +--ro sc-id            uint32
+     |  |     +--ro bandwith-use?    uint64
+     |  |     +--ro bandwith-free?   uint64
+     |  +--ro vlan-multicast-bandwidth-states
+     |  |  +--ro vlan-multicast-bandwidth-state* [vlan-id group-address source-address]
+     |  |     +--ro vlan-id           uint32
+     |  |     +--ro group-address     inet:ipv4-address-no-zone
+     |  |     +--ro source-address    inet:ipv4-address-no-zone
+     |  |     +--ro sc-id?            uint32
+     |  |     +--ro bandwidth         uint64
+     |  +--ro vsi-multicast-bandwidth-states
+     |  |  +--ro vsi-multicast-bandwidth-state* [vsi-name group-address source-address]
+     |  |     +--ro vsi-name          string
+     |  |     +--ro group-address     inet:ipv4-address-no-zone
+     |  |     +--ro source-address    inet:ipv4-address-no-zone
+     |  |     +--ro sc-id?            uint32
+     |  |     +--ro bandwidth         uint64
+     |  +--ro ipv4-multicast-bandwidth-states
+     |     +--ro ipv4-multicast-bandwidth-state* [vrf-name group-address source-address]
+     |        +--ro vrf-name          string
+     |        +--ro group-address     inet:ipv4-address-no-zone
+     |        +--ro source-address    inet:ipv4-address-no-zone
+     |        +--ro sc-id?            uint32
+     |        +--ro bandwidth         uint64
+     +--ro multicast-remote-users
+     |  +--ro multicast-remote-user* [source-address group-address trunk-id vrf-name]
+     |     +--ro source-address    inet:ipv4-address-no-zone
+     |     +--ro group-address     inet:ipv4-address-no-zone
+     |     +--ro trunk-id          uint32
+     |     +--ro vrf-name          string
+     |     +--ro flow?             string
+     +--ro multicast-outgoing-interface-statics
+     |  +--ro multicast-outgoing-interface-static* [slot]
+     |     +--ro slot                   string
+     |     +--ro device-id?             uint32
+     |     +--ro resource-pool-index?   resource-pool-type
+     |     +--ro total-number?          uint32
+     |     +--ro left-number?           uint32
+     |     +--ro used-number?           uint32
+     |     +--ro ipv4-used-number?      string
+     |     +--ro ipv6-used-number?      string
+     |     +--ro others-number?         string
+     +--rw l3-egress-statistics
+     |  +--rw enable-slots
+     |  |  +--rw enable-slot* [slot-id]
+     |  |     +--rw slot-id    string
+     |  +--rw vpn-enables
+     |  |  +--rw vpn-enable* [slot-id vpn-name source-address group-address]
+     |  |     +--rw slot-id           string
+     |  |     +--rw vpn-name          -> /ni:network-instance/instances/instance/name
+     |  |     +--rw source-address    inet:ipv4-address-no-zone
+     |  |     +--rw group-address     inet:ipv4-address-no-zone
+     |  +--ro vpn-statistics
+     |     +--ro vpn-statistic* [slot-id vpn-name source-address group-address]
+     |        +--ro slot-id           string
+     |        +--ro vpn-name          -> /ni:network-instance/instances/instance/name
+     |        +--ro source-address    inet:ipv4-address-no-zone
+     |        +--ro group-address     inet:ipv4-address-no-zone
+     |        +--ro interface-name?   string
+     |        +--ro packet-number?    uint64
+     |        +--ro byte-number?      uint64
+     |        +--ro packet-rate?      uint64
+     |        +--ro bit-rate?         uint64
+     +--rw l2-egress-statistics
+     |  +--rw enable-slots
+     |  |  +--rw enable-slot* [slot-id]
+     |  |     +--rw slot-id    string
+     |  +--rw vlan-enables
+     |  |  +--rw vlan-enable* [slot-id vlan-id source-address group-address]
+     |  |     +--rw slot-id           string
+     |  |     +--rw vlan-id           -> /vlan:vlan/vlans/vlan/id
+     |  |     +--rw source-address    inet:ipv4-address-no-zone
+     |  |     +--rw group-address     inet:ipv4-address-no-zone
+     |  +--rw vsi-enables
+     |  |  +--rw vsi-enable* [slot-id vsi-name source-address group-address]
+     |  |     +--rw slot-id           string
+     |  |     +--rw vsi-name          string
+     |  |     +--rw source-address    inet:ipv4-address-no-zone
+     |  |     +--rw group-address     inet:ipv4-address-no-zone
+     |  +--rw bd-enables
+     |  |  +--rw bd-enable* [slot-id bd-id source-address group-address]
+     |  |     +--rw slot-id           string
+     |  |     +--rw bd-id             uint32
+     |  |     +--rw source-address    inet:ipv4-address-no-zone
+     |  |     +--rw group-address     inet:ipv4-address-no-zone
+     |  +--ro vlan-statistics
+     |  |  +--ro vlan-statistic* [slot-id vlan-id source-address group-address]
+     |  |     +--ro slot-id           string
+     |  |     +--ro vlan-id           -> /vlan:vlan/vlans/vlan/id
+     |  |     +--ro source-address    inet:ipv4-address-no-zone
+     |  |     +--ro group-address     inet:ipv4-address-no-zone
+     |  |     +--ro interface-type?   string
+     |  |     +--ro interface-name?   string
+     |  |     +--ro packet-number?    uint64
+     |  |     +--ro byte-number?      uint64
+     |  |     +--ro packet-rate?      uint64
+     |  |     +--ro bit-rate?         uint64
+     |  +--ro vsi-statistics
+     |  |  +--ro vsi-statistic* [slot-id vsi-name source-address group-address]
+     |  |     +--ro slot-id           string
+     |  |     +--ro vsi-name          string
+     |  |     +--ro source-address    inet:ipv4-address-no-zone
+     |  |     +--ro group-address     inet:ipv4-address-no-zone
+     |  |     +--ro interface-type?   string
+     |  |     +--ro interface-name?   string
+     |  |     +--ro packet-number?    uint64
+     |  |     +--ro byte-number?      uint64
+     |  |     +--ro packet-rate?      uint64
+     |  |     +--ro bit-rate?         uint64
+     |  +--ro bd-statistics
+     |     +--ro bd-statistic* [slot-id bd-id source-address group-address]
+     |        +--ro slot-id           string
+     |        +--ro bd-id             uint32
+     |        +--ro source-address    inet:ipv4-address-no-zone
+     |        +--ro group-address     inet:ipv4-address-no-zone
+     |        +--ro interface-type?   string
+     |        +--ro interface-name?   string
+     |        +--ro packet-number?    uint64
+     |        +--ro byte-number?      uint64
+     |        +--ro packet-rate?      uint64
+     |        +--ro bit-rate?         uint64
+     +--rw random-detect
+     |  +--rw enable?           boolean
+     |  +--rw rules
+     |  |  +--rw rule* [source-address group-address vpn-name]
+     |  |     +--rw source-address    inet:ipv4-address-no-zone
+     |  |     +--rw group-address     inet:ipv4-address-no-zone
+     |  |     +--rw vpn-name          -> /ni:network-instance/instances/instance/name
+     |  |     +--rw mask?             inet:ipv4-address-no-zone
+     |  +--ro select-results
+     |     +--ro select-result* [slot source-address group-address vpn-name]
+     |        +--ro slot                  string
+     |        +--ro source-address        inet:ipv4-address-no-zone
+     |        +--ro group-address         inet:ipv4-address-no-zone
+     |        +--ro vpn-name              -> /ni:network-instance/instances/instance/name
+     |        +--ro multicast-group-id?   uint32
+     +--rw static-frr
+        +--rw static-frr-enables
+        |  +--rw static-frr-enable* [source-address group-address vpn-name]
+        |     +--rw source-address    inet:ipv4-address-no-zone
+        |     +--rw group-address     inet:ipv4-address-no-zone
+        |     +--rw vpn-name          -> /ni:network-instance/instances/instance/name
+        |     +--rw mask?             inet:ipv4-address-no-zone
+        +--ro static-frr-statuss
+           +--ro static-frr-status* [source-address group-address vpn-name]
+              +--ro source-address            inet:ipv4-address-no-zone
+              +--ro group-address             inet:ipv4-address-no-zone
+              +--ro vpn-name                  -> /ni:network-instance/instances/instance/name
+              +--ro status?                   frr-status-type
+              +--ro frr-type?                 frr-type
+              +--ro master-id?                uint32
+              +--ro backup-id?                uint32
+              +--ro primary-interface-name?   pub-type:if-name
+              +--ro backup-interface-name?    pub-type:if-name
+              +--ro primary-source-address?   inet:ipv4-address-no-zone
+              +--ro backup-source-address?    inet:ipv4-address-no-zone
+              +--ro primary-root-address?     inet:ipv4-address-no-zone
+              +--ro backup-root-address?      inet:ipv4-address-no-zone
+              +--ro receive-status?           receive-status-type
+
+  rpcs:
+    +---x reset-bas-multicast-rui-statics
+    +---x send-igmp-packet
+    |  +---w input
+    |     +---w interface-name    -> /ifm:ifm/interfaces/interface/name
+    |     +---w igmp-packet       string
+    +---x reset-l3-egress-all-statistics
+    |  +---w input
+    |     +---w slot-id    string
+    +---x reset-l3-egress-statistics
+    |  +---w input
+    |     +---w slot-id           string
+    |     +---w vpn-name          -> /ni:network-instance/instances/instance/name
+    |     +---w source-address    inet:ipv4-address-no-zone
+    |     +---w group-address     inet:ipv4-address-no-zone
+    +---x reset-l2-egress-all-statistics
+    |  +---w input
+    |     +---w slot-id    string
+    +---x reset-vlan-egress-statistics
+    |  +---w input
+    |     +---w slot-id           string
+    |     +---w vlan-id           -> /vlan:vlan/vlans/vlan/id
+    |     +---w source-address    inet:ipv4-address-no-zone
+    |     +---w group-address     inet:ipv4-address-no-zone
+    +---x reset-vsi-egress-statistics
+    |  +---w input
+    |     +---w slot-id           string
+    |     +---w vsi-name          string
+    |     +---w source-address    inet:ipv4-address-no-zone
+    |     +---w group-address     inet:ipv4-address-no-zone
+    +---x reset-bd-egress-statistics
+    |  +---w input
+    |     +---w slot-id           string
+    |     +---w bd-id             uint32
+    |     +---w source-address    inet:ipv4-address-no-zone
+    |     +---w group-address     inet:ipv4-address-no-zone
+    +---x single-fast-switch
+    |  +---w input
+    |     +---w outbound-id          -> /multicast-forward/nat/outbounds/outbound/outbound-id
+    |     +---w instance-id          -> /multicast-forward/nat/instances/instance/instance-id
+    |     +---w switch-mode?         switch-mode
+    |     +---w switch-field-type?   switch-field-type
+    +---x group-fast-switch
+    |  +---w input
+    |     +---w outbound-group-id    -> /multicast-forward/nat/outbound-groups/outbound-group/group-id
+    |     +---w instance-group-id    -> /multicast-forward/nat/instance-groups/instance-group/group-id
+    |     +---w switch-mode?         switch-mode
+    |     +---w switch-field-type?   switch-field-type
+    +---x get-multicast-forwarding-device
+       +---w input
+       |  +---w source-address    inet:ipv4-address-no-zone
+       |  +---w group-address     inet:ipv4-address-no-zone
+       |  +---w trunk-id          uint32
+       |  +---w vrf-name?         -> /ni:network-instance/instances/instance/name
+       +--ro output
+          +--ro flow?   string

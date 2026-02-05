@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-radius-client"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:radius-client="urn:huawei:yang:huawei-radius-client"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-radius-client"/>
+  <prefix value="radius-client"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>RADIUS client configuration.</text>
+  </description>
+  <revision date="2019-06-27">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="radius"/>
+  <typedef name="radius-server-type">
+    <type name="enumeration">
+      <enum name="authentication">
+        <value value="0"/>
+        <description>
+          <text>Server type as authentication server.</text>
+        </description>
+      </enum>
+      <enum name="accounting">
+        <value value="1"/>
+        <description>
+          <text>Server type as accounting server.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of RADIUS server.</text>
+    </description>
+  </typedef>
+  <typedef name="radius-mode">
+    <type name="enumeration">
+      <enum name="primary-secondary">
+        <value value="0"/>
+        <description>
+          <text>Group mode as primary secondary.</text>
+        </description>
+      </enum>
+      <enum name="load-balance">
+        <value value="1"/>
+        <description>
+          <text>Group mode as load balance.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of RADIUS server mode.</text>
+    </description>
+  </typedef>
+  <typedef name="radius-server-mode">
+    <type name="enumeration">
+      <enum name="secondary-server">
+        <value value="0"/>
+        <description>
+          <text>Secondary server.</text>
+        </description>
+      </enum>
+      <enum name="primary-server">
+        <value value="1"/>
+        <description>
+          <text>Primary server.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The priority of RADIUS server.</text>
+    </description>
+  </typedef>
+  <typedef name="domain-include-mode">
+    <type name="enumeration">
+      <enum name="no">
+        <value value="0"/>
+        <description>
+          <text>User name excludes domain.</text>
+        </description>
+      </enum>
+      <enum name="yes">
+        <value value="1"/>
+        <description>
+          <text>User name includes domain.</text>
+        </description>
+      </enum>
+      <enum name="original">
+        <value value="2"/>
+        <description>
+          <text>User name same as user input.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of domain mode.</text>
+    </description>
+  </typedef>
+  <container name="radius-client">
+    <description>
+      <text>RADIUS client configuration. It will be replaced by the huawei-radius module defined in unified datacom YANG model.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure RADIUS global client configuration.</text>
+      </description>
+      <leaf name="radius-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the RADIUS client services.</text>
+        </description>
+      </leaf>
+      <leaf name="dead-count">
+        <type name="uint32">
+          <range value="3..65535"/>
+        </type>
+        <default value="10"/>
+        <description>
+          <text>To configure the dead count for all RADIUS servers.</text>
+        </description>
+      </leaf>
+      <leaf name="dead-interval">
+        <type name="uint32">
+          <range value="0..60"/>
+        </type>
+        <units name="s"/>
+        <default value="5"/>
+        <description>
+          <text>To configure the dead interval for all the RADIUS servers.</text>
+        </description>
+      </leaf>
+      <leaf name="dead-time">
+        <type name="uint32">
+          <range value="1..65535"/>
+        </type>
+        <units name="min"/>
+        <default value="3"/>
+        <description>
+          <text>To configure the dead time for all the RADIUS servers.</text>
+        </description>
+      </leaf>
+      <leaf name="fail-rate">
+        <type name="uint32">
+          <range value="1..100"/>
+        </type>
+        <default value="100"/>
+        <description>
+          <text>Configure the fail rate for all the RADIUS servers.</text>
+        </description>
+      </leaf>
+      <leaf name="recovery-enable">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable configure server recovery on response for all the RADIUS servers.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="radius-server-groups">
+      <description>
+        <text>List of RADIUS group configuration.</text>
+      </description>
+      <list name="radius-server-group">
+        <key value="name"/>
+        <max-elements value="128"/>
+        <description>
+          <text>Configure RADIUS group configuration.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[a-z0-9._-]+"/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>RADIUS server group's name. Range supported [a-z][0-9] and [.,_,-].</text>
+          </description>
+        </leaf>
+        <leaf name="retrans-count">
+          <type name="int32">
+            <range value="1..5"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>Number of times packet retransmission will happen if server is not responding.</text>
+          </description>
+        </leaf>
+        <leaf name="retrans-interval">
+          <type name="int32">
+            <range value="3..25"/>
+          </type>
+          <units name="s"/>
+          <default value="5"/>
+          <description>
+            <text>Server response timeout value.</text>
+          </description>
+        </leaf>
+        <leaf name="auth-retrans-count">
+          <type name="int32">
+            <range value="1..5"/>
+          </type>
+          <must condition="../auth-retrans-interval"/>
+          <description>
+            <text>Number of retransmission times of RADIUS authentication request packets if the server is not responding.</text>
+          </description>
+        </leaf>
+        <leaf name="auth-retrans-interval">
+          <type name="int32">
+            <range value="3..25"/>
+          </type>
+          <units name="s"/>
+          <must condition="../auth-retrans-count"/>
+          <description>
+            <text>Authentication response timeout interval of the RADIUS server.</text>
+          </description>
+        </leaf>
+        <leaf name="acct-retrans-count">
+          <type name="int32">
+            <range value="1..5"/>
+          </type>
+          <must condition="../acct-retrans-interval"/>
+          <description>
+            <text>Number of retransmission times of RADIUS accounting request packets if the server is not responding.</text>
+          </description>
+        </leaf>
+        <leaf name="acct-retrans-interval">
+          <type name="int32">
+            <range value="3..25"/>
+          </type>
+          <units name="s"/>
+          <must condition="../acct-retrans-count"/>
+          <description>
+            <text>Accounting response timeout interval of the RADIUS server.</text>
+          </description>
+        </leaf>
+        <leaf name="shared-key">
+          <type name="pub-type:password-extend">
+            <length value="1..268"/>
+          </type>
+          <description>
+            <text>To configure shared key value for a particular group, which is a string ranging from 1 to 128 characters for a unencrypted key and 24 characters or 32 to 268 characters for a encrypted key.</text>
+          </description>
+        </leaf>
+        <leaf name="attr-trans-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the attribute translation.</text>
+          </description>
+        </leaf>
+        <leaf name="group-mode">
+          <type name="radius-mode"/>
+          <default value="primary-secondary"/>
+          <description>
+            <text>To configure mode (primary secondary and load balance) for a particular group.</text>
+          </description>
+        </leaf>
+        <leaf name="nas-ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>NAS IP Address.</text>
+          </description>
+        </leaf>
+        <leaf name="source-interface-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>To configure source interface name at group level.</text>
+          </description>
+        </leaf>
+        <leaf name="domain-mode">
+          <type name="domain-include-mode"/>
+          <default value="yes"/>
+          <description>
+            <text>To configure domain Mode. It can not be set to no when admin-level node in aaa module is configured.</text>
+          </description>
+        </leaf>
+        <container name="ipv4-servers">
+          <description>
+            <text>List of servers in a group.</text>
+          </description>
+          <list name="ipv4-server">
+            <key value="server-type address port server-mode vpn-name"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure RADIUS IPv4 server for a particular group.</text>
+            </description>
+            <leaf name="server-type">
+              <type name="radius-server-type"/>
+              <description>
+                <text>Type of RADIUS server (authentication or accounting, or both).</text>
+              </description>
+            </leaf>
+            <leaf name="address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>IPv4 address of configured server.</text>
+              </description>
+            </leaf>
+            <leaf name="port">
+              <type name="int32">
+                <range value="1..65535"/>
+              </type>
+              <description>
+                <text>Configured server port for a particular server.</text>
+              </description>
+            </leaf>
+            <leaf name="server-mode">
+              <type name="radius-server-mode"/>
+              <description>
+                <text>To configure primary or secondary server.</text>
+              </description>
+            </leaf>
+            <leaf name="vpn-name">
+              <type name="string">
+                <length value="1..31"/>
+              </type>
+              <description>
+                <text>Set VPN instance.</text>
+              </description>
+            </leaf>
+            <leaf name="source-interface-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="not(../source-address)"/>
+              <description>
+                <text>To configure source interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="shared-key">
+              <type name="pub-type:password-extend">
+                <length value="1..268"/>
+              </type>
+              <description>
+                <text>To configure shared key value for a particular server, which is a string ranging from 1 to 128 characters for a unencrypted key and 24 characters or 32 to 268 characters for a encrypted key.</text>
+              </description>
+            </leaf>
+            <leaf name="source-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <must condition="not(../source-interface-name)"/>
+              <description>
+                <text>To configure source address.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ipv6-servers">
+          <description>
+            <text>List of servers in a group.</text>
+          </description>
+          <list name="ipv6-server">
+            <key value="server-type address port server-mode"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure RADIUS IPv6 Server for a particular group.</text>
+            </description>
+            <leaf name="server-type">
+              <type name="radius-server-type"/>
+              <description>
+                <text>Type of RADIUS server (authentication or accounting, or both).</text>
+              </description>
+            </leaf>
+            <leaf name="address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address of configured server.</text>
+              </description>
+            </leaf>
+            <leaf name="port">
+              <type name="int32">
+                <range value="1..65535"/>
+              </type>
+              <description>
+                <text>Configured server port for a particular server.</text>
+              </description>
+            </leaf>
+            <leaf name="server-mode">
+              <type name="radius-server-mode"/>
+              <description>
+                <text>To configure primary or secondary server.</text>
+              </description>
+            </leaf>
+            <leaf name="shared-key">
+              <type name="pub-type:password-extend">
+                <length value="1..268"/>
+              </type>
+              <description>
+                <text>To configure shared key value for a particular server, which is a string ranging from 1 to 128 characters for a unencrypted key and 24 characters or 32 to 268 characters for a encrypted key.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

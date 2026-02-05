@@ -1,0 +1,1333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-twamp-controller"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:twamp-controller="urn:huawei:yang:huawei-twamp-controller"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <namespace uri="urn:huawei:yang:huawei-twamp-controller"/>
+  <prefix value="twamp-controller"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>TWAMP Controller.</text>
+  </description>
+  <revision date="2020-03-14">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-27">
+    <description>
+      <text>Solve some errors.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-05">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="twampclient"/>
+  <typedef name="period-type">
+    <type name="enumeration">
+      <enum name="10ms">
+        <value value="1"/>
+        <description>
+          <text>The period of sending packets is 10ms.</text>
+        </description>
+      </enum>
+      <enum name="100ms">
+        <value value="2"/>
+        <description>
+          <text>The period of sending packets is 100ms.</text>
+        </description>
+      </enum>
+      <enum name="1000ms">
+        <value value="3"/>
+        <description>
+          <text>The period of sending packets is 1000ms.</text>
+        </description>
+      </enum>
+      <enum name="30000ms">
+        <value value="4"/>
+        <description>
+          <text>The period of sending packets is 30000ms.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The period of sending packets.</text>
+    </description>
+  </typedef>
+  <typedef name="test-state">
+    <type name="enumeration">
+      <enum name="initial">
+        <value value="0"/>
+        <description>
+          <text>Test session state is initial.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="2"/>
+        <description>
+          <text>Test session state is active.</text>
+        </description>
+      </enum>
+      <enum name="inactive">
+        <value value="1"/>
+        <description>
+          <text>Test session state is inactive.</text>
+        </description>
+      </enum>
+      <enum name="unknown">
+        <value value="3"/>
+        <description>
+          <text>Test session state is unknown.</text>
+        </description>
+      </enum>
+      <enum name="inconsistent">
+        <value value="4"/>
+        <description>
+          <text>Test session state is inconsistent.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Test session state.</text>
+    </description>
+  </typedef>
+  <typedef name="session-start-type">
+    <type name="enumeration">
+      <enum name="continual">
+        <value value="1"/>
+        <description>
+          <text>Session start type is continual.</text>
+        </description>
+      </enum>
+      <enum name="on-demand">
+        <value value="2"/>
+        <description>
+          <text>Session start type is on-demand.</text>
+        </description>
+      </enum>
+      <enum name="unknown">
+        <value value="0"/>
+        <description>
+          <text>Session start type is unknown.</text>
+        </description>
+      </enum>
+      <enum name="regular">
+        <value value="3"/>
+        <description>
+          <text>Session start type is regular.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Session start type.</text>
+    </description>
+  </typedef>
+  <typedef name="ctrl-auth-mode">
+    <type name="enumeration">
+      <enum name="unauthenticated">
+        <value value="0"/>
+        <description>
+          <text>Controller authentication mode is unauthenticated.</text>
+        </description>
+      </enum>
+      <enum name="authenticated">
+        <value value="1"/>
+        <description>
+          <text>Controller authentication mode is authenticated.</text>
+        </description>
+      </enum>
+      <enum name="encrypted">
+        <value value="2"/>
+        <description>
+          <text>Controller authentication mode is encrypted.</text>
+        </description>
+      </enum>
+      <enum name="unknown">
+        <value value="3"/>
+        <description>
+          <text>Controller authentication mode is unknown.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Controller authentication mode.</text>
+    </description>
+  </typedef>
+  <typedef name="padding-info">
+    <type name="enumeration">
+      <enum name="00">
+        <value value="0"/>
+        <description>
+          <text>Padding information is 00.</text>
+        </description>
+      </enum>
+      <enum name="aa">
+        <value value="170"/>
+        <description>
+          <text>Padding information is aa.</text>
+        </description>
+      </enum>
+      <enum name="55">
+        <value value="85"/>
+        <description>
+          <text>Padding information is 55.</text>
+        </description>
+      </enum>
+      <enum name="ff">
+        <value value="255"/>
+        <description>
+          <text>Padding information is ff.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Padding information.</text>
+    </description>
+  </typedef>
+  <typedef name="inactive-reason">
+    <type name="enumeration">
+      <enum name="not-startup">
+        <value value="1"/>
+        <description>
+          <text>The inactive reason is not startup.</text>
+        </description>
+      </enum>
+      <enum name="absence-resource">
+        <value value="2"/>
+        <description>
+          <text>The inactive reason is absence of resource.</text>
+        </description>
+      </enum>
+      <enum name="board-fault">
+        <value value="3"/>
+        <description>
+          <text>The inactive reason is board fault.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The inactive reason.</text>
+    </description>
+  </typedef>
+  <container name="twamp-controller">
+    <description>
+      <text>TWAMP Controller.</text>
+    </description>
+    <container name="client">
+      <presence value="Enable client of TWAMP."/>
+      <description>
+        <text>Configure the client of TWAMP light.</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>List of configuration session.</text>
+        </description>
+        <list name="session">
+          <key value="id"/>
+          <unique tag="send-ip-addr ref-ip-addr send-port ref-port vrf-name"/>
+          <description>
+            <text>Configure the object of session.</text>
+          </description>
+          <leaf name="id">
+            <type name="uint32">
+              <range value="1..65535"/>
+            </type>
+            <description>
+              <text>The session ID of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="send-ip-addr">
+            <type name="inet:ip-address-no-zone"/>
+            <must condition="((../send-ip-addr) != (../ref-ip-addr))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>The sender IP address of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="ref-ip-addr">
+            <type name="inet:ip-address-no-zone"/>
+            <must condition="((../send-ip-addr) != (../ref-ip-addr))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>The reflector IP address of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="send-port">
+            <type name="uint16">
+              <range value="862..863|1025..65535"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The sender port of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="ref-port">
+            <type name="uint16">
+              <range value="862..863|1025..65535"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The reflector port of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="vrf-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="(contains(../send-ip-addr,':') and /ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']) or (not(contains(../send-ip-addr,':'))and /ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+            <description>
+              <text>The VRF name of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="dscp-value">
+            <type name="uint32">
+              <range value="0..63"/>
+            </type>
+            <default value="0"/>
+            <description>
+              <text>The DSCP value of configuration session.</text>
+            </description>
+          </leaf>
+          <leaf name="padding-length">
+            <type name="uint32">
+              <range value="32..1454"/>
+            </type>
+            <must condition="(contains(../send-ip-addr,':') and ((../link-bundle-if and ../padding-length&gt;=38 and ../padding-length&lt;=1428) or (not(../link-bundle-if) and ../padding-length&lt;=1434))) or (not(contains(../send-ip-addr,':')) and ((../link-bundle-if and ../padding-length&gt;=38 and ../padding-length&lt;=1448) or not(../link-bundle-if)))"/>
+            <default value="128"/>
+            <description>
+              <text>The padding length of configuration session. The value range is 32-1454 and 32-1434 in V4 and V6, respectively.</text>
+            </description>
+          </leaf>
+          <leaf name="padding-type">
+            <type name="padding-info"/>
+            <default value="00"/>
+            <description>
+              <text>Padding type.</text>
+            </description>
+          </leaf>
+          <leaf name="binded-interface">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>The interface name which the test-session is binded to.</text>
+            </description>
+          </leaf>
+          <leaf name="description">
+            <type name="string">
+              <length value="3..32"/>
+            </type>
+            <description>
+              <text>Session description.</text>
+            </description>
+          </leaf>
+          <leaf name="link-bundle-if">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm:type='Eth-Trunk'"/>
+            <must condition="not(../binded-interface)"/>
+            <description>
+              <text>Link-bundle interface that the session binds.</text>
+            </description>
+          </leaf>
+          <container name="twoway-loss-threshold">
+            <description>
+              <text>Configure the twoway loss threshold of session.</text>
+            </description>
+            <leaf name="up-limit">
+              <type name="string">
+                <length value="1..7"/>
+                <pattern value="[0-1]{0,1}[0-9]{0,1}[0-9]{0,1}(\.[0-9]{1,4})?"/>
+              </type>
+              <units name="%"/>
+              <default value="0.1"/>
+              <description>
+                <text>Twoway loss threshold upper limit.</text>
+              </description>
+            </leaf>
+            <leaf name="low-limit">
+              <type name="string">
+                <length value="1..7"/>
+                <pattern value="[0-1]{0,1}[0-9]{0,1}[0-9]{0,1}(\.[0-9]{1,4})?"/>
+              </type>
+              <units name="%"/>
+              <default value="0.05"/>
+              <description>
+                <text>Twoway loss threshold lower limit.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="twoway-delay-threshold">
+            <description>
+              <text>Configure the twoway delay threshold of session.</text>
+            </description>
+            <leaf name="up-limit">
+              <type name="uint32">
+                <range value="2..1000"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="100"/>
+              <description>
+                <text>Twoway delay threshold upper limit.</text>
+              </description>
+            </leaf>
+            <leaf name="low-limit">
+              <type name="uint32">
+                <range value="1..999"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="80"/>
+              <description>
+                <text>Twoway delay threshold lower limit.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="twoway-jitter-threshold">
+            <description>
+              <text>Configure the twoway jitter threshold of session.</text>
+            </description>
+            <leaf name="up-limit">
+              <type name="uint32">
+                <range value="2..1000"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="10"/>
+              <description>
+                <text>Twoway jitter threshold upper limit.</text>
+              </description>
+            </leaf>
+            <leaf name="low-limit">
+              <type name="uint32">
+                <range value="1..999"/>
+              </type>
+              <units name="ms"/>
+              <must condition="../low-limit &lt; ../up-limit"/>
+              <default value="8"/>
+              <description>
+                <text>Twoway jitter threshold lower limit.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="session-detail">
+            <config value="false"/>
+            <description>
+              <text>Statistics of the running session information.</text>
+            </description>
+            <leaf name="state">
+              <type name="test-state"/>
+              <description>
+                <text>The state of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="type">
+              <type name="session-start-type"/>
+              <description>
+                <text>The type of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="auth-mode">
+              <type name="ctrl-auth-mode"/>
+              <description>
+                <text>The authentication mode of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="last-start-time">
+              <type name="yang:date-and-time"/>
+              <description>
+                <text>The last start time of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="last-stop-time">
+              <type name="yang:date-and-time"/>
+              <description>
+                <text>The last stop time of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="duration-time">
+              <type name="uint32"/>
+              <units name="s"/>
+              <description>
+                <text>The duation time of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="packet-count">
+              <type name="uint32"/>
+              <description>
+                <text>The packet count of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="period">
+              <type name="period-type"/>
+              <units name="ms"/>
+              <description>
+                <text>The period of configuration session.</text>
+              </description>
+            </leaf>
+            <leaf name="timeout">
+              <type name="uint16">
+                <range value="1..10"/>
+              </type>
+              <units name="s"/>
+              <description>
+                <text>The timeout of configuration session.</text>
+              </description>
+            </leaf>
+            <container name="member-interface-infos">
+              <description>
+                <text>List of member interface information.</text>
+              </description>
+              <list name="member-interface-info">
+                <key value="member-if"/>
+                <description>
+                  <text>Statistics of the member interface information.</text>
+                </description>
+                <leaf name="member-if">
+                  <type name="leafref">
+                    <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                  </type>
+                  <description>
+                    <text>Member interface name.</text>
+                  </description>
+                </leaf>
+                <leaf name="state">
+                  <type name="test-state"/>
+                  <description>
+                    <text>The state of configuration session.</text>
+                  </description>
+                </leaf>
+                <leaf name="inactive-reason">
+                  <type name="inactive-reason"/>
+                  <description>
+                    <text>The inactive reason.</text>
+                  </description>
+                </leaf>
+                <leaf name="last-start-time">
+                  <type name="yang:date-and-time"/>
+                  <description>
+                    <text>The last start time of configuration session.</text>
+                  </description>
+                </leaf>
+                <leaf name="last-stop-time">
+                  <type name="yang:date-and-time"/>
+                  <description>
+                    <text>The last stop time of configuration session.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </container>
+          <container name="twoway-delay-result">
+            <config value="false"/>
+            <description>
+              <text>Statistics of the result of two way delay.</text>
+            </description>
+            <leaf name="average-delay">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The average delay.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-delay">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The maximum delay.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-delay">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The minimum delay.</text>
+              </description>
+            </leaf>
+            <leaf name="average-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The average jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The maximum jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The minimum jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="average-tx-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The average TX jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-tx-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The maximum TX jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-tx-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The minimum TX jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="average-rx-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The average RX jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-rx-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The maximum RX jitter.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-rx-jitter">
+              <type name="uint32"/>
+              <units name="us"/>
+              <description>
+                <text>The minimum RX jitter.</text>
+              </description>
+            </leaf>
+            <container name="twoway-delay-datas">
+              <description>
+                <text>List of two way delay data.</text>
+              </description>
+              <list name="twoway-delay-data">
+                <key value="index"/>
+                <description>
+                  <text>Statistics of data of two-way delay measurement.</text>
+                </description>
+                <leaf name="index">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Data index of two-way delay measurement.</text>
+                  </description>
+                </leaf>
+                <leaf name="delay">
+                  <type name="uint32"/>
+                  <units name="us"/>
+                  <description>
+                    <text>Two-way delay results.</text>
+                  </description>
+                </leaf>
+                <leaf name="jitter">
+                  <type name="uint32"/>
+                  <units name="us"/>
+                  <description>
+                    <text>Two-way jitter results.</text>
+                  </description>
+                </leaf>
+                <leaf name="tx-jitter">
+                  <type name="uint32"/>
+                  <units name="us"/>
+                  <description>
+                    <text>Two-way TX jitter results.</text>
+                  </description>
+                </leaf>
+                <leaf name="rx-jitter">
+                  <type name="uint32"/>
+                  <units name="us"/>
+                  <description>
+                    <text>Two-way RX jitter results.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </container>
+          <container name="twoway-delay-result-link-bundle-ifs">
+            <config value="false"/>
+            <description>
+              <text>List of the result of two way delay of link bundle session.</text>
+            </description>
+            <list name="twoway-delay-result-link-bundle-if">
+              <key value="member-if"/>
+              <description>
+                <text>Statistics of data of two-way loss measurement.</text>
+              </description>
+              <leaf name="member-if">
+                <type name="leafref">
+                  <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                </type>
+                <description>
+                  <text>Member interface name.</text>
+                </description>
+              </leaf>
+              <leaf name="average-delay">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The average delay.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-delay">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The maximum delay.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-delay">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The minimum delay.</text>
+                </description>
+              </leaf>
+              <leaf name="average-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The average jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The maximum jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The minimum jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="average-tx-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The average TX jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-tx-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The maximum TX jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-tx-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The minimum TX jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="average-rx-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The average RX jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-rx-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The maximum RX jitter.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-rx-jitter">
+                <type name="uint32"/>
+                <units name="us"/>
+                <description>
+                  <text>The minimum RX jitter.</text>
+                </description>
+              </leaf>
+              <container name="twoway-delay-datas">
+                <description>
+                  <text>List of two way delay data.</text>
+                </description>
+                <list name="twoway-delay-data">
+                  <key value="index"/>
+                  <description>
+                    <text>Statistics of data of two-way delay measurement.</text>
+                  </description>
+                  <leaf name="index">
+                    <type name="uint32"/>
+                    <description>
+                      <text>Data index of two-way delay measurement.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="delay">
+                    <type name="uint32"/>
+                    <units name="us"/>
+                    <description>
+                      <text>Two-way delay results.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="jitter">
+                    <type name="uint32"/>
+                    <units name="us"/>
+                    <description>
+                      <text>Two-way jitter results.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="tx-jitter">
+                    <type name="uint32"/>
+                    <units name="us"/>
+                    <description>
+                      <text>Two-way TX jitter results.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="rx-jitter">
+                    <type name="uint32"/>
+                    <units name="us"/>
+                    <description>
+                      <text>Two-way RX jitter results.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </list>
+          </container>
+          <container name="twoway-loss-result">
+            <config value="false"/>
+            <description>
+              <text>Statistics of the result of two way loss.</text>
+            </description>
+            <leaf name="average-loss">
+              <type name="uint32"/>
+              <description>
+                <text>The average loss.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-loss">
+              <type name="uint32"/>
+              <description>
+                <text>The maximum loss.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-loss">
+              <type name="uint32"/>
+              <description>
+                <text>The minimum loss.</text>
+              </description>
+            </leaf>
+            <leaf name="average-loss-ratio">
+              <type name="string">
+                <length value="1..9"/>
+              </type>
+              <description>
+                <text>The average loss ratio.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-loss-ratio">
+              <type name="string">
+                <length value="1..9"/>
+              </type>
+              <description>
+                <text>The maximum loss ratio.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-loss-ratio">
+              <type name="string">
+                <length value="1..9"/>
+              </type>
+              <description>
+                <text>The minimum loss ratio.</text>
+              </description>
+            </leaf>
+            <leaf name="average-rx-error">
+              <type name="uint32"/>
+              <description>
+                <text>The average RX error.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-rx-error">
+              <type name="uint32"/>
+              <description>
+                <text>The maximum RX error.</text>
+              </description>
+            </leaf>
+            <leaf name="minium-rx-error">
+              <type name="uint32"/>
+              <description>
+                <text>The minium RX error.</text>
+              </description>
+            </leaf>
+            <leaf name="average-rx-error-ratio">
+              <type name="string">
+                <length value="1..9"/>
+              </type>
+              <description>
+                <text>The average RX error ratio.</text>
+              </description>
+            </leaf>
+            <leaf name="maximum-rx-error-ratio">
+              <type name="string">
+                <length value="1..9"/>
+              </type>
+              <description>
+                <text>The maximum RX error ratio.</text>
+              </description>
+            </leaf>
+            <leaf name="minimum-rx-error-ratio">
+              <type name="string">
+                <length value="1..9"/>
+              </type>
+              <description>
+                <text>The minimum RX error ratio.</text>
+              </description>
+            </leaf>
+            <container name="twoway-loss-datas">
+              <description>
+                <text>List of two way loss data.</text>
+              </description>
+              <list name="twoway-loss-data">
+                <key value="index"/>
+                <description>
+                  <text>Statistics of data of two-way loss measurement.</text>
+                </description>
+                <leaf name="index">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Data index of two-way loss measurement.</text>
+                  </description>
+                </leaf>
+                <leaf name="loss">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Two-way loss results.</text>
+                  </description>
+                </leaf>
+                <leaf name="loss-ratio">
+                  <type name="string">
+                    <length value="1..9"/>
+                  </type>
+                  <description>
+                    <text>Two-way lossRatio results.</text>
+                  </description>
+                </leaf>
+                <leaf name="error">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Two-way error results.</text>
+                  </description>
+                </leaf>
+                <leaf name="error-ratio">
+                  <type name="string">
+                    <length value="1..9"/>
+                  </type>
+                  <description>
+                    <text>Two-way error ratio results.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </container>
+          <container name="twoway-loss-result-link-bundle-ifs">
+            <config value="false"/>
+            <description>
+              <text>List of the result of two way loss of link bundle session.</text>
+            </description>
+            <list name="twoway-loss-result-link-bundle-if">
+              <key value="member-if"/>
+              <description>
+                <text>Statistics of data of two-way loss measurement.</text>
+              </description>
+              <leaf name="member-if">
+                <type name="leafref">
+                  <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                </type>
+                <description>
+                  <text>Member interface name.</text>
+                </description>
+              </leaf>
+              <leaf name="average-loss">
+                <type name="uint32"/>
+                <description>
+                  <text>The average loss.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-loss">
+                <type name="uint32"/>
+                <description>
+                  <text>The maximum loss.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-loss">
+                <type name="uint32"/>
+                <description>
+                  <text>The minimum loss.</text>
+                </description>
+              </leaf>
+              <leaf name="average-loss-ratio">
+                <type name="string">
+                  <length value="1..9"/>
+                </type>
+                <description>
+                  <text>The average loss ratio.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-loss-ratio">
+                <type name="string">
+                  <length value="1..9"/>
+                </type>
+                <description>
+                  <text>The maximum loss ratio.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-loss-ratio">
+                <type name="string">
+                  <length value="1..9"/>
+                </type>
+                <description>
+                  <text>The minimum loss ratio.</text>
+                </description>
+              </leaf>
+              <leaf name="average-rx-error">
+                <type name="uint32"/>
+                <description>
+                  <text>The average RX error.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-rx-error">
+                <type name="uint32"/>
+                <description>
+                  <text>The maximum RX error.</text>
+                </description>
+              </leaf>
+              <leaf name="minium-rx-error">
+                <type name="uint32"/>
+                <description>
+                  <text>The minium RX error.</text>
+                </description>
+              </leaf>
+              <leaf name="average-rx-error-ratio">
+                <type name="string">
+                  <length value="1..9"/>
+                </type>
+                <description>
+                  <text>The average RX error ratio.</text>
+                </description>
+              </leaf>
+              <leaf name="maximum-rx-error-ratio">
+                <type name="string">
+                  <length value="1..9"/>
+                </type>
+                <description>
+                  <text>The maximum RX error ratio.</text>
+                </description>
+              </leaf>
+              <leaf name="minimum-rx-error-ratio">
+                <type name="string">
+                  <length value="1..9"/>
+                </type>
+                <description>
+                  <text>The minimum RX error ratio.</text>
+                </description>
+              </leaf>
+              <container name="twoway-loss-datas">
+                <description>
+                  <text>List of two way loss data.</text>
+                </description>
+                <list name="twoway-loss-data">
+                  <key value="index"/>
+                  <description>
+                    <text>Statistics of data of two-way loss measurement.</text>
+                  </description>
+                  <leaf name="index">
+                    <type name="uint32"/>
+                    <description>
+                      <text>Data index of two-way loss measurement.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="loss">
+                    <type name="uint32"/>
+                    <description>
+                      <text>Two-way loss results.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="loss-ratio">
+                    <type name="string">
+                      <length value="1..9"/>
+                    </type>
+                    <description>
+                      <text>Two-way lossRatio results.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="error">
+                    <type name="uint32"/>
+                    <description>
+                      <text>Two-way error results.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="error-ratio">
+                    <type name="string">
+                      <length value="1..9"/>
+                    </type>
+                    <description>
+                      <text>Two-way error ratio results.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </list>
+          </container>
+        </list>
+      </container>
+    </container>
+    <container name="sender">
+      <presence value="Enable sender of TWAMP"/>
+      <description>
+        <text>Configure the sender of TWAMP light.</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>List of sender session.</text>
+        </description>
+        <list name="session">
+          <key value="id"/>
+          <description>
+            <text>Configure the object of sender session.</text>
+          </description>
+          <leaf name="id">
+            <type name="leafref">
+              <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+            </type>
+            <description>
+              <text>Configure the session ID of sender session.</text>
+            </description>
+          </leaf>
+          <leaf name="period">
+            <type name="period-type"/>
+            <units name="ms"/>
+            <default value="100ms"/>
+            <description>
+              <text>The period of sender session.</text>
+            </description>
+          </leaf>
+          <leaf name="timeout">
+            <type name="uint16">
+              <range value="1..10"/>
+            </type>
+            <units name="s"/>
+            <default value="5"/>
+            <description>
+              <text>The timeout of sender session.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="regular-sessions">
+        <description>
+          <text>List of sender regular session.</text>
+        </description>
+        <list name="regular-session">
+          <key value="id"/>
+          <description>
+            <text>Configure the object of sender regular session.</text>
+          </description>
+          <leaf name="id">
+            <type name="leafref">
+              <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+            </type>
+            <description>
+              <text>The session ID of regular sender session.</text>
+            </description>
+          </leaf>
+          <leaf name="regular-time">
+            <ext:operation-exclude value="update|delete"/>
+            <type name="uint16">
+              <range value="10..60"/>
+            </type>
+            <units name="s"/>
+            <default value="30"/>
+            <description>
+              <text>The regular time of sender regular session.</text>
+            </description>
+          </leaf>
+          <leaf name="packet-count">
+            <ext:operation-exclude value="update|delete"/>
+            <type name="uint32">
+              <range value="10..1000"/>
+            </type>
+            <default value="100"/>
+            <description>
+              <text>The packet count of sender regular session.</text>
+            </description>
+          </leaf>
+          <leaf name="timeout">
+            <ext:operation-exclude value="update|delete"/>
+            <type name="uint8">
+              <range value="1..10"/>
+            </type>
+            <units name="s"/>
+            <default value="5"/>
+            <description>
+              <text>The timeout of sender regular session.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <rpc name="start-on-demand-test">
+    <description>
+      <text>Start twamp-light on demand test.</text>
+    </description>
+    <ext:node-ref value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session"/>
+    <input>
+      <leaf name="id">
+        <type name="leafref">
+          <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>The session ID of on demand test session.</text>
+        </description>
+      </leaf>
+      <choice name="packet-sent-type">
+        <mandatory value="true"/>
+        <description>
+          <text>Configure the type how the packet is sent in on demand test session.</text>
+        </description>
+        <case name="duration-type">
+          <description>
+            <text>The packet is sent in dedicated duration.</text>
+          </description>
+          <leaf name="duration-time">
+            <type name="uint32">
+              <range value="60..300"/>
+            </type>
+            <units name="s"/>
+            <description>
+              <text>The duation time of on demand test session.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="count-type">
+          <description>
+            <text>The packet is sent by total count.</text>
+          </description>
+          <leaf name="packet-count">
+            <type name="uint32">
+              <range value="100..3000"/>
+            </type>
+            <description>
+              <text>The packet count of on demand test session.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <leaf name="period">
+        <type name="period-type"/>
+        <units name="ms"/>
+        <default value="100ms"/>
+        <description>
+          <text>The period of on demand test session.</text>
+        </description>
+      </leaf>
+      <leaf name="timeout">
+        <type name="uint16">
+          <range value="1..10"/>
+        </type>
+        <units name="s"/>
+        <default value="5"/>
+        <description>
+          <text>The timeout of on demand test session.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="stop-on-demand-test">
+    <description>
+      <text>Stop twamp-light on demand test.</text>
+    </description>
+    <ext:node-ref value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session"/>
+    <input>
+      <leaf name="id">
+        <type name="leafref">
+          <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+        </type>
+        <description>
+          <text>The session ID of on demand test session.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="reset-statistics">
+    <description>
+      <text>Reset the twamp-light statistics.</text>
+    </description>
+    <ext:node-ref value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session"/>
+    <input>
+      <leaf name="id">
+        <type name="leafref">
+          <path value="/twamp-controller:twamp-controller/twamp-controller:client/twamp-controller:sessions/twamp-controller:session/twamp-controller:id"/>
+        </type>
+        <description>
+          <text>The session ID of test session.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-segment-routing"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:sr="urn:huawei:yang:huawei-segment-routing"
+        xmlns:rtp="urn:huawei:yang:huawei-routing-policy"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance">
+  <namespace uri="urn:huawei:yang:huawei-segment-routing"/>
+  <prefix value="sr"/>
+  <import module="huawei-routing-policy">
+    <prefix value="rtp"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <include module="huawei-segment-routing-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Segment routing.</text>
+  </description>
+  <revision date="2020-03-13">
+    <description>
+      <text>Modify the format specification.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-04">
+    <description>
+      <text>Modify the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-23">
+    <description>
+      <text>Reconstructing Yang file by yin mechanism.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-15">
+    <description>
+      <text>Reconstructing Yang file by yin mechanism.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-09-21">
+    <description>
+      <text>Reconstructing Yang file by yin mechanism.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-04">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="segr"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Segment routing augment to L3VPN.</text>
+    </description>
+    <container name="segment-routing">
+      <when condition="../ni:name='_public_'"/>
+      <description>
+        <text>Configure segment routing.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable segment routing.</text>
+        </description>
+      </leaf>
+      <leaf name="tunnel-prefer">
+        <when condition="../enable='true'"/>
+        <type name="enumeration">
+          <enum name="ldp">
+            <value value="1"/>
+            <description>
+              <text>LDP tunnel.</text>
+            </description>
+          </enum>
+          <enum name="sr-be">
+            <value value="2"/>
+            <description>
+              <text>SR BE tunnel.</text>
+            </description>
+          </enum>
+        </type>
+        <default value="ldp"/>
+        <description>
+          <text>Prefer segment routing tunnel.</text>
+        </description>
+      </leaf>
+      <container name="srlbs">
+        <description>
+          <text>List of segment routing local block.</text>
+        </description>
+        <list name="srlb">
+          <key value="begin end"/>
+          <max-elements value="1"/>
+          <description>
+            <text>Configure segment routing local block. Currently only one configuration is supported.</text>
+          </description>
+          <leaf name="begin">
+            <type name="uint32">
+              <range value="16..1048575"/>
+            </type>
+            <description>
+              <text>SRLB begin value. The value range is determined by the PAF file of the corresponding device.
+special explanation:
+range: The range comes from PAF.</text>
+            </description>
+          </leaf>
+          <leaf name="end">
+            <type name="uint32">
+              <range value="16..1048575"/>
+            </type>
+            <description>
+              <text>SRLB begin value. The value range is determined by the PAF file of the corresponding device.
+special explanation:
+range: The range comes from PAF.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="bfds">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>List of SRBFDS configuration.</text>
+        </description>
+        <list name="bfd">
+          <key value="type mode-type"/>
+          <max-elements value="1"/>
+          <description>
+            <text>Configure SRBFDS configuration.</text>
+          </description>
+          <leaf name="type">
+            <type name="bfd-type"/>
+            <description>
+              <text>Sets a BFD type.</text>
+            </description>
+          </leaf>
+          <leaf name="mode-type">
+            <type name="enumeration">
+              <enum name="tunnel">
+                <value value="1"/>
+                <description>
+                  <text>The type of session mode is tunnel.</text>
+                </description>
+              </enum>
+            </type>
+            <description>
+              <text>Sets a session mode.</text>
+            </description>
+          </leaf>
+          <leaf name="ip-prefix">
+            <type name="leafref">
+              <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+            </type>
+            <description>
+              <text>Sets a policy name.</text>
+            </description>
+          </leaf>
+          <leaf name="min-rx">
+            <type name="uint32">
+              <range value="3..20000"/>
+            </type>
+            <units name="ms"/>
+            <default value="10"/>
+            <description>
+              <text>Sets a minimum receive interval. Different products have different value ranges.</text>
+            </description>
+          </leaf>
+          <leaf name="min-tx">
+            <type name="uint32">
+              <range value="3..1000"/>
+            </type>
+            <units name="ms"/>
+            <default value="10"/>
+            <description>
+              <text>Sets a minimum transmit interval.</text>
+            </description>
+          </leaf>
+          <leaf name="detect-multiplier">
+            <type name="uint32">
+              <range value="3..50"/>
+            </type>
+            <default value="3"/>
+            <description>
+              <text>Sets a detect multiplier.</text>
+            </description>
+          </leaf>
+          <leaf name="effect-sr-lsp">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable effect SR BE tunnel.</text>
+            </description>
+          </leaf>
+          <leaf name="nil-fec">
+            <when condition="../type='bfd'"/>
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable use nil FEC.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="traffic-stats">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure the stats of SR traffic.</text>
+        </description>
+        <leaf name="mode">
+          <type name="enumeration">
+            <enum name="none">
+              <value value="0"/>
+              <description>
+                <text>SRBE traffic statistics are not enabled.</text>
+              </description>
+            </enum>
+            <enum name="host">
+              <value value="1"/>
+              <description>
+                <text>SRBE traffic statistics host mode.</text>
+              </description>
+            </enum>
+            <enum name="ip-prefix">
+              <value value="2"/>
+              <description>
+                <text>SRBE traffic statistics host IP prefix mode.</text>
+              </description>
+            </enum>
+          </type>
+          <must condition="../mode!='ip-prefix' or ../prefix-name"/>
+          <default value="none"/>
+          <description>
+            <text>The stats mode of SR traffic.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-name">
+          <when condition="../mode='ip-prefix'"/>
+          <type name="leafref">
+            <path value="/rtp:routing-policy/rtp:ipv4-prefix-filters/rtp:ipv4-prefix-filter/rtp:name"/>
+          </type>
+          <description>
+            <text>The name of prefix.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="adjacency-sid">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure Segment Routing IPv4 static adjacency label.</text>
+        </description>
+        <container name="globals">
+          <description>
+            <text>List of Segment Routing global linkage label.</text>
+          </description>
+          <list name="global">
+            <key value="local-ip-address remote-ip-address absolute-sid"/>
+            <description>
+              <text>Configure Segment Routing global linkage label.</text>
+            </description>
+            <leaf name="local-ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Specifies the ip address of the local interface.</text>
+              </description>
+            </leaf>
+            <leaf name="remote-ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <must condition="../local-ip-address!=../remote-ip-address"/>
+              <description>
+                <text>Remote ip address.</text>
+              </description>
+            </leaf>
+            <leaf name="absolute-sid">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>Segment ID. The value range is determined by the PAF. The yang node is static-label-blocks of huawei-segment-routing.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="bindings">
+        <when condition="../enable='true'"/>
+        <description>
+          <text>Configure bindings.</text>
+        </description>
+        <container name="prefix-sid-mappings">
+          <description>
+            <text>List of address prefix mapping SID information.</text>
+          </description>
+          <list name="prefix-sid-mapping">
+            <key value="ip-address mask-length algorithm"/>
+            <description>
+              <text>Configure address prefix mapping SID information.</text>
+            </description>
+            <leaf name="ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Address prefix.</text>
+              </description>
+            </leaf>
+            <leaf name="mask-length">
+              <type name="uint8">
+                <range value="32"/>
+              </type>
+              <description>
+                <text>Mask length of address, only the 32 bit mask length is supported currently.</text>
+              </description>
+            </leaf>
+            <leaf name="algorithm">
+              <type name="uint32">
+                <range value="0"/>
+              </type>
+              <description>
+                <text>Prefix SID algorithm.</text>
+              </description>
+            </leaf>
+            <leaf name="start-sid">
+              <type name="uint32">
+                <range value="0..65534"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Start of SID index range.</text>
+              </description>
+            </leaf>
+            <leaf name="range">
+              <type name="uint16">
+                <range value="1..65535"/>
+              </type>
+              <default value="1"/>
+              <description>
+                <text>Number of allocated SIDs.</text>
+              </description>
+            </leaf>
+            <leaf name="attach-flag">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the attach flag.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="static-label-blocks">
+        <config value="false"/>
+        <description>
+          <text>List of segment routing global block.</text>
+        </description>
+        <list name="static-label-block">
+          <key value="lower-sid upper-sid"/>
+          <config value="false"/>
+          <description>
+            <text>Statistics of segment routing global block. The range of global labels reserved by the local device for segment routing.</text>
+          </description>
+          <leaf name="lower-sid">
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <description>
+              <text>Minimum SID available.</text>
+            </description>
+          </leaf>
+          <leaf name="upper-sid">
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <description>
+              <text>Maximum SID available.</text>
+            </description>
+          </leaf>
+          <leaf name="range">
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <description>
+              <text>Total number of SIDs available.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="ipv4-state">
+        <config value="false"/>
+        <description>
+          <text>Statistics of IPv4.</text>
+        </description>
+        <container name="prefix-mpls-forwardings">
+          <description>
+            <text>List of label for transmission.</text>
+          </description>
+          <list name="prefix-mpls-forwarding">
+            <key value="ip-address mask-length"/>
+            <description>
+              <text>Statistics of label for transmission.</text>
+            </description>
+            <leaf name="ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>The prefix IP address.</text>
+              </description>
+            </leaf>
+            <leaf name="mask-length">
+              <type name="uint8">
+                <range value="1..32"/>
+              </type>
+              <description>
+                <text>The length of prefix mask.</text>
+              </description>
+            </leaf>
+            <leaf name="in-label">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <description>
+                <text>In label.</text>
+              </description>
+            </leaf>
+            <leaf name="out-label">
+              <type name="string">
+                <length value="1..20"/>
+              </type>
+              <description>
+                <text>Out label.</text>
+              </description>
+            </leaf>
+            <leaf name="if-name">
+              <type name="string">
+                <length value="1..64"/>
+              </type>
+              <description>
+                <text>Local interface.</text>
+              </description>
+            </leaf>
+            <leaf name="next-hop">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>IP address of next hop.</text>
+              </description>
+            </leaf>
+            <leaf name="lsp-xc-role">
+              <type name="string">
+                <length value="1..50"/>
+              </type>
+              <description>
+                <text>Label type.</text>
+              </description>
+            </leaf>
+            <leaf name="mpls-mtu">
+              <type name="string">
+                <length value="1..50"/>
+              </type>
+              <units name="Byte"/>
+              <description>
+                <text>MPLS maximum transmission unit (MTU).</text>
+              </description>
+            </leaf>
+            <leaf name="mtu">
+              <type name="uint32">
+                <range value="1..4294967295"/>
+              </type>
+              <units name="Byte"/>
+              <description>
+                <text>MTU.</text>
+              </description>
+            </leaf>
+            <leaf name="state">
+              <type name="string">
+                <length value="1..50"/>
+              </type>
+              <description>
+                <text>Lable state.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="bfd-states">
+          <config value="false"/>
+          <description>
+            <text>List of queries BFD session.</text>
+          </description>
+          <list name="bfd-state">
+            <key value="type mode-type ip-address mask-length"/>
+            <config value="false"/>
+            <description>
+              <text>Statistics of queries BFD session.</text>
+            </description>
+            <leaf name="type">
+              <type name="bfd-type"/>
+              <description>
+                <text>BFD type.</text>
+              </description>
+            </leaf>
+            <leaf name="mode-type">
+              <type name="enumeration">
+                <enum name="tunnel">
+                  <value value="1"/>
+                  <description>
+                    <text>The type of session mode is tunnel.</text>
+                  </description>
+                </enum>
+              </type>
+              <description>
+                <text>Session mode.</text>
+              </description>
+            </leaf>
+            <leaf name="ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Destination IP address.</text>
+              </description>
+            </leaf>
+            <leaf name="mask-length">
+              <type name="uint8">
+                <range value="1..32"/>
+              </type>
+              <description>
+                <text>IP address mask length.</text>
+              </description>
+            </leaf>
+            <leaf name="state">
+              <type name="string">
+                <length value="1..64"/>
+              </type>
+              <description>
+                <text>Session state.</text>
+              </description>
+            </leaf>
+            <leaf name="discriminator">
+              <type name="uint32">
+                <range value="0..4294967295"/>
+              </type>
+              <description>
+                <text>Local discriminator.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+  </augment>
+</module>

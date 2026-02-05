@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-vaccess-snmp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nvsnmp="urn:huawei:yang:huawei-vaccess-snmp"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:vaccess="urn:huawei:yang:huawei-vaccess"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:snmp="urn:huawei:yang:huawei-snmp">
+  <namespace uri="urn:huawei:yang:huawei-vaccess-snmp"/>
+  <prefix value="nvsnmp"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-vaccess">
+    <prefix value="vaccess"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-snmp">
+    <prefix value="snmp"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>SNMP configuration of virtual access.</text>
+  </description>
+  <revision date="2020-04-20">
+    <description>
+      <text>Modify description syntax.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-04">
+    <description>
+      <text>Modify description syntax.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-20">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="snmp"/>
+  <typedef name="snmp-notify">
+    <type name="enumeration">
+      <enum name="trap">
+        <value value="1"/>
+        <description>
+          <text>The notify type of trap.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SNMP notify type enum.</text>
+    </description>
+  </typedef>
+  <augment target-node="/vaccess:vaccess">
+    <description>
+      <text>The configuration of vaccess.</text>
+    </description>
+    <container name="snmp">
+      <description>
+        <text>Configure SNMP in virtual access.</text>
+      </description>
+      <container name="system">
+        <description>
+          <text>Configure SNMP parameters.</text>
+        </description>
+        <leaf name="agent-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable SNMP agent enable switch.</text>
+          </description>
+        </leaf>
+        <leaf name="ext-err-code-enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable extend error code enable switch.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="engine">
+        <description>
+          <text>Configure SNMP engine parameters.</text>
+        </description>
+        <leaf name="version">
+          <type name="snmp:snmp-version"/>
+          <default value="v3"/>
+          <description>
+            <text>Version supported by SNMP engine.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="mib-views">
+        <description>
+          <text>List of VACM View to configure MIB subtree.</text>
+        </description>
+        <list name="mib-view">
+          <key value="view-name sub-tree"/>
+          <description>
+            <text>Configure name of MIB View entry.</text>
+          </description>
+          <leaf name="view-name">
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+            <description>
+              <text>Name of subtree's MIB View entry.</text>
+            </description>
+          </leaf>
+          <leaf name="sub-tree">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>MIB subtree.</text>
+            </description>
+          </leaf>
+          <leaf name="type">
+            <type name="snmp:snmp-filter"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Filter (include | exclude).</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="communitys">
+        <description>
+          <text>List of SNMP communtiy for SNMPv1 and SNMPv2.</text>
+        </description>
+        <list name="community">
+          <key value="index"/>
+          <unique tag="name"/>
+          <max-elements value="25"/>
+          <description>
+            <text>Configure community entry.</text>
+          </description>
+          <leaf name="index">
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+            <description>
+              <text>Unique index to identify the community.</text>
+            </description>
+          </leaf>
+          <leaf name="name">
+            <type name="pub-type:password-extend">
+              <length value="8..32 | 48 | 68..168"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Unique name to identify the community.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="access-right">
+            <type name="snmp:snmp-access"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Access right (read | write).</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="view-name">
+            <type name="leafref">
+              <path value="/vaccess:vaccess/nvsnmp:snmp/nvsnmp:mib-views/nvsnmp:mib-view/nvsnmp:view-name"/>
+            </type>
+            <description>
+              <text>MIB View name.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="target-hosts">
+        <description>
+          <text>List of target host for traps.</text>
+        </description>
+        <list name="target-host">
+          <key value="nms-name"/>
+          <unique tag="address"/>
+          <max-elements value="20"/>
+          <description>
+            <text>Configure target host entry.</text>
+          </description>
+          <leaf name="nms-name">
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+            <description>
+              <text>Unique name to identify target host entry.</text>
+            </description>
+          </leaf>
+          <leaf name="address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Network address.</text>
+            </description>
+          </leaf>
+          <leaf name="notify-type">
+            <type name="snmp-notify"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Notify type about alarm message.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <choice name="params">
+            <mandatory value="true"/>
+            <description>
+              <text>This choice is augmented with case nodes containing configuration parameters specific to the security model.</text>
+            </description>
+            <case name="v1">
+              <description>
+                <text>Security model SNMPv1.</text>
+              </description>
+              <leaf name="security-name-v1">
+                <type name="pub-type:password-extend">
+                  <length value="1..32 | 48 | 68..168"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>SNMPv1 security name.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="v2c">
+              <description>
+                <text>Security model v2c.</text>
+              </description>
+              <leaf name="security-name-v2c">
+                <type name="pub-type:password-extend">
+                  <length value="1..32 | 48 | 68..168"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>SNMPv2c security name.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="usm">
+              <description>
+                <text>Security model SNMPv3.</text>
+              </description>
+              <leaf name="usm-name">
+                <type name="string">
+                  <length value="1..32"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>USM name.</text>
+                </description>
+              </leaf>
+              <leaf name="security-level">
+                <type name="snmp:snmp-security-level"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Security level indicating whether to use authentication and encryption.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="private-netmanager">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable private VB's for target host.</text>
+            </description>
+          </leaf>
+          <leaf name="ext-vb">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable extended VB's for target host.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="usm-users">
+        <description>
+          <text>List of USM users for SNMPv3.</text>
+        </description>
+        <list name="usm-user">
+          <key value="user-name"/>
+          <max-elements value="20"/>
+          <description>
+            <text>Configure USM user entry.</text>
+          </description>
+          <leaf name="user-name">
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+            <description>
+              <text>Unique name to identify the USM user.</text>
+            </description>
+          </leaf>
+          <leaf name="group-name">
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+            <description>
+              <text>Name of the group where user belongs to.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="auth-protocol">
+            <type name="snmp:snmp-authenmode"/>
+            <default value="noAuth"/>
+            <description>
+              <text>Authentication protocol.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="auth-key">
+            <when condition="../auth-protocol != 'noAuth'"/>
+            <type name="pub-type:password-extend">
+              <length value="1..432"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The authentication password.</text>
+            </description>
+          </leaf>
+          <leaf name="priv-protocol">
+            <type name="snmp:snmp-privacy"/>
+            <must condition="../priv-protocol='noPriv' or not(../auth-protocol='noAuth')"/>
+            <default value="noPriv"/>
+            <description>
+              <text>Encryption protocol.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="priv-key">
+            <when condition="../auth-protocol!='noAuth' and ../priv-protocol!='noPriv'"/>
+            <type name="pub-type:password-extend">
+              <length value="1..432"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The encryption password.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="v3-groups">
+        <description>
+          <text>List of SNMPv3 groups.</text>
+        </description>
+        <list name="v3-group">
+          <key value="group-name security-level"/>
+          <max-elements value="20"/>
+          <description>
+            <text>Configure SNMPv3 group entry.</text>
+          </description>
+          <leaf name="group-name">
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+            <description>
+              <text>Unique name to identify the SNMPv3 group.</text>
+            </description>
+          </leaf>
+          <leaf name="security-level">
+            <type name="snmp:snmp-security-level"/>
+            <description>
+              <text>Security level indicating whether to use authentication and encryption.</text>
+            </description>
+          </leaf>
+          <leaf name="read-view-name">
+            <type name="leafref">
+              <path value="/vaccess:vaccess/nvsnmp:snmp/nvsnmp:mib-views/nvsnmp:mib-view/nvsnmp:view-name"/>
+            </type>
+            <description>
+              <text>MIB View name for read access permission.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="write-view-name">
+            <type name="leafref">
+              <path value="/vaccess:vaccess/nvsnmp:snmp/nvsnmp:mib-views/nvsnmp:mib-view/nvsnmp:view-name"/>
+            </type>
+            <description>
+              <text>MIB View name for write access permission.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+          <leaf name="notify-view-name">
+            <type name="leafref">
+              <path value="/vaccess:vaccess/nvsnmp:snmp/nvsnmp:mib-views/nvsnmp:mib-view/nvsnmp:view-name"/>
+            </type>
+            <description>
+              <text>MIB View name for notification access permission.</text>
+            </description>
+            <ext:support-filter value="true"/>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

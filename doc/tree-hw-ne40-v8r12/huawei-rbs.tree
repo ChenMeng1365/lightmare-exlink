@@ -1,0 +1,48 @@
+module: huawei-rbs
+  +--rw rbs
+     +--rw services
+     |  +--rw service* [name]
+     |     +--rw name                string
+     |     +--rw peer-ip?            inet:ip-address-no-zone
+     |     +--rw source-ip?          inet:ip-address-no-zone
+     |     +--rw tcp-port?           uint32
+     |     +--rw shut-down?          boolean
+     |     +--ro index?              uint32
+     |     +--ro tcp-state?          tcp-state
+     |     +--ro last-up-time?       yang:date-and-time
+     |     +--ro last-down-time?     yang:date-and-time
+     |     +--ro last-down-reason?   string
+     |     +--rw batch-backups
+     |        +--rw batch-backup* [service-type]
+     |           +--rw service-type    batch-backup-type
+     |           +--rw backup-time     pub-type:time
+     +--rw profiles
+        +--rw profile* [name]
+           +--rw name                   string
+           +--rw service-name?          -> ../../../services/service/name
+           +--rw backup-id?             uint32
+           +--rw mode?                  backup-mode
+           +--ro index?                 uint32
+           +--ro local-state?           rbp-state
+           +--ro peer-state?            rbp-state
+           +--rw (track-type)?
+           |  +--:(e-trunk)
+           |  |  +--rw etrunk-id        -> /etrunk:etrunk/instances/instance/id
+           |  |  +--rw ethtrunk-name    -> /etrunk:etrunk/instances/instance[etrunk:id=current()/../etrunk-id]/interfaces/interface/if-name
+           |  +--:(vrrp)
+           |     +--rw vrrps
+           |        +--rw vrrp* [id]
+           |           +--rw id             uint8
+           |           +--rw if-name        -> /ifm:ifm/interfaces/interface/name
+           |           +--rw mac-type?      vrrp-mac-type
+           |           +--ro local-state?   rbp-state
+           |           +--ro peer-state?    rbp-state
+           +--rw service-types
+              +--rw service-type* [type]
+                 +--rw type    service-type
+
+  rpcs:
+    +---x batch-backup-now
+       +---w input
+          +---w rbs-name        -> /rbs/services/service/name
+          +---w service-type    batch-backup-rpc-type

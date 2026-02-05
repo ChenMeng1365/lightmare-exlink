@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-rib-bgp-tables"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-rib-bgp="http://openconfig.net/yang/rib/bgp"
+           xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-pol-types="http://openconfig.net/yang/policy-types">
+  <belongs-to module="openconfig-rib-bgp">
+    <prefix value="oc-rib-bgp"/>
+  </belongs-to>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-policy-types">
+    <prefix value="oc-pol-types"/>
+  </import>
+  <include module="openconfig-rib-bgp-attributes"/>
+  <include module="openconfig-rib-bgp-shared-attributes"/>
+  <include module="openconfig-rib-bgp-table-attributes"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This submodule contains structural data definitions for
+BGP routing tables.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.6.0"/>
+  <revision date="2019-04-25">
+    <description>
+      <text>Update last-modified timestamp to be expressed as nanoseconds
+since the Unix epoch.</text>
+    </description>
+    <reference>
+      <text>0.6.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-16">
+    <description>
+      <text>Rename the top-level BGP RIB container's name
+to RIB.</text>
+    </description>
+    <reference>
+      <text>0.5.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-02-27">
+    <description>
+      <text>Remove top-level BGP RIB container, and update list
+names to be compatible with path compression.</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.3.1</text>
+    </reference>
+  </revision>
+  <revision date="2016-10-17">
+    <description>
+      <text>OpenConfig BGP RIB refactor</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <grouping name="bgp-adj-rib-common-attr-refs">
+    <description>
+      <text>Definitions of common references to attribute sets for
+multiple AFI-SAFIs for Adj-RIB tables</text>
+    </description>
+    <leaf name="attr-index">
+      <type name="leafref">
+        <path value="../../../../../../../../../../attr-sets/attr-set/state/index"/>
+      </type>
+      <description>
+        <text>Reference to the common attribute group for the
+route</text>
+      </description>
+    </leaf>
+    <leaf name="community-index">
+      <type name="leafref">
+        <path value="../../../../../../../../../../communities/community/state/index"/>
+      </type>
+      <description>
+        <text>Reference to the community attribute for the route</text>
+      </description>
+    </leaf>
+    <leaf name="ext-community-index">
+      <type name="leafref">
+        <path value="../../../../../../../../../../ext-communities/ext-community/state/index"/>
+      </type>
+      <description>
+        <text>Reference to the extended community attribute for the
+route</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-loc-rib-common-attr-refs">
+    <description>
+      <text>Definitions of common references to attribute sets for
+multiple AFI-SAFIs for LOC-RIB tables</text>
+    </description>
+    <leaf name="attr-index">
+      <type name="leafref">
+        <path value="../../../../../../../../attr-sets/attr-set/state/index"/>
+      </type>
+      <description>
+        <text>Reference to the common attribute group for the
+route</text>
+      </description>
+    </leaf>
+    <leaf name="community-index">
+      <type name="leafref">
+        <path value="../../../../../../../../communities/community/state/index"/>
+      </type>
+      <description>
+        <text>Reference to the community attribute for the route</text>
+      </description>
+    </leaf>
+    <leaf name="ext-community-index">
+      <type name="leafref">
+        <path value="../../../../../../../../ext-communities/ext-community/state/index"/>
+      </type>
+      <description>
+        <text>Reference to the extended community attribute for the
+route</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-loc-rib-common-keys">
+    <description>
+      <text>Common references used in keys for IPv4 and IPv6
+LOC-RIB entries</text>
+    </description>
+    <leaf name="origin">
+      <type name="union">
+        <type name="oc-inet:ip-address"/>
+        <type name="identityref">
+          <base name="oc-pol-types:INSTALL_PROTOCOL_TYPE"/>
+        </type>
+      </type>
+      <description>
+        <text>Indicates the origin of the route.  If the route is learned
+from a neighbor, this value is the neighbor address.  If
+the route was injected or redistributed from another
+protocol, the origin indicates the source protocol for the
+route.</text>
+      </description>
+    </leaf>
+    <leaf name="path-id">
+      <type name="uint32"/>
+      <default value="0"/>
+      <description>
+        <text>If the route is learned from a neighbor, the path-id
+corresponds to the path-id for the route in the
+corresponding adj-rib-in-post table.  If the route is
+injected from another protocol, or the neighbor does not
+support BGP add-paths, the path-id should be set
+to zero, also the default value.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bgp-loc-rib-key-refs">
+    <description>
+      <text>Key references to support operational state structure for
+the BGP LOC-RIB table</text>
+    </description>
+    <leaf name="prefix">
+      <type name="leafref">
+        <path value="../state/prefix"/>
+      </type>
+      <description>
+        <text>Reference to the prefix list key</text>
+      </description>
+    </leaf>
+    <leaf name="origin">
+      <type name="leafref">
+        <path value="../state/origin"/>
+      </type>
+      <description>
+        <text>Reference to the origin list key</text>
+      </description>
+    </leaf>
+    <leaf name="path-id">
+      <type name="leafref">
+        <path value="../state/path-id"/>
+      </type>
+      <description>
+        <text>Reference to the path-id list key</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ipv4-loc-rib-top">
+    <description>
+      <text>Top-level grouping for IPv4 routing tables</text>
+    </description>
+    <container name="loc-rib">
+      <config value="false"/>
+      <description>
+        <text>Container for the IPv4 BGP LOC-RIB data</text>
+      </description>
+      <uses name="bgp-common-table-attrs-top"/>
+      <container name="routes">
+        <description>
+          <text>Enclosing container for list of routes in the routing
+table.</text>
+        </description>
+        <list name="route">
+          <key value="prefix origin path-id"/>
+          <description>
+            <text>List of routes in the table, keyed by the route
+prefix, the route origin, and path-id.  The route
+origin can be either the neighbor address from which
+the route was learned, or the source protocol that
+injected the route.  The path-id distinguishes routes
+for the same prefix received from a neighbor (e.g.,
+if add-paths is eanbled).</text>
+          </description>
+          <uses name="bgp-loc-rib-key-refs"/>
+          <container name="state">
+            <description>
+              <text>Operational state data for route entries in the
+BGP LOC-RIB</text>
+            </description>
+            <leaf name="prefix">
+              <type name="oc-inet:ipv4-prefix"/>
+              <description>
+                <text>The IPv4 prefix corresponding to the route</text>
+              </description>
+            </leaf>
+            <uses name="bgp-loc-rib-common-keys"/>
+            <uses name="bgp-loc-rib-common-attr-refs"/>
+            <uses name="bgp-loc-rib-attr-state"/>
+            <uses name="bgp-common-route-annotations-state"/>
+            <uses name="bgp-loc-rib-route-annotations-state"/>
+          </container>
+          <uses name="bgp-unknown-attr-top"/>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="ipv6-loc-rib-top">
+    <description>
+      <text>Top-level grouping for IPv6 routing tables</text>
+    </description>
+    <container name="loc-rib">
+      <config value="false"/>
+      <description>
+        <text>Container for the IPv6 BGP LOC-RIB data</text>
+      </description>
+      <uses name="bgp-common-table-attrs-top"/>
+      <container name="routes">
+        <description>
+          <text>Enclosing container for list of routes in the routing
+table.</text>
+        </description>
+        <list name="route">
+          <key value="prefix origin path-id"/>
+          <description>
+            <text>List of routes in the table, keyed by the route
+prefix, the route origin, and path-id.  The route
+origin can be either the neighbor address from which
+the route was learned, or the source protocol that
+injected the route.  The path-id distinguishes routes
+for the same prefix received from a neighbor (e.g.,
+if add-paths is eanbled).</text>
+          </description>
+          <uses name="bgp-loc-rib-key-refs"/>
+          <container name="state">
+            <description>
+              <text>Operational state data for route entries in the
+BGP LOC-RIB</text>
+            </description>
+            <leaf name="prefix">
+              <type name="oc-inet:ipv6-prefix"/>
+              <description>
+                <text>The IPv6 prefix corresponding to the route</text>
+              </description>
+            </leaf>
+            <uses name="bgp-loc-rib-common-keys"/>
+            <uses name="bgp-loc-rib-common-attr-refs"/>
+            <uses name="bgp-loc-rib-attr-state"/>
+            <uses name="bgp-common-route-annotations-state"/>
+            <uses name="bgp-loc-rib-route-annotations-state"/>
+          </container>
+          <uses name="bgp-unknown-attr-top"/>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="bgp-adj-rib-key-refs">
+    <description>
+      <text>Key references to support operational state structure for
+the BGP Adj-RIB tables</text>
+    </description>
+    <leaf name="prefix">
+      <type name="leafref">
+        <path value="../state/prefix"/>
+      </type>
+      <description>
+        <text>Reference to the prefix list key</text>
+      </description>
+    </leaf>
+    <leaf name="path-id">
+      <type name="leafref">
+        <path value="../state/path-id"/>
+      </type>
+      <description>
+        <text>Reference to the path-id list key</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ipv4-adj-rib-common">
+    <description>
+      <text>Common structural grouping for each IPv4 adj-RIB table</text>
+    </description>
+    <uses name="bgp-common-table-attrs-top"/>
+    <container name="routes">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of routes in the routing
+table.</text>
+      </description>
+      <list name="route">
+        <key value="prefix path-id"/>
+        <description>
+          <text>List of routes in the table, keyed by a combination of
+the route prefix and path-id to distinguish multiple
+routes received from a neighbor for the same prefix,
+e.g., when BGP add-paths is enabled.</text>
+        </description>
+        <uses name="bgp-adj-rib-key-refs"/>
+        <container name="state">
+          <description>
+            <text>Operational state data for BGP Adj-RIB entries</text>
+          </description>
+          <leaf name="prefix">
+            <type name="oc-inet:ipv4-prefix"/>
+            <description>
+              <text>Prefix for the route</text>
+            </description>
+          </leaf>
+          <uses name="bgp-adj-rib-attr-state"/>
+          <uses name="bgp-adj-rib-common-attr-refs"/>
+          <uses name="bgp-common-route-annotations-state"/>
+        </container>
+        <uses name="bgp-unknown-attr-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipv4-adj-rib-in-post">
+    <description>
+      <text>Common structural grouping for the IPv4 adj-rib-in
+post-policy table</text>
+    </description>
+    <uses name="bgp-common-table-attrs-top"/>
+    <container name="routes">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of routes in the routing
+table.</text>
+      </description>
+      <list name="route">
+        <key value="prefix path-id"/>
+        <description>
+          <text>List of routes in the table, keyed by a combination of
+the route prefix and path-id to distinguish multiple
+routes received from a neighbor for the same prefix,
+e.g., when BGP add-paths is enabled.</text>
+        </description>
+        <uses name="bgp-adj-rib-key-refs"/>
+        <container name="state">
+          <description>
+            <text>Operational state data for BGP Adj-RIB entries</text>
+          </description>
+          <leaf name="prefix">
+            <type name="oc-inet:ipv4-prefix"/>
+            <description>
+              <text>Prefix for the route</text>
+            </description>
+          </leaf>
+          <uses name="bgp-adj-rib-attr-state"/>
+          <uses name="bgp-adj-rib-common-attr-refs"/>
+          <uses name="bgp-common-route-annotations-state"/>
+          <uses name="bgp-adj-rib-in-post-route-annotations-state"/>
+        </container>
+        <uses name="bgp-unknown-attr-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipv4-adj-rib-top">
+    <description>
+      <text>Top-level grouping for Adj-RIB table</text>
+    </description>
+    <container name="neighbors">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for neighbor list</text>
+      </description>
+      <list name="neighbor">
+        <key value="neighbor-address"/>
+        <description>
+          <text>List of neighbors (peers) of the local BGP speaker</text>
+        </description>
+        <leaf name="neighbor-address">
+          <type name="leafref">
+            <path value="../state/neighbor-address"/>
+          </type>
+          <description>
+            <text>Reference to the list key</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <description>
+            <text>Operational state for each neighbor BGP Adj-RIB</text>
+          </description>
+          <leaf name="neighbor-address">
+            <type name="oc-inet:ip-address"/>
+            <description>
+              <text>IP address of the BGP neighbor or peer</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="adj-rib-in-pre">
+          <description>
+            <text>Per-neighbor table containing the NLRI updates
+received from the neighbor before any local input
+policy rules or filters have been applied.  This can
+be considered the 'raw' updates from the neighbor.</text>
+          </description>
+          <uses name="ipv4-adj-rib-common"/>
+        </container>
+        <container name="adj-rib-in-post">
+          <description>
+            <text>Per-neighbor table containing the paths received from
+the neighbor that are eligible for best-path selection
+after local input policy rules have been applied.</text>
+          </description>
+          <uses name="ipv4-adj-rib-in-post"/>
+        </container>
+        <container name="adj-rib-out-pre">
+          <description>
+            <text>Per-neighbor table containing paths eligble for
+sending (advertising) to the neighbor before output
+policy rules have been applied</text>
+          </description>
+          <uses name="ipv4-adj-rib-common"/>
+        </container>
+        <container name="adj-rib-out-post">
+          <description>
+            <text>Per-neighbor table containing paths eligble for
+sending (advertising) to the neighbor after output
+policy rules have been applied</text>
+          </description>
+          <uses name="ipv4-adj-rib-common"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipv6-adj-rib-common">
+    <description>
+      <text>Common structural grouping for each IPv6 adj-RIB table</text>
+    </description>
+    <uses name="bgp-common-table-attrs-state"/>
+    <container name="routes">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of routes in the routing
+table.</text>
+      </description>
+      <list name="route">
+        <key value="prefix path-id"/>
+        <description>
+          <text>List of routes in the table</text>
+        </description>
+        <uses name="bgp-adj-rib-key-refs"/>
+        <container name="state">
+          <description>
+            <text>Operational state data for BGP Adj-RIB entries</text>
+          </description>
+          <leaf name="prefix">
+            <type name="oc-inet:ipv6-prefix"/>
+            <description>
+              <text>Prefix for the route</text>
+            </description>
+          </leaf>
+          <uses name="bgp-adj-rib-attr-state"/>
+          <uses name="bgp-adj-rib-common-attr-refs"/>
+          <uses name="bgp-common-route-annotations-state"/>
+        </container>
+        <uses name="bgp-unknown-attr-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipv6-adj-rib-in-post">
+    <description>
+      <text>Common structural grouping for the IPv6 adj-rib-in
+post-policy table</text>
+    </description>
+    <uses name="bgp-common-table-attrs-state"/>
+    <container name="routes">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for list of routes in the routing
+table.</text>
+      </description>
+      <list name="route">
+        <key value="prefix path-id"/>
+        <description>
+          <text>List of routes in the table</text>
+        </description>
+        <uses name="bgp-adj-rib-key-refs"/>
+        <container name="state">
+          <description>
+            <text>Operational state data for BGP Adj-RIB entries</text>
+          </description>
+          <leaf name="prefix">
+            <type name="oc-inet:ipv6-prefix"/>
+            <description>
+              <text>Prefix for the route</text>
+            </description>
+          </leaf>
+          <uses name="bgp-adj-rib-attr-state"/>
+          <uses name="bgp-adj-rib-common-attr-refs"/>
+          <uses name="bgp-common-route-annotations-state"/>
+          <uses name="bgp-adj-rib-in-post-route-annotations-state"/>
+        </container>
+        <uses name="bgp-unknown-attr-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipv6-adj-rib-top">
+    <description>
+      <text>Top-level grouping for Adj-RIB table</text>
+    </description>
+    <container name="neighbors">
+      <config value="false"/>
+      <description>
+        <text>Enclosing container for neighbor list</text>
+      </description>
+      <list name="neighbor">
+        <key value="neighbor-address"/>
+        <description>
+          <text>List of neighbors (peers) of the local BGP speaker</text>
+        </description>
+        <leaf name="neighbor-address">
+          <type name="leafref">
+            <path value="../state/neighbor-address"/>
+          </type>
+          <description>
+            <text>Reference to the list key</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <description>
+            <text>Operational state for each neighbor BGP Adj-RIB</text>
+          </description>
+          <leaf name="neighbor-address">
+            <type name="oc-inet:ip-address"/>
+            <description>
+              <text>IP address of the BGP neighbor or peer</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="adj-rib-in-pre">
+          <description>
+            <text>Per-neighbor table containing the NLRI updates
+received from the neighbor before any local input
+policy rules or filters have been applied.  This can
+be considered the 'raw' updates from the neighbor.</text>
+          </description>
+          <uses name="ipv6-adj-rib-common"/>
+        </container>
+        <container name="adj-rib-in-post">
+          <description>
+            <text>Per-neighbor table containing the paths received from
+the neighbor that are eligible for best-path selection
+after local input policy rules have been applied.</text>
+          </description>
+          <uses name="ipv6-adj-rib-in-post"/>
+        </container>
+        <container name="adj-rib-out-pre">
+          <description>
+            <text>Per-neighbor table containing paths eligble for
+sending (advertising) to the neighbor before output
+policy rules have been applied</text>
+          </description>
+          <uses name="ipv6-adj-rib-common"/>
+        </container>
+        <container name="adj-rib-out-post">
+          <description>
+            <text>Per-neighbor table containing paths eligble for
+sending (advertising) to the neighbor after output
+policy rules have been applied</text>
+          </description>
+          <uses name="ipv6-adj-rib-common"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipvX-srte-policy-adjrib-top">
+    <description>
+      <text>Top-level grouping for the IPv4 and IPv6 AFI, SR-TE Policy SAFI
+Adj-RIBs.</text>
+    </description>
+    <container name="neighbors">
+      <description>
+        <text>Surrounding container for the list of neighbours that are
+enabled for the IPv4 and IPv6 AFI, SR-TE Policy SAFI address
+family.</text>
+      </description>
+      <list name="neighbor">
+        <key value="neighbor-address"/>
+        <description>
+          <text>An individual neighbour that is enabled for the SR-TE
+Policy SAFI.</text>
+        </description>
+        <leaf name="neighbor-address">
+          <type name="leafref">
+            <path value="../state/neighbor-address"/>
+          </type>
+          <description>
+            <text>Reference to the address of the neighbour for which the
+Adj-RIBs specified are maintained.</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <description>
+            <text>Operational state parameters of the BGP neighbour for
+which the SR-TE Policy SAFI is enabled.</text>
+          </description>
+          <uses name="ipvX-srte-policy-adjrib-neighbor-state"/>
+        </container>
+        <container name="adj-rib-in-pre">
+          <description>
+            <text>The Adj-RIB-In for the SR-TE Policy SAFI for the neighbour,
+prior to any inbound policy constraints or modifications
+having been applied.</text>
+          </description>
+          <uses name="ipvX-srte-policy-adjrib-common"/>
+        </container>
+        <container name="adj-rib-in-post">
+          <description>
+            <text>The Adj-RIB-In for the SR-TE Policy SAFI for the neighbour,
+following any inbound policy constraints or modifications
+being made.</text>
+          </description>
+          <uses name="ipvX-srte-policy-adjrib-in-post"/>
+        </container>
+        <container name="adj-rib-out-pre">
+          <description>
+            <text>The Adj-RIB-Out for the SR-TE Policy SAFI for the neighbour,
+prior to any outgoing policy modifications or constraints
+having been applied.</text>
+          </description>
+          <uses name="ipvX-srte-policy-adjrib-common"/>
+        </container>
+        <container name="adj-rib-out-post">
+          <description>
+            <text>The Adj-RIB-Out for the SR-TE Policy SAFI for the neighbour,
+follow any outbound policy constraints or modifications being
+made.</text>
+          </description>
+          <uses name="ipvX-srte-policy-adjrib-common"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipvX-srte-policy-adjrib-neighbor-state">
+    <description>
+      <text>Common attributes for each neighbour for which the SR-TE
+Policy SAFI RIBs are being maintained.</text>
+    </description>
+    <leaf name="neighbor-address">
+      <description>
+        <text>The address of the neighbour for which the SR-TE policy
+SAFI has been negotiated.</text>
+      </description>
+      <type name="oc-inet:ip-address"/>
+    </leaf>
+  </grouping>
+  <grouping name="ipvX-srte-policy-adjrib-common">
+    <description>
+      <text>Common structure containing the routes that are learnt via
+the IPv4 or IPv6 SR-TE Policy SAFI.</text>
+    </description>
+    <container name="routes">
+      <description>
+        <text>Surrounding container for the list of routes within the
+SR-TE Policy SAFI.</text>
+      </description>
+      <list name="route">
+        <key value="path-id endpoint color"/>
+        <description>
+          <text>The routes within the SR-TE Policy SAFI Adj-RIB. The
+routes are keyed on the path-id - set to a non-zero
+value only if ADD-PATHS is being used; the color; and
+the endpoint. The colour and endpoint are extracted from
+the NLRI.</text>
+        </description>
+        <uses name="ipvX-srte-policy-common-keys"/>
+        <container name="state">
+          <description>
+            <text>State parameters for entries within the Adj-RIB used
+to store SR-TE Policy SAFI routes.</text>
+          </description>
+          <uses name="ipvX-srte-policy-common-route-state"/>
+          <uses name="bgp-adj-rib-common-attr-refs"/>
+          <uses name="bgp-common-route-annotations-state"/>
+        </container>
+        <uses name="bgp-unknown-attr-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipvX-srte-policy-common-route-state">
+    <description>
+      <text>Common attributes used SR-TE Policy SAFI routes.</text>
+    </description>
+    <leaf name="path-id">
+      <type name="uint32"/>
+      <default value="0"/>
+      <description>
+        <text>Identifier for the path when using BGP ADD-PATHS for the SR-TE
+policy SAFI.</text>
+      </description>
+    </leaf>
+    <leaf name="endpoint">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>A unique identifier for the remote set of nodes. When the address
+family is IPv4, the value is a 4-octet IPv4 address. When the
+address family is IPv6, the value is a 16-octet IPv6 address.</text>
+      </description>
+    </leaf>
+    <leaf name="color">
+      <type name="uint32"/>
+      <description>
+        <text>A 4-octet value identifying the policy. Combined with the endpoint
+the endpoint and colour represent the unique policy.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ipvX-srte-policy-common-keys">
+    <description>
+      <text>Common grouping of the keys used for lists of SR-TE policy
+SAFI routes.</text>
+    </description>
+    <leaf name="path-id">
+      <type name="leafref">
+        <path value="../state/path-id"/>
+      </type>
+      <description>
+        <text>Reference to the path identifier for the SR-TE Policy SAFI
+route. The value is only non-zero if ADD-PATHS is not being
+used.</text>
+      </description>
+    </leaf>
+    <leaf name="endpoint">
+      <type name="leafref">
+        <path value="../state/endpoint"/>
+      </type>
+      <description>
+        <text>Reference to the endpoint used for the SR-TE Policy SAFI
+route within the NLRI.</text>
+      </description>
+    </leaf>
+    <leaf name="color">
+      <type name="leafref">
+        <path value="../state/color"/>
+      </type>
+      <description>
+        <text>Reference to the colour used for the SR-TE policy SAFI
+route within the NLRI.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="ipvX-srte-policy-adjrib-in-post">
+    <description>
+      <text>Grouping for the post-policy Adj-RIB-In for SR-TE Policy SAFI routes</text>
+    </description>
+    <container name="routes">
+      <description>
+        <text>The set of routes that are within the Adj-RIB-Out for the
+neighbour.</text>
+      </description>
+      <list name="route">
+        <key value="path-id endpoint color"/>
+        <description>
+          <text>The routes that are in the Adj-RIB-In-Post for the specified
+BGP neighbour within the SR-TE Policy SAFI for the specified
+address family.</text>
+        </description>
+        <uses name="ipvX-srte-policy-common-keys"/>
+        <container name="state">
+          <description>
+            <text>Operational state attributes related to the route within
+the SR-TE Policy SAFI Adj-RIB-In-Post for the specified
+neighbour.</text>
+          </description>
+          <uses name="ipvX-srte-policy-common-route-state"/>
+          <uses name="bgp-adj-rib-common-attr-refs"/>
+          <uses name="bgp-common-route-annotations-state"/>
+          <uses name="bgp-adj-rib-in-post-route-annotations-state"/>
+        </container>
+        <uses name="bgp-unknown-attr-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ipvX-srte-policy-locrib-top">
+    <description>
+      <text>Top-level grouping for the Loc-RIB for IPv4 or IPv6 Adj-RIB
+for SR-TE Policy SAFI.</text>
+    </description>
+    <container name="loc-rib">
+      <description>
+        <text>The Loc-RIB for the SR-TE Policy SAFI for IPv4 or IPv6 Unicast
+AFIs.</text>
+      </description>
+      <container name="routes">
+        <description>
+          <text>List of routes within the SR-TE Policy SAFI, for the IPv4 or
+IPv6 AFI.</text>
+        </description>
+        <list name="route">
+          <key value="path-id endpoint color"/>
+          <description>
+            <text>Route within the specified address family for the SR-TE
+Policy SAFI.</text>
+          </description>
+          <uses name="ipvX-srte-policy-common-keys"/>
+          <container name="state">
+            <description>
+              <text>Operational state attributes for each route within the
+IPv4 or IPv6 Unicast SR-TE Policy SAFI.</text>
+            </description>
+            <uses name="ipvX-srte-policy-common-route-state"/>
+            <uses name="bgp-loc-rib-common-attr-refs"/>
+            <uses name="bgp-common-route-annotations-state"/>
+          </container>
+          <uses name="bgp-unknown-attr-top"/>
+        </list>
+      </container>
+    </container>
+  </grouping>
+</submodule>

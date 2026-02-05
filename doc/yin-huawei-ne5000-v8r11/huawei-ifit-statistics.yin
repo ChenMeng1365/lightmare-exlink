@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ifit-statistics"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ifit-statistics="urn:huawei:yang:huawei-ifit-statistics"
+        xmlns:ifit="urn:huawei:yang:huawei-ifit"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-ifit-statistics"/>
+  <prefix value="ifit-statistics"/>
+  <import module="huawei-ifit">
+    <prefix value="ifit"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>IFIT statistics.</text>
+  </description>
+  <revision date="2020-03-05">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-28">
+    <description>
+      <text>Add new leaf: if-index.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-10-12">
+    <description>
+      <text>Add new containers: flow-peer-ip-statistics and flow-locator-statistics.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-17">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="address-family">
+    <type name="enumeration">
+      <enum name="ipv4">
+        <value value="0"/>
+        <description>
+          <text>IPv4 address family.</text>
+        </description>
+      </enum>
+      <enum name="ipv6">
+        <value value="1"/>
+        <description>
+          <text>IPv6 address family.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of IP address family.</text>
+    </description>
+  </typedef>
+  <typedef name="vpn-type">
+    <type name="enumeration">
+      <enum name="vpn">
+        <value value="0"/>
+        <description>
+          <text>VPN type.</text>
+        </description>
+      </enum>
+      <enum name="evpn">
+        <value value="1"/>
+        <description>
+          <text>EVPN type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Type of VPN.</text>
+    </description>
+  </typedef>
+  <typedef name="flow-direction">
+    <type name="enumeration">
+      <enum name="ingress">
+        <value value="1"/>
+        <description>
+          <text>Ingress of an IFIT flow.</text>
+        </description>
+      </enum>
+      <enum name="transit-input">
+        <value value="2"/>
+        <description>
+          <text>TransitInput of an IFIT flow.</text>
+        </description>
+      </enum>
+      <enum name="transit-output">
+        <value value="3"/>
+        <description>
+          <text>TransitOutput of an IFIT flow.</text>
+        </description>
+      </enum>
+      <enum name="egress">
+        <value value="4"/>
+        <description>
+          <text>Egress of an IFIT flow.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Direction of an IFIT flow.</text>
+    </description>
+  </typedef>
+  <grouping name="statistics-data">
+    <leaf name="period-id">
+      <type name="uint64"/>
+      <description>
+        <text>Index of the statistics collection period of IFIT flows.</text>
+      </description>
+    </leaf>
+    <leaf name="packet-count">
+      <type name="uint64"/>
+      <description>
+        <text>Number of packets transmitted within this period.</text>
+      </description>
+    </leaf>
+    <leaf name="byte-count">
+      <type name="uint64"/>
+      <description>
+        <text>Number of bytes transmitted within this period.</text>
+      </description>
+    </leaf>
+    <leaf name="timestamp-second">
+      <type name="uint32"/>
+      <description>
+        <text>Integer part of the number of seconds starting at 00:00:00 UTC on January 1, 1970.</text>
+      </description>
+    </leaf>
+    <leaf name="timestamp-nanosecond">
+      <type name="uint32"/>
+      <description>
+        <text>Decimal part of the number of seconds starting at 00:00:00 UTC on January 1, 1970.</text>
+      </description>
+    </leaf>
+    <description>
+      <text>The result data of IFIT statistics.</text>
+    </description>
+  </grouping>
+  <ext:task-name value="ifit"/>
+  <augment target-node="/ifit:ifit">
+    <description>
+      <text>IFIT augment.</text>
+    </description>
+    <container name="flow-statistics">
+      <config value="false"/>
+      <description>
+        <text>List of IFIT flow statistics.</text>
+      </description>
+      <list name="flow-statistic">
+        <key value="flow-id direction"/>
+        <unique tag="address-family source-ip destination-ip source-mask destination-mask source-port destination-port protocol vpn-name if-index"/>
+        <description>
+          <text>Statistics of IFIT flow.</text>
+        </description>
+        <leaf name="flow-id">
+          <type name="uint64"/>
+          <description>
+            <text>The index of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="direction">
+          <type name="flow-direction"/>
+          <description>
+            <text>Direction of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="address-family">
+          <type name="address-family"/>
+          <description>
+            <text>The IP address family.</text>
+          </description>
+        </leaf>
+        <leaf name="source-ip">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Source IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-ip">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Destination IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="source-mask">
+          <type name="uint8"/>
+          <description>
+            <text>Mask of a source IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-mask">
+          <type name="uint8"/>
+          <description>
+            <text>Mask of a destination IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="source-port">
+          <type name="uint16"/>
+          <description>
+            <text>Source port number.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-port">
+          <type name="uint16"/>
+          <description>
+            <text>Destination port number.</text>
+          </description>
+        </leaf>
+        <leaf name="protocol">
+          <type name="uint8"/>
+          <description>
+            <text>Protocol number.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="pub-type:vrf-name"/>
+          <description>
+            <text>Name of VPN.</text>
+          </description>
+        </leaf>
+        <leaf name="if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Interface ID.</text>
+          </description>
+        </leaf>
+        <leaf name="error-info">
+          <type name="uint8"/>
+          <description>
+            <text>Information of error.</text>
+          </description>
+        </leaf>
+        <leaf name="interval">
+          <type name="uint16"/>
+          <units name="s"/>
+          <description>
+            <text>Interval of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="period-id">
+          <type name="uint64"/>
+          <description>
+            <text>Index of the statistics collection period of IFIT flows.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-count">
+          <type name="uint64"/>
+          <description>
+            <text>Number of packets transmitted within this period.</text>
+          </description>
+        </leaf>
+        <leaf name="byte-count">
+          <type name="uint64"/>
+          <description>
+            <text>Number of bytes transmitted within this period.</text>
+          </description>
+        </leaf>
+        <leaf name="timestamp-second">
+          <type name="uint32"/>
+          <description>
+            <text>Integer part of the number of seconds starting at 00:00:00 UTC on January 1, 1970.</text>
+          </description>
+        </leaf>
+        <leaf name="timestamp-nanosecond">
+          <type name="uint32"/>
+          <description>
+            <text>Decimal part of the number of seconds starting at 00:00:00 UTC on January 1, 1970.</text>
+          </description>
+        </leaf>
+        <leaf name="ttl">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The forwarding hops of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="tunnel-if-index">
+          <type name="string">
+            <length value="1..144"/>
+          </type>
+          <description>
+            <text>The tunnel interface index of ECMP tunnel group.</text>
+          </description>
+        </leaf>
+        <leaf name="dscp">
+          <type name="uint8"/>
+          <description>
+            <text>DSCP value.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="flow-peer-ip-statistics">
+      <config value="false"/>
+      <description>
+        <text>List of IFIT flow peer IP statistics.</text>
+      </description>
+      <list name="flow-peer-ip-statistic">
+        <key value="flow-id direction"/>
+        <description>
+          <text>Statistics of IFIT flow peer IP.</text>
+        </description>
+        <leaf name="flow-id">
+          <type name="uint64"/>
+          <description>
+            <text>The index of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="direction">
+          <type name="flow-direction"/>
+          <description>
+            <text>Direction of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-ip">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Peer IP address bound to a VPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-type">
+          <type name="vpn-type"/>
+          <description>
+            <text>Type of VPN.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="pub-type:vrf-name"/>
+          <description>
+            <text>Name of VPN.</text>
+          </description>
+        </leaf>
+        <leaf name="evpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Name of EVPN.</text>
+          </description>
+        </leaf>
+        <leaf name="error-info">
+          <type name="uint8"/>
+          <description>
+            <text>Information of error.</text>
+          </description>
+        </leaf>
+        <leaf name="interval">
+          <type name="uint16"/>
+          <units name="s"/>
+          <description>
+            <text>Interval of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Interface ID.</text>
+          </description>
+        </leaf>
+        <uses name="statistics-data"/>
+        <leaf name="ttl">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The forwarding hops of an IFIT flow.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="flow-locator-statistics">
+      <config value="false"/>
+      <description>
+        <text>List of IFIT flow locator statistics.</text>
+      </description>
+      <list name="flow-locator-statistic">
+        <key value="flow-id direction"/>
+        <description>
+          <text>Statistics of IFIT flow locator.</text>
+        </description>
+        <leaf name="flow-id">
+          <type name="uint64"/>
+          <description>
+            <text>The index of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="direction">
+          <type name="flow-direction"/>
+          <description>
+            <text>Direction of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="locator-prefix">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>The locator prefix.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-length">
+          <type name="uint8"/>
+          <description>
+            <text>Length of prefix.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-type">
+          <type name="vpn-type"/>
+          <description>
+            <text>Type of VPN.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="pub-type:vrf-name"/>
+          <description>
+            <text>Name of VPN.</text>
+          </description>
+        </leaf>
+        <leaf name="evpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Name of EVPN.</text>
+          </description>
+        </leaf>
+        <leaf name="error-info">
+          <type name="uint8"/>
+          <description>
+            <text>Information of error.</text>
+          </description>
+        </leaf>
+        <leaf name="interval">
+          <type name="uint16"/>
+          <units name="s"/>
+          <description>
+            <text>Interval of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Interface ID.</text>
+          </description>
+        </leaf>
+        <uses name="statistics-data"/>
+        <leaf name="ttl">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The forwarding hops of an IFIT flow.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="flow-hop-statistics">
+      <config value="false"/>
+      <description>
+        <text>List of IFIT flow hop statistics.</text>
+      </description>
+      <list name="flow-hop-statistic">
+        <key value="flow-id direction"/>
+        <description>
+          <text>Statistics of IFIT flow hop.</text>
+        </description>
+        <leaf name="flow-id">
+          <type name="uint64"/>
+          <description>
+            <text>The index of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="direction">
+          <type name="flow-direction"/>
+          <description>
+            <text>Direction of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="if-index">
+          <type name="uint32"/>
+          <description>
+            <text>Interface ID.</text>
+          </description>
+        </leaf>
+        <leaf name="error-info">
+          <type name="uint8"/>
+          <description>
+            <text>Information of error.</text>
+          </description>
+        </leaf>
+        <leaf name="period-id">
+          <type name="uint64"/>
+          <description>
+            <text>Index of the statistics collection period of IFIT flows.</text>
+          </description>
+        </leaf>
+        <leaf name="packet-count">
+          <type name="uint64"/>
+          <description>
+            <text>Number of packets transmitted within this period.</text>
+          </description>
+        </leaf>
+        <leaf name="byte-count">
+          <type name="uint64"/>
+          <description>
+            <text>Number of bytes transmitted within this period.</text>
+          </description>
+        </leaf>
+        <leaf name="timestamp-second">
+          <type name="uint32"/>
+          <description>
+            <text>Integer part of the number of seconds starting at 00:00:00 UTC on January 1, 1970.</text>
+          </description>
+        </leaf>
+        <leaf name="timestamp-nanosecond">
+          <type name="uint32"/>
+          <description>
+            <text>Decimal part of the number of seconds starting at 00:00:00 UTC on January 1, 1970.</text>
+          </description>
+        </leaf>
+        <leaf name="ttl">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>The forwarding hops of an IFIT flow.</text>
+          </description>
+        </leaf>
+        <leaf name="tunnel-if-index">
+          <type name="string">
+            <length value="1..144"/>
+          </type>
+          <description>
+            <text>The tunnel interface index of ECMP tunnel group.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>

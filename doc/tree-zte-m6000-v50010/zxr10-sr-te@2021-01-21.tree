@@ -1,0 +1,582 @@
+module: zxr10-sr-te
+  +--ro state
+  |  +--ro sr-tunnel
+  |  |  +--ro tunnel* [tunnel-id]
+  |  |  |  +--ro tunnel-id              uint16
+  |  |  |  +--ro ingress-id?            ncd:ipv4-address
+  |  |  |  +--ro egress-id?             ncd:ipv4-address
+  |  |  |  +--ro v6-ingress-id?         ncd:ipv6-address
+  |  |  |  +--ro v6-egress-id?          ncd:ipv6-address
+  |  |  |  +--ro oper-status?           enumeration
+  |  |  |  +--ro master-lsp-id?         uint16
+  |  |  |  +--ro slave-lsp-id?          uint16
+  |  |  |  +--ro hsb-status?            enumeration
+  |  |  |  +--ro master-splice-label?   uint32
+  |  |  |  +--ro slave-splice-label?    uint32
+  |  |  +--ro tunnel-sr-path
+  |  |     +--ro sr-path-hop* [tunnel-id lsp-role hop-index]
+  |  |        +--ro tunnel-id          uint16
+  |  |        +--ro lsp-role           enumeration
+  |  |        +--ro hop-index          uint16
+  |  |        +--ro lsp-id?            uint16
+  |  |        +--ro sid-type?          enumeration
+  |  |        +--ro sid-val?           uint32
+  |  |        +--ro node-ip?           ncd:ipv4-address
+  |  |        +--ro adj-local-rid?     ncd:ipv4-address
+  |  |        +--ro adj-local-ip?      ncd:ipv4-address
+  |  |        +--ro adj-local-id?      uint32
+  |  |        +--ro adj-peer-rid?      ncd:ipv4-address
+  |  |        +--ro adj-peer-ip?       ncd:ipv4-address
+  |  |        +--ro adj-peer-id?       uint32
+  |  |        +--ro srv6-sid?          ncd:ipv6-address
+  |  |        +--ro v6-node-ip?        ncd:ipv6-address
+  |  |        +--ro v6-adj-local-ip?   ncd:ipv6-address
+  |  |        +--ro v6-local-id?       uint32
+  |  |        +--ro v6-adj-peer-ip?    ncd:ipv6-address
+  |  |        +--ro v6-peer-id?        uint32
+  |  +--ro static-sr
+  |  |  +--ro resource
+  |  |  |  +--ro tunnel-perf-switch
+  |  |  |     +--ro configured?      uint32
+  |  |  |     +--ro remainder-sum?   uint32
+  |  |  +--ro static-tunnel
+  |  |     +--ro tunnel* [tunnel-id]
+  |  |        +--ro tunnel-id            uint32
+  |  |        +--ro associated-status?   enumeration
+  |  +--ro sr-policy
+  |     +--ro traffic-statistics
+  |        +--ro policy* [color end-point]
+  |           +--ro color            uint32
+  |           +--ro end-point        string
+  |           +--ro in-bytes?        uint64
+  |           +--ro in-packets?      uint64
+  |           +--ro e-bytes?         uint64
+  |           +--ro e-packets?       uint64
+  |           +--ro e-bit-rate?      uint64
+  |           +--ro e-packet-rate?   uint64
+  +--rw configuration
+  |  +--rw segment-routing
+  |     +--rw traffic-eng
+  |        +--rw te-enable?                   enumeration
+  |        +--rw bfd-affect-enable?           enumeration
+  |        +--rw bfd-create-timeout?          uint16
+  |        +--rw hsb-policy?                  enumeration
+  |        +--rw path-verification?           enumeration
+  |        +--rw policy-traffic-statistics?   enumeration
+  |        +--rw path-uninterrupt-time?       uint16
+  |        +--rw load-sharing?                enumeration
+  |        +--rw cspf-ex-overload?            enumeration
+  |        +--rw global-config
+  |        |  +--rw bgp-auto-del-delay-time?   uint16
+  |        |  +--rw srv6-locator-name?         string
+  |        |  +--rw policy-sbfd
+  |        |  |  +--rw template-name?   string
+  |        |  +--rw policy-sl-sbfd
+  |        |  |  +--rw template-name?   string
+  |        |  +--rw pcep-auto-init
+  |        |     +--rw tunnel-sbfd-template?   string
+  |        |     +--rw master-sbfd-template?   string
+  |        |     +--rw slave-sbfd-template?    string
+  |        +--rw bgp-ls
+  |        |  +--rw bgp-link-state?   enumeration
+  |        +--rw sr-path!
+  |        |  +--rw name-based* [name]
+  |        |  |  +--rw name          string
+  |        |  |  +--rw path-paras
+  |        |  |     +--rw path-para* [index]
+  |        |  |        +--rw index      uint8
+  |        |  |        +--rw sr-path
+  |        |  |           +--rw (sr-path-type)
+  |        |  |              +--:(node)
+  |        |  |              |  +--rw node-router-id                           ncd:ipv4-address
+  |        |  |              |  +--rw node-label-value?                        uint32
+  |        |  |              +--:(adjacency)
+  |        |  |              |  +--rw router-id                                ncd:ipv4-address
+  |        |  |              |  +--rw interface-ip                             ncd:ipv4-address
+  |        |  |              |  +--rw peer-router-id                           ncd:ipv4-address
+  |        |  |              |  +--rw peer-interface-ip                        ncd:ipv4-address
+  |        |  |              |  +--rw adjacency-label-value?                   uint32
+  |        |  |              +--:(label)
+  |        |  |              |  +--rw label-value                              uint32
+  |        |  |              +--:(node-ipv6)
+  |        |  |              |  +--rw node-router-id-ipv6                      ncd:ipv6-address
+  |        |  |              |  +--rw node-ipv6-label-value?                   uint32
+  |        |  |              +--:(adjacency-ipv6)
+  |        |  |              |  +--rw interface-ipv6                           ncd:ipv6-address
+  |        |  |              |  +--rw peer-interface-ipv6                      ncd:ipv6-address
+  |        |  |              |  +--rw adjacency-ipv6-label-value?              uint32
+  |        |  |              +--:(adjacency-ipv6-link-local)
+  |        |  |                 +--rw local-interface-ipv6-addr                ncd:ipv6-address
+  |        |  |                 +--rw local-interface-id                       uint32
+  |        |  |                 +--rw peer-interface-ipv6-addr                 ncd:ipv6-address
+  |        |  |                 +--rw peer-interface-id                        uint32
+  |        |  |                 +--rw adjacency-ipv6-link-local-label-value?   uint32
+  |        |  +--rw id-based* [id]
+  |        |     +--rw id            uint16
+  |        |     +--rw path-paras
+  |        |        +--rw path-para* [index]
+  |        |           +--rw index      uint8
+  |        |           +--rw sr-path
+  |        |              +--rw (sr-path-type)
+  |        |                 +--:(node)
+  |        |                 |  +--rw node-router-id                           ncd:ipv4-address
+  |        |                 |  +--rw node-label-value?                        uint32
+  |        |                 +--:(adjacency)
+  |        |                 |  +--rw router-id                                ncd:ipv4-address
+  |        |                 |  +--rw interface-ip                             ncd:ipv4-address
+  |        |                 |  +--rw peer-router-id                           ncd:ipv4-address
+  |        |                 |  +--rw peer-interface-ip                        ncd:ipv4-address
+  |        |                 |  +--rw adjacency-label-value?                   uint32
+  |        |                 +--:(label)
+  |        |                 |  +--rw label-value                              uint32
+  |        |                 +--:(node-ipv6)
+  |        |                 |  +--rw node-router-id-ipv6                      ncd:ipv6-address
+  |        |                 |  +--rw node-ipv6-label-value?                   uint32
+  |        |                 +--:(adjacency-ipv6)
+  |        |                 |  +--rw interface-ipv6                           ncd:ipv6-address
+  |        |                 |  +--rw peer-interface-ipv6                      ncd:ipv6-address
+  |        |                 |  +--rw adjacency-ipv6-label-value?              uint32
+  |        |                 +--:(adjacency-ipv6-link-local)
+  |        |                    +--rw local-interface-ipv6-addr                ncd:ipv6-address
+  |        |                    +--rw local-interface-id                       uint32
+  |        |                    +--rw peer-interface-ipv6-addr                 ncd:ipv6-address
+  |        |                    +--rw peer-interface-id                        uint32
+  |        |                    +--rw adjacency-ipv6-link-local-label-value?   uint32
+  |        +--rw srv6-path
+  |        |  +--rw name-based* [name]
+  |        |     +--rw name          string
+  |        |     +--rw path-paras
+  |        |        +--rw path-para* [index]
+  |        |           +--rw index        int8
+  |        |           +--rw srv6-path
+  |        |              +--rw (srv6-path-type)
+  |        |                 +--:(srv6-sid)
+  |        |                    +--rw srv6-sid-value    ncd:ipv6-address
+  |        +--rw sr-tunnel
+  |        |  +--rw tunnel* [tunnel-name]
+  |        |     +--rw tunnel-name          string
+  |        |     +--rw activation?          enumeration
+  |        |     +--rw hsb-enable?          enumeration
+  |        |     +--rw entropy-label?       empty
+  |        |     +--rw destination?         ncd:ipv4-address
+  |        |     +--rw track-name?          string
+  |        |     +--rw alias-name?          string
+  |        |     +--rw path-setup-type?     enumeration
+  |        |     +--rw path-verification?   enumeration
+  |        |     +--rw color?               uint32
+  |        |     +--rw sid-algo?            uint8
+  |        |     +--rw metric-type?         enumeration
+  |        |     +--rw drop-upon-invalid?   enumeration
+  |        |     +--rw destination-ipv6
+  |        |     |  +--rw destination-ipv6?   ncd:ipv6-address
+  |        |     +--rw affinity
+  |        |     |  +--rw main-affinity
+  |        |     |     +--rw bit-positions
+  |        |     |     |  +--rw bit-position* [position]
+  |        |     |     |     +--rw affinity-type    enumeration
+  |        |     |     |     +--rw position         uint8
+  |        |     |     +--rw bit-names
+  |        |     |        +--rw bit-name* [name]
+  |        |     |           +--rw affinity-type    enumeration
+  |        |     |           +--rw name             string
+  |        |     +--rw escape-path!
+  |        |     |  +--rw escape-path-enable?   enumeration
+  |        |     |  +--rw sr-path
+  |        |     |     +--rw (path-type)?
+  |        |     |        +--:(name-based)
+  |        |     |        |  +--rw name    string
+  |        |     |        +--:(id-based)
+  |        |     |           +--rw id      uint16
+  |        |     +--rw ref-hsb!
+  |        |     |  +--rw ref_hsb_enable?   enumeration
+  |        |     +--rw sr-path!
+  |        |     |  +--rw tunnel-sr-path* [path-role]
+  |        |     |     +--rw path-role     enumeration
+  |        |     |     +--rw (path-type)
+  |        |     |        +--:(name-based)
+  |        |     |        |  +--rw name    string
+  |        |     |        +--:(id-based)
+  |        |     |           +--rw id      uint16
+  |        |     +--rw srv6-path
+  |        |     |  +--rw tunnel-srv6-path* [path-role]
+  |        |     |     +--rw path-role    enumeration
+  |        |     |     +--rw path-name    string
+  |        |     +--rw bfd!
+  |        |     |  +--rw tunnel-bfd* [bfd-enable]
+  |        |     |     +--rw bfd-enable                enumeration
+  |        |     |     +--rw (detect-param)
+  |        |     |     |  +--:(template)
+  |        |     |     |  |  +--rw template-name       string
+  |        |     |     |  +--:(detect-params)
+  |        |     |     |     +--rw min-tx-interval     uint32
+  |        |     |     |     +--rw min-rx-interval     uint32
+  |        |     |     |     +--rw detect-multiple     uint16
+  |        |     |     +--rw (reverse-path)?
+  |        |     |        +--:(reverse-tunnel)
+  |        |     |        |  +--rw reverse-tunnelid?   uint16
+  |        |     |        +--:(ld-rd)
+  |        |     |           +--rw ld-rd!
+  |        |     |              +--rw ld    uint32
+  |        |     |              +--rw rd    uint32
+  |        |     +--rw sbfd
+  |        |     |  +--rw tunnel-sbfd* [sbfd-enable]
+  |        |     |     +--rw sbfd-enable              enumeration
+  |        |     |     +--rw (detect-param)
+  |        |     |     |  +--:(template)
+  |        |     |     |  |  +--rw template-name      string
+  |        |     |     |  +--:(detect-params)
+  |        |     |     |     +--rw min-tx-interval    uint32
+  |        |     |     |     +--rw detect-multiple    uint16
+  |        |     |     +--rw reverse-path
+  |        |     |        +--rw (path-type)?
+  |        |     |           +--:(label-based)
+  |        |     |           |  +--rw mpls-label?     uint32
+  |        |     |           +--:(sr-path-id-based)
+  |        |     |           |  +--rw sr-path-id?     uint16
+  |        |     |           +--:(sr-path-name-based)
+  |        |     |              +--rw sr-path-name?   string
+  |        |     +--rw path-option!
+  |        |     |  +--rw tunnel-path-option* [option-id]
+  |        |     |     +--rw option-id                   uint8
+  |        |     |     +--rw (path-type)
+  |        |     |        +--:(dynamic)
+  |        |     |        |  +--rw dynamic               empty
+  |        |     |        +--:(explicit-name)
+  |        |     |        |  +--rw explicit-path-name    string
+  |        |     |        +--:(explicit-id)
+  |        |     |           +--rw explicit-path-id      uint16
+  |        |     +--rw hotstandby!
+  |        |     |  +--rw tunnel-hotstandby* [path-option-id]
+  |        |     |     +--rw path-option-id              uint8
+  |        |     |     +--rw (path-type)
+  |        |     |        +--:(dynamic)
+  |        |     |        |  +--rw dynamic               empty
+  |        |     |        |  +--rw prefer?               boolean
+  |        |     |        +--:(explicit-id)
+  |        |     |        |  +--rw explicit-path-id      uint16
+  |        |     |        |  +--rw id-exclude?           boolean
+  |        |     |        +--:(explicit-name)
+  |        |     |           +--rw explicit-path-name    string
+  |        |     |           +--rw name-exclude?         boolean
+  |        |     +--rw link-limit!
+  |        |     |  +--rw link-limit-num?        uint8
+  |        |     |  +--rw srv6-link-limit-num?   uint8
+  |        |     x--rw pce-init!
+  |        |     |  x--rw pce-init-enable?   enumeration
+  |        |     x--rw pce-control!
+  |        |     |  x--rw pce-control-enable?      enumeration
+  |        |     |  x--rw pce-control-addr?        ncd:ipv4-address
+  |        |     |  x--rw pce-control-addr-ipv6?   ncd:ipv6-address
+  |        |     +--rw pce
+  |        |     |  +--rw slave-name
+  |        |     |  |  +--rw slave-name?   string
+  |        |     |  +--rw (pce-type)?
+  |        |     |     +--:(pce-init)
+  |        |     |     |  +--rw pce-init-cfg
+  |        |     |     |     +--rw pce-init-enable?   empty
+  |        |     |     +--:(pce-control)
+  |        |     |        +--rw pce-control-cfg!
+  |        |     |           +--rw pce-control-enable?   empty
+  |        |     |           +--rw control-addr
+  |        |     |              +--rw (addr-type)?
+  |        |     |                 +--:(ipv4)
+  |        |     |                 |  +--rw pce-control-addr?        ncd:ipv4-address
+  |        |     |                 +--:(ipv6)
+  |        |     |                    +--rw pce-control-addr-ipv6?   ncd:ipv6-address
+  |        |     +--rw srv6-binding-sid
+  |        |     |  +--rw (srv6-bsid-type)?
+  |        |     |     o--:(auto)
+  |        |     |     |  o--rw auto?               empty
+  |        |     |     +--:(static)
+  |        |     |        +--rw static_srv6_bsid?   ncd:ipv6-address
+  |        |     +--rw auto-route!
+  |        |     |  +--rw ar-enable?            enumeration
+  |        |     |  +--rw ar-metric-type?       enumeration
+  |        |     |  +--rw ar-relative-metric?   int32
+  |        |     |  +--rw ar-absolute-metric?   uint32
+  |        |     |  +--rw ar-include-ipv6?      enumeration
+  |        |     +--rw reoptimize?          empty
+  |        |     +--rw reopt-hsb-lsp?       empty
+  |        |     +--rw flow-statistics?     enumeration
+  |        |     +--rw bandwidth!
+  |        |        +--rw bandwidth    uint32
+  |        +--rw static-sr
+  |        |  +--rw static-tunnel* [tunnel-name]
+  |        |     +--rw tunnel-name           string
+  |        |     +--rw activation?           enumeration
+  |        |     +--rw compress-num?         uint16
+  |        |     +--rw path-verification?    enumeration
+  |        |     +--rw performance-switch?   enumeration
+  |        |     +--rw track-name?           string
+  |        |     +--rw role-type!
+  |        |     |  +--rw role              enumeration
+  |        |     |  +--rw direction-type    enumeration
+  |        |     +--rw triple!
+  |        |     |  +--rw ingress-tunnel-id        uint32
+  |        |     |  +--rw (ip-type)
+  |        |     |     +--:(ipv4)
+  |        |     |     |  +--rw ingress-id         ncd:ipv4-address
+  |        |     |     |  +--rw egress-id          ncd:ipv4-address
+  |        |     |     +--:(ipv6)
+  |        |     |        +--rw ingress-ipv6-id    ncd:ipv6-address
+  |        |     |        +--rw egress-ipv6-id     ncd:ipv6-address
+  |        |     +--rw pce-control
+  |        |     |  +--rw pce-control-enable?   enumeration
+  |        |     +--rw lsps
+  |        |     |  +--rw lsp* [lsp-id]
+  |        |     |     +--rw lsp-id                uint16
+  |        |     |     +--rw positive-in-label!
+  |        |     |     |  +--rw in-label    uint32
+  |        |     |     +--rw positive-out-label!
+  |        |     |     |  +--rw out-label    uint32
+  |        |     |     +--rw reverse-in-label!
+  |        |     |     |  +--rw rvs-in-label    uint32
+  |        |     |     +--rw reverse-out-label!
+  |        |     |     |  +--rw rvs-out-label    uint32
+  |        |     |     +--rw positive-sr-path!
+  |        |     |     |  +--rw (sr-path)
+  |        |     |     |     +--:(id)
+  |        |     |     |     |  +--rw path-id      uint16
+  |        |     |     |     +--:(name)
+  |        |     |     |        +--rw path-name    string
+  |        |     |     +--rw reserve-sr-path!
+  |        |     |        +--rw (rvs-sr-path)
+  |        |     |           +--:(rvs-id)
+  |        |     |           |  +--rw rvs-path-id      uint16
+  |        |     |           +--:(rvs-name)
+  |        |     |              +--rw rvs-path-name    string
+  |        |     +--rw flow-statistics?      enumeration
+  |        +--rw sr-policy!
+  |        |  +--rw policy* [policy-name]
+  |        |     +--rw policy-name           string
+  |        |     +--rw path-setup-type?      enumeration
+  |        |     +--rw drop-upon-invalid?    enumeration
+  |        |     +--rw hsb-policy?           enumeration
+  |        |     +--rw path-verification?    enumeration
+  |        |     +--rw traffic-statistics?   enumeration
+  |        |     +--rw load-sharing?         enumeration
+  |        |     +--rw sid-algo?             uint8
+  |        |     +--rw end-point!
+  |        |     |  +--rw color                 uint32
+  |        |     |  +--rw (address-type)
+  |        |     |     +--:(ipv4)
+  |        |     |     |  +--rw end-point-v4    ncd:ipv4-address
+  |        |     |     +--:(ipv6)
+  |        |     |        +--rw end-point-v6    ncd:ipv6-address
+  |        |     +--rw srv6-binding-sid
+  |        |     |  +--rw (srv6-bsid-type)?
+  |        |     |     o--:(auto)
+  |        |     |     |  o--rw auto?               empty
+  |        |     |     +--:(static)
+  |        |     |     |  +--rw static_srv6_bsid?   ncd:ipv6-address
+  |        |     |     +--:(dynamic)
+  |        |     |        +--rw dynamic?            enumeration
+  |        |     +--rw ipv6-diffserv-mode
+  |        |     |  +--rw (mode)?
+  |        |     |     +--:(uniform-phb-mode)
+  |        |     |     |  +--rw uniform-phb        empty
+  |        |     |     +--:(uniform-non-phb-mode)
+  |        |     |     |  +--rw uniform-non-phb    empty
+  |        |     |     +--:(pipe-mode)
+  |        |     |        +--rw pipe               empty
+  |        |     |        +--rw dscp-value         uint8
+  |        |     +--rw sbfd
+  |        |     |  +--rw (sbfd-conf)?
+  |        |     |     +--:(enable)
+  |        |     |     |  +--rw template-name    string
+  |        |     |     |  +--rw reverse-path
+  |        |     |     |     +--rw (path-type)?
+  |        |     |     |        +--:(mpls-label)
+  |        |     |     |        |  +--rw mpls-label?   uint32
+  |        |     |     |        +--:(srv6-sid)
+  |        |     |     |           +--rw srv6-sid?     ncd:ipv6-address
+  |        |     |     +--:(disable)
+  |        |     |        +--rw disable          empty
+  |        |     +--rw segment-list-sbfd
+  |        |     |  +--rw (sbfd-conf)?
+  |        |     |     +--:(enable)
+  |        |     |     |  +--rw template-name    string
+  |        |     |     +--:(disable)
+  |        |     |        +--rw disable          empty
+  |        |     +--rw candidate-path
+  |        |        +--rw cp* [preference]
+  |        |           +--rw preference      uint32
+  |        |           +--rw path-type?      enumeration
+  |        |           +--rw metric-type?    enumeration
+  |        |           +--rw pce-delegate
+  |        |           |  +--rw enable?     empty
+  |        |           |  +--rw pce-addr
+  |        |           |     +--rw (addr-type)?
+  |        |           |        +--:(ipv4)
+  |        |           |        |  +--rw pce-addr-ipv4?   ncd:ipv4-address
+  |        |           |        +--:(ipv6)
+  |        |           |           +--rw pce-addr-ipv6?   ncd:ipv6-address
+  |        |           +--rw segment-list
+  |        |           |  +--rw sl* [index]
+  |        |           |     +--rw index              uint8
+  |        |           |     +--rw weight?            uint32
+  |        |           |     +--rw (sl-path-type)?
+  |        |           |        +--:(sr-path)
+  |        |           |        |  +--rw sr-path
+  |        |           |        |     +--rw (path-type)?
+  |        |           |        |        +--:(name-based)
+  |        |           |        |        |  +--rw sr-path-name    string
+  |        |           |        |        +--:(id-based)
+  |        |           |        |           +--rw sr-path-id      uint16
+  |        |           |        +--:(srv6-path)
+  |        |           |           +--rw srv6-path!
+  |        |           |              +--rw srv6-path-name    string
+  |        |           +--rw affinity
+  |        |              +--rw bit-position* [position]
+  |        |                 +--rw affinity-type    enumeration
+  |        |                 +--rw position         uint16
+  |        +--rw mbb
+  |        |  +--rw cleanup-delay-time?        uint16
+  |        |  +--rw installation-delay-time?   uint16
+  |        +--rw policy-class
+  |        |  +--rw classes* [tnnl-name class]
+  |        |     +--rw tnnl-name    ncd:ifname
+  |        |     +--rw class        uint8
+  |        +--rw tnnl-rate-limit!
+  |        |  +--rw tunnel* [tunnel-name]
+  |        |     +--rw tunnel-name    ncd:ifname
+  |        |     +--rw mode           enumeration
+  |        |     +--rw cir            uint32
+  |        |     +--rw cbs            uint32
+  |        |     +--rw pir            uint32
+  |        |     +--rw pbs            uint32
+  |        +--rw color-templates
+  |        |  +--rw color-template* [color]
+  |        |     +--rw color                uint32
+  |        |     +--rw template-type?       enumeration
+  |        |     +--rw path-verification?   enumeration
+  |        |     +--rw path-options
+  |        |     |  +--rw path-option* [option-id]
+  |        |     |     +--rw option-id        uint8
+  |        |     |     +--rw (path-type)
+  |        |     |        +--:(dynamic)
+  |        |     |           +--rw dynamic    empty
+  |        |     +--rw pce-path-compute!
+  |        |     |  +--rw enable    empty
+  |        |     +--rw pce-delegate!
+  |        |     |  +--rw enable    empty
+  |        |     +--rw policy
+  |        |        +--rw path-setup-type?      enumeration
+  |        |        +--rw drop-upon-invalid?    enumeration
+  |        |        +--rw traffic-statistics?   enumeration
+  |        |        +--rw sbfd
+  |        |        |  +--rw (sbfd-conf)?
+  |        |        |     +--:(enable)
+  |        |        |     |  +--rw template-name    string
+  |        |        |     +--:(disable)
+  |        |        |        +--rw disable          empty
+  |        |        +--rw segment-list-sbfd
+  |        |        |  +--rw (sbfd-conf)?
+  |        |        |     +--:(enable)
+  |        |        |     |  +--rw template-name    string
+  |        |        |     +--:(disable)
+  |        |        |        +--rw disable          empty
+  |        |        +--rw candidate-path
+  |        |           +--rw cp* [preference]
+  |        |              +--rw preference      uint32
+  |        |              +--rw metric-type?    enumeration
+  |        |              +--rw affinity
+  |        |              |  +--rw bit-position* [position]
+  |        |              |     +--rw affinity-type    enumeration
+  |        |              |     +--rw position         uint16
+  |        |              +--rw pce-delegate
+  |        |                 +--rw enable?     empty
+  |        |                 +--rw pce-addr
+  |        |                    +--rw (addr-type)?
+  |        |                       +--:(ipv4)
+  |        |                       |  +--rw pce-addr-ipv4?   ncd:ipv4-address
+  |        |                       +--:(ipv6)
+  |        |                          +--rw pce-addr-ipv6?   ncd:ipv6-address
+  |        +--rw delay
+  |        |  +--rw delay_linkup?   uint8
+  |        +--rw reoptimize
+  |        |  +--rw frequency?        int32
+  |        |  +--rw delay-decrease?   empty
+  |        |  +--rw link-up?          empty
+  |        +--rw color-maps
+  |        |  +--rw color-map* [color]
+  |        |     +--rw color       uint32
+  |        |     +--rw sid-algo?   uint8
+  |        +--rw flex-algo-define
+  |        |  +--rw flex-algo* [number]
+  |        |     +--rw number           uint8
+  |        |     +--rw advertise-def?   empty
+  |        |     +--rw metric-type?     enumeration
+  |        |     +--rw priority?        uint8
+  |        |     +--rw affinity
+  |        |        +--rw bit-positions
+  |        |        |  +--rw bit-position* [position]
+  |        |        |     +--rw affinity-type    enumeration
+  |        |        |     +--rw position         uint8
+  |        |        +--rw bit-names
+  |        |           +--rw bit-name* [name]
+  |        |              +--rw affinity-type    enumeration
+  |        |              +--rw name             string
+  |        +--rw policy-group!
+  |           +--rw group* [group-id]
+  |              +--rw group-id     uint16
+  |              +--rw end-point!
+  |              |  +--rw (address-type)
+  |              |     +--:(ipv4)
+  |              |     |  +--rw end-point-v4    ncd:ipv4-address
+  |              |     +--:(ipv6)
+  |              |        +--rw end-point-v6    ncd:ipv6-address
+  |              +--rw color!
+  |                 +--rw colors* [color dscp-address-type]
+  |                    +--rw color                uint32
+  |                    +--rw dscp-address-type    enumeration
+  |                    +--rw (dscp-type)
+  |                       +--:(dscp-value)
+  |                       |  +--rw value          ncd:range
+  |                       +--:(dscp-default)
+  |                          +--rw default        empty
+  +--ro operation
+     +--ro manual-reopt
+        +--ro tunnel-id?   uint32
+        +--ro all?         empty
+
+  notifications:
+    +---n sr-tunnel
+    |  +--ro tunnel* [tunnel-id]
+    |  |  +--ro tunnel-id              uint16
+    |  |  +--ro ingress-id?            ncd:ipv4-address
+    |  |  +--ro egress-id?             ncd:ipv4-address
+    |  |  +--ro v6-ingress-id?         ncd:ipv6-address
+    |  |  +--ro v6-egress-id?          ncd:ipv6-address
+    |  |  +--ro oper-status?           enumeration
+    |  |  +--ro master-lsp-id?         uint16
+    |  |  +--ro slave-lsp-id?          uint16
+    |  |  +--ro hsb-status?            enumeration
+    |  |  +--ro master-splice-label?   uint32
+    |  |  +--ro slave-splice-label?    uint32
+    |  |  +--ro report-reason?         enumeration
+    |  +--ro tunnel-path* [tunnel-id lsp-role hop-index]
+    |     +--ro tunnel-id          uint16
+    |     +--ro lsp-role           enumeration
+    |     +--ro hop-index          uint16
+    |     +--ro lsp-id?            uint16
+    |     +--ro sid-type?          enumeration
+    |     +--ro sid-val?           uint32
+    |     +--ro node-ip?           ncd:ipv4-address
+    |     +--ro adj-local-rid?     ncd:ipv4-address
+    |     +--ro adj-local-ip?      ncd:ipv4-address
+    |     +--ro adj-local-id?      uint32
+    |     +--ro adj-peer-rid?      ncd:ipv4-address
+    |     +--ro adj-peer-ip?       ncd:ipv4-address
+    |     +--ro adj-peer-id?       uint32
+    |     +--ro srv6-sid?          ncd:ipv6-address
+    |     +--ro v6-node-ip?        ncd:ipv6-address
+    |     +--ro v6-adj-local-ip?   ncd:ipv6-address
+    |     +--ro v6-local-id?       uint32
+    |     +--ro v6-adj-peer-ip?    ncd:ipv6-address
+    |     +--ro v6-peer-id?        uint32
+    +---n static-sr
+       +--ro tunnel* [tunnel-id]
+          +--ro tunnel-id            uint32
+          +--ro report-reason?       enumeration
+          +--ro associated-status?   enumeration

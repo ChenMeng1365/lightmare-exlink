@@ -1,0 +1,623 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "openconfig-aft API generated from openconfig-aft.yang",
+        "version": "1.0.0",
+        "title": "openconfig-aft API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "aft-top": {
+            "description": "Top-level grouping allowing per-protocol instantiation of the\nAFT.",
+            "properties": {
+                "afts": {
+                    "description": "The abstract forwarding tables (AFTs) that are associated\nwith the network instance. An AFT is instantiated per-protocol\nrunning within the network-instance - such that one exists for\nIPv4 Unicast, IPv6 Unicast, MPLS, L2 forwarding entries, etc.\nA forwarding entry within the FIB has a set of next-hops,\nwhich may be a reference to an entry within another table -\ne.g., where a Layer 3 next-hop has an associated Layer 2\nforwarding entry.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/aft-next-hop-groups-structural"
+                        },
+                        {
+                            "$ref": "#/definitions/aft-nhop-structural"
+                        },
+                        {
+                            "properties": {
+                                "ipv4-unicast": {
+                                    "description": "The abstract forwarding table for IPv4 unicast. Entries\nwithin this table are uniquely keyed on the IPv4 unicast\ndestination prefix which is matched by ingress packets.\n\nThe data set represented by the IPv4 Unicast AFT is the set\nof entries from the IPv4 unicast RIB that have been selected\nfor installation into the FIB of the device exporting the\ndata structure.",
+                                    "$ref": "#/definitions/aft-ipv4-unicast-structural"
+                                },
+                                "ipv6-unicast": {
+                                    "description": "The abstract forwarding table for IPv6 unicast. Entries\nwithin this table are uniquely keyed on the IPv6 unicast\ndestination prefix which is matched by ingress packets.\n\nThe data set represented by the IPv6 Unicast AFTis the set\nof entries within the IPv6 RIB that ",
+                                    "$ref": "#/definitions/aft-ipv6-unicast-structural"
+                                },
+                                "policy-forwarding": {
+                                    "description": "The abstract forwarding table for policy-based forwarding\nentries. Since multiple match criteria can be utilised\nwithin a policy-based forwarding rule, this AFT provides a\nflexible match criteria, and is indexed based on an\narbitrary 64-bit index. Entries within the AFT may match on\nmultiple field types (e.g., L4 header fields, as well as L2\nfields).\n\nExamples of entries within this table are:\n - IPv4 policy-based routing based on DSCP.\n - MPLS policy-based forwarding entries.",
+                                    "$ref": "#/definitions/aft-pf-structural"
+                                },
+                                "mpls": {
+                                    "description": "The abstract forwarding table for MPLS label based\nforwarding entries. Entries within the table are keyed based\non the top-most MPLS label in the stack on the ingress\npacket.",
+                                    "$ref": "#/definitions/aft-mpls-structural"
+                                },
+                                "ethernet": {
+                                    "description": "The abstract forwarding table for Ethernet based forwarding\nentries. Entries within the table are keyed based on the\ndestination MAC address on the ingress packet.",
+                                    "$ref": "#/definitions/aft-ethernet-structural"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "aft-ipv4-unicast-structural": {
+            "description": "Structural grouping defining the schema for the IPv4 unicast\nabstract forwarding table.",
+            "properties": {
+                "ipv4-entry": {
+                    "description": "List of the IPv4 unicast entries within the abstract\nforwarding table. This list is keyed by the destination IPv4\nprefix.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "prefix": {
+                                "type": "string",
+                                "x-path": "../config/prefix",
+                                "description": "Reference to the IPv4 unicast destination prefix which\nmust be matched to utilise the AFT entry."
+                            },
+                            "config": {
+                                "description": "Configuration parameters for the IPv4 unicast AFT entry.",
+                                "$ref": "#/definitions/aft-ipv4-unicast-entry-config"
+                            },
+                            "state": {
+                                "description": "Operational state parameters for the IPv4 unicast AFT\nentry.",
+                                "$ref": "#/definitions/aft-ipv4-unicast-entry-state"
+                            }
+                        }
+                    },
+                    "x-key": "prefix"
+                }
+            }
+        },
+        "aft-ipv4-unicast-entry-config": {
+            "description": "Configuration parameters for the IPv4 unicast entry.",
+            "properties": {
+                "prefix": {
+                    "type": "string",
+                    "description": "The IPv4 destination prefix that should be matched to\nutilise the AFT entry."
+                }
+            }
+        },
+        "aft-ipv4-unicast-entry-state": {
+            "description": "Operational state parameters for the IPv4 unicast entry.",
+            "$ref": "#/definitions/aft-common-ip-state"
+        },
+        "aft-nhop-structural": {
+            "description": "Structural grouping describing a next-hop entry.",
+            "properties": {
+                "next-hops": {
+                    "description": "The list of next-hops that are to be used for entry within\nthe AFT table. The structure of each next-hop is address\nfamily independent, such that it is possible to resolve fully\nhow the next-hop is treated. For example:\n\n- Where ingress IPv4 unicast packets are to be forwarded via\n an MPLS LSP, the next-hop list should indicate the MPLS\n label stack that is used to the next-hop.\n- Where ingress MPLS labelled packets are to be forwarded to\n an IPv6 nexthop (for example, a CE within a VPN, then the\n popped label stack, and IPv6 next-hop address should be\n indicated).",
+                    "properties": {
+                        "next-hop": {
+                            "description": "A next-hop associated with the forwarding instance.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/interface-ref"
+                                    },
+                                    {
+                                        "properties": {
+                                            "index": {
+                                                "type": "string",
+                                                "x-path": "../config/index",
+                                                "description": "A unique index identifying the next-hop entry for the\nAFT entry"
+                                            },
+                                            "config": {
+                                                "description": "Configuration parameters relating to the AFT next-hop\nentry",
+                                                "$ref": "#/definitions/aft-common-entry-nexthop-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state parameters relating to the AFT\nnext-hop entry",
+                                                "$ref": "#/definitions/aft-common-entry-nexthop-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "index"
+                        }
+                    }
+                }
+            }
+        },
+        "aft-common-entry-state": {
+            "description": "Operational state parameters relating to a forwarding entry",
+            "properties": {
+                "packets-forwarded": {
+                    "type": "string",
+                    "description": "The number of packets which have matched, and been forwarded,\nbased on the AFT entry."
+                },
+                "octets-forwarded": {
+                    "type": "string",
+                    "description": "The number of octets which have matched, and been forwarded,\nbased on the AFT entry"
+                },
+                "next-hop-group": {
+                    "type": "string",
+                    "x-path": "../../../../next-hop-groups/next-hop-group/config/id",
+                    "description": "A reference to the next-hop-group that is in use for the entry\nwithin the AFT. Traffic is distributed across the set of next-hops\nwithin the next-hop group according to the weight."
+                }
+            }
+        },
+        "aft-common-entry-nexthop-config": {
+            "description": "Configuration parameters relating to a next-hop entry for a AFT\nentry",
+            "properties": {
+                "index": {
+                    "type": "string",
+                    "description": "A unique entry for the next-hop."
+                }
+            }
+        },
+        "aft-common-entry-nexthop-state": {
+            "description": "Parameters relating to a next-hop.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/aft-common-install-protocol"
+                },
+                {
+                    "properties": {
+                        "ip-address": {
+                            "type": "string",
+                            "description": "The IP address of the next-hop system."
+                        },
+                        "mac-address": {
+                            "type": "string",
+                            "description": "The MAC address of the next-hop if resolved by the local\nnetwork instance."
+                        },
+                        "pushed-mpls-label-stack": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "The MPLS label stack imposed when forwarding packets to the\nnext-hop\n- the stack is encoded as a leaf list whereby the order of the\n entries is such that the first entry in the list is the\n label at the bottom of the stack to be pushed.\n\nTo this end, a packet which is to forwarded to a device using\na service label of 42, and a transport label of 8072 will be\nrepresented with a label stack list of [42, 8072].\n\nThe MPLS label stack list is ordered by the user, such that no\nsystem re-ordering of leaves is permitted by the system.\n\nA swap operation is reflected by entries in the\npopped-mpls-label-stack and pushed-mpls-label-stack nodes."
+                            }
+                        },
+                        "encapsulate-header": {
+                            "type": "string",
+                            "description": "When forwarding a packet to the specified next-hop the local\nsystem performs an encapsulation of the packet - adding the\nspecified header type."
+                        }
+                    }
+                }
+            ]
+        },
+        "aft-common-install-protocol": {
+            "description": "Grouping for a common reference to the protocol which\ninstalled an entry.",
+            "properties": {
+                "origin-protocol": {
+                    "type": "string",
+                    "description": "The protocol from which the AFT entry was learned."
+                },
+                "lsp-name": {
+                    "type": "string",
+                    "description": "Where applicable, the protocol name for the next-hop labelled\nforwarding entry. This leaf is applicable only to next-hops\nwho include MPLS label information, and its value typically\ncorresponds to the RSVP-TE LSP name."
+                }
+            }
+        },
+        "aft-common-ip-state": {
+            "description": "Common parameters across IP address families",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/aft-common-install-protocol"
+                },
+                {
+                    "properties": {
+                        "decapsulate-header": {
+                            "type": "string",
+                            "description": "When forwarding a packet to the specified next-hop, the local\nsystem performs a decapsulation of the packet - removing the\nspecified header type. In the case that no next-hop is\nspecified, the packet header is removed, and a subsequent\nforwarding lookup is performed on the packet encapsulated\nwithin the header, matched within the relevant AFT within the\nspecified network-instance."
+                        }
+                    }
+                }
+            ]
+        },
+        "aft-next-hop-groups-structural": {
+            "description": "Logical grouping for groups of next-hops.",
+            "properties": {
+                "next-hop-groups": {
+                    "description": "Surrounding container for groups of next-hops.",
+                    "properties": {
+                        "next-hop-group": {
+                            "description": "An individual set of next-hops grouped into a common group.\nEach entry within an abstract forwarding table points to a\nnext-hop-group. Entries in the next-hop-group are forwarded to\naccording to the weights specified for each next-hop group.\n\nIf an entry within the next-hop group becomes unusable, for\nexample due to an interface failure, the remaining entries\nare used until all entries become unusable - at which point\nthe backup next-hop-group (if specified) is used.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "x-path": "../config/id",
+                                        "description": "A reference to a unique identifier for the next-hop-group."
+                                    },
+                                    "config": {
+                                        "description": "Configuration parameters related to the next-hop-group.",
+                                        "$ref": "#/definitions/aft-nhg-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state parameters relating to next-hop-groups.",
+                                        "$ref": "#/definitions/aft-nhg-state"
+                                    },
+                                    "next-hops": {
+                                        "description": "Surrounding container for the list of next-hops within\nthe next-hop-group.",
+                                        "properties": {
+                                            "next-hop": {
+                                                "description": "An individual next-hop within the next-hop-group. Each\nnext-hop is a reference to an entry within the next-hop\nlist.",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "index": {
+                                                            "type": "string",
+                                                            "x-path": "../config/index",
+                                                            "description": "A reference to the index for the next-hop within the\nthe next-hop-group."
+                                                        },
+                                                        "config": {
+                                                            "description": "Configuration parameters related to a next-hop within\nthe next-hop-group.",
+                                                            "$ref": "#/definitions/aft-nhg-nh-config"
+                                                        },
+                                                        "state": {
+                                                            "description": "Operational state parameters related to a next-hop\nwithin the next-hop-group.",
+                                                            "$ref": "#/definitions/aft-nhg-nh-state"
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "index"
+                                            }
+                                        }
+                                    },
+                                    "conditional": {
+                                        "description": "When a system selects a next-hop-group based on conditions\nin addition to those specified in the referencing table entries\n(for example, DSCP is used in addition to the IPv4 destination\nprefix), these conditions are specified in the conditions list.\nWhere such conditions exist, the next-hop-group MUST only\nspecify next-hop-groups under the conditional list, and therefore\nMUST NOT specify any corresponding next-hops. The\nnext-hop-groups that are referenced by any conditions MUST\nreference only next-hops and therefore MUST NOT be conditional\nthemselves.",
+                                        "properties": {
+                                            "condition": {
+                                                "description": "A conditional next-hop-group that is used by the AFT\nentry. The conditions that are specified within the\ngroup are logically ANDed together. If a condition\nis a leaf-list field its contents are logically ORed.",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "x-path": "../config/id",
+                                                            "description": "A reference to the identifier for the condition."
+                                                        },
+                                                        "config": {
+                                                            "description": "Configuration parameters related to the conditional\nnext-hop selection.",
+                                                            "$ref": "#/definitions/aft-nhg-conditional-config"
+                                                        },
+                                                        "state": {
+                                                            "description": "Operational state parameters related to the conditional\nnext-hop selection.",
+                                                            "$ref": "#/definitions/aft-nhg-conditional-state"
+                                                        },
+                                                        "input-interfaces": {
+                                                            "description": "The set of input interfaces that are required to be matched for\nthe next-hop-group condition to be met. Each non-interface condition\nis logically ANDed with each member of the list -- i.e., interfaces in\nthe list are logically ORed.\n\nIf the input-interface list is empty, the condition applies to ALL input\ninterfaces.",
+                                                            "properties": {
+                                                                "input-interface": {
+                                                                    "description": "The input interface that must be matched for the condition to be met.",
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "string",
+                                                                                "x-path": "../config/id",
+                                                                                "description": "Reference to the unique ID assigned to the input interface within\nthe conditions list."
+                                                                            },
+                                                                            "config": {
+                                                                                "description": "Configuration parameters that relate to the input interface.",
+                                                                                "$ref": "#/definitions/aft-nhg-conditional-interface-config"
+                                                                            },
+                                                                            "state": {
+                                                                                "description": "Operational state parameters that relate to the input interface.",
+                                                                                "$ref": "#/definitions/aft-nhg-conditional-interface-state"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "x-key": "id"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "id"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "id"
+                        }
+                    }
+                }
+            }
+        },
+        "aft-nhg-config": {
+            "description": "Configuration parameters related to a next-hop-group.",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "A unique identifier for the next-hop-group. This index\nis not expected to be consistent across reboots, or\nreprogramming of the next-hop-group. When updating\na next-hop-group, if the group is removed by the system\nor assigned an alternate identifier, the system should\nsend telemetry notifications deleting the previous\nidentifier. If the identifier of the next-hop-group\nis changed, all AFT entries that reference it must\nalso be updated."
+                }
+            }
+        },
+        "aft-nhg-state": {
+            "description": "Operational state parameters related to a next-hop-group.",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "description": "An arbitrary colour that is used as an identifier for the next-hop\ngroup. Some next-hop resolutions may utilise the colour to select\nthe particular next-hop-group that a routing entry should be resolved\nto. In this case, next-hop-group selection may be based on colour\nmatches rather than the protocol specified next-hop.\n\nRegardless of whether the next-hop-group's specified colour is\nused to select an AFT's active forwarding entry, the next-hop-group\nreferenced by an entry should be the currently active value.\n\nNext-hop-groups that are installed on the system through a protocol\nthat allows injection of such entries (e.g., BGP using the SR-TE\nPolicy SAFI, or gRPC-based RIB programming) should have the colour\nspecified in the injecting protocol within this leaf."
+                },
+                "backup-next-hop-group": {
+                    "type": "string",
+                    "x-path": "../../../next-hop-group/config/id",
+                    "description": "The backup next-hop-group for the current group. When all\nentries within the next-hop group become unusable, the backup\nnext-hop group is used if specified."
+                }
+            }
+        },
+        "aft-nhg-nh-config": {
+            "description": "Configuration parameters relating to an individual next-hop within\na next-hop-group.",
+            "properties": {
+                "index": {
+                    "type": "string",
+                    "x-path": "../../../../../../next-hops/next-hop/config/index",
+                    "description": "A reference to the identifier for the next-hop to which\nthe entry in the next-hop group corresponds."
+                }
+            }
+        },
+        "aft-nhg-nh-state": {
+            "description": "Operational state parameters relating to an individual next-hop\nwithin the next-hop-group.",
+            "properties": {
+                "weight": {
+                    "type": "string",
+                    "description": "The weight applied to the next-hop within the group. Traffic\nis balanced across the next-hops within the group in the\nproportion of weight/(sum of weights of the next-hops within\nthe next-hop group)."
+                }
+            }
+        },
+        "aft-nhg-conditional-config": {
+            "description": "Configuration parameters relating to the conditional selection of\na next-hop group for an AFT entry.",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "A unique identifier for the conditional criteria."
+                }
+            }
+        },
+        "aft-nhg-conditional-state": {
+            "description": "Operational state parameters relating to the conditional selection\nof a next-hop group for an AFT entry.",
+            "properties": {
+                "dscp": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "A set of DSCP values that must be matched by an input packet for\nthe next-hop-group specified to be selected. A logical OR is applied\nacross the DSCP values."
+                    }
+                },
+                "next-hop-group": {
+                    "type": "string",
+                    "x-path": "../../../../../next-hop-group/config/id",
+                    "description": "The next-hop-group that is used by the system for packets that match\nthe criteria specified."
+                }
+            }
+        },
+        "aft-nhg-conditional-interface-config": {
+            "description": "Configuration parameters relating to the input-interface condition for\na next-hop-group.",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "A unique reference for the input interface."
+                }
+            }
+        },
+        "aft-nhg-conditional-interface-state": {
+            "description": "Operational state parameters relating to the input-interface condition\nfor a next-hop-group.",
+            "$ref": "#/definitions/interface-ref-common"
+        },
+        "aft-ipv6-unicast-structural": {
+            "description": "Structural grouping defining the schema for the IPv6 unicast\nabstract forwarding table.",
+            "properties": {
+                "ipv6-entry": {
+                    "description": "List of the IPv6 unicast entries within the abstract\nforwarding table. This list is keyed by the destination IPv6\nprefix.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "prefix": {
+                                "type": "string",
+                                "x-path": "../config/prefix",
+                                "description": "Reference to the IPv6 unicast destination prefix which\nmust be matched to utilise the AFT entry."
+                            },
+                            "config": {
+                                "description": "Configuration parameters for the IPv6 unicast AFT entry.",
+                                "$ref": "#/definitions/aft-ipv6-unicast-entry-config"
+                            },
+                            "state": {
+                                "description": "Operational state parameters for the IPv6 unicast AFT\nentry.",
+                                "$ref": "#/definitions/aft-ipv6-unicast-entry-state"
+                            }
+                        }
+                    },
+                    "x-key": "prefix"
+                }
+            }
+        },
+        "aft-ipv6-unicast-entry-config": {
+            "description": "Configuration parameters for the IPv6 unicast entry.",
+            "properties": {
+                "prefix": {
+                    "type": "string",
+                    "description": "The IPv6 destination prefix that should be matched to\nutilise the AFT entry."
+                }
+            }
+        },
+        "aft-ipv6-unicast-entry-state": {
+            "description": "Operational state parameters for the IPv6 unicast entry.",
+            "$ref": "#/definitions/aft-common-ip-state"
+        },
+        "aft-mpls-structural": {
+            "description": "Structural grouping defining the schema for the MPLS\nabstract forwarding table.",
+            "properties": {
+                "label-entry": {
+                    "description": "List of the MPLS entries within the abstract\nforwarding table. This list is keyed by the top-most MPLS\nlabel.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "label": {
+                                "type": "string",
+                                "x-path": "../config/label",
+                                "description": "Reference to the top-most MPLS label matched by the\nentry."
+                            },
+                            "config": {
+                                "description": "Configuration parameters for the MPLS AFT entry.",
+                                "$ref": "#/definitions/aft-mpls-entry-config"
+                            },
+                            "state": {
+                                "description": "Operational state parameters for the MPLS AFT\nentry.",
+                                "$ref": "#/definitions/aft-mpls-entry-state"
+                            }
+                        }
+                    },
+                    "x-key": "label"
+                }
+            }
+        },
+        "aft-mpls-entry-config": {
+            "description": "Configuration parameters for the MPLS entry.",
+            "properties": {
+                "label": {
+                    "type": "string",
+                    "description": "The top-most MPLS label that should be matched to\nutilise the AFT entry."
+                }
+            }
+        },
+        "aft-mpls-entry-state": {
+            "description": "Operational state parameters for the MPLS entry.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/aft-common-entry-state"
+                },
+                {
+                    "properties": {
+                        "popped-mpls-label-stack": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "The MPLS label stack to be popped from the packet when\nswitched by the system. The stack is encoded as a leaf-list\nsuch that the first entry is the label that is outer-most (i.e.,\nfurthest from the bottom of the stack).\n\nIf the local system pops the outer-most label 400, then the\nvalue of this list is [400,]. If the local system removes two\nlabels, the outer-most being 500, and the second of which is\n400, then the value of the list is [500, 400].\n\nA swap operation is reflected by entries in the\npopped-mpls-label-stack and pushed-mpls-label-stack nodes."
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "aft-pf-structural": {
+            "description": "Structural grouping defining the schema for the policy\nforwarding abstract forwarding table.",
+            "properties": {
+                "policy-forwarding-entry": {
+                    "description": "List of the policy forwarding entries within the abstract\nforwarding table. Each entry is uniquely identified by an\nindex on the system, due to the arbitrary match conditions\nthat may be implemented within the policy forwarding AFT.\nThe index may change upon changes of the entry if, and only\nif, the device exporting the AFT replaces the entire entry\nby removing the previous entry and replacing it with a\nsubsequent updated version.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "index": {
+                                "type": "string",
+                                "x-path": "../config/index",
+                                "description": "Reference to the arbitary index for the policy forwarding\nAFT entry."
+                            },
+                            "config": {
+                                "description": "Configuration parameters for the Policy forwarding\nAFT entry.",
+                                "$ref": "#/definitions/aft-pf-entry-config"
+                            },
+                            "state": {
+                                "description": "Operational state parameters for the Policy Forwarding\nAFT entry.",
+                                "$ref": "#/definitions/aft-pf-entry-state"
+                            }
+                        }
+                    },
+                    "x-key": "index"
+                }
+            }
+        },
+        "aft-pf-entry-config": {
+            "description": "Configuration parameters for the Policy Forwarding\nAFT entry.",
+            "properties": {
+                "index": {
+                    "type": "string",
+                    "description": "An arbitrary 64-bit index identifying the policy forwarding\nAFT entry."
+                },
+                "ip-prefix": {
+                    "type": "string",
+                    "description": "The IP prefix that the forwarding entry matches."
+                },
+                "mac-address": {
+                    "type": "string",
+                    "description": "The MAC address that the forwarding entry matches. Used for\nLayer 2 forwarding entries, e.g., within a VSI instance."
+                },
+                "mpls-label": {
+                    "type": "string",
+                    "description": "The MPLS label that the forwarding entry matches. Used for\nMPLS forwarding entries, whereby the local device acts as an\nLSR."
+                },
+                "mpls-tc": {
+                    "type": "string",
+                    "description": "The value of the MPLS Traffic Class bits (formerly known as\nthe MPLS experimental bits) that are to be matched by the AFT\nentry."
+                },
+                "ip-dscp": {
+                    "type": "string",
+                    "description": "The value of the differentiated services code point (DSCP) to\nbe matched for the forwarding entry. The value is specified in\ncases where specific class-based forwarding based on IP is\nimplemented by the device."
+                },
+                "ip-protocol": {
+                    "type": "string",
+                    "description": "The value of the IP protocol field of an IPv4 packet, or the\nnext-header field of an IPv6 packet which is to be matched by\nthe AFT entry. This field is utilised where forwarding is\nperformed based on L4 information."
+                },
+                "l4-src-port": {
+                    "type": "string",
+                    "description": "The value of the source port field of the transport header\nthat is to be matched by the AFT entry."
+                },
+                "l4-dst-port": {
+                    "type": "string",
+                    "description": "The value of the destination port field of the transport\nheader that is to be matched by the AFT entry."
+                }
+            }
+        },
+        "aft-pf-entry-state": {
+            "description": "Operational state parameters for the Policy Forwarding\nAFT entry.",
+            "$ref": "#/definitions/aft-common-entry-state"
+        },
+        "aft-ethernet-structural": {
+            "description": "Structural grouping defining the schema for the Ethernet\nabstract forwarding table.",
+            "properties": {
+                "mac-entry": {
+                    "description": "List of the Ethernet entries within the abstract\nforwarding table. This list is keyed by the outer MAC address\nof the Ethernet frame.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "mac-address": {
+                                "type": "string",
+                                "x-path": "../config/mac-address",
+                                "description": "Reference to the outer MAC address matched by the\nentry."
+                            },
+                            "config": {
+                                "description": "Configuration parameters for the Ethernet AFT entry.",
+                                "$ref": "#/definitions/aft-ethernet-entry-config"
+                            },
+                            "state": {
+                                "description": "Operational state parameters for the Ethernet AFT\nentry.",
+                                "$ref": "#/definitions/aft-ethernet-entry-state"
+                            }
+                        }
+                    },
+                    "x-key": "mac-address"
+                }
+            }
+        },
+        "aft-ethernet-entry-config": {
+            "description": "Configuration parameters for the Ethernet AFT entry.",
+            "properties": {
+                "mac-address": {
+                    "type": "string",
+                    "description": "The outer MAC address of the Ethernet frame that must\nbe matched for the AFT entry to be utilised."
+                }
+            }
+        },
+        "aft-ethernet-entry-state": {
+            "description": "Operational state parameters for the Ethernet AFT entry.",
+            "$ref": "#/definitions/aft-common-entry-state"
+        }
+    }
+}

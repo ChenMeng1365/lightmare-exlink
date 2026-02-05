@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-evpl-ext"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:evpl-ext="urn:huawei:yang:huawei-evpl-ext"
+        xmlns:evpl="urn:huawei:yang:huawei-evpl"
+        xmlns:qos="urn:huawei:yang:huawei-qos"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-evpl-ext"/>
+  <prefix value="evpl-ext"/>
+  <import module="huawei-evpl">
+    <prefix value="evpl"/>
+  </import>
+  <import module="huawei-qos">
+    <prefix value="qos"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Evpl ext.</text>
+  </description>
+  <revision date="2020-03-06">
+    <description>
+      <text>Add pipe type.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-23">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="evpl-pipe-mode">
+    <type name="enumeration">
+      <enum name="pipe">
+        <value value="1"/>
+        <description>
+          <text>Evpl pipe mode.</text>
+        </description>
+      </enum>
+      <enum name="shortpipe">
+        <value value="2"/>
+        <description>
+          <text>Evpl short pipe mode.</text>
+        </description>
+      </enum>
+      <enum name="uniform">
+        <value value="3"/>
+        <description>
+          <text>Evpl uniform mode.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Evpl pipe mode.</text>
+    </description>
+  </typedef>
+  <typedef name="evpl-service-class">
+    <type name="enumeration">
+      <enum name="be">
+        <value value="0"/>
+        <description>
+          <text>Specify the CoS as BE.</text>
+        </description>
+      </enum>
+      <enum name="af1">
+        <value value="1"/>
+        <description>
+          <text>Specify the CoS as AF1.</text>
+        </description>
+      </enum>
+      <enum name="af2">
+        <value value="2"/>
+        <description>
+          <text>Specify the CoS as AF2.</text>
+        </description>
+      </enum>
+      <enum name="af3">
+        <value value="3"/>
+        <description>
+          <text>Specify the CoS as AF3.</text>
+        </description>
+      </enum>
+      <enum name="af4">
+        <value value="4"/>
+        <description>
+          <text>Specify the CoS as AF4.</text>
+        </description>
+      </enum>
+      <enum name="ef">
+        <value value="5"/>
+        <description>
+          <text>Specify the CoS as EF.</text>
+        </description>
+      </enum>
+      <enum name="cs6">
+        <value value="6"/>
+        <description>
+          <text>Specify the CoS as CS6.</text>
+        </description>
+      </enum>
+      <enum name="cs7">
+        <value value="7"/>
+        <description>
+          <text>Specify the CoS as CS7.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Description of CoS.</text>
+    </description>
+  </typedef>
+  <typedef name="evpl-color">
+    <type name="enumeration">
+      <enum name="green">
+        <value value="0"/>
+        <description>
+          <text>Specify the packet color as green.</text>
+        </description>
+      </enum>
+      <enum name="yellow">
+        <value value="1"/>
+        <description>
+          <text>Specify the packet color as yellow.</text>
+        </description>
+      </enum>
+      <enum name="red">
+        <value value="2"/>
+        <description>
+          <text>Specify the packet color as red.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Description of packet color.</text>
+    </description>
+  </typedef>
+  <typedef name="evpl-trust-type">
+    <type name="enumeration">
+      <enum name="outpri">
+        <value value="0"/>
+        <description>
+          <text>Specify the trust type as OUTTER-VLAN-8021P.</text>
+        </description>
+      </enum>
+      <enum name="inpri">
+        <value value="1"/>
+        <description>
+          <text>Specify the trust type as INNER-VLAN-8021P.</text>
+        </description>
+      </enum>
+      <enum name="ipdscp">
+        <value value="2"/>
+        <description>
+          <text>Specify the trust type as IP-DSCP.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Description of trust type.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="forwarding"/>
+  <augment target-node="/evpl:evpl/evpl:instances/evpl:instance">
+    <description>
+      <text>Evpl configuration.</text>
+    </description>
+    <container name="pipe">
+      <when condition="(../evpl:mode != 'vxlan-mode')"/>
+      <description>
+        <text>Configure the diffserv mode of evpl.</text>
+      </description>
+      <leaf name="split-mode">
+        <type name="boolean"/>
+        <must condition="((../split-mode='false' and not(../ingress-pipe-mode) and not(../egress-pipe-mode) and ../pipe-mode) or (../split-mode='true' and not(../pipe-mode) and ../ingress-pipe-mode and ../egress-pipe-mode and not(../ingress-pipe-mode='uniform' and ../egress-pipe-mode='uniform')))"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable split mode.</text>
+        </description>
+      </leaf>
+      <leaf name="pipe-mode">
+        <when condition="../split-mode='false'"/>
+        <type name="evpl-pipe-mode"/>
+        <must condition="(../split-mode='false') and ((../pipe-mode='pipe' and (../service-class) and (../color)) or (../pipe-mode='shortpipe' and (../service-class) and (../color) and (../domain-name)) or (../pipe-mode='uniform'))"/>
+        <default value="uniform"/>
+        <description>
+          <text>Pipe mode.</text>
+        </description>
+      </leaf>
+      <leaf name="ingress-pipe-mode">
+        <when condition="../split-mode='true'"/>
+        <type name="evpl-pipe-mode"/>
+        <must condition="((../split-mode='true') and (((../service-class) and (../color) and (../ingress-pipe-mode='shortpipe' or ../ingress-pipe-mode='pipe')) or (../ingress-pipe-mode='uniform' and ../egress-pipe-mode!='uniform')))"/>
+        <default value="uniform"/>
+        <description>
+          <text>Ingress pipe mode.</text>
+        </description>
+      </leaf>
+      <leaf name="egress-pipe-mode">
+        <when condition="../split-mode='true'"/>
+        <type name="evpl-pipe-mode"/>
+        <must condition="((../split-mode='true') and (((../domain-name) and (../trust-type) and (../egress-pipe-mode='shortpipe')) or (../egress-pipe-mode='pipe') or (../egress-pipe-mode='uniform' and ../ingress-pipe-mode!='uniform')))"/>
+        <default value="uniform"/>
+        <description>
+          <text>Egress pipe mode.</text>
+        </description>
+      </leaf>
+      <leaf name="service-class">
+        <when condition="(../pipe-mode='pipe' or ../pipe-mode='shortpipe' or ../ingress-pipe-mode='pipe' or ../ingress-pipe-mode='shortpipe')"/>
+        <type name="evpl-service-class"/>
+        <must condition="(../pipe-mode='pipe' or ../pipe-mode='shortpipe' or ../ingress-pipe-mode='pipe' or ../ingress-pipe-mode='shortpipe')"/>
+        <default value="be"/>
+        <description>
+          <text>Service class.</text>
+        </description>
+      </leaf>
+      <leaf name="color">
+        <when condition="(../pipe-mode='pipe' or ../pipe-mode='shortpipe'  or ../ingress-pipe-mode='pipe' or ../ingress-pipe-mode='shortpipe')"/>
+        <type name="evpl-color"/>
+        <must condition="(../pipe-mode='pipe' or ../pipe-mode='shortpipe' or ../ingress-pipe-mode='pipe' or ../ingress-pipe-mode='shortpipe')"/>
+        <default value="green"/>
+        <description>
+          <text>Color.</text>
+        </description>
+      </leaf>
+      <leaf name="domain-name">
+        <when condition="(../pipe-mode='shortpipe'  or ../egress-pipe-mode='shortpipe')"/>
+        <type name="leafref">
+          <path value="/qos:qos/qos:classifier-template/qos:diffserv-domains/qos:diffserv-domain/qos:name"/>
+        </type>
+        <must condition="(../pipe-mode='shortpipe' or ../egress-pipe-mode='shortpipe')"/>
+        <default value="default"/>
+        <description>
+          <text>Domain name.</text>
+        </description>
+      </leaf>
+      <leaf name="trust-type">
+        <when condition="../egress-pipe-mode='shortpipe'"/>
+        <type name="evpl-trust-type"/>
+        <must condition="../egress-pipe-mode='shortpipe'"/>
+        <default value="outpri"/>
+        <description>
+          <text>Trust type.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-flowspec"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flowspec="urn:huawei:yang:huawei-flowspec"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-flowspec"/>
+  <prefix value="flowspec"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <include module="huawei-flowspec-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Flow specification.</text>
+  </description>
+  <revision date="2020-03-23">
+    <description>
+      <text>Modify container condition.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-05-08">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <container name="flowspec">
+    <description>
+      <text>Configure flow specification.</text>
+    </description>
+    <container name="interface-groups">
+      <description>
+        <text>List of flow specification interface groups.</text>
+      </description>
+      <list name="interface-group">
+        <key value="id"/>
+        <max-elements value="100"/>
+        <description>
+          <text>Configure flow specification interface group.</text>
+        </description>
+        <leaf name="id">
+          <type name="uint16">
+            <range value="0..16383"/>
+          </type>
+          <description>
+            <text>Flow specification interface group ID.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..63"/>
+            <pattern value="([^?]*)"/>
+          </type>
+          <description>
+            <text>Flow specification interface group description.</text>
+          </description>
+        </leaf>
+        <leaf-list name="interface-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <max-elements value="500"/>
+          <description>
+            <text>Configure interface in flow specification interface group.</text>
+          </description>
+        </leaf-list>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Flowspec private network instance configuration.</text>
+    </description>
+    <container name="flowspec">
+      <description>
+        <text>Configure flow specification.</text>
+      </description>
+      <container name="flow-routes">
+        <description>
+          <text>List of flow specification routes.</text>
+        </description>
+        <list name="flow-route">
+          <key value="address-family name"/>
+          <description>
+            <text>Configure static flow specification route.</text>
+          </description>
+          <leaf name="address-family">
+            <type name="flowspec:af-type"/>
+            <description>
+              <text>Address Family Type.</text>
+            </description>
+          </leaf>
+          <leaf name="name">
+            <type name="string">
+              <length value="1..30"/>
+            </type>
+            <description>
+              <text>Route name. Spaces not supported.</text>
+            </description>
+          </leaf>
+          <container name="condition">
+            <description>
+              <text>Configure filtering conditions.</text>
+            </description>
+            <container name="source-prefix">
+              <when condition="../../address-family='ipv4flow'"/>
+              <presence value="Source IP address."/>
+              <description>
+                <text>Enable/disable the source IP address matching condition.</text>
+              </description>
+              <leaf name="address">
+                <type name="inet:ipv4-address"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Source IP address.</text>
+                </description>
+              </leaf>
+              <leaf name="mask-length">
+                <type name="uint8">
+                  <range value="0..32"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Mask length.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="destination-prefix">
+              <when condition="../../address-family='ipv4flow'"/>
+              <presence value="Destination IP address."/>
+              <description>
+                <text>Enable/disable the destination IP address matching condition.</text>
+              </description>
+              <leaf name="address">
+                <type name="inet:ipv4-address"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Destination IP address.</text>
+                </description>
+              </leaf>
+              <leaf name="mask-length">
+                <type name="uint8">
+                  <range value="0..32"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Mask length.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="source-ipv6-prefix">
+              <when condition="../../address-family='ipv6flow'"/>
+              <presence value="Source IPv6 address."/>
+              <description>
+                <text>Enable/disable the source IPv6 address matching condition.</text>
+              </description>
+              <leaf name="address">
+                <type name="inet:ipv6-address"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Source IPv6 address.</text>
+                </description>
+              </leaf>
+              <leaf name="mask-length">
+                <type name="uint8">
+                  <range value="0..128"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Mask length.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="destination-ipv6-prefix">
+              <when condition="../../address-family='ipv6flow'"/>
+              <presence value="Destination IPv6 address"/>
+              <description>
+                <text>Enable/disable the destination IPv6 address matching condition.</text>
+              </description>
+              <leaf name="address">
+                <type name="inet:ipv6-address"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Destination IPv6 address.</text>
+                </description>
+              </leaf>
+              <leaf name="mask-length">
+                <type name="uint8">
+                  <range value="0..128"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Mask length.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="origin-ass">
+              <when condition="../../address-family='ipv4flow' and ../../../../../ni:name='_public_'"/>
+              <description>
+                <text>List of origin-AS rules.</text>
+              </description>
+              <list name="origin-as">
+                <key value="type"/>
+                <description>
+                  <text>Configure a filtering rule that is based on the origin AS number of the destination IP address.</text>
+                </description>
+                <leaf name="type">
+                  <type name="match-origin-as-type"/>
+                  <description>
+                    <text>Specify a type for the origin-AS filtering rule.</text>
+                  </description>
+                </leaf>
+                <leaf name="value">
+                  <type name="as-number-type"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specify an AS value for origin AS filtering rule. The value can be in either of the two formats:
+The two-byte format is X. X is an integer ranging from 1 to 65535.
+The four-byte format is X.Y and X. When the format is X.Y, X and Y are both integers, with the value of X ranging from 1 to 65535, and the value of Y ranging from 0 to 65535; when the format is X, X is an interger, with the value ranging from 1 to 4294967295.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="tcp-flags">
+              <description>
+                <text>List of TCP flags.</text>
+              </description>
+              <list name="tcp-flag">
+                <key value="value"/>
+                <max-elements value="5"/>
+                <description>
+                  <text>Configure a filtering rule based on the TCP flag value.</text>
+                </description>
+                <leaf name="value">
+                  <type name="uint16">
+                    <range value="0..63"/>
+                  </type>
+                  <description>
+                    <text>Specify a value for the TCP flag filtering rule.</text>
+                  </description>
+                </leaf>
+                <leaf name="operator">
+                  <type name="flow-match-operator-type"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specify an operator for the filtering rule.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="fragments">
+              <description>
+                <text>List of Fragment types.</text>
+              </description>
+              <list name="fragment">
+                <key value="type"/>
+                <max-elements value="3"/>
+                <description>
+                  <text>Configure a filtering rule based on the fragment type.</text>
+                </description>
+                <leaf name="type">
+                  <type name="match-fragment-type"/>
+                  <description>
+                    <text>Specify a type for the fragment type filtering rule.</text>
+                  </description>
+                </leaf>
+                <leaf name="operator">
+                  <type name="fragment-operator-type"/>
+                  <must condition="../../../../address-family = 'ipv4flow' or (../../../../address-family = 'ipv6flow' and ../type != 'fragment-spe-first')"/>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specify an operator for the filtering rule.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="icmp-codes">
+              <description>
+                <text>List of ICMP codes.</text>
+              </description>
+              <list name="icmp-code">
+                <key value="range"/>
+                <max-elements value="5"/>
+                <description>
+                  <text>Configure a filtering rule that is based on the code in ICMP packets.</text>
+                </description>
+                <leaf name="range">
+                  <type name="string">
+                    <length value="1..30"/>
+                    <pattern value="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])|(MIN..(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])..MAX)|((25[0-4]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])..(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9]))"/>
+                  </type>
+                  <description>
+                    <text>Specify a value or value range for a ICMP code-based filtering rule. The range is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 63, Y is an integer ranging from 0 to 62, and Z is an integer ranging from 1 to 63. Y must be less than Z.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="icmp-types">
+              <description>
+                <text>List of ICMP types.</text>
+              </description>
+              <list name="icmp-type">
+                <key value="range"/>
+                <max-elements value="5"/>
+                <description>
+                  <text>Configure a filtering rule that is based on the type of ICMP packets.</text>
+                </description>
+                <leaf name="range">
+                  <type name="string">
+                    <length value="1..30"/>
+                    <pattern value="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])|(MIN..(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])..MAX)|((25[0-4]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])..(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9]))"/>
+                  </type>
+                  <description>
+                    <text>Specify a value or value range for a ICMP type-based filtering rule. The range is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 63, Y is an integer ranging from 0 to 62, and Z is an integer ranging from 1 to 63. Y must be less than Z.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="dscps">
+              <description>
+                <text>List of DSCPs.</text>
+              </description>
+              <list name="dscp">
+                <key value="range"/>
+                <max-elements value="5"/>
+                <description>
+                  <text>Configure a filtering rule that is based on the DSCP. Relationships between the traffic classifier name and DSCP value are as follows: 0: BE; 8: CS1; 10: AF11; 12: AF12; 14: AF13; 16: CS2; 18: AF21; 20: AF22; 22: AF23; 24: CS3; 26: AF31; 28: AF32; 30: AF33; 32: CS4; 34: AF41; 36: AF42; 38: AF43; 40: CS5; 46: EF; 48: CS6; 56: CS7.</text>
+                </description>
+                <leaf name="range">
+                  <type name="string">
+                    <length value="1..30"/>
+                    <pattern value="(6[0-3]|[1-5][0-9]|[0-9])|(MIN..(6[0-3]|[1-5][0-9]|[0-9]))|((6[0-3]|[1-5][0-9]|[0-9])..MAX)|((6[0-2]|[1-5][0-9]|[0-9])..(6[0-3]|[1-5][0-9]|[1-9]))"/>
+                  </type>
+                  <description>
+                    <text>Specify a value or value range for a DSCP-based filtering rule. The range is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 63, Y is an integer ranging from 0 to 62, and Z is an integer ranging from 1 to 63. Y must be less than Z.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="protocols">
+              <description>
+                <text>List of IP protocols.</text>
+              </description>
+              <list name="protocol">
+                <key value="range"/>
+                <max-elements value="5"/>
+                <description>
+                  <text>Configure a filtering rule that is based on the IP protocol. Relationships between the protocol name and protocol value are as follows: 1: ICMP; 2: IGMP; 4: IPIP; 6: TCP; 8: EGP; 17: UDP; 41: IPv6; 46: RSVP; 47: GRE; 50: ESP; 89: OSPF; 103: PIM.</text>
+                </description>
+                <leaf name="range">
+                  <type name="string">
+                    <length value="1..30"/>
+                    <pattern value="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])|(MIN..(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])..MAX)|((25[0-4]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])..(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9]))"/>
+                  </type>
+                  <description>
+                    <text>Specify a value or value range for an IP protocol-based filtering rule. The range is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 63, Y is an integer ranging from 0 to 62, and Z is an integer ranging from 1 to 63. Y must be less than Z.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="packet-lengths">
+              <description>
+                <text>List of packet-lengths.</text>
+              </description>
+              <list name="packet-length">
+                <key value="range"/>
+                <max-elements value="5"/>
+                <description>
+                  <text>Configure a packet length-based filtering rule for a BGP (IPv6) Flow Specification route or BGP VPN Flow Specification route to filter packets.</text>
+                </description>
+                <leaf name="range">
+                  <type name="string">
+                    <length value="1..30"/>
+                    <pattern value="(9600|9[0-5][0-9][0-9]||[1-8][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])|(MIN..(9600|9[0-5][0-9][0-9]||[1-8][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9]))|((9600|9[0-5][0-9][0-9]||[1-8][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])..MAX)|((9[0-5][0-9][0-9]||[1-8][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])..(9600|9[0-5][0-9][0-9]||[1-8][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[1-9]))"/>
+                  </type>
+                  <description>
+                    <text>Specify a length or length range for a BGP (IPv6) Flow Specification route or BGP VPN Flow Specification route to filter packets. The value is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 9600, Y is an integer ranging from 0 to 9599, and Z is an integer ranging from 1 to 9600. Y must be less than Z.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+            <container name="packet-port">
+              <description>
+                <text>Configure port filtering rules.</text>
+              </description>
+              <choice name="set-type">
+                <description>
+                  <text>Set port or source-destination-port filtering rule.</text>
+                </description>
+                <case name="port-rule">
+                  <description>
+                    <text>Set port rule.</text>
+                  </description>
+                  <container name="ports">
+                    <description>
+                      <text>List of ports.</text>
+                    </description>
+                    <list name="port">
+                      <key value="range"/>
+                      <max-elements value="5"/>
+                      <description>
+                        <text>Configure a filtering rule that is based on the port number. Relationships between the port name and port value are as follows: 1: ICMP; 2: IGMP; 4: IPIP; 6: TCP; 8: EGP; 17: UDP; 41: IPv6; 46: RSVP; 47: GRE; 50: ESP; 89: OSPF; 103: PIM.</text>
+                      </description>
+                      <leaf name="range">
+                        <type name="string">
+                          <length value="1..30"/>
+                          <pattern value="(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])|(MIN..(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9]))|((6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])..MAX)|((6553[0-4]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])..(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[1-9]))"/>
+                        </type>
+                        <description>
+                          <text>Specify a port number or port number range for traffic filtering. The range is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 65535, Y is an integer ranging from 0 to 65534, and Z is an integer ranging from 1 to 65535. Y must be less than Z.</text>
+                        </description>
+                      </leaf>
+                    </list>
+                  </container>
+                </case>
+                <case name="src-dest-port-rule">
+                  <description>
+                    <text>Set source and destination port rule.</text>
+                  </description>
+                  <container name="source-destination-ports">
+                    <description>
+                      <text>List of source and destination ports.</text>
+                    </description>
+                    <list name="source-destination-port">
+                      <key value="type range"/>
+                      <max-elements value="10"/>
+                      <description>
+                        <text>Configure a filtering rule that is based on the source and destination port number. Relationships between the port name and port value are as follows: 1: ICMP; 2: IGMP; 4: IPIP; 6: TCP; 8: EGP; 17: UDP; 41: IPv6; 46: RSVP; 47: GRE; 50: ESP; 89: OSPF; 103: PIM.</text>
+                      </description>
+                      <leaf name="type">
+                        <type name="match-port-type"/>
+                        <description>
+                          <text>Specify a type for the filtering rule.</text>
+                        </description>
+                      </leaf>
+                      <leaf name="range">
+                        <type name="string">
+                          <length value="1..30"/>
+                          <pattern value="(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])|(MIN..(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9]))|((6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])..MAX)|((6553[0-4]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[0-9])..(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9]|[1-9]))"/>
+                        </type>
+                        <description>
+                          <text>Specify a port number or port number range for traffic filtering. The range is in any of the following formats: X, MIN..X, X..MAX, or Y..Z. X, MIN..X, and X..MAX indicate that a matched port number must be equal to X, less than X, and greater than X, respectively. Y..Z indicates that a matched port number must be greater than Y and less than Z. X is an integer ranging from 0 to 65535, Y is an integer ranging from 0 to 65534, and Z is an integer ranging from 1 to 65535. Y must be less than Z.</text>
+                        </description>
+                      </leaf>
+                    </list>
+                  </container>
+                </case>
+              </choice>
+            </container>
+          </container>
+          <container name="action">
+            <description>
+              <text>Configure actions to be applied to static flow specification routes.</text>
+            </description>
+            <container name="remark-dscp">
+              <description>
+                <text>Configure remark DSCP.</text>
+              </description>
+              <leaf name="value">
+                <type name="uint8">
+                  <range value="0..63"/>
+                </type>
+                <description>
+                  <text>Specify the DSCP Value. Relationships between the traffic classifier name and DSCP value are as follows: 0: BE; 8: CS1; 10: AF11; 12: AF12; 14: AF13; 16: CS2; 18: AF21; 20: AF22; 22: AF23; 24: CS3; 26: AF31; 28: AF32; 30: AF33; 32: CS4; 34: AF41; 36: AF42; 38: AF43; 40: CS5; 46: EF; 48: CS6; 56: CS7.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="traffic-rate">
+              <description>
+                <text>Configure the traffic rate.</text>
+              </description>
+              <leaf name="value">
+                <type name="uint32">
+                  <range value="1..100000000"/>
+                </type>
+                <units name="kB/s"/>
+                <description>
+                  <text>Specify the traffic rate.</text>
+                </description>
+              </leaf>
+              <leaf name="valid-value">
+                <type name="uint32">
+                  <range value="1..12500000"/>
+                </type>
+                <units name="kB/s"/>
+                <config value="false"/>
+                <description>
+                  <text>The valid traffic rate.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="traffic">
+              <description>
+                <text>Configure the traffic behaviour table.</text>
+              </description>
+              <leaf name="sample">
+                <type name="empty"/>
+                <description>
+                  <text>Apply the traffic behaviour sampling.</text>
+                </description>
+              </leaf>
+            </container>
+            <choice name="redirect-type">
+              <description>
+                <text>Set redirect rule.</text>
+              </description>
+              <case name="ip">
+                <description>
+                  <text>Set redirect ip rule.</text>
+                </description>
+                <container name="redirect-ip">
+                  <when condition="../../address-family='ipv4flow'"/>
+                  <presence value="Redirect to IPv4"/>
+                  <description>
+                    <text>Configure the rule to redirect to IP.</text>
+                  </description>
+                  <leaf name="value">
+                    <type name="string">
+                      <length value="9..17"/>
+                      <pattern value="([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}:[0-1]"/>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Specify the redirect IP information, Format:X.X.X.X:number[0-1] (0:redirect 1:copy).</text>
+                    </description>
+                  </leaf>
+                  <leaf name="color">
+                    <when condition="../value"/>
+                    <type name="string">
+                      <length value="3..12"/>
+                      <pattern value="0:([1-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[0-1][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[0-1][0-9]{2}|42949672[0-8][0-9]|429496729[0-5])"/>
+                    </type>
+                    <description>
+                      <text>Specify the color information, format:0:number[1-4294967295].</text>
+                    </description>
+                  </leaf>
+                </container>
+              </case>
+              <case name="ipv6">
+                <description>
+                  <text>Set redirect IPv6 rule.</text>
+                </description>
+                <container name="redirect-ipv6">
+                  <when condition="../../../../../ni:name='_public_'"/>
+                  <must condition="(../../address-family='ipv4flow' and color) or (../../address-family='ipv6flow')"/>
+                  <presence value="Redirect to IPv6"/>
+                  <description>
+                    <text>Configure the rule to redirect to IPv6.</text>
+                  </description>
+                  <leaf name="ipv6">
+                    <type name="string">
+                      <length value="5..47"/>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Specify the redirect IPv6 information, Format:X:X::X:X.number[0-1] (0:redirect 1:copy).</text>
+                    </description>
+                  </leaf>
+                  <leaf name="color">
+                    <type name="string">
+                      <length value="3..12"/>
+                    </type>
+                    <description>
+                      <text>Specify the color information, format:0:number[1-4294967295].</text>
+                    </description>
+                  </leaf>
+                  <leaf name="prefix-sid">
+                    <when condition="../color"/>
+                    <type name="inet:ipv6-address-no-zone"/>
+                    <description>
+                      <text>PrefixSid attribute information of Route.</text>
+                    </description>
+                  </leaf>
+                </container>
+              </case>
+            </choice>
+            <container name="redirect-vpn-target">
+              <presence value="Redirect to vpn-target."/>
+              <description>
+                <text>Configure the rule to redirect to vpn-target.</text>
+              </description>
+              <leaf name="value">
+                <type name="string">
+                  <length value="3..21"/>
+                  <pattern value="(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}:([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))|(([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([1-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[0-1][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[0-1][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]))|(([1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[0-1][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[0-1][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]))|((6(553[6-9]|55[4-9][0-9]|5[6-9][0-9]{2}|[6-9][0-9]{3})|[7-9][0-9]{4}|[1-9][0-9]{5,8}|[1-3][0-9]{9}|4[0-1][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[0-1][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]):([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))|(([1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])\.([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))|(([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])\.([1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))|(([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])\.([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Specify the redirect vpn-target information.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="deny">
+              <presence value="Deny attack traffic."/>
+              <description>
+                <text>Configure traffic drop operations.</text>
+              </description>
+              <leaf name="enable">
+                <type name="empty"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Deny attack traffic from BGP flow specification routes to protect devices and improve network security.</text>
+                </description>
+              </leaf>
+            </container>
+          </container>
+          <container name="interface-groups">
+            <when condition="../address-family = 'ipv4flow' and ../../../../ni:name = '_public_'"/>
+            <description>
+              <text>List of interface group list to be bounded to static flow specification routes.</text>
+            </description>
+            <list name="interface-group">
+              <key value="id"/>
+              <max-elements value="100"/>
+              <description>
+                <text>Configure interface group list to be bounded to static flow specification routes.</text>
+              </description>
+              <leaf name="id">
+                <type name="uint16">
+                  <range value="0..16383"/>
+                </type>
+                <description>
+                  <text>Interface group ID.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="flow-route"/>
+</module>

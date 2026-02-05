@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-dhcpv6-server"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-dhcpv6-server="urn:huawei:yang:huawei-bras-dhcpv6-server"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-bras-dhcpv6-server"/>
+  <prefix value="bras-dhcpv6-server"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Configure the DHCPv6 server.</text>
+  </description>
+  <revision date="2020-02-22">
+    <description>
+      <text>Description modification.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-10-17">
+    <description>
+      <text>Second revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-09-27">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="ipv6pool"/>
+  <grouping name="dhcpv6-server-property">
+    <description>
+      <text>Configure a status (Up/Down) switchover for a DHCPv6 server.</text>
+    </description>
+    <leaf name="dead-count">
+      <type name="uint8">
+        <range value="1..64"/>
+      </type>
+      <default value="1"/>
+      <description>
+        <text>Specify the maximum number of times at which the DHCPv6 server does not send response packets.</text>
+      </description>
+    </leaf>
+    <leaf name="time-out">
+      <type name="uint8">
+        <range value="1..60"/>
+      </type>
+      <units name="s"/>
+      <default value="25"/>
+      <description>
+        <text>Specify a timeout period. If a device receives no response from the DHCPv6 server within the timeout period, it re-sends request packets.</text>
+      </description>
+    </leaf>
+    <leaf name="dead-time">
+      <type name="uint16">
+        <range value="1..65535"/>
+      </type>
+      <units name="min"/>
+      <default value="3"/>
+      <description>
+        <text>Specify a period within which the DHCPv6 server is down. After the dead-time, the DHCPv6 server is set to up.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <container name="bras-dhcpv6-server">
+    <description>
+      <text>Configure the DHCPv6 server.</text>
+    </description>
+    <container name="dhcpv6-server-groups">
+      <description>
+        <text>List of DHCPv6 server groups.</text>
+      </description>
+      <list name="dhcpv6-server-group">
+        <key value="name"/>
+        <max-elements value="4096"/>
+        <description>
+          <text>Configure a DHCPv6 server group.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[a-z0-9._-]{1,32}"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <description>
+            <text>Specify the name of the DHCPv6 server group.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <container name="server-source">
+          <description>
+            <text>Configure the source address for packets to be sent to the DHCPv6 server group.</text>
+          </description>
+          <choice name="source-address">
+            <description>
+              <text>Configure the source address for packets to be sent to the DHCPv6 server group.</text>
+            </description>
+            <case name="link-address">
+              <description>
+                <text>Configures the source address, which is a link address of the prefix pool bound to a remote address pool.</text>
+              </description>
+              <leaf name="link-address">
+                <type name="empty"/>
+                <description>
+                  <text>Indicate that the source address is a link address of the prefix pool bound to a remote address pool.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="if-name">
+              <description>
+                <text>Configures the type and number of the interface whose address is the source address.</text>
+              </description>
+              <leaf name="if-name">
+                <type name="leafref">
+                  <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                </type>
+                <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='GigabitEthernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='10GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='XGigabitEthernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='100GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Virtual-Ethernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='50GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='50|100GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='FlexE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='25GE' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Ethernet' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Eth-Trunk' or&#10;/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='LoopBack'"/>
+                <description>
+                  <text>Indicate the type and number of the interface whose address is the source address.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+        </container>
+      </list>
+    </container>
+    <container name="server-global-property">
+      <description>
+        <text>Configure a status (Up/Down) switchover for global DHCPv6 server.</text>
+      </description>
+      <uses name="dhcpv6-server-property"/>
+    </container>
+  </container>
+</module>

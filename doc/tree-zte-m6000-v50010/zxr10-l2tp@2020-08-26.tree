@@ -1,0 +1,242 @@
+module: zxr10-l2tp
+  +--rw configuration
+  |  +--rw l2tp
+  |     +--rw global
+  |     |  +--rw enable?                   boolean
+  |     |  +--rw default-vpdn-group?       string
+  |     |  +--rw radius-vpdn-group?        string
+  |     |  +--rw tsa-id?                   string
+  |     |  +--rw multihop?                 boolean
+  |     |  +--rw calling-number-avp?       boolean
+  |     |  +--rw check-hostname-avp?       boolean
+  |     |  +--rw invalid-peerip-timeout?   uint16
+  |     |  o--rw tid-alloc-mode?           enumeration
+  |     |  +--rw tunnel-num-per-spu?       uint16
+  |     |  +--rw calling-number-format?    enumeration
+  |     |  +--rw tunnel-id!
+  |     |  |  +--rw tunnel-id-base    uint16
+  |     |  |  +--rw tunnel-id-max     uint16
+  |     |  +--rw vpdn-mode
+  |     |  |  +--rw mode?   enumeration
+  |     |  +--rw tid-allocate-mode
+  |     |     +--rw (tid-allocate-mode)?
+  |     |        +--:(first)
+  |     |        |  +--rw first?                enumeration
+  |     |        +--:(round-robin)
+  |     |        |  +--rw round-robin?          enumeration
+  |     |        +--:(round-robin-weight)
+  |     |           +--rw round-robin-weight    enumeration
+  |     |           +--rw tunnel-weight         uint32
+  |     |           +--rw session-weight        uint32
+  |     +--rw vpdn-groups
+  |        +--rw vpdn-group* [group-name]
+  |           +--rw group-name                   string
+  |           +--rw force-local-chap?            boolean
+  |           +--rw lcp-renegotiation?           enumeration
+  |           +--rw lns-send-sli?                boolean
+  |           +--rw hidden?                      boolean
+  |           +--rw tunnel-authentication?       boolean
+  |           +--rw tunnel-hello-interval?       uint16
+  |           +--rw tunnel-receive-window?       uint16
+  |           +--rw tunnel-retransmit-retries?   uint16
+  |           +--rw tunnel-retransmit-timeout?   uint16
+  |           +--rw tunnel-timeout-setup?        uint16
+  |           +--rw tunnel-timeout-no-session?   uint16
+  |           +--rw hash-type?                   enumeration
+  |           +--rw max-session?                 uint32
+  |           +--rw max-session-per-tunnel?      uint16
+  |           +--rw virtual-template?            uint32
+  |           +--rw domain?                      string
+  |           +--rw local-name?                  string
+  |           +--rw terminate-from-hostname?     string
+  |           +--rw terminate-from-local-ip?     ncd:ipv4-address-none-zero
+  |           +--rw terminate-from-local-ipv6?   ncd:ipv6-address
+  |           +--rw vrf?                         string
+  |           +--rw dscp?                        uint8
+  |           +--rw calling-number-format?       enumeration
+  |           +--rw bind-sal?                    string
+  |           +--rw tcp-adjust-mss?              uint16
+  |           +--rw sib-instance?                uint32
+  |           +--rw tunnel-password
+  |           |  +--rw (type)?
+  |           |     +--:(plain-text)
+  |           |     |  +--rw plain-text-password    string
+  |           |     |  o--rw show-clear?            empty
+  |           |     +--:(encrypted)
+  |           |     |  +--rw encrypted-password     string
+  |           |     o--:(clear-text)
+  |           |        o--rw clear-text-password    string
+  |           +--rw bind-cpus
+  |           |  +--rw bind-cpu* [cpu-name]
+  |           |     +--rw cpu-name    ncd:cpu
+  |           +--rw rule-config
+  |              +--rw (different-rule)?
+  |                 +--:(lac-config)
+  |                 |  +--rw service-type-lac?         enumeration
+  |                 |  +--rw source-ip-config
+  |                 |  |  +--rw (source-ip)?
+  |                 |  |     +--:(ip)
+  |                 |  |     |  +--rw ip-addr           ncd:ipv4-address
+  |                 |  |     +--:(interface)
+  |                 |  |        +--rw interface-name    ncd:ifname
+  |                 |  +--rw source-ipv6-config
+  |                 |  |  +--rw (source-ipv6)?
+  |                 |  |     +--:(ip)
+  |                 |  |     |  +--rw ipv6-addr         ncd:ipv6-address
+  |                 |  |     +--:(interface)
+  |                 |  |        +--rw interface-name    ncd:ifname
+  |                 |  +--rw initiate-to-ip-addrs
+  |                 |  |  +--rw initiate-to-ip-addr* [peer-ip]
+  |                 |  |     +--rw peer-ip     ncd:ipv4-address
+  |                 |  |     +--rw priority?   uint16
+  |                 |  +--rw initiate-to-ipv6-addrs
+  |                 |     +--rw initiate-to-ipv6-addr* [peer-ipv6]
+  |                 |        +--rw peer-ipv6    ncd:ipv6-address
+  |                 |        +--rw priority?    uint16
+  |                 +--:(lns-config)
+  |                    +--rw service-type-lns?         enumeration
+  +--ro operation
+  |  +--ro l2tp
+  |     +--ro clear-invalid-destination
+  |     |  +--ro (type)?
+  |     |     +--:(all)
+  |     |     |  +--ro all-invalid-destination?   empty
+  |     |     +--:(ip)
+  |     |     |  +--ro peer-ip?                   ncd:ipv4-address
+  |     |     +--:(ipv6)
+  |     |        +--ro peer-ipv6?                 ncd:ipv6-address
+  |     +--ro clear-tunnel
+  |     |  +--ro (type)?
+  |     |     +--:(all)
+  |     |     |  +--ro all-tunnel?        empty
+  |     |     +--:(local-tid-sid)
+  |     |     |  +--ro local-tid          uint16
+  |     |     |  +--ro local-sid?         uint16
+  |     |     +--:(remote-name)
+  |     |        +--ro remote-name-str?   string
+  |     +--ro clear-failure?               empty
+  +--ro state
+     +--ro l2tp
+        +--ro summary-info
+        |  +--ro tunnel-number?    uint32
+        |  +--ro session-number?   uint32
+        +--ro tunnel-statistic-info
+        |  +--ro detail* [board-name tunnel-type local-ip peer-ip]
+        |     +--ro board-name        string
+        |     +--ro tunnel-type       enumeration
+        |     +--ro local-ip          ncd:ipv4-address
+        |     +--ro peer-ip           ncd:ipv4-address
+        |     +--ro tunnel-number?    uint32
+        |     +--ro session-number?   uint32
+        +--ro tunnel-statistic-ipv6-info
+        |  +--ro detail* [board-name tunnel-type local-ipv6 peer-ipv6]
+        |     +--ro board-name        string
+        |     +--ro tunnel-type       enumeration
+        |     +--ro local-ipv6        ncd:ipv6-address
+        |     +--ro peer-ipv6         ncd:ipv6-address
+        |     +--ro tunnel-number?    uint32
+        |     +--ro session-number?   uint32
+        +--ro tunnel-brief-info
+        |  +--ro detail* [local-tid]
+        |     +--ro local-tid         uint16
+        |     +--ro remote-tid?       uint16
+        |     +--ro remote-name?      string
+        |     +--ro state?            string
+        |     +--ro remote-ip?        ncd:string-all
+        |     +--ro remote-port?      uint16
+        |     +--ro session-number?   uint16
+        +--ro tunnel-detail-info
+        |  +--ro detail* [local-tid]
+        |     +--ro local-tid                 uint16
+        |     +--ro remote-tid?               uint16
+        |     +--ro local-ip?                 ncd:string-all
+        |     +--ro remote-ip?                ncd:string-all
+        |     +--ro local-port?               uint16
+        |     +--ro remote-port?              uint16
+        |     +--ro local-name?               string
+        |     +--ro remote-name?              string
+        |     +--ro state?                    string
+        |     +--ro online-time?              uint32
+        |     +--ro sib-instance?             uint32
+        |     +--ro current-session-number?   uint16
+        |     +--ro fail-session-number?      uint16
+        |     +--ro rcv-ctrl-packet?          uint16
+        |     +--ro send-ctrl-packet?         uint16
+        |     +--ro rcv-zlb?                  uint16
+        |     +--ro send-zlb?                 uint16
+        |     +--ro peer-rcv-window-size?     uint16
+        |     +--ro send-window-size?         uint16
+        |     +--ro next-ns?                  uint16
+        |     +--ro next-nr?                  uint16
+        |     +--ro retransmit-interval?      uint16
+        |     +--ro rcv-hello?                uint16
+        |     +--ro send-hello?               uint16
+        |     +--ro slide-block?              uint16
+        |     +--ro slide-block-exhausted?    boolean
+        +--ro session-detail-info
+        |  +--ro detail* [local-tid local-sid]
+        |     +--ro local-tid             uint16
+        |     +--ro local-sid             uint16
+        |     +--ro remote-tid?           uint16
+        |     +--ro remote-sid?           uint16
+        |     +--ro state?                string
+        |     +--ro online-time?          uint32
+        |     +--ro service-type?         string
+        |     +--ro interface?            string
+        |     +--ro user-name?            string
+        |     +--ro call-serial-number?   uint32
+        +--ro per-card-info
+        |  +--ro detail* [board-name]
+        |     +--ro board-name        string
+        |     +--ro tunnel-number?    uint32
+        |     +--ro session-number?   uint32
+        +--ro tid-pool-info
+        |  +--ro detail* [start-tid end-tid]
+        |     +--ro start-tid     uint16
+        |     +--ro end-tid       uint16
+        |     +--ro board-name?   string
+        |     +--ro used?         uint32
+        |     +--ro free?         uint32
+        +--ro invalid-destination-info
+        |  +--ro detail* [board-name invalid-peer-ip]
+        |     +--ro board-name         string
+        |     +--ro invalid-peer-ip    ncd:ipv4-address
+        |     +--ro remaining-time?    uint32
+        +--ro invalid-destination-ipv6-info
+        |  +--ro detail* [board-name invalid-peer-ipv6]
+        |     +--ro board-name           string
+        |     +--ro invalid-peer-ipv6    ncd:ipv6-address
+        |     +--ro remaining-time?      uint32
+        +--ro summary-peak-info
+        |  +--ro tunnel-number?    uint32
+        |  +--ro session-number?   uint32
+        |  +--ro occurred-time?    ncd:string-with-blank
+        +--ro failure-detail-info
+        |  +--ro detail* [board-name local-tid local-sid]
+        |     +--ro board-name                string
+        |     +--ro local-tid                 uint16
+        |     +--ro local-sid                 uint16
+        |     +--ro remote-tid?               uint16
+        |     +--ro remote-sid?               uint16
+        |     +--ro service-type?             string
+        |     +--ro user-name?                string
+        |     +--ro session-prestate?         string
+        |     +--ro session-curstate?         string
+        |     +--ro local-ip?                 ncd:string-all
+        |     +--ro remote-ip?                ncd:string-all
+        |     +--ro sib-instance?             uint32
+        |     +--ro session-offline-reason?   ncd:string-with-blank
+        |     +--ro session-offline-time?     ncd:string-with-blank
+        +--ro failure-brief-info
+        |  +--ro detail* [board-name offline-reason]
+        |     +--ro board-name        string
+        |     +--ro offline-reason    ncd:string-with-blank
+        |     +--ro offline-count?    uint32
+        +--ro tunnel-summary-info
+           +--ro detail* [local-tid]
+              +--ro local-tid         uint16
+              +--ro remote-tid?       uint16
+              +--ro local-ip?         ncd:string-all
+              +--ro remote-ip?        ncd:string-all
+              +--ro tunnel-type?      enumeration
+              +--ro session-number?   uint16

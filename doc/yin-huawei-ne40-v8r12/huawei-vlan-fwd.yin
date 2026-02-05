@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-vlan-fwd"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vlan-fwd="urn:huawei:yang:huawei-vlan-fwd"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:fim-ifm="urn:huawei:yang:huawei-fim-ifm"
+        xmlns:vlan="urn:huawei:yang:huawei-vlan">
+  <namespace uri="urn:huawei:yang:huawei-vlan-fwd"/>
+  <prefix value="vlan-fwd"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-fim-ifm">
+    <prefix value="fim-ifm"/>
+  </import>
+  <import module="huawei-vlan">
+    <prefix value="vlan"/>
+  </import>
+  <ext:task-name value="vlan"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Forwarding VLAN service.</text>
+  </description>
+  <revision date="2020-03-06">
+    <description>
+      <text>Change description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-15">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <rpc name="reset-vlan-ac-suppression-statistics">
+    <description>
+      <text>Reset AC suppression.</text>
+    </description>
+    <ext:node-ref value="/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:main-interface/ethernet:l2-attribute"/>
+    <input>
+      <leaf name="interface-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Interface name.</text>
+        </description>
+      </leaf>
+      <leaf name="vlan-id">
+        <type name="leafref">
+          <path value="/vlan:vlan/vlan:vlans/vlan:vlan/vlan:id"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>VLAN ID.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Unknown-unicast alarm threshold.</text>
+    </description>
+    <container name="unknow-unicast-threshold">
+      <when condition="../ifm:type='Ethernet' or ../ifm:type='GigabitEthernet' or ../ifm:type='Eth-Trunk' or ../ifm:type='100GE' or ../ifm:type='XGigabitEthernet' or ../ifm:type='40GE' or ../ifm:type='10GE' or ../ifm:type='400GE' or ../ifm:type='25GE' or ../ifm:type='FlexE' or ../ifm:type='50GE' or ../ifm:type='50|100GE'"/>
+      <description>
+        <text>Configure unknown-unicast alarm threshold.</text>
+      </description>
+      <leaf name="threshold">
+        <type name="uint32">
+          <range value="1..100"/>
+        </type>
+        <must condition="(../../ethernet:ethernet/ethernet:main-interface/ethernet:l2-attribute and not(../../fim-ifm:fim/fim-ifm:statistic-mode='forward')) or (../../ifm:parent-name and ../../ifm:statistic-enable='true') or not(../threshold)"/>
+        <description>
+          <text>Unknown-unicast alarm threshold, which can be disabled.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:main-interface/ethernet:l2-attribute">
+    <description>
+      <text>Forwarding VLAN service.</text>
+    </description>
+    <container name="vlan-isolate-attribute">
+      <description>
+        <text>Configure VLAN isolation.</text>
+      </description>
+      <leaf name="isolate-vlanlist">
+        <type name="pub-type:vlan-range"/>
+        <description>
+          <text>Isolated VLAN list.</text>
+        </description>
+      </leaf>
+      <leaf name="outside-vlan-iso">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable VLAN isolation state.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

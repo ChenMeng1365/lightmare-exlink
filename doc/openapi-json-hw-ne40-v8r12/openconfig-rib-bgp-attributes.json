@@ -1,0 +1,503 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "openconfig-rib-bgp-attributes API generated from openconfig-rib-bgp-attributes.yang",
+        "version": "1.0.0",
+        "title": "openconfig-rib-bgp-attributes API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "bgp-as-path-attr-state": {
+            "description": "Data for representing BGP AS-PATH attribute",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "AS_SEQ",
+                        "AS_SET",
+                        "AS_CONFED_SEQUENCE",
+                        "AS_CONFED_SET"
+                    ],
+                    "description": "The type of AS-PATH segment"
+                },
+                "member": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "List of the AS numbers in the AS-PATH segment"
+                    }
+                }
+            }
+        },
+        "bgp-as-path-attr-top": {
+            "description": "Top-level grouping for AS-PATH attribute data",
+            "properties": {
+                "as-path": {
+                    "description": "Enclosing container for the list of AS path segments.\n\nIn the Adj-RIB-In or Adj-RIB-Out, this list should show\nthe received or sent AS_PATH, respectively.  For\nexample, if the local router is not 4-byte capable, this\nvalue should consist of 2-octet ASNs or the AS_TRANS\n(AS 23456) values received or sent in route updates.\n\nIn the Loc-RIB, this list should reflect the effective\nAS path for the route, e.g., a 4-octet value if the\nlocal router is 4-octet capable.",
+                    "properties": {
+                        "as-segment": {
+                            "description": "Unkeyed list of AS PATH segments",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "state": {
+                                        "description": "Opstate data for AS-PATH segments",
+                                        "$ref": "#/definitions/bgp-as-path-attr-state"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-as4-path-attr-top": {
+            "description": "Top-level grouping for AS4-PATH attribute data",
+            "properties": {
+                "as4-path": {
+                    "description": "This is the path encoded with 4-octet\nAS numbers in the optional transitive AS4_PATH attribute.\nThis value is populated with the received or sent attribute\nin Adj-RIB-In or Adj-RIB-Out, respectively.  It should not\nbe populated in Loc-RIB since the Loc-RIB is expected to\nstore the effective AS-Path in the as-path leaf regardless\nof being 4-octet or 2-octet.",
+                    "properties": {
+                        "as4-segment": {
+                            "description": "Unkeyed list of AS PATH segments",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "state": {
+                                        "description": "Opstate data for AS-PATH segments",
+                                        "$ref": "#/definitions/bgp-as-path-attr-state"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-community-attr-state": {
+            "description": "Common definition of BGP community attributes",
+            "properties": {
+                "community": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "List of standard or well-known BGP community\nattributes."
+                    }
+                }
+            }
+        },
+        "bgp-extended-community-attr-state": {
+            "description": "Common definition of BGP extended community attribute",
+            "properties": {
+                "ext-community": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "List of BGP extended community attributes.  The received\nextended community may be an explicitly modeled\ntype or unknown, represented by an 8-octet value\nformatted according to RFC 4360."
+                    }
+                }
+            }
+        },
+        "bgp-aggregator-attr-state": {
+            "description": "Operational state data for the BGP aggregator\nattribute",
+            "properties": {
+                "as": {
+                    "type": "string",
+                    "description": "AS number of the autnonomous system that performed the\naggregation."
+                },
+                "as4": {
+                    "type": "string",
+                    "description": "AS number of the autnonomous system that performed the\naggregation (4-octet representation).  This value is\npopulated if an upstream router is not 4-octet capable.\nIts semantics are similar to the AS4_PATH optional\ntransitive attribute"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "IP address of the router that performed the\naggregation."
+                }
+            }
+        },
+        "bgp-aggregator-attr-top": {
+            "description": "Common definition of the BGP aggregator attribute",
+            "properties": {
+                "aggregator": {
+                    "description": "BGP attribute indicating the prefix has been aggregated by\nthe specified AS and router.",
+                    "properties": {
+                        "state": {
+                            "description": "Operational state data for BGP aggregator attribute",
+                            "$ref": "#/definitions/bgp-aggregator-attr-state"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-shared-common-attr-state": {
+            "description": "Route attributes shared across route table entries,\ncommon to both LOC-Rib and Adj-RIB",
+            "properties": {
+                "origin": {
+                    "type": "string",
+                    "enum": [
+                        "IGP",
+                        "EGP",
+                        "INCOMPLETE"
+                    ],
+                    "description": "BGP attribute defining the origin of the path information."
+                },
+                "atomic-aggregate": {
+                    "type": "boolean",
+                    "description": "BGP attribute indicating that the prefix is an atomic\naggregate, i.e., the peer selected a less specific\nroute without selecting a more specific route that is\nincluded in it."
+                },
+                "next-hop": {
+                    "type": "string",
+                    "description": "BGP next hop attribute defining the IP address of the router\nthat should be used as the next hop to the destination"
+                },
+                "med": {
+                    "type": "string",
+                    "description": "BGP multi-exit discriminator attribute used in BGP route\nselection process"
+                },
+                "local-pref": {
+                    "type": "string",
+                    "description": "BGP local preference attribute sent to internal peers to\nindicate the degree of preference for externally learned\nroutes.  The route with the highest local preference value\nis preferred."
+                },
+                "originator-id": {
+                    "type": "string",
+                    "description": "BGP attribute that provides the id as an IPv4 address\nof the originator of the announcement."
+                },
+                "cluster-list": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Represents the reflection path that the route has passed."
+                    }
+                },
+                "aigp": {
+                    "type": "string",
+                    "description": "BGP path attribute representing the accumulated IGP metric\nfor the path"
+                }
+            }
+        },
+        "bgp-unknown-attr-flags-state": {
+            "description": "Operational state data for path attribute flags",
+            "properties": {
+                "optional": {
+                    "type": "boolean",
+                    "description": "Defines whether the attribute is optional (if\nset to true) or well-known (if set to false).\nSet in the high-order bit of the BGP attribute\nflags octet."
+                },
+                "transitive": {
+                    "type": "boolean",
+                    "description": "Defines whether an optional attribute is transitive\n(if set to true) or non-transitive (if set to false).  For\nwell-known attributes, the transitive flag MUST be set to\ntrue.  Set in the second high-order bit of the BGP attribute\nflags octet."
+                },
+                "partial": {
+                    "type": "boolean",
+                    "description": "Defines whether the information contained in the optional\ntransitive attribute is partial (if set to true) or complete\n(if set to false).  For well-known attributes and for\noptional non-transitive attributes, the partial flag\nmust be set to false.  Set in the third high-order bit of\nthe BGP attribute flags octet."
+                },
+                "extended": {
+                    "type": "boolean",
+                    "description": "Defines whether the attribute length is one octet\n(if set to false) or two octets (if set to true).  Set in\nthe fourth high-order bit of the BGP attribute flags\noctet."
+                }
+            }
+        },
+        "bgp-unknown-attr-state": {
+            "description": "Operational state data for path attributes not shared\nacross route entries, common to LOC-RIB and Adj-RIB",
+            "properties": {
+                "attr-type": {
+                    "type": "string",
+                    "description": "1-octet value encoding the attribute type code"
+                },
+                "attr-len": {
+                    "type": "string",
+                    "description": "One or two octet attribute length field indicating the\nlength of the attribute data in octets.  If the Extended\nLength attribute flag is set, the length field is 2 octets,\notherwise it is 1 octet"
+                },
+                "attr-value": {
+                    "type": "string",
+                    "description": "Raw attribute value, not including the attribute\nflags, type, or length.  The maximum length\nof the attribute value data is 2^16-1 per the max value\nof the attr-len field (2 octets)."
+                }
+            }
+        },
+        "bgp-unknown-attr-top": {
+            "description": "Unknown path attributes that are not expected to be shared\nacross route entries, common to LOC-RIB and Adj-RIB",
+            "properties": {
+                "unknown-attributes": {
+                    "description": "Unknown path attributes that were received in the UPDATE\nmessage which contained the prefix.",
+                    "properties": {
+                        "unknown-attribute": {
+                            "description": "This list contains received attributes that are unrecognized\nor unsupported by the local router.  The list may be empty.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "attr-type": {
+                                        "type": "string",
+                                        "x-path": "../state/attr-type",
+                                        "description": "Reference to the list key"
+                                    },
+                                    "state": {
+                                        "description": "Operational state for unknown route attributes",
+                                        "$ref": "#/definitions/bgp-unknown-attr-state"
+                                    }
+                                }
+                            },
+                            "x-key": "attr-type"
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-loc-rib-attr-state": {
+            "description": "Path attributes that are not expected to be shared across\nroute entries, specific to LOC-RIB"
+        },
+        "bgp-adj-rib-attr-state": {
+            "description": "Path attributes that are not expected to be shared across\nroute entries, specific to Adj-RIB",
+            "properties": {
+                "path-id": {
+                    "type": "string",
+                    "description": "When the BGP speaker supports advertisement of multiple\npaths for a prefix, the path identifier is used to\nuniquely identify a route based on the combination of the\nprefix and path id.  In the Adj-RIB-In, the path-id value is\nthe value received in the update message.   In the Loc-RIB,\nif used, it should represent a locally generated path-id\nvalue for the corresponding route.  In Adj-RIB-Out, it\nshould be the value sent to a neighbor when add-paths is\nused, i.e., the capability has been negotiated."
+                }
+            }
+        },
+        "bgp-tunnel-encapsulation-attr-top": {
+            "description": "Top-level definition of the BGP Tunnel encapsulation\nattribute.",
+            "properties": {
+                "tunnel-encapsulation": {
+                    "description": "The Tunnel Encapsulation attribute specifies a set of\ntunnels to a remote destination. The attribute is TLV\nbased and allows description of a tunnel type, and the\nrelevant information to create the tunnel to the remote\ndestination.",
+                    "properties": {
+                        "tunnels": {
+                            "description": "Surrounding container for the set of tunnels included\nwithin the tunnel encapsulation attribute.",
+                            "properties": {
+                                "tunnel": {
+                                    "description": "List of the tunnels that are specified within the\nattribute. Keyed on the type of tunnel that the\nTLV describes.",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "x-path": "../state/type",
+                                                "description": "Reference to the tunnel type specified within the\nTLV's type field."
+                                            },
+                                            "state": {
+                                                "description": "State parameters of the tunnel attribute",
+                                                "$ref": "#/definitions/bgp-tunnel-encapsulation-attr-tunnel-state"
+                                            },
+                                            "subtlvs": {
+                                                "description": "Surrounding container for the list of sub-TLVs within\nthe tunnel encapsulation attribute.",
+                                                "properties": {
+                                                    "subtlv": {
+                                                        "description": "List of the subTLVs that are specified within the\nTLV instance inside the tunnel encapsulation attribute.",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "x-path": "../state/type",
+                                                                    "description": "Reference to the sub-TLV type that is included within\nthe subTLV."
+                                                                },
+                                                                "state": {
+                                                                    "description": "State parameters of the subTLV of the tunnel attribute",
+                                                                    "$ref": "#/definitions/bgp-tunnel-encapsulation-attr-tunnel-subtlv-state"
+                                                                },
+                                                                "remote-endpoints": {
+                                                                    "description": "The remote endpoints associated with the tunnel\ndescribed by the attribute.",
+                                                                    "properties": {
+                                                                        "remote-endpoint": {
+                                                                            "description": "List of the remote endpoints described within the TLV.",
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "endpoint": {
+                                                                                        "type": "string",
+                                                                                        "x-path": "../state/endpoint",
+                                                                                        "description": "Reference to the IP address of the endpoint."
+                                                                                    },
+                                                                                    "state": {
+                                                                                        "description": "State parameters of the remote endpoints described\nby the attribute.",
+                                                                                        "$ref": "#/definitions/bgp-tunnel-encapsulation-attr-tunnel-subtlv-endpoint-state"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "x-key": "endpoint"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "segment-lists": {
+                                                                    "description": "Surrounding container for the list of segment lists that are\nassociated with a SR-TE Policy tunnel.",
+                                                                    "properties": {
+                                                                        "segment-list": {
+                                                                            "description": "List of segment lists that are specified within the\ntunnel encapsulation attribute.",
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "instance-id": {
+                                                                                        "type": "string",
+                                                                                        "x-path": "../state/instance-id",
+                                                                                        "description": "Reference to the instance identifier of the Segment List\nthat is included within the tunnel encapsulation\nattribute."
+                                                                                    },
+                                                                                    "state": {
+                                                                                        "description": "State parameters relating to the Segment List within the\nTunnel Encapsulation attribute.",
+                                                                                        "$ref": "#/definitions/bgp-tunnel-encapsulation-attr-tunnel-subtlv-segment-list-state"
+                                                                                    },
+                                                                                    "segments": {
+                                                                                        "description": "Surrounding container for the list of segments within the\nSR-TE segment list.",
+                                                                                        "properties": {
+                                                                                            "segment": {
+                                                                                                "description": "List of segments within the SR-TE segment list.",
+                                                                                                "type": "array",
+                                                                                                "items": {
+                                                                                                    "properties": {
+                                                                                                        "index": {
+                                                                                                            "type": "string",
+                                                                                                            "x-path": "../state/index",
+                                                                                                            "description": "Reference to the index of the segment within the\nsegment list."
+                                                                                                        },
+                                                                                                        "state": {
+                                                                                                            "description": "State parameters relating to the segment within\nthe segment list.",
+                                                                                                            "$ref": "#/definitions/bgp-tunnel-encapsulation-attr-tunnel-subtlv-segment-state"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "x-key": "index"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "x-key": "instance-id"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "x-key": "type"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "x-key": "type"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "bgp-tunnel-encapsulation-attr-tunnel-state": {
+            "description": "State parameters of the tunnel encapsulation attribute",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Type of the tunnel described within the tunnel encapsulation\nattribute."
+                }
+            }
+        },
+        "bgp-tunnel-encapsulation-attr-tunnel-subtlv-state": {
+            "description": "State parameters relating to subTLVs of the tunnel encapsulation\nattribute.",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Type of the sub-TLV within the tunnel encapsulation attribute"
+                },
+                "colors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "The colours associated with the tunnel encapsulation attribute,\nas described by RFC5512."
+                    }
+                },
+                "preference": {
+                    "type": "string",
+                    "description": "The preference of the SR-TE policy described by the tunnel\nencapsulation attribute. If unspecified, the preference\ndefaults to 100."
+                },
+                "binding-sid": {
+                    "type": "string",
+                    "description": "Binding SID associated with the SR-TE policy"
+                }
+            }
+        },
+        "bgp-tunnel-encapsulation-attr-tunnel-subtlv-endpoint-state": {
+            "description": "State parameters relating to the remote endpoint described by a\ntunnel encapsulation attribute.",
+            "properties": {
+                "as": {
+                    "type": "string",
+                    "description": "The remote AS to which the IP address of the remote endpoint\nbelongs."
+                },
+                "endpoint": {
+                    "type": "string",
+                    "description": "IP address of the remote endpoint."
+                }
+            }
+        },
+        "bgp-tunnel-encapsulation-attr-tunnel-subtlv-segment-list-state": {
+            "description": "State parameters relating to an entry within a segment list within\na SR-TE policy segment list.",
+            "properties": {
+                "instance-id": {
+                    "type": "string",
+                    "description": "Instance of the segment list within the sub-TLV"
+                },
+                "weight": {
+                    "type": "string",
+                    "description": "The weight given to the path within the set of segment\nlists that are included in the tunnel attribute sub-TLV."
+                }
+            }
+        },
+        "bgp-tunnel-encapsulation-attr-tunnel-subtlv-segment-state": {
+            "description": "State parameters relating to a segment within the segment list.",
+            "properties": {
+                "index": {
+                    "type": "string",
+                    "description": "Index of the segment within the segment list. The segments are\nordered in ascending order, beginning at 0."
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "MPLS_SID",
+                        "IPV6_SID",
+                        "IPV4_NODE_ADDRESS",
+                        "IPV6_NODE_ADDRESS",
+                        "IPV4_LOCAL_INTF_ID",
+                        "IPV4_LOCAL_REMOTE_ADDR",
+                        "IPV6_LOCAL_INTF_ID",
+                        "IPV6_LOCAL_REMOTE_ADDR"
+                    ],
+                    "description": "The type of segment specified within the segment entry."
+                },
+                "sid": {
+                    "type": "string",
+                    "description": "SID value for the segment entry, specified as an MPLS label\nor IPv6 address."
+                },
+                "mpls-tc": {
+                    "type": "string",
+                    "description": "The MPLS TC bits used when the SID is specified as an MPLS\nlabel. If set to zero, the receiving system specifies the\nvalue of the TC bits."
+                },
+                "mpls-bos": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true the MPLS bottom-of-stack\n(BoS) bit is set in the MPLS segment. The BoS bit should\nalways be set to zero by the sender."
+                },
+                "mpls-ttl": {
+                    "type": "string",
+                    "description": "The MPLS time to live (TTL) to be set for the MPLS\nsegment. If set to 255, the receiver specifies the\nTTL value that is used for packets sent with this\nsegment in the stack."
+                },
+                "remote-ipv4-address": {
+                    "type": "string",
+                    "description": "An IPv4 address specified as the remote node address. When the type\nof the segment specifies only the remote address, no other addresses\nare specified. When the type of the segment requires a local address,\nthis leaf specifies the remote IPv4 address."
+                },
+                "local-ipv4-address": {
+                    "type": "string",
+                    "description": "An IPv4 address of a local adjacency that is used to identify\nthe segment."
+                },
+                "remote-ipv6-address": {
+                    "type": "string",
+                    "description": "An IPv6 address specified as the remote node address. When the type\nof the segment specifies only the remote address, no other addresses\nare specified. When the type of the segment requires a local address,\nthis leaf specifies the remote IPv6 address."
+                },
+                "local-ipv6-address": {
+                    "type": "string",
+                    "description": "An IPv6 address of a local adjacency that is used to identify the\nsegment."
+                },
+                "local-interface-id": {
+                    "type": "string",
+                    "description": "The local interface identifier to be utilised for the segment."
+                }
+            }
+        }
+    }
+}

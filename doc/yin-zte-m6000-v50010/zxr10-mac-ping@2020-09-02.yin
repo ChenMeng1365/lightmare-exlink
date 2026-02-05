@@ -1,0 +1,952 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-mac-ping"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mac-ping="http://www.zte.com.cn/zxr10/netconf/schema/rosng/mac-ping"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/mac-ping"/>
+  <prefix value="mac-ping"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe MAC-PING/TRACE. MAC-PING/TRACE provides a simple and efficient mechanism that can be used to detect level-2 plane failures.</text>
+  </description>
+  <revision date="2020-09-02">
+    <description>
+      <text>1)Obsolete /operation/mac-oam/mac-pings/mac-ping-type/evpn-ping/broadcast.</text>
+    </description>
+  </revision>
+  <revision date="2019-10-16">
+    <description>
+      <text>1)Add operation about evpn-pings
+2)Add operation about evpn-traces</text>
+    </description>
+  </revision>
+  <revision date="2015-06-08">
+    <description>
+      <text>1 Add notification-mac-ping node.
+2 Add notification-mac-trace node.
+3 Add notification-mac-trace-result node.
+4 Delete notification node.</text>
+    </description>
+  </revision>
+  <revision date="2015-01-14">
+    <description>
+      <text>Add notification model info.</text>
+    </description>
+  </revision>
+  <revision date="2014-04-29">
+    <description>
+      <text>Fix errors, add "dst-mac-addr" and "src-mac-addr" in mac-ping state table.</text>
+    </description>
+  </revision>
+  <revision date="2014-04-17">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>MAC-OAM configurations model info.</text>
+    </description>
+    <container name="mac-oam">
+      <description>
+        <text>MAC-OAM configuration info.</text>
+      </description>
+      <container name="global-config">
+        <description>
+          <text>MAC-OAM global configuration info.</text>
+        </description>
+        <leaf name="zmac-oam-enable">
+          <description>
+            <text>Enable or disable MAC-OAM.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>Disable MAC-OAM</text>
+              </description>
+            </enum>
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>Enable MAC-OAM</text>
+              </description>
+            </enum>
+          </type>
+          <default value="disable"/>
+        </leaf>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>MAC-OAM operations model info.</text>
+    </description>
+    <container name="mac-oam">
+      <description>
+        <text>MAC-OAM operation parameters.</text>
+      </description>
+      <container name="mac-pings">
+        <description>
+          <text>MAC-PING operation parameters.</text>
+        </description>
+        <list name="mac-ping">
+          <description>
+            <text>MAC-PING operation parameter.</text>
+          </description>
+          <key value="serial-num"/>
+          <leaf name="serial-num">
+            <description>
+              <text>MAC-PING serial number.</text>
+            </description>
+            <type name="uint64"/>
+          </leaf>
+          <choice name="status">
+            <description>
+              <text>The switch to start/stop MAC-PING.</text>
+            </description>
+            <mandatory value="true"/>
+            <case name="enable">
+              <description>
+                <text>Start MAC-PING function.</text>
+              </description>
+              <leaf name="ping-enable">
+                <description>
+                  <text>Start MAC-PING.</text>
+                </description>
+                <type name="empty"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="dst-mac">
+                <description>
+                  <text>Destination MAC address.</text>
+                </description>
+                <type name="ncd:mac-address"/>
+                <mandatory value="true"/>
+              </leaf>
+              <container name="mac-ping-type">
+                <description>
+                  <text>MAC-PING type.</text>
+                </description>
+                <choice name="ping-type">
+                  <description>
+                    <text>MAC-PING type.</text>
+                  </description>
+                  <mandatory value="true"/>
+                  <case name="ce-pings">
+                    <description>
+                      <text>MAC-PING CE.</text>
+                    </description>
+                    <leaf name="interface">
+                      <description>
+                        <text>Interface for sending packets.</text>
+                      </description>
+                      <type name="ncd:ifname"/>
+                      <mandatory value="true"/>
+                    </leaf>
+                  </case>
+                  <case name="pe-pings">
+                    <description>
+                      <text>MAC-PING PE.</text>
+                    </description>
+                    <container name="pe-ping">
+                      <description>
+                        <text>MAC-PING ping parameter.</text>
+                      </description>
+                      <choice name="vpls-vpws">
+                        <description>
+                          <text>VPLS or VPWS.</text>
+                        </description>
+                        <mandatory value="true"/>
+                        <case name="vpls">
+                          <description>
+                            <text>VPLS type.</text>
+                          </description>
+                          <leaf name="vpls-name">
+                            <description>
+                              <text>VPLS name.</text>
+                            </description>
+                            <type name="string">
+                              <length value="1..32">
+                                <description>
+                                  <text>VPLS name.</text>
+                                </description>
+                              </length>
+                            </type>
+                            <mandatory value="true"/>
+                          </leaf>
+                        </case>
+                        <case name="vpws">
+                          <description>
+                            <text>VPWS type.</text>
+                          </description>
+                          <leaf name="vpws-name">
+                            <description>
+                              <text>VPWS name.</text>
+                            </description>
+                            <type name="string">
+                              <length value="1..32">
+                                <description>
+                                  <text>VPWS name.</text>
+                                </description>
+                              </length>
+                            </type>
+                            <mandatory value="true"/>
+                          </leaf>
+                        </case>
+                      </choice>
+                      <leaf name="peer-addr">
+                        <description>
+                          <text>Peer address.</text>
+                        </description>
+                        <type name="ncd:ipv4-address"/>
+                        <mandatory value="true"/>
+                      </leaf>
+                    </container>
+                  </case>
+                  <case name="evpn-pings">
+                    <description>
+                      <text>MAC-PING EVPN</text>
+                    </description>
+                    <container name="evpn-ping">
+                      <description>
+                        <text>MAC-PING EVPN</text>
+                      </description>
+                      <leaf name="evpn-name">
+                        <description>
+                          <text>EVPN name.</text>
+                        </description>
+                        <type name="string">
+                          <length value="1..32">
+                            <description>
+                              <text>VPLS name.</text>
+                            </description>
+                          </length>
+                        </type>
+                        <mandatory value="true"/>
+                      </leaf>
+                      <leaf name="interface">
+                        <description>
+                          <text>Access point</text>
+                        </description>
+                        <type name="ncd:ifname"/>
+                        <mandatory value="true"/>
+                      </leaf>
+                      <leaf name="broadcast">
+                        <status value="obsolete">
+                          <ncd:revise-date date="2020-09-02"/>
+                        </status>
+                        <description>
+                          <text>Broadcast if MAC entry does not exist.</text>
+                        </description>
+                        <type name="uint8">
+                          <range value="0..1"/>
+                        </type>
+                        <default value="0"/>
+                      </leaf>
+                    </container>
+                    <ncd:revise-date date="2019-10-16"/>
+                  </case>
+                </choice>
+              </container>
+              <container name="mac-ping-option">
+                <description>
+                  <text>MAC-PING options.</text>
+                </description>
+                <leaf name="repeat">
+                  <description>
+                    <text>Repeat number of MAC-PING.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..65535">
+                      <description>
+                        <text>Repeat number.</text>
+                      </description>
+                    </range>
+                  </type>
+                  <default value="5"/>
+                </leaf>
+                <leaf name="timeout">
+                  <description>
+                    <text>Timeout of MAC-PING.</text>
+                  </description>
+                  <type name="uint32"/>
+                  <units name="seconds"/>
+                  <default value="2"/>
+                </leaf>
+                <leaf name="external-vlan">
+                  <description>
+                    <text>External VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094">
+                      <description>
+                        <text>External VLAN ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+                <leaf name="internal-vlan">
+                  <description>
+                    <text>Internal VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094">
+                      <description>
+                        <text>Internal VLAN ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+                <leaf name="vlan">
+                  <description>
+                    <text>VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094">
+                      <description>
+                        <text>VLAN ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+                <leaf name="reply-option">
+                  <type name="enumeration">
+                    <enum name="default">
+                      <value value="0"/>
+                      <description>
+                        <text>Default relpy option.</text>
+                      </description>
+                    </enum>
+                    <enum name="physical-port">
+                      <value value="1"/>
+                      <description>
+                        <text>Reply from physical port.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <ncd:revise-date date="2019-10-16"/>
+                </leaf>
+              </container>
+            </case>
+            <case name="disable">
+              <description>
+                <text>Stop MAC-PING function.</text>
+              </description>
+              <leaf name="ping-disable">
+                <description>
+                  <text>Stop MAC-PING.</text>
+                </description>
+                <type name="empty"/>
+                <mandatory value="true"/>
+              </leaf>
+            </case>
+          </choice>
+        </list>
+      </container>
+      <container name="mac-traces">
+        <description>
+          <text>MAC-TRACE operation parameters.</text>
+        </description>
+        <list name="mac-trace">
+          <description>
+            <text>MAC-TRACE operation parameter.</text>
+          </description>
+          <key value="serial-num"/>
+          <leaf name="serial-num">
+            <description>
+              <text>MAC-TRACE serial number.</text>
+            </description>
+            <type name="uint64"/>
+          </leaf>
+          <choice name="status">
+            <description>
+              <text>The switch to start/stop MAC-TRACE.</text>
+            </description>
+            <mandatory value="true"/>
+            <case name="enable">
+              <description>
+                <text>Start MAC-TRACE function.</text>
+              </description>
+              <leaf name="trace-enable">
+                <description>
+                  <text>Start MAC-TRACE.</text>
+                </description>
+                <type name="empty"/>
+                <mandatory value="true"/>
+              </leaf>
+              <leaf name="dst-mac">
+                <description>
+                  <text>Destination MAC address.</text>
+                </description>
+                <type name="ncd:mac-address"/>
+                <mandatory value="true"/>
+              </leaf>
+              <container name="mac-trace-type">
+                <description>
+                  <text>MAC-TRACE type.</text>
+                </description>
+                <choice name="trace-type">
+                  <description>
+                    <text>MAC-TRACE type.</text>
+                  </description>
+                  <mandatory value="true"/>
+                  <case name="ce-traces">
+                    <description>
+                      <text>MAC-TRACE CE.</text>
+                    </description>
+                    <leaf name="interface">
+                      <description>
+                        <text>Interface for sending packets.</text>
+                      </description>
+                      <type name="ncd:ifname"/>
+                      <mandatory value="true"/>
+                    </leaf>
+                  </case>
+                  <case name="pe-traces">
+                    <description>
+                      <text>MAC-TRACE PE.</text>
+                    </description>
+                    <container name="pe-trace">
+                      <description>
+                        <text>MAC-TRACE PE parameter.</text>
+                      </description>
+                      <choice name="vpls-vpws">
+                        <description>
+                          <text>VPLS or VPWS.</text>
+                        </description>
+                        <mandatory value="true"/>
+                        <case name="vpls">
+                          <description>
+                            <text>VPLS type.</text>
+                          </description>
+                          <leaf name="vpls-name">
+                            <description>
+                              <text>VPLS name.</text>
+                            </description>
+                            <type name="string"/>
+                            <mandatory value="true"/>
+                          </leaf>
+                        </case>
+                        <case name="vpws">
+                          <description>
+                            <text>VPWS type.</text>
+                          </description>
+                          <leaf name="vpws-name">
+                            <description>
+                              <text>VPWS name.</text>
+                            </description>
+                            <type name="string"/>
+                            <mandatory value="true"/>
+                          </leaf>
+                        </case>
+                      </choice>
+                      <leaf name="peer-addr">
+                        <description>
+                          <text>Peer address.</text>
+                        </description>
+                        <type name="ncd:ipv4-address"/>
+                        <mandatory value="true"/>
+                      </leaf>
+                    </container>
+                  </case>
+                  <case name="evpn-traces">
+                    <description>
+                      <text>EVPN MAC-TRACE</text>
+                    </description>
+                    <container name="evpn-trace">
+                      <description>
+                        <text>EVPN MAC-TRACE</text>
+                      </description>
+                      <leaf name="evpn-name">
+                        <description>
+                          <text>EVPN name.</text>
+                        </description>
+                        <type name="string">
+                          <length value="1..32">
+                            <description>
+                              <text>VPLS name.</text>
+                            </description>
+                          </length>
+                        </type>
+                        <mandatory value="true"/>
+                      </leaf>
+                      <leaf name="interface">
+                        <description>
+                          <text>Access point</text>
+                        </description>
+                        <type name="ncd:ifname"/>
+                        <mandatory value="true"/>
+                      </leaf>
+                    </container>
+                    <ncd:revise-date date="2019-10-16"/>
+                  </case>
+                </choice>
+              </container>
+              <container name="mac-trace-option">
+                <description>
+                  <text>MAC-TRACE options.</text>
+                </description>
+                <leaf name="external-vlan">
+                  <description>
+                    <text>External VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094">
+                      <description>
+                        <text>External VLAN ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+                <leaf name="internal-vlan">
+                  <description>
+                    <text>Internal VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094">
+                      <description>
+                        <text>Internal VLAN ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+                <leaf name="vlan">
+                  <description>
+                    <text>VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094">
+                      <description>
+                        <text>VLAN ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+              </container>
+            </case>
+            <case name="disable">
+              <description>
+                <text>Stop MAC-TRACE function.</text>
+              </description>
+              <leaf name="trace-disable">
+                <description>
+                  <text>Stop MAC-TRACE.</text>
+                </description>
+                <type name="empty"/>
+                <mandatory value="true"/>
+              </leaf>
+            </case>
+          </choice>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>MAC-OAM state model info.</text>
+    </description>
+    <container name="mac-oam">
+      <description>
+        <text>MAC-OAM state model.</text>
+      </description>
+      <container name="mac-pings">
+        <description>
+          <text>MAC-PING state model info.</text>
+        </description>
+        <list name="mac-ping">
+          <description>
+            <text>The detail result information of MAC-PING.</text>
+          </description>
+          <key value="serial-num"/>
+          <leaf name="serial-num">
+            <description>
+              <text>MAC-PING serial number.</text>
+            </description>
+            <type name="uint64"/>
+          </leaf>
+          <leaf name="send-pkts">
+            <description>
+              <text>Sent packets.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="rcv-pkts">
+            <description>
+              <text>Received packets.</text>
+            </description>
+            <type name="uint32"/>
+          </leaf>
+          <leaf name="min-rtt">
+            <description>
+              <text>Minimum round-trip-time.</text>
+            </description>
+            <type name="uint32"/>
+            <units name="millisecond"/>
+          </leaf>
+          <leaf name="max-rtt">
+            <description>
+              <text>Maximum round-trip-time.</text>
+            </description>
+            <type name="uint32"/>
+            <units name="millisecond"/>
+          </leaf>
+          <leaf name="avg-rtt">
+            <description>
+              <text>Average round-trip-time.</text>
+            </description>
+            <type name="uint32"/>
+            <units name="millisecond"/>
+          </leaf>
+          <leaf name="min-rwt">
+            <description>
+              <text>Minimum round-wobble-time.</text>
+            </description>
+            <type name="uint32"/>
+            <units name="millisecond"/>
+          </leaf>
+          <leaf name="max-rwt">
+            <description>
+              <text>Maximum round-wobble-time.</text>
+            </description>
+            <type name="uint32"/>
+            <units name="millisecond"/>
+          </leaf>
+          <leaf name="avg-rwt">
+            <description>
+              <text>Average round-wobble-time.</text>
+            </description>
+            <type name="uint32"/>
+            <units name="millisecond"/>
+          </leaf>
+          <leaf name="dst-host-name">
+            <description>
+              <text>Host name of destination.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="dst-if-name">
+            <description>
+              <text>Interface name of destination.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="dst-mac-addr">
+            <description>
+              <text>MAC address of destination.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="src-hostname">
+            <description>
+              <text>Host name of source.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="src-if-name">
+            <description>
+              <text>Interface name of source.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="src-mac-addr">
+            <description>
+              <text>MAC address of source.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="mac-traces">
+        <description>
+          <text>MAC-TRACE state model info.</text>
+        </description>
+        <list name="mac-trace">
+          <description>
+            <text>The detail result information of MAC-TRACE.</text>
+          </description>
+          <key value="serial-num hop-num"/>
+          <leaf name="serial-num">
+            <description>
+              <text>MAC-TRACE serial number.</text>
+            </description>
+            <type name="uint64"/>
+          </leaf>
+          <leaf name="hop-num">
+            <description>
+              <text>Hop number.</text>
+            </description>
+            <type name="uint8"/>
+          </leaf>
+          <leaf name="hop-status">
+            <description>
+              <text>Hop status.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="success">
+                <value value="1"/>
+                <description>
+                  <text>MAC-TRACE success.</text>
+                </description>
+              </enum>
+              <enum name="fail">
+                <value value="2"/>
+                <description>
+                  <text>MAC-TRACE fail.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="hop-host-name">
+            <description>
+              <text>Hop host name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="hop-mac-addr">
+            <description>
+              <text>Hop MAC address.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="hop-if-name">
+            <description>
+              <text>Hop interface name.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <ncd:select fields="serial-num hop-num"/>
+          <ncd:select fields="serial-num"/>
+        </list>
+      </container>
+    </container>
+  </container>
+  <notification name="notification-mac-ping">
+    <description>
+      <text>MAC-PING notification model info.</text>
+    </description>
+    <container name="mac-pings">
+      <config value="false"/>
+      <description>
+        <text>MAC-PING notification model info.</text>
+      </description>
+      <list name="mac-ping">
+        <description>
+          <text>The detail result information of MAC-PING.</text>
+        </description>
+        <key value="serial-num"/>
+        <leaf name="serial-num">
+          <description>
+            <text>MAC-PING serial number.</text>
+          </description>
+          <type name="uint64"/>
+        </leaf>
+        <leaf name="send-pkts">
+          <description>
+            <text>Sent packets.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="rcv-pkts">
+          <description>
+            <text>Received packets.</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="min-rtt">
+          <description>
+            <text>Minimum round-trip-time.</text>
+          </description>
+          <type name="uint32"/>
+          <units name="millisecond"/>
+        </leaf>
+        <leaf name="max-rtt">
+          <description>
+            <text>Maximum round-trip-time.</text>
+          </description>
+          <type name="uint32"/>
+          <units name="millisecond"/>
+        </leaf>
+        <leaf name="avg-rtt">
+          <description>
+            <text>Average round-trip-time.</text>
+          </description>
+          <type name="uint32"/>
+          <units name="millisecond"/>
+        </leaf>
+        <leaf name="min-rwt">
+          <description>
+            <text>Minimum round-wobble-time.</text>
+          </description>
+          <type name="uint32"/>
+          <units name="millisecond"/>
+        </leaf>
+        <leaf name="max-rwt">
+          <description>
+            <text>Maximum round-wobble-time.</text>
+          </description>
+          <type name="uint32"/>
+          <units name="millisecond"/>
+        </leaf>
+        <leaf name="avg-rwt">
+          <description>
+            <text>Average round-wobble-time.</text>
+          </description>
+          <type name="uint32"/>
+          <units name="millisecond"/>
+        </leaf>
+        <leaf name="dst-host-name">
+          <description>
+            <text>Host name of destination.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="dst-if-name">
+          <description>
+            <text>Interface name of destination.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="dst-mac-addr">
+          <description>
+            <text>MAC address of destination.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="src-hostname">
+          <description>
+            <text>Host name of source.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="src-if-name">
+          <description>
+            <text>Interface name of source.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="src-mac-addr">
+          <description>
+            <text>MAC address of source.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+      </list>
+    </container>
+    <ncd:revise-date date="2015-06-08"/>
+  </notification>
+  <notification name="notification-mac-trace">
+    <description>
+      <text>MAC-TRACE notification model info.</text>
+    </description>
+    <container name="mac-traces">
+      <config value="false"/>
+      <description>
+        <text>MAC-TRACE notification model info.</text>
+      </description>
+      <list name="mac-trace">
+        <description>
+          <text>The detail result information of MAC-TRACE.</text>
+        </description>
+        <key value="serial-num hop-num"/>
+        <leaf name="serial-num">
+          <description>
+            <text>MAC-TRACE serial number.</text>
+          </description>
+          <type name="uint64"/>
+        </leaf>
+        <leaf name="hop-num">
+          <description>
+            <text>The number of mac-trace hop.</text>
+          </description>
+          <type name="uint8"/>
+        </leaf>
+        <leaf name="hop-status">
+          <description>
+            <text>Hop status.</text>
+          </description>
+          <type name="enumeration">
+            <enum name="success">
+              <value value="1"/>
+              <description>
+                <text>MAC-TRACE success.</text>
+              </description>
+            </enum>
+            <enum name="fail">
+              <value value="2"/>
+              <description>
+                <text>MAC-TRACE fail.</text>
+              </description>
+            </enum>
+          </type>
+        </leaf>
+        <leaf name="hop-host-name">
+          <description>
+            <text>Hop host name.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="hop-mac-addr">
+          <description>
+            <text>Hop MAC address.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="hop-if-name">
+          <description>
+            <text>Hop interface name.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <ncd:select fields="serial-num hop-num"/>
+        <ncd:select fields="serial-num"/>
+      </list>
+    </container>
+    <ncd:revise-date date="2015-06-08"/>
+  </notification>
+  <notification name="notification-mac-trace-result">
+    <description>
+      <text>MAC-TRACE result notification model info.</text>
+    </description>
+    <container name="mac-trace-results">
+      <config value="false"/>
+      <description>
+        <text>MAC-TRACE result notification model info.</text>
+      </description>
+      <list name="mac-trace-result">
+        <description>
+          <text>The detail result information of MAC-TRACE.</text>
+        </description>
+        <key value="serial-num"/>
+        <leaf name="serial-num">
+          <description>
+            <text>MAC-TRACE serial number.</text>
+          </description>
+          <type name="uint64"/>
+        </leaf>
+        <leaf name="hops-count">
+          <description>
+            <text>The number of mac-trace hops.</text>
+          </description>
+          <type name="uint8"/>
+        </leaf>
+        <ncd:select fields="serial-num"/>
+      </list>
+    </container>
+    <ncd:revise-date date="2015-06-08"/>
+  </notification>
+</module>

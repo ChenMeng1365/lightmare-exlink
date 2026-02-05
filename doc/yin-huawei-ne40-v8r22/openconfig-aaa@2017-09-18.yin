@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-aaa"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-aaa="http://openconfig.net/yang/aaa"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-yang="http://openconfig.net/yang/types/yang"
+        xmlns:oc-aaa-types="http://openconfig.net/yang/aaa/types">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/aaa"/>
+  <prefix value="oc-aaa"/>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-yang-types">
+    <prefix value="oc-yang"/>
+  </import>
+  <import module="openconfig-aaa-types">
+    <prefix value="oc-aaa-types"/>
+  </import>
+  <include module="openconfig-aaa-tacacs"/>
+  <include module="openconfig-aaa-radius"/>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module defines configuration and operational state data
+related to authorization, authentication, and accounting (AAA)
+management.
+
+Portions of this model reuse data definitions or structure from
+RFC 7317 - A YANG Data Model for System Management</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.3.0"/>
+  <revision date="2017-09-18">
+    <description>
+      <text>Updated to use OpenConfig types modules</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-06">
+    <description>
+      <text>Move to oc-inet types, add IETF attribution, add RADIUS
+counters, changed password leaf names to indicate hashed</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-29">
+    <description>
+      <text>Initial public release</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <grouping name="aaa-servergroup-common-config">
+    <description>
+      <text>Configuration data for AAA server groups</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Name for the server group</text>
+      </description>
+    </leaf>
+    <leaf name="type">
+      <type name="identityref">
+        <base name="oc-aaa-types:AAA_SERVER_TYPE"/>
+      </type>
+      <description>
+        <text>AAA server type -- all servers in the group must be of this
+type</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-servergroup-common-state">
+    <description>
+      <text>Operational state data for AAA server groups</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-servergroup-common-top">
+    <description>
+      <text>Top-level grouping for AAA server groups</text>
+    </description>
+    <container name="server-groups">
+      <description>
+        <text>Enclosing container for AAA server groups</text>
+      </description>
+      <list name="server-group">
+        <key value="name"/>
+        <description>
+          <text>List of AAA server groups.  All servers in a group
+must have the same type as indicated by the server
+type.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to configured name of the server group</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for each server group</text>
+          </description>
+          <uses name="aaa-servergroup-common-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for each server group</text>
+          </description>
+          <uses name="aaa-servergroup-common-config"/>
+          <uses name="aaa-servergroup-common-state"/>
+        </container>
+        <uses name="aaa-server-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="aaa-server-config">
+    <description>
+      <text>Common configuration data for AAA servers</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Name assigned to the server</text>
+      </description>
+    </leaf>
+    <leaf name="address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>Address of the authentication server</text>
+      </description>
+    </leaf>
+    <leaf name="timeout">
+      <type name="uint16"/>
+      <units name="seconds"/>
+      <description>
+        <text>Set the timeout in seconds on responses from the AAA
+server</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-server-state">
+    <description>
+      <text>Common operational state data for AAA servers</text>
+    </description>
+    <leaf name="connection-opens">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of new connection requests sent to the server, e.g.
+socket open</text>
+      </description>
+    </leaf>
+    <leaf name="connection-closes">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of connection close requests sent to the server, e.g.
+socket close</text>
+      </description>
+    </leaf>
+    <leaf name="connection-aborts">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of aborted connections to the server.  These do
+not include connections that are close gracefully.</text>
+      </description>
+    </leaf>
+    <leaf name="connection-failures">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of connection failures to the server</text>
+      </description>
+    </leaf>
+    <leaf name="connection-timeouts">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of connection timeouts to the server</text>
+      </description>
+    </leaf>
+    <leaf name="messages-sent">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of messages sent to the server</text>
+      </description>
+    </leaf>
+    <leaf name="messages-received">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of messages received by the server</text>
+      </description>
+    </leaf>
+    <leaf name="errors-received">
+      <type name="oc-yang:counter64"/>
+      <description>
+        <text>Number of error messages received from the server</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-server-top">
+    <description>
+      <text>Top-level grouping for list of AAA servers</text>
+    </description>
+    <container name="servers">
+      <description>
+        <text>Enclosing container the list of servers</text>
+      </description>
+      <list name="server">
+        <key value="address"/>
+        <description>
+          <text>List of AAA servers</text>
+        </description>
+        <leaf name="address">
+          <type name="leafref">
+            <path value="../config/address"/>
+          </type>
+          <description>
+            <text>Reference to the configured address of the AAA server</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data </text>
+          </description>
+          <uses name="aaa-server-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data </text>
+          </description>
+          <uses name="aaa-server-config"/>
+          <uses name="aaa-server-state"/>
+        </container>
+        <uses name="aaa-tacacs-server-top"/>
+        <uses name="aaa-radius-server-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="aaa-admin-config">
+    <description>
+      <text>Configuration data for the system built-in
+administrator / root user account</text>
+    </description>
+    <leaf name="admin-password">
+      <type name="string"/>
+      <oc-ext:openconfig-hashed-value/>
+      <description>
+        <text>The admin/root password, supplied as a cleartext string.
+The system should hash and only store the password as a
+hashed value.</text>
+      </description>
+    </leaf>
+    <leaf name="admin-password-hashed">
+      <type name="oc-aaa-types:crypt-password-type"/>
+      <description>
+        <text>The admin/root password, supplied as a hashed value
+using the notation described in the definition of the
+crypt-password-type.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-admin-state">
+    <description>
+      <text>Operational state data for the root user</text>
+    </description>
+    <leaf name="admin-username">
+      <type name="string"/>
+      <description>
+        <text>Name of the administrator user account, e.g., admin, root,
+etc.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-authentication-admin-top">
+    <description>
+      <text>Top-level grouping for root user configuration and state
+data</text>
+    </description>
+    <container name="admin-user">
+      <description>
+        <text>Top-level container for the system root or admin user
+configuration and operational state</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for the root user account</text>
+        </description>
+        <uses name="aaa-admin-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for the root user account</text>
+        </description>
+        <uses name="aaa-admin-config"/>
+        <uses name="aaa-admin-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="aaa-authentication-user-config">
+    <description>
+      <text>Configuration data for local users</text>
+    </description>
+    <leaf name="username">
+      <type name="string"/>
+      <description>
+        <text>Assigned username for this user</text>
+      </description>
+    </leaf>
+    <leaf name="password">
+      <type name="string"/>
+      <oc-ext:openconfig-hashed-value/>
+      <description>
+        <text>The user password, supplied as cleartext.  The system
+must hash the value and only store the hashed value.</text>
+      </description>
+    </leaf>
+    <leaf name="password-hashed">
+      <type name="oc-aaa-types:crypt-password-type"/>
+      <description>
+        <text>The user password, supplied as a hashed value
+using the notation described in the definition of the
+crypt-password-type.</text>
+      </description>
+    </leaf>
+    <leaf name="ssh-key">
+      <type name="string"/>
+      <description>
+        <text>SSH public key for the user (RSA or DSA)</text>
+      </description>
+    </leaf>
+    <leaf name="role">
+      <type name="union">
+        <type name="string"/>
+        <type name="identityref">
+          <base name="oc-aaa-types:SYSTEM_DEFINED_ROLES"/>
+        </type>
+      </type>
+      <description>
+        <text>Role assigned to the user.  The role may be supplied
+as a string or a role defined by the SYSTEM_DEFINED_ROLES
+identity.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-authentication-user-state">
+    <description>
+      <text>Operational state data for local users</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-authentication-user-top">
+    <description>
+      <text>Top-level grouping for local users</text>
+    </description>
+    <container name="users">
+      <description>
+        <text>Enclosing container list of local users</text>
+      </description>
+      <list name="user">
+        <key value="username"/>
+        <description>
+          <text>List of local users on the system</text>
+        </description>
+        <leaf name="username">
+          <type name="leafref">
+            <path value="../config/username"/>
+          </type>
+          <description>
+            <text>References the configured username for the user</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for local users</text>
+          </description>
+          <uses name="aaa-authentication-user-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for local users</text>
+          </description>
+          <uses name="aaa-authentication-user-config"/>
+          <uses name="aaa-authentication-user-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="aaa-accounting-methods-common">
+    <description>
+      <text>Common definitions for accounting methods</text>
+    </description>
+    <leaf-list name="accounting-method">
+      <type name="union">
+        <type name="identityref">
+          <base name="oc-aaa-types:AAA_METHOD_TYPE"/>
+        </type>
+        <type name="string"/>
+      </type>
+      <description>
+        <text>The method used for AAA accounting for this event
+type.  The method is defined by the destination for
+accounting data, which may be specified as the group of
+all TACACS+/RADIUS servers, a defined server group, or
+the local system.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="aaa-accounting-events-config">
+    <description>
+      <text>Configuration data for AAA accounting events</text>
+    </description>
+    <leaf name="event-type">
+      <type name="identityref">
+        <base name="oc-aaa-types:AAA_ACCOUNTING_EVENT_TYPE"/>
+      </type>
+      <description>
+        <text>The type of activity to record at the AAA accounting
+server</text>
+      </description>
+    </leaf>
+    <leaf name="record">
+      <type name="enumeration">
+        <enum name="START_STOP">
+          <description>
+            <text>Send START record to the accounting server at the
+beginning of the activity, and STOP record at the
+end of the activity.</text>
+          </description>
+        </enum>
+        <enum name="STOP">
+          <description>
+            <text>Send STOP record to the accounting server when the
+user activity completes</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Type of record to send to the accounting server for this
+activity type</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-accounting-events-state">
+    <description>
+      <text>Operational state data for accounting events</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-accounting-events-top">
+    <description>
+      <text>Top-level grouping for accounting events</text>
+    </description>
+    <container name="events">
+      <description>
+        <text>Enclosing container for defining handling of events
+for accounting</text>
+      </description>
+      <list name="event">
+        <key value="event-type"/>
+        <description>
+          <text>List of events subject to accounting</text>
+        </description>
+        <leaf name="event-type">
+          <type name="leafref">
+            <path value="../config/event-type"/>
+          </type>
+          <description>
+            <text>Reference to the event-type being logged at the
+accounting server</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for accounting events</text>
+          </description>
+          <uses name="aaa-accounting-events-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for accounting events</text>
+          </description>
+          <uses name="aaa-accounting-events-config"/>
+          <uses name="aaa-accounting-events-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="aaa-accounting-config">
+    <description>
+      <text>Configuration data for event accounting</text>
+    </description>
+    <uses name="aaa-accounting-methods-common"/>
+  </grouping>
+  <grouping name="aaa-accounting-state">
+    <description>
+      <text>Operational state data for event accounting services</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-accounting-top">
+    <description>
+      <text>Top-level grouping for user activity accounting</text>
+    </description>
+    <container name="accounting">
+      <description>
+        <text>Top-level container for AAA accounting</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for user activity accounting.</text>
+        </description>
+        <uses name="aaa-accounting-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for user accounting.</text>
+        </description>
+        <uses name="aaa-accounting-config"/>
+        <uses name="aaa-accounting-state"/>
+      </container>
+      <uses name="aaa-accounting-events-top"/>
+    </container>
+  </grouping>
+  <grouping name="aaa-authorization-methods-config">
+    <description>
+      <text>Common definitions for authorization methods for global
+and per-event type</text>
+    </description>
+    <leaf-list name="authorization-method">
+      <type name="union">
+        <type name="identityref">
+          <base name="oc-aaa-types:AAA_METHOD_TYPE"/>
+        </type>
+        <type name="string"/>
+      </type>
+      <description>
+        <text>Ordered list of methods for authorizing commands.  The first
+method that provides a response (positive or negative) should
+be used.  The list may contain a well-defined method such
+as the set of all TACACS or RADIUS servers, or the name of
+a defined AAA server group.  The system must validate
+that the named server group exists.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="aaa-authorization-events-config">
+    <description>
+      <text>Configuration data for AAA authorization events</text>
+    </description>
+    <leaf name="event-type">
+      <type name="identityref">
+        <base name="oc-aaa-types:AAA_AUTHORIZATION_EVENT_TYPE"/>
+      </type>
+      <description>
+        <text>The type of event to record at the AAA authorization
+server</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="aaa-authorization-events-state">
+    <description>
+      <text>Operational state data for AAA authorization events</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-authorization-events-top">
+    <description>
+      <text>Top-level grouping for authorization events</text>
+    </description>
+    <container name="events">
+      <description>
+        <text>Enclosing container for the set of events subject
+to authorization</text>
+      </description>
+      <list name="event">
+        <key value="event-type"/>
+        <description>
+          <text>List of events subject to AAA authorization</text>
+        </description>
+        <leaf name="event-type">
+          <type name="leafref">
+            <path value="../config/event-type"/>
+          </type>
+          <description>
+            <text>Reference to the event-type list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for each authorized event</text>
+          </description>
+          <uses name="aaa-authorization-events-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for each authorized activity</text>
+          </description>
+          <uses name="aaa-authorization-events-config"/>
+          <uses name="aaa-authorization-events-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="aaa-authorization-config">
+    <description>
+      <text>Configuration data for AAA authorization</text>
+    </description>
+    <uses name="aaa-authorization-methods-config"/>
+  </grouping>
+  <grouping name="aaa-authorization-state">
+    <description>
+      <text>Operational state data for AAA authorization</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-authorization-top">
+    <description>
+      <text>Top-level grouping for AAA authorization</text>
+    </description>
+    <container name="authorization">
+      <description>
+        <text>Top-level container for AAA authorization configuration
+and operational state data</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for authorization based on AAA
+methods</text>
+        </description>
+        <uses name="aaa-authorization-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for authorization based on AAA</text>
+        </description>
+        <uses name="aaa-authorization-config"/>
+        <uses name="aaa-authorization-state"/>
+      </container>
+      <uses name="aaa-authorization-events-top"/>
+    </container>
+  </grouping>
+  <grouping name="aaa-authentication-config">
+    <description>
+      <text>Configuration data for global authentication</text>
+    </description>
+    <leaf-list name="authentication-method">
+      <type name="union">
+        <type name="identityref">
+          <base name="oc-aaa-types:AAA_METHOD_TYPE"/>
+        </type>
+        <type name="string"/>
+      </type>
+      <ordered-by value="user"/>
+      <description>
+        <text>Ordered list of authentication methods for users.  This
+can be either a reference to a server group, or a well-
+defined designation in the AAA_METHOD_TYPE identity.  If
+authentication fails with one method, the next defined
+method is tried -- failure of all methods results in the
+user being denied access.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="aaa-authentication-state">
+    <description>
+      <text>Operational state data for global authentication</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-authentication-top">
+    <description>
+      <text>Top-level grouping for top-level authentication</text>
+    </description>
+    <container name="authentication">
+      <description>
+        <text>Top-level container for global authentication data</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for global authentication services</text>
+        </description>
+        <uses name="aaa-authentication-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for global authentication
+services</text>
+        </description>
+        <uses name="aaa-authentication-config"/>
+        <uses name="aaa-authentication-state"/>
+      </container>
+      <uses name="aaa-authentication-admin-top"/>
+      <uses name="aaa-authentication-user-top"/>
+    </container>
+  </grouping>
+  <grouping name="aaa-config">
+    <description>
+      <text>Configuration data for top level AAA</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-state">
+    <description>
+      <text>Operational state data for top level AAA</text>
+    </description>
+  </grouping>
+  <grouping name="aaa-top">
+    <description>
+      <text>Top-level grouping for AAA services</text>
+    </description>
+    <container name="aaa">
+      <description>
+        <text>Top-level container for AAA services</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for top level AAA services</text>
+        </description>
+        <uses name="aaa-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for top level AAA services </text>
+        </description>
+        <uses name="aaa-config"/>
+        <uses name="aaa-state"/>
+      </container>
+      <uses name="aaa-authentication-top"/>
+      <uses name="aaa-authorization-top"/>
+      <uses name="aaa-accounting-top"/>
+      <uses name="aaa-servergroup-common-top"/>
+    </container>
+  </grouping>
+</module>

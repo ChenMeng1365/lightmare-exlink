@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-http"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:http="urn:huawei:yang:huawei-http"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ssl="urn:huawei:yang:huawei-ssl"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type">
+  <namespace uri="urn:huawei:yang:huawei-http"/>
+  <prefix value="http"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ssl">
+    <prefix value="ssl"/>
+  </import>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>HTTP server and client.</text>
+  </description>
+  <revision date="2020-07-21">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="http-server-type">
+    <type name="enumeration">
+      <enum name="restconf">
+        <value value="1"/>
+        <description>
+          <text>Restconf: restconf service type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>HTTP service type.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="https"/>
+  <container name="http">
+    <description>
+      <text>HTTP.</text>
+    </description>
+    <container name="comp-enable">
+      <description>
+        <text>Configure HTTP enable.</text>
+      </description>
+      <leaf name="comp-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable HTTP function.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="client">
+      <when condition="../comp-enable/comp-enable = 'true'"/>
+      <description>
+        <text>Configure HTTP client.</text>
+      </description>
+      <leaf name="ssl-policy-name">
+        <type name="leafref">
+          <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+        </type>
+        <description>
+          <text>SSL policy name.</text>
+        </description>
+      </leaf>
+      <leaf name="ssl-verify-type">
+        <when condition="../ssl-policy-name"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable SSL verify peer.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="servers">
+      <when condition="../comp-enable/comp-enable = 'true'"/>
+      <description>
+        <text>List of HTTP server configuration.</text>
+      </description>
+      <list name="server">
+        <key value="server-type"/>
+        <description>
+          <text>Configure HTTP server.</text>
+        </description>
+        <leaf name="server-type">
+          <type name="http-server-type"/>
+          <description>
+            <text>HTTP server type.</text>
+          </description>
+        </leaf>
+        <leaf name="server-enable">
+          <type name="boolean"/>
+          <must condition="../secure-enable != 'true' or (../secure-enable = 'true' and ../server-enable = 'false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable HTTP server.</text>
+          </description>
+        </leaf>
+        <leaf name="secure-enable">
+          <type name="boolean"/>
+          <must condition="../server-enable != 'true' or (../server-enable = 'true' and ../secure-enable = 'false')"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable HTTP secure server.</text>
+          </description>
+        </leaf>
+        <leaf name="server-port">
+          <type name="uint32">
+            <range value="80 | 1025..65535"/>
+          </type>
+          <default value="80"/>
+          <description>
+            <text>HTTP server port.</text>
+          </description>
+        </leaf>
+        <leaf name="secure-port">
+          <type name="uint32">
+            <range value="443 | 1025..65535"/>
+          </type>
+          <default value="443"/>
+          <description>
+            <text>HTTP secure server port.</text>
+          </description>
+        </leaf>
+        <leaf name="acl-name">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+          <description>
+            <text>HTTP server ACL name or number for IPv4 connections.</text>
+          </description>
+        </leaf>
+        <leaf name="ssl-policy-name">
+          <type name="leafref">
+            <path value="/ssl:ssl/ssl:ssl-policys/ssl:ssl-policy/ssl:policy-name"/>
+          </type>
+          <must condition="../secure-enable = 'true' "/>
+          <description>
+            <text>SSL policy name.</text>
+          </description>
+        </leaf>
+        <leaf name="ssl-verify-type">
+          <type name="boolean"/>
+          <must condition="../secure-enable = 'true'  and ../ssl-policy-name"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable SSL verify.</text>
+          </description>
+        </leaf>
+        <leaf name="idle-timeout">
+          <type name="uint32">
+            <range value="1..60"/>
+          </type>
+          <default value="20"/>
+          <description>
+            <text>Idle timeout.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-source">
+      <when condition="../comp-enable/comp-enable = 'true' and count(../servers/server[server-type = 'restconf']) &gt; 0 "/>
+      <description>
+        <text>Configure http server interfaces.</text>
+      </description>
+      <leaf name="src-interface">
+        <when condition="../all-interface = 'false'"/>
+        <type name="pub-type:if-name"/>
+        <description>
+          <text>Specify the source interface name. The specified source interface must exist and an IP address must be configured on the interface.</text>
+        </description>
+      </leaf>
+      <leaf name="all-interface">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable specify all interfaces.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+</module>

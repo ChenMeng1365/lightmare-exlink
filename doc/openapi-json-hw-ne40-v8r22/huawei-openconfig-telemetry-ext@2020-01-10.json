@@ -1,0 +1,1906 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "huawei-openconfig-telemetry-ext API generated from huawei-openconfig-telemetry-ext@2020-01-10.yang",
+        "version": "1.0.0",
+        "title": "huawei-openconfig-telemetry-ext API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "telemetry-global-attribute-config": {
+            "description": "The global attribute of telemetry.",
+            "properties": {
+                "json-only-content": {
+                    "type": "boolean",
+                    "description": "Enable/disable its operation when telemetry-stream-encoding-config.encoding is specified to literal ENC_JSON_IETF within any subscription. If it is set to true, json format will only act on real data content while telemetry message layer will keep on gpb format."
+                },
+                "cpu-max-usage": {
+                    "type": "string",
+                    "description": "Maximum usage of the main control board's CPU used when telemetry collects data."
+                }
+            }
+        },
+        "telemetry-sensor-path-condition-op-config": {
+            "description": "Parameters for a filter criterion.",
+            "properties": {
+                "op-field": {
+                    "type": "string",
+                    "description": "Reference field in the filter criterion. Different paths support different reference fields."
+                },
+                "op-type": {
+                    "type": "string",
+                    "enum": [
+                        "eq",
+                        "gt",
+                        "ge",
+                        "lt",
+                        "le"
+                    ],
+                    "description": "Reference to the op-type of the filter criterion."
+                },
+                "op-value": {
+                    "type": "string",
+                    "description": "Comparison value of the filter criterion. Op-value must be an integer and the maximum value range is [0, 9223372036854775807]. For the actual value range, see the definition of op-field in the YANG model."
+                }
+            }
+        },
+        "telemetry-sensor-path-filter-condition-config": {
+            "description": "Parameters for filter criteria.",
+            "properties": {
+                "conditions": {
+                    "description": "List of filter criteria, including the filter information such as op-field, op-type, and op-value.",
+                    "properties": {
+                        "condition": {
+                            "description": "Configure the filter criteria.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "op-field": {
+                                        "type": "string",
+                                        "x-path": "../config/op-field",
+                                        "description": "Reference to the op-field of the filter criterion."
+                                    },
+                                    "op-type": {
+                                        "type": "string",
+                                        "x-path": "../config/op-type",
+                                        "description": "Reference to the op-type of the filter criterion."
+                                    },
+                                    "op-value": {
+                                        "type": "string",
+                                        "x-path": "../config/op-value",
+                                        "description": "Comparison value of the filter criterion. Op-value must be an integer and the maximum value range is [0, 9223372036854775807]. For the actual value range, see the definition of op-field in the YANG model."
+                                    },
+                                    "config": {
+                                        "description": "Configure the parameters for a filter criterion.",
+                                        "$ref": "#/definitions/telemetry-sensor-path-condition-op-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state of a filter criterion.",
+                                        "$ref": "#/definitions/telemetry-sensor-path-condition-op-config"
+                                    }
+                                }
+                            },
+                            "x-key": "op-field op-type op-value"
+                        }
+                    }
+                }
+            }
+        },
+        "telemetry-sensor-path-filter-attribute-config": {
+            "description": "Configuration parameters relating to the configured name of the telemetry sensor path filter.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Filter name for the telemetry sensor path filter."
+                },
+                "condition-relation": {
+                    "type": "string",
+                    "enum": [
+                        "and",
+                        "or"
+                    ],
+                    "description": "Relationship between filter criteria in a filter of a sampling path."
+                }
+            }
+        },
+        "telemetry-sensor-path-filter-config": {
+            "description": "Condition-based filtering's parameter of the sampling path. If the conditions are met, the data is reported.",
+            "properties": {
+                "filters": {
+                    "description": "List of the top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.",
+                    "properties": {
+                        "filter": {
+                            "description": "Configure the sampling path.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/telemetry-sensor-path-filter-condition-config"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Filter name of a sampling path."
+                                            },
+                                            "config": {
+                                                "description": "Configure the parameters for a filter in a sampling path.",
+                                                "$ref": "#/definitions/telemetry-sensor-path-filter-attribute-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state of a filter in a sampling path.",
+                                                "$ref": "#/definitions/telemetry-sensor-path-filter-attribute-config"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "telemetry-sensor-path-self-define-event-config": {
+            "description": "Parameters for a customized event.",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Description of a customized event."
+                },
+                "level": {
+                    "type": "string",
+                    "description": "Level of a customized event."
+                },
+                "suppress-period": {
+                    "type": "string",
+                    "description": "Suppression period for customized event reporting."
+                },
+                "depth": {
+                    "type": "string",
+                    "description": "Sampling depth."
+                }
+            }
+        },
+        "telemetry-sensor-path-config-self-define-event": {
+            "description": "Configuration parameters relating to the grouping of data model paths comprising a sensor grouping.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/telemetry-sensor-path-self-define-event-config"
+                },
+                {
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "description": "Path to a section of operational state of interest (the sensor)."
+                        }
+                    }
+                }
+            ]
+        },
+        "telemetry-stream-destination-with-vpn-config": {
+            "description": "Configuration parameters for the stream destinations.",
+            "properties": {
+                "destination-address": {
+                    "type": "string",
+                    "description": "IP address of the telemetry stream destination.\nWhen the destination-address is an IPv4 address, it can only be configured as an class A/B/C address.\nWhen the destination-address is an IPv6 address, it cannot be configured as an unspecified address, multicast address, link-local address, loopback address, IPv4-compatible IPv6 address, or IPv4-mapped IPv6 address."
+                },
+                "destination-port": {
+                    "type": "string",
+                    "description": "Protocol (UDP or TCP) port number for the telemetry stream destination."
+                },
+                "vpn-instance": {
+                    "type": "string",
+                    "x-path": "/ni:network-instance/ni:instances/ni:instance/ni:name",
+                    "description": "Name of a VPN instance for the telemetry stream destination."
+                },
+                "protocol": {
+                    "type": "string",
+                    "description": "Selection of the transport protocol for the telemetry stream."
+                },
+                "tls": {
+                    "type": "boolean",
+                    "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                }
+            }
+        },
+        "telemetry-system_schema": {
+            "description": "Top level configuration and state for the\ndevice's telemetry system.",
+            "properties": {
+                "sensor-groups": {
+                    "description": "Top level container for sensor-groups.",
+                    "properties": {
+                        "sensor-group": {
+                            "description": "List of telemetry sensory groups on the local\nsystem, where a sensor grouping represents a resuable\ngrouping of multiple paths and exclude filters.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "sensor-group-id": {
+                                        "type": "string",
+                                        "x-path": "../config/sensor-group-id",
+                                        "description": "Reference to the name or identifier of the\nsensor grouping"
+                                    },
+                                    "config": {
+                                        "description": "Configuration parameters relating to the\ntelemetry sensor grouping",
+                                        "$ref": "#/definitions/telemetry-sensor-group-config"
+                                    },
+                                    "state": {
+                                        "description": "State information relating to the telemetry\nsensor group",
+                                        "$ref": "#/definitions/telemetry-sensor-group-config"
+                                    },
+                                    "sensor-paths": {
+                                        "description": "Top level container to hold a set of sensor\npaths grouped together",
+                                        "properties": {
+                                            "sensor-path": {
+                                                "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "path": {
+                                                            "type": "string",
+                                                            "x-path": "../config/path",
+                                                            "description": "Reference to the path of interest"
+                                                        },
+                                                        "config": {
+                                                            "description": "Configuration parameters to configure a set\nof data model paths as a sensor grouping",
+                                                            "allOf": [
+                                                                {
+                                                                    "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                                },
+                                                                {
+                                                                    "properties": {
+                                                                        "reset-when-start": {
+                                                                            "type": "boolean",
+                                                                            "description": "Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/qosPortQueueStatInfos/qosPortQueueStatInfo allows reset-when-start to be set to true."
+                                                                        },
+                                                                        "depth": {
+                                                                            "type": "string",
+                                                                            "description": "Sampling depth."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "state": {
+                                                            "description": "Configuration parameters to configure a set\nof data model paths as a sensor grouping",
+                                                            "allOf": [
+                                                                {
+                                                                    "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                                },
+                                                                {
+                                                                    "properties": {
+                                                                        "reset-when-start": {
+                                                                            "type": "boolean",
+                                                                            "description": "Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/global-query/default-queue-statisticss/default-queue-statistics allows reset-when-start to be set to true."
+                                                                        },
+                                                                        "depth": {
+                                                                            "type": "string",
+                                                                            "description": "Sampling depth."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "filters": {
+                                                            "description": "List of the top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.",
+                                                            "properties": {
+                                                                "filter": {
+                                                                    "description": "Configure the sampling path.",
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "$ref": "#/definitions/telemetry-sensor-path-filter-condition-config"
+                                                                    },
+                                                                    "x-key": "name"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "path"
+                                            }
+                                        }
+                                    },
+                                    "sensor-paths-self-define-event": {
+                                        "description": "Configure the top level container to hold a set of customized events' sensor paths grouped together. Customized events and heartbeat interval or redundancy suppression cannot be configured at the same time. A customized event can take effect only after at least one filter criterion is configured for the event.",
+                                        "properties": {
+                                            "sensor-path": {
+                                                "description": "Configure the customized events.",
+                                                "type": "array",
+                                                "items": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/definitions/telemetry-sensor-path-filter-config"
+                                                        },
+                                                        {
+                                                            "properties": {
+                                                                "path": {
+                                                                    "type": "string",
+                                                                    "x-path": "../config/path",
+                                                                    "description": "Reference to the path of interest."
+                                                                },
+                                                                "config": {
+                                                                    "description": "Configure the parameters for a customized event.",
+                                                                    "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                                                },
+                                                                "state": {
+                                                                    "description": "Operational state of a customized event.",
+                                                                    "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "x-key": "path"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "sensor-group-id"
+                        }
+                    }
+                },
+                "destination-groups": {
+                    "description": "Top level container for destination group configuration\nand state.",
+                    "properties": {
+                        "destination-group": {
+                            "description": "List of destination-groups. Destination groups allow the\nreuse of common telemetry destinations across the\ntelemetry configuration. An operator references a\nset of destinations via the configurable\ndestination-group-identifier.\n\nA destination group may contain one or more telemetry\ndestinations",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "group-id": {
+                                        "type": "string",
+                                        "x-path": "../config/group-id",
+                                        "description": "Unique identifier for the destination group"
+                                    },
+                                    "config": {
+                                        "description": "Top level config container for destination groups",
+                                        "properties": {
+                                            "group-id": {
+                                                "type": "string",
+                                                "description": "Unique identifier for the destination group"
+                                            }
+                                        }
+                                    },
+                                    "state": {
+                                        "description": "Top level state container for destination groups",
+                                        "properties": {
+                                            "group-id": {
+                                                "type": "string",
+                                                "description": "Unique identifier for destination group"
+                                            }
+                                        }
+                                    },
+                                    "destinations": {
+                                        "description": "The destination container lists the destination\ninformation such as IP address and port of the\ntelemetry messages from the network element.",
+                                        "properties": {
+                                            "destination": {
+                                                "description": "List of telemetry stream destinations",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "destination-address": {
+                                                            "type": "string",
+                                                            "x-path": "../config/destination-address",
+                                                            "description": "Reference to the destination address of the\ntelemetry stream"
+                                                        },
+                                                        "destination-port": {
+                                                            "type": "string",
+                                                            "x-path": "../config/destination-port",
+                                                            "description": "Reference to the port number of the stream\ndestination"
+                                                        },
+                                                        "config": {
+                                                            "description": "Configuration parameters relating to\ntelemetry destinations",
+                                                            "allOf": [
+                                                                {
+                                                                    "$ref": "#/definitions/telemetry-stream-destination-config"
+                                                                },
+                                                                {
+                                                                    "properties": {
+                                                                        "protocol": {
+                                                                            "type": "string",
+                                                                            "description": "Selection of the transport protocol for the telemetry stream."
+                                                                        },
+                                                                        "tls": {
+                                                                            "type": "boolean",
+                                                                            "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "state": {
+                                                            "description": "State information associated with\ntelemetry destinations",
+                                                            "allOf": [
+                                                                {
+                                                                    "$ref": "#/definitions/telemetry-stream-destination-config"
+                                                                },
+                                                                {
+                                                                    "properties": {
+                                                                        "protocol": {
+                                                                            "type": "string",
+                                                                            "description": "Selection of the transport protocol for the telemetry stream."
+                                                                        },
+                                                                        "tls": {
+                                                                            "type": "boolean",
+                                                                            "description": "Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "destination-address destination-port"
+                                            }
+                                        }
+                                    },
+                                    "destinations-with-vpn": {
+                                        "description": "Configure the destination container to list the information about the destination with the VPN such as IP address, port, and VPN of the telemetry messages from the network element.",
+                                        "properties": {
+                                            "destination-with-vpn": {
+                                                "description": "Configure the telemetry stream destinations, including vpn-instance.",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "destination-address": {
+                                                            "type": "string",
+                                                            "x-path": "../config/destination-address",
+                                                            "description": "Reference to the destination address of the telemetry stream."
+                                                        },
+                                                        "destination-port": {
+                                                            "type": "string",
+                                                            "x-path": "../config/destination-port",
+                                                            "description": "Reference to the port number of the stream destination."
+                                                        },
+                                                        "vpn-instance": {
+                                                            "type": "string",
+                                                            "x-path": "../config/vpn-instance",
+                                                            "description": "Name of a VPN instance for the telemetry stream destination."
+                                                        },
+                                                        "config": {
+                                                            "description": "Configure the parameters relating to telemetry destinations.",
+                                                            "$ref": "#/definitions/telemetry-stream-destination-with-vpn-config"
+                                                        },
+                                                        "state": {
+                                                            "description": "Telemetry destinations-associated state.",
+                                                            "$ref": "#/definitions/telemetry-stream-destination-with-vpn-config"
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "destination-address destination-port vpn-instance"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "group-id"
+                        }
+                    }
+                },
+                "subscriptions": {
+                    "description": "This container holds information for both persistent\nand dynamic telemetry subscriptions.",
+                    "properties": {
+                        "persistent": {
+                            "description": "This container holds information relating to persistent\ntelemetry subscriptions. A persistent telemetry\nsubscription is configued locally on the device through\nconfiguration, and is persistent across device restarts or\nother redundancy changes.",
+                            "properties": {
+                                "subscription": {
+                                    "description": "List of telemetry subscriptions. A telemetry\nsubscription consists of a set of collection\ndestinations, stream attributes, and associated paths to\nstate information in the model (sensor data)",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "subscription-name": {
+                                                "type": "string",
+                                                "x-path": "../config/subscription-name",
+                                                "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                                            },
+                                            "config": {
+                                                "description": "Config parameters relating to the telemetry\nsubscriptions on the local device",
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-subscription-name-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-local-source-address-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-qos-marking-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-stream-protocol-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                                    },
+                                                    {
+                                                        "properties": {
+                                                            "local-source-port": {
+                                                                "type": "string",
+                                                                "description": "The source port of UDP packets from the device to a telemetry collector destination. The port range is 1025..65535 when used by IPv6."
+                                                            },
+                                                            "tls": {
+                                                                "type": "boolean",
+                                                                "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                                            },
+                                                            "local-source-interface": {
+                                                                "type": "string",
+                                                                "description": "The interface which will be the source of packets from the device to a telemetry collector destination."
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "state": {
+                                                "description": "State parameters relating to the telemetry\nsubscriptions on the local device",
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-subscription-name-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-subscription-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-subscription-state"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-local-source-address-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-qos-marking-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-stream-protocol-config"
+                                                    },
+                                                    {
+                                                        "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                                    },
+                                                    {
+                                                        "properties": {
+                                                            "local-source-port": {
+                                                                "type": "string",
+                                                                "description": "The source port of UDP packets from the device to a telemetry collector destination."
+                                                            },
+                                                            "tls": {
+                                                                "type": "boolean",
+                                                                "description": "Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                                            },
+                                                            "local-source-interface": {
+                                                                "type": "string",
+                                                                "description": "The interface which will be the source of packets from the device to a telemetry collector destination."
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "sensor-profiles": {
+                                                "description": "A sensor profile is a set of sensor groups or\nindividual sensor paths which are associated with a\ntelemetry subscription. This is the source of the\ntelemetry data for the subscription to send to the\ndefined collectors.",
+                                                "properties": {
+                                                    "sensor-profile": {
+                                                        "description": "List of telemetry sensor groups used\nin the subscription",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "sensor-group": {
+                                                                    "type": "string",
+                                                                    "x-path": "../config/sensor-group",
+                                                                    "description": "Reference to the telemetry sensor group name"
+                                                                },
+                                                                "config": {
+                                                                    "description": "Configuration parameters related to the sensor\nprofile for a subscription",
+                                                                    "$ref": "#/definitions/telemetry-sensor-profile-config"
+                                                                },
+                                                                "state": {
+                                                                    "description": "State information relating to the sensor profile\nfor a subscription",
+                                                                    "$ref": "#/definitions/telemetry-sensor-profile-config"
+                                                                }
+                                                            }
+                                                        },
+                                                        "x-key": "sensor-group"
+                                                    }
+                                                }
+                                            },
+                                            "destination-groups": {
+                                                "description": "A subscription may specify destination addresses.\nIf the subscription supplies destination addresses,\nthe network element will be the initiator of the\ntelemetry streaming, sending it to the destination(s)\nspecified.\n\nIf the destination set is omitted, the subscription\npreconfigures certain elements such as paths and\nsample intervals under a specified subscription ID.\nIn this case, the network element will NOT initiate an\noutbound connection for telemetry, but will wait for\nan inbound connection from a network management\nsystem.\n\nIt is expected that the network management system\nconnecting to the network element will reference\nthe preconfigured subscription ID when initiating\na subscription.",
+                                                "properties": {
+                                                    "destination-group": {
+                                                        "description": "Identifier of the previously defined destination\ngroup",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "group-id": {
+                                                                    "type": "string",
+                                                                    "x-path": "../config/group-id",
+                                                                    "description": "The destination group id references a configured\ngroup of destinations for the telemetry stream."
+                                                                },
+                                                                "config": {
+                                                                    "description": "Configuration parameters related to telemetry\ndestinations.",
+                                                                    "properties": {
+                                                                        "group-id": {
+                                                                            "type": "string",
+                                                                            "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                                                            "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "state": {
+                                                                    "description": "State information related to telemetry\ndestinations",
+                                                                    "properties": {
+                                                                        "group-id": {
+                                                                            "type": "string",
+                                                                            "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                                                            "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "x-key": "group-id"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "x-key": "subscription-name"
+                                }
+                            }
+                        },
+                        "dynamic": {
+                            "description": "This container holds information relating to dynamic\ntelemetry subscriptions. A dynamic subscription is\ntypically configured through an RPC channel, and does not\npersist across device restarts, or if the RPC channel is\nreset or otherwise torn down.",
+                            "properties": {
+                                "subscription": {
+                                    "description": "List representation of telemetry subscriptions that\nare configured via an inline RPC, otherwise known\nas dynamic telemetry subscriptions.",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "subscription-id": {
+                                                "type": "string",
+                                                "x-path": "../state/subscription-id",
+                                                "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                                            },
+                                            "state": {
+                                                "description": "State information relating to dynamic telemetry\nsubscriptions.",
+                                                "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                            },
+                                            "sensor-paths": {
+                                                "description": "Top level container to hold a set of sensor\npaths grouped together",
+                                                "properties": {
+                                                    "sensor-path": {
+                                                        "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "path": {
+                                                                    "type": "string",
+                                                                    "x-path": "../state/path",
+                                                                    "description": "Reference to the path of interest"
+                                                                },
+                                                                "state": {
+                                                                    "description": "State information for a dynamic subscription's\npaths of interest",
+                                                                    "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                                }
+                                                            }
+                                                        },
+                                                        "x-key": "path"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "x-key": "subscription-id"
+                                }
+                            }
+                        }
+                    }
+                },
+                "global": {
+                    "description": "Configure the global attribute of telemetry.",
+                    "properties": {
+                        "config": {
+                            "description": "Configure the parameters relating to the telemetry global attribute.",
+                            "$ref": "#/definitions/telemetry-global-attribute-config"
+                        },
+                        "state": {
+                            "description": "Operational state of information relating to the telemetry global attribute.",
+                            "$ref": "#/definitions/telemetry-global-attribute-config"
+                        }
+                    }
+                }
+            }
+        },
+        "sensor-groups_schema": {
+            "description": "Top level container for sensor-groups.",
+            "properties": {
+                "sensor-group": {
+                    "description": "List of telemetry sensory groups on the local\nsystem, where a sensor grouping represents a resuable\ngrouping of multiple paths and exclude filters.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "sensor-group-id": {
+                                "type": "string",
+                                "x-path": "../config/sensor-group-id",
+                                "description": "Reference to the name or identifier of the\nsensor grouping"
+                            },
+                            "config": {
+                                "description": "Configuration parameters relating to the\ntelemetry sensor grouping",
+                                "$ref": "#/definitions/telemetry-sensor-group-config"
+                            },
+                            "state": {
+                                "description": "State information relating to the telemetry\nsensor group",
+                                "$ref": "#/definitions/telemetry-sensor-group-config"
+                            },
+                            "sensor-paths": {
+                                "description": "Top level container to hold a set of sensor\npaths grouped together",
+                                "properties": {
+                                    "sensor-path": {
+                                        "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string",
+                                                    "x-path": "../config/path",
+                                                    "description": "Reference to the path of interest"
+                                                },
+                                                "config": {
+                                                    "description": "Configuration parameters to configure a set\nof data model paths as a sensor grouping",
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                        },
+                                                        {
+                                                            "properties": {
+                                                                "reset-when-start": {
+                                                                    "type": "boolean",
+                                                                    "description": "Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/qosPortQueueStatInfos/qosPortQueueStatInfo allows reset-when-start to be set to true."
+                                                                },
+                                                                "depth": {
+                                                                    "type": "string",
+                                                                    "description": "Sampling depth."
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "state": {
+                                                    "description": "Configuration parameters to configure a set\nof data model paths as a sensor grouping",
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                        },
+                                                        {
+                                                            "properties": {
+                                                                "reset-when-start": {
+                                                                    "type": "boolean",
+                                                                    "description": "Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/global-query/default-queue-statisticss/default-queue-statistics allows reset-when-start to be set to true."
+                                                                },
+                                                                "depth": {
+                                                                    "type": "string",
+                                                                    "description": "Sampling depth."
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "filters": {
+                                                    "description": "List of the top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.",
+                                                    "properties": {
+                                                        "filter": {
+                                                            "description": "Configure the sampling path.",
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/telemetry-sensor-path-filter-condition-config"
+                                                            },
+                                                            "x-key": "name"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "x-key": "path"
+                                    }
+                                }
+                            },
+                            "sensor-paths-self-define-event": {
+                                "description": "Configure the top level container to hold a set of customized events' sensor paths grouped together. Customized events and heartbeat interval or redundancy suppression cannot be configured at the same time. A customized event can take effect only after at least one filter criterion is configured for the event.",
+                                "properties": {
+                                    "sensor-path": {
+                                        "description": "Configure the customized events.",
+                                        "type": "array",
+                                        "items": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/telemetry-sensor-path-filter-config"
+                                                },
+                                                {
+                                                    "properties": {
+                                                        "path": {
+                                                            "type": "string",
+                                                            "x-path": "../config/path",
+                                                            "description": "Reference to the path of interest."
+                                                        },
+                                                        "config": {
+                                                            "description": "Configure the parameters for a customized event.",
+                                                            "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                                        },
+                                                        "state": {
+                                                            "description": "Operational state of a customized event.",
+                                                            "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "x-key": "path"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "x-key": "sensor-group-id"
+                }
+            }
+        },
+        "sensor-group_schema": {
+            "properties": {
+                "sensor-group-id": {
+                    "type": "string",
+                    "x-path": "../config/sensor-group-id",
+                    "description": "Reference to the name or identifier of the\nsensor grouping"
+                },
+                "config": {
+                    "description": "Configuration parameters relating to the\ntelemetry sensor grouping",
+                    "$ref": "#/definitions/telemetry-sensor-group-config"
+                },
+                "state": {
+                    "description": "State information relating to the telemetry\nsensor group",
+                    "$ref": "#/definitions/telemetry-sensor-group-config"
+                },
+                "sensor-paths": {
+                    "description": "Top level container to hold a set of sensor\npaths grouped together",
+                    "properties": {
+                        "sensor-path": {
+                            "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "path": {
+                                        "type": "string",
+                                        "x-path": "../config/path",
+                                        "description": "Reference to the path of interest"
+                                    },
+                                    "config": {
+                                        "description": "Configuration parameters to configure a set\nof data model paths as a sensor grouping",
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/definitions/telemetry-sensor-path-config"
+                                            },
+                                            {
+                                                "properties": {
+                                                    "reset-when-start": {
+                                                        "type": "boolean",
+                                                        "description": "Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/qosPortQueueStatInfos/qosPortQueueStatInfo allows reset-when-start to be set to true."
+                                                    },
+                                                    "depth": {
+                                                        "type": "string",
+                                                        "description": "Sampling depth."
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "state": {
+                                        "description": "Configuration parameters to configure a set\nof data model paths as a sensor grouping",
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/definitions/telemetry-sensor-path-config"
+                                            },
+                                            {
+                                                "properties": {
+                                                    "reset-when-start": {
+                                                        "type": "boolean",
+                                                        "description": "Enable/disable clearing a field in the sampling path when a sampling sensor group is associated with subscription. The fields that can be cleared in different sampling paths are different. The value true indicates that the field is cleared, and the value false indicates that the field is not cleared. Currently, only the sampling path huawei-qos:qos/global-query/default-queue-statisticss/default-queue-statistics allows reset-when-start to be set to true."
+                                                    },
+                                                    "depth": {
+                                                        "type": "string",
+                                                        "description": "Sampling depth."
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "filters": {
+                                        "description": "List of the top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.",
+                                        "properties": {
+                                            "filter": {
+                                                "description": "Configure the sampling path.",
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/telemetry-sensor-path-filter-condition-config"
+                                                },
+                                                "x-key": "name"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "path"
+                        }
+                    }
+                },
+                "sensor-paths-self-define-event": {
+                    "description": "Configure the top level container to hold a set of customized events' sensor paths grouped together. Customized events and heartbeat interval or redundancy suppression cannot be configured at the same time. A customized event can take effect only after at least one filter criterion is configured for the event.",
+                    "properties": {
+                        "sensor-path": {
+                            "description": "Configure the customized events.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/telemetry-sensor-path-filter-config"
+                                    },
+                                    {
+                                        "properties": {
+                                            "path": {
+                                                "type": "string",
+                                                "x-path": "../config/path",
+                                                "description": "Reference to the path of interest."
+                                            },
+                                            "config": {
+                                                "description": "Configure the parameters for a customized event.",
+                                                "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                            },
+                                            "state": {
+                                                "description": "Operational state of a customized event.",
+                                                "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "path"
+                        }
+                    }
+                }
+            }
+        },
+        "sensor-paths_schema": {
+            "description": "Top level container to hold a set of sensor\npaths grouped together",
+            "properties": {
+                "sensor-path": {
+                    "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "path": {
+                                "type": "string",
+                                "x-path": "../state/path",
+                                "description": "Reference to the path of interest"
+                            },
+                            "state": {
+                                "description": "State information for a dynamic subscription's\npaths of interest",
+                                "$ref": "#/definitions/telemetry-sensor-path-config"
+                            }
+                        }
+                    },
+                    "x-key": "path"
+                }
+            }
+        },
+        "sensor-path_schema": {
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "x-path": "../state/path",
+                    "description": "Reference to the path of interest"
+                },
+                "state": {
+                    "description": "State information for a dynamic subscription's\npaths of interest",
+                    "$ref": "#/definitions/telemetry-sensor-path-config"
+                }
+            }
+        },
+        "config_schema": {
+            "description": "Configuration parameters related to telemetry\ndestinations.",
+            "properties": {
+                "group-id": {
+                    "type": "string",
+                    "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                    "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                }
+            }
+        },
+        "state_schema": {
+            "description": "State information related to telemetry\ndestinations",
+            "properties": {
+                "group-id": {
+                    "type": "string",
+                    "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                    "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                }
+            }
+        },
+        "filters_schema": {
+            "description": "List of the top level container for filters. If the filter criteria are met, sampled data is sent to a collector. A filter and heartbeat interval or redundancy suppression cannot be configured at the same time.",
+            "properties": {
+                "filter": {
+                    "description": "Configure the sampling path.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/telemetry-sensor-path-filter-condition-config"
+                    },
+                    "x-key": "name"
+                }
+            }
+        },
+        "conditions_schema": {
+            "description": "List of filter criteria, including the filter information such as op-field, op-type, and op-value.",
+            "properties": {
+                "condition": {
+                    "description": "Configure the filter criteria.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "op-field": {
+                                "type": "string",
+                                "x-path": "../config/op-field",
+                                "description": "Reference to the op-field of the filter criterion."
+                            },
+                            "op-type": {
+                                "type": "string",
+                                "x-path": "../config/op-type",
+                                "description": "Reference to the op-type of the filter criterion."
+                            },
+                            "op-value": {
+                                "type": "string",
+                                "x-path": "../config/op-value",
+                                "description": "Comparison value of the filter criterion. Op-value must be an integer and the maximum value range is [0, 9223372036854775807]. For the actual value range, see the definition of op-field in the YANG model."
+                            },
+                            "config": {
+                                "description": "Configure the parameters for a filter criterion.",
+                                "$ref": "#/definitions/telemetry-sensor-path-condition-op-config"
+                            },
+                            "state": {
+                                "description": "Operational state of a filter criterion.",
+                                "$ref": "#/definitions/telemetry-sensor-path-condition-op-config"
+                            }
+                        }
+                    },
+                    "x-key": "op-field op-type op-value"
+                }
+            }
+        },
+        "condition_schema": {
+            "properties": {
+                "op-field": {
+                    "type": "string",
+                    "x-path": "../config/op-field",
+                    "description": "Reference to the op-field of the filter criterion."
+                },
+                "op-type": {
+                    "type": "string",
+                    "x-path": "../config/op-type",
+                    "description": "Reference to the op-type of the filter criterion."
+                },
+                "op-value": {
+                    "type": "string",
+                    "x-path": "../config/op-value",
+                    "description": "Comparison value of the filter criterion. Op-value must be an integer and the maximum value range is [0, 9223372036854775807]. For the actual value range, see the definition of op-field in the YANG model."
+                },
+                "config": {
+                    "description": "Configure the parameters for a filter criterion.",
+                    "$ref": "#/definitions/telemetry-sensor-path-condition-op-config"
+                },
+                "state": {
+                    "description": "Operational state of a filter criterion.",
+                    "$ref": "#/definitions/telemetry-sensor-path-condition-op-config"
+                }
+            }
+        },
+        "sensor-paths-self-define-event_schema": {
+            "description": "Configure the top level container to hold a set of customized events' sensor paths grouped together. Customized events and heartbeat interval or redundancy suppression cannot be configured at the same time. A customized event can take effect only after at least one filter criterion is configured for the event.",
+            "properties": {
+                "sensor-path": {
+                    "description": "Configure the customized events.",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/telemetry-sensor-path-filter-config"
+                            },
+                            {
+                                "properties": {
+                                    "path": {
+                                        "type": "string",
+                                        "x-path": "../config/path",
+                                        "description": "Reference to the path of interest."
+                                    },
+                                    "config": {
+                                        "description": "Configure the parameters for a customized event.",
+                                        "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                    },
+                                    "state": {
+                                        "description": "Operational state of a customized event.",
+                                        "$ref": "#/definitions/telemetry-sensor-path-config-self-define-event"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "path"
+                }
+            }
+        },
+        "destination-groups_schema": {
+            "description": "A subscription may specify destination addresses.\nIf the subscription supplies destination addresses,\nthe network element will be the initiator of the\ntelemetry streaming, sending it to the destination(s)\nspecified.\n\nIf the destination set is omitted, the subscription\npreconfigures certain elements such as paths and\nsample intervals under a specified subscription ID.\nIn this case, the network element will NOT initiate an\noutbound connection for telemetry, but will wait for\nan inbound connection from a network management\nsystem.\n\nIt is expected that the network management system\nconnecting to the network element will reference\nthe preconfigured subscription ID when initiating\na subscription.",
+            "properties": {
+                "destination-group": {
+                    "description": "Identifier of the previously defined destination\ngroup",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "group-id": {
+                                "type": "string",
+                                "x-path": "../config/group-id",
+                                "description": "The destination group id references a configured\ngroup of destinations for the telemetry stream."
+                            },
+                            "config": {
+                                "description": "Configuration parameters related to telemetry\ndestinations.",
+                                "properties": {
+                                    "group-id": {
+                                        "type": "string",
+                                        "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                        "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                    }
+                                }
+                            },
+                            "state": {
+                                "description": "State information related to telemetry\ndestinations",
+                                "properties": {
+                                    "group-id": {
+                                        "type": "string",
+                                        "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                        "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "x-key": "group-id"
+                }
+            }
+        },
+        "destination-group_schema": {
+            "properties": {
+                "group-id": {
+                    "type": "string",
+                    "x-path": "../config/group-id",
+                    "description": "The destination group id references a configured\ngroup of destinations for the telemetry stream."
+                },
+                "config": {
+                    "description": "Configuration parameters related to telemetry\ndestinations.",
+                    "properties": {
+                        "group-id": {
+                            "type": "string",
+                            "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                            "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                        }
+                    }
+                },
+                "state": {
+                    "description": "State information related to telemetry\ndestinations",
+                    "properties": {
+                        "group-id": {
+                            "type": "string",
+                            "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                            "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                        }
+                    }
+                }
+            }
+        },
+        "destinations_schema": {
+            "description": "The destination container lists the destination\ninformation such as IP address and port of the\ntelemetry messages from the network element.",
+            "properties": {
+                "destination": {
+                    "description": "List of telemetry stream destinations",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "destination-address": {
+                                "type": "string",
+                                "x-path": "../config/destination-address",
+                                "description": "Reference to the destination address of the\ntelemetry stream"
+                            },
+                            "destination-port": {
+                                "type": "string",
+                                "x-path": "../config/destination-port",
+                                "description": "Reference to the port number of the stream\ndestination"
+                            },
+                            "config": {
+                                "description": "Configuration parameters relating to\ntelemetry destinations",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/telemetry-stream-destination-config"
+                                    },
+                                    {
+                                        "properties": {
+                                            "protocol": {
+                                                "type": "string",
+                                                "description": "Selection of the transport protocol for the telemetry stream."
+                                            },
+                                            "tls": {
+                                                "type": "boolean",
+                                                "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "state": {
+                                "description": "State information associated with\ntelemetry destinations",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/telemetry-stream-destination-config"
+                                    },
+                                    {
+                                        "properties": {
+                                            "protocol": {
+                                                "type": "string",
+                                                "description": "Selection of the transport protocol for the telemetry stream."
+                                            },
+                                            "tls": {
+                                                "type": "boolean",
+                                                "description": "Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "x-key": "destination-address destination-port"
+                }
+            }
+        },
+        "destination_schema": {
+            "properties": {
+                "destination-address": {
+                    "type": "string",
+                    "x-path": "../config/destination-address",
+                    "description": "Reference to the destination address of the\ntelemetry stream"
+                },
+                "destination-port": {
+                    "type": "string",
+                    "x-path": "../config/destination-port",
+                    "description": "Reference to the port number of the stream\ndestination"
+                },
+                "config": {
+                    "description": "Configuration parameters relating to\ntelemetry destinations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/telemetry-stream-destination-config"
+                        },
+                        {
+                            "properties": {
+                                "protocol": {
+                                    "type": "string",
+                                    "description": "Selection of the transport protocol for the telemetry stream."
+                                },
+                                "tls": {
+                                    "type": "boolean",
+                                    "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "state": {
+                    "description": "State information associated with\ntelemetry destinations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/telemetry-stream-destination-config"
+                        },
+                        {
+                            "properties": {
+                                "protocol": {
+                                    "type": "string",
+                                    "description": "Selection of the transport protocol for the telemetry stream."
+                                },
+                                "tls": {
+                                    "type": "boolean",
+                                    "description": "Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "destinations-with-vpn_schema": {
+            "description": "Configure the destination container to list the information about the destination with the VPN such as IP address, port, and VPN of the telemetry messages from the network element.",
+            "properties": {
+                "destination-with-vpn": {
+                    "description": "Configure the telemetry stream destinations, including vpn-instance.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "destination-address": {
+                                "type": "string",
+                                "x-path": "../config/destination-address",
+                                "description": "Reference to the destination address of the telemetry stream."
+                            },
+                            "destination-port": {
+                                "type": "string",
+                                "x-path": "../config/destination-port",
+                                "description": "Reference to the port number of the stream destination."
+                            },
+                            "vpn-instance": {
+                                "type": "string",
+                                "x-path": "../config/vpn-instance",
+                                "description": "Name of a VPN instance for the telemetry stream destination."
+                            },
+                            "config": {
+                                "description": "Configure the parameters relating to telemetry destinations.",
+                                "$ref": "#/definitions/telemetry-stream-destination-with-vpn-config"
+                            },
+                            "state": {
+                                "description": "Telemetry destinations-associated state.",
+                                "$ref": "#/definitions/telemetry-stream-destination-with-vpn-config"
+                            }
+                        }
+                    },
+                    "x-key": "destination-address destination-port vpn-instance"
+                }
+            }
+        },
+        "destination-with-vpn_schema": {
+            "properties": {
+                "destination-address": {
+                    "type": "string",
+                    "x-path": "../config/destination-address",
+                    "description": "Reference to the destination address of the telemetry stream."
+                },
+                "destination-port": {
+                    "type": "string",
+                    "x-path": "../config/destination-port",
+                    "description": "Reference to the port number of the stream destination."
+                },
+                "vpn-instance": {
+                    "type": "string",
+                    "x-path": "../config/vpn-instance",
+                    "description": "Name of a VPN instance for the telemetry stream destination."
+                },
+                "config": {
+                    "description": "Configure the parameters relating to telemetry destinations.",
+                    "$ref": "#/definitions/telemetry-stream-destination-with-vpn-config"
+                },
+                "state": {
+                    "description": "Telemetry destinations-associated state.",
+                    "$ref": "#/definitions/telemetry-stream-destination-with-vpn-config"
+                }
+            }
+        },
+        "subscriptions_schema": {
+            "description": "This container holds information for both persistent\nand dynamic telemetry subscriptions.",
+            "properties": {
+                "persistent": {
+                    "description": "This container holds information relating to persistent\ntelemetry subscriptions. A persistent telemetry\nsubscription is configued locally on the device through\nconfiguration, and is persistent across device restarts or\nother redundancy changes.",
+                    "properties": {
+                        "subscription": {
+                            "description": "List of telemetry subscriptions. A telemetry\nsubscription consists of a set of collection\ndestinations, stream attributes, and associated paths to\nstate information in the model (sensor data)",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "subscription-name": {
+                                        "type": "string",
+                                        "x-path": "../config/subscription-name",
+                                        "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                                    },
+                                    "config": {
+                                        "description": "Config parameters relating to the telemetry\nsubscriptions on the local device",
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/definitions/telemetry-subscription-name-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-local-source-address-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-qos-marking-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-stream-protocol-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                            },
+                                            {
+                                                "properties": {
+                                                    "local-source-port": {
+                                                        "type": "string",
+                                                        "description": "The source port of UDP packets from the device to a telemetry collector destination. The port range is 1025..65535 when used by IPv6."
+                                                    },
+                                                    "tls": {
+                                                        "type": "boolean",
+                                                        "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                                    },
+                                                    "local-source-interface": {
+                                                        "type": "string",
+                                                        "description": "The interface which will be the source of packets from the device to a telemetry collector destination."
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "state": {
+                                        "description": "State parameters relating to the telemetry\nsubscriptions on the local device",
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/definitions/telemetry-subscription-name-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-subscription-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-subscription-state"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-local-source-address-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-qos-marking-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-stream-protocol-config"
+                                            },
+                                            {
+                                                "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                            },
+                                            {
+                                                "properties": {
+                                                    "local-source-port": {
+                                                        "type": "string",
+                                                        "description": "The source port of UDP packets from the device to a telemetry collector destination."
+                                                    },
+                                                    "tls": {
+                                                        "type": "boolean",
+                                                        "description": "Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                                    },
+                                                    "local-source-interface": {
+                                                        "type": "string",
+                                                        "description": "The interface which will be the source of packets from the device to a telemetry collector destination."
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "sensor-profiles": {
+                                        "description": "A sensor profile is a set of sensor groups or\nindividual sensor paths which are associated with a\ntelemetry subscription. This is the source of the\ntelemetry data for the subscription to send to the\ndefined collectors.",
+                                        "properties": {
+                                            "sensor-profile": {
+                                                "description": "List of telemetry sensor groups used\nin the subscription",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "sensor-group": {
+                                                            "type": "string",
+                                                            "x-path": "../config/sensor-group",
+                                                            "description": "Reference to the telemetry sensor group name"
+                                                        },
+                                                        "config": {
+                                                            "description": "Configuration parameters related to the sensor\nprofile for a subscription",
+                                                            "$ref": "#/definitions/telemetry-sensor-profile-config"
+                                                        },
+                                                        "state": {
+                                                            "description": "State information relating to the sensor profile\nfor a subscription",
+                                                            "$ref": "#/definitions/telemetry-sensor-profile-config"
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "sensor-group"
+                                            }
+                                        }
+                                    },
+                                    "destination-groups": {
+                                        "description": "A subscription may specify destination addresses.\nIf the subscription supplies destination addresses,\nthe network element will be the initiator of the\ntelemetry streaming, sending it to the destination(s)\nspecified.\n\nIf the destination set is omitted, the subscription\npreconfigures certain elements such as paths and\nsample intervals under a specified subscription ID.\nIn this case, the network element will NOT initiate an\noutbound connection for telemetry, but will wait for\nan inbound connection from a network management\nsystem.\n\nIt is expected that the network management system\nconnecting to the network element will reference\nthe preconfigured subscription ID when initiating\na subscription.",
+                                        "properties": {
+                                            "destination-group": {
+                                                "description": "Identifier of the previously defined destination\ngroup",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "group-id": {
+                                                            "type": "string",
+                                                            "x-path": "../config/group-id",
+                                                            "description": "The destination group id references a configured\ngroup of destinations for the telemetry stream."
+                                                        },
+                                                        "config": {
+                                                            "description": "Configuration parameters related to telemetry\ndestinations.",
+                                                            "properties": {
+                                                                "group-id": {
+                                                                    "type": "string",
+                                                                    "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                                                    "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                                                }
+                                                            }
+                                                        },
+                                                        "state": {
+                                                            "description": "State information related to telemetry\ndestinations",
+                                                            "properties": {
+                                                                "group-id": {
+                                                                    "type": "string",
+                                                                    "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                                                    "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "group-id"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "subscription-name"
+                        }
+                    }
+                },
+                "dynamic": {
+                    "description": "This container holds information relating to dynamic\ntelemetry subscriptions. A dynamic subscription is\ntypically configured through an RPC channel, and does not\npersist across device restarts, or if the RPC channel is\nreset or otherwise torn down.",
+                    "properties": {
+                        "subscription": {
+                            "description": "List representation of telemetry subscriptions that\nare configured via an inline RPC, otherwise known\nas dynamic telemetry subscriptions.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "subscription-id": {
+                                        "type": "string",
+                                        "x-path": "../state/subscription-id",
+                                        "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                                    },
+                                    "state": {
+                                        "description": "State information relating to dynamic telemetry\nsubscriptions.",
+                                        "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                    },
+                                    "sensor-paths": {
+                                        "description": "Top level container to hold a set of sensor\npaths grouped together",
+                                        "properties": {
+                                            "sensor-path": {
+                                                "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "path": {
+                                                            "type": "string",
+                                                            "x-path": "../state/path",
+                                                            "description": "Reference to the path of interest"
+                                                        },
+                                                        "state": {
+                                                            "description": "State information for a dynamic subscription's\npaths of interest",
+                                                            "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "path"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "x-key": "subscription-id"
+                        }
+                    }
+                }
+            }
+        },
+        "persistent_schema": {
+            "description": "This container holds information relating to persistent\ntelemetry subscriptions. A persistent telemetry\nsubscription is configued locally on the device through\nconfiguration, and is persistent across device restarts or\nother redundancy changes.",
+            "properties": {
+                "subscription": {
+                    "description": "List of telemetry subscriptions. A telemetry\nsubscription consists of a set of collection\ndestinations, stream attributes, and associated paths to\nstate information in the model (sensor data)",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "subscription-name": {
+                                "type": "string",
+                                "x-path": "../config/subscription-name",
+                                "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                            },
+                            "config": {
+                                "description": "Config parameters relating to the telemetry\nsubscriptions on the local device",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/telemetry-subscription-name-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-local-source-address-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-qos-marking-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-stream-protocol-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                    },
+                                    {
+                                        "properties": {
+                                            "local-source-port": {
+                                                "type": "string",
+                                                "description": "The source port of UDP packets from the device to a telemetry collector destination. The port range is 1025..65535 when used by IPv6."
+                                            },
+                                            "tls": {
+                                                "type": "boolean",
+                                                "description": "Enable/disable data encryption at the transport layer. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                            },
+                                            "local-source-interface": {
+                                                "type": "string",
+                                                "description": "The interface which will be the source of packets from the device to a telemetry collector destination."
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "state": {
+                                "description": "State parameters relating to the telemetry\nsubscriptions on the local device",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/telemetry-subscription-name-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-subscription-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-subscription-state"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-local-source-address-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-qos-marking-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-stream-protocol-config"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/telemetry-stream-encoding-config"
+                                    },
+                                    {
+                                        "properties": {
+                                            "local-source-port": {
+                                                "type": "string",
+                                                "description": "The source port of UDP packets from the device to a telemetry collector destination."
+                                            },
+                                            "tls": {
+                                                "type": "boolean",
+                                                "description": "Whether data encryption at the transport layer is allowed. If encryption is allowed, whether the data is encrypted depends on the SSL policy of the gRPC client. If an SSL policy is configured, data at the transport layer is encrypted. Otherwise, the data is not encrypted."
+                                            },
+                                            "local-source-interface": {
+                                                "type": "string",
+                                                "description": "The interface which will be the source of packets from the device to a telemetry collector destination."
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "sensor-profiles": {
+                                "description": "A sensor profile is a set of sensor groups or\nindividual sensor paths which are associated with a\ntelemetry subscription. This is the source of the\ntelemetry data for the subscription to send to the\ndefined collectors.",
+                                "properties": {
+                                    "sensor-profile": {
+                                        "description": "List of telemetry sensor groups used\nin the subscription",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "sensor-group": {
+                                                    "type": "string",
+                                                    "x-path": "../config/sensor-group",
+                                                    "description": "Reference to the telemetry sensor group name"
+                                                },
+                                                "config": {
+                                                    "description": "Configuration parameters related to the sensor\nprofile for a subscription",
+                                                    "$ref": "#/definitions/telemetry-sensor-profile-config"
+                                                },
+                                                "state": {
+                                                    "description": "State information relating to the sensor profile\nfor a subscription",
+                                                    "$ref": "#/definitions/telemetry-sensor-profile-config"
+                                                }
+                                            }
+                                        },
+                                        "x-key": "sensor-group"
+                                    }
+                                }
+                            },
+                            "destination-groups": {
+                                "description": "A subscription may specify destination addresses.\nIf the subscription supplies destination addresses,\nthe network element will be the initiator of the\ntelemetry streaming, sending it to the destination(s)\nspecified.\n\nIf the destination set is omitted, the subscription\npreconfigures certain elements such as paths and\nsample intervals under a specified subscription ID.\nIn this case, the network element will NOT initiate an\noutbound connection for telemetry, but will wait for\nan inbound connection from a network management\nsystem.\n\nIt is expected that the network management system\nconnecting to the network element will reference\nthe preconfigured subscription ID when initiating\na subscription.",
+                                "properties": {
+                                    "destination-group": {
+                                        "description": "Identifier of the previously defined destination\ngroup",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "group-id": {
+                                                    "type": "string",
+                                                    "x-path": "../config/group-id",
+                                                    "description": "The destination group id references a configured\ngroup of destinations for the telemetry stream."
+                                                },
+                                                "config": {
+                                                    "description": "Configuration parameters related to telemetry\ndestinations.",
+                                                    "properties": {
+                                                        "group-id": {
+                                                            "type": "string",
+                                                            "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                                            "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                                        }
+                                                    }
+                                                },
+                                                "state": {
+                                                    "description": "State information related to telemetry\ndestinations",
+                                                    "properties": {
+                                                        "group-id": {
+                                                            "type": "string",
+                                                            "x-path": "../../../../../../../destination-groups/destination-group/group-id",
+                                                            "description": "The destination group id references a reusable\ngroup of destination addresses and ports for\nthe telemetry stream."
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "x-key": "group-id"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "x-key": "subscription-name"
+                }
+            }
+        },
+        "subscription_schema": {
+            "properties": {
+                "subscription-id": {
+                    "type": "string",
+                    "x-path": "../state/subscription-id",
+                    "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                },
+                "state": {
+                    "description": "State information relating to dynamic telemetry\nsubscriptions.",
+                    "$ref": "#/definitions/telemetry-stream-encoding-config"
+                },
+                "sensor-paths": {
+                    "description": "Top level container to hold a set of sensor\npaths grouped together",
+                    "properties": {
+                        "sensor-path": {
+                            "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "path": {
+                                        "type": "string",
+                                        "x-path": "../state/path",
+                                        "description": "Reference to the path of interest"
+                                    },
+                                    "state": {
+                                        "description": "State information for a dynamic subscription's\npaths of interest",
+                                        "$ref": "#/definitions/telemetry-sensor-path-config"
+                                    }
+                                }
+                            },
+                            "x-key": "path"
+                        }
+                    }
+                }
+            }
+        },
+        "sensor-profiles_schema": {
+            "description": "A sensor profile is a set of sensor groups or\nindividual sensor paths which are associated with a\ntelemetry subscription. This is the source of the\ntelemetry data for the subscription to send to the\ndefined collectors.",
+            "properties": {
+                "sensor-profile": {
+                    "description": "List of telemetry sensor groups used\nin the subscription",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "sensor-group": {
+                                "type": "string",
+                                "x-path": "../config/sensor-group",
+                                "description": "Reference to the telemetry sensor group name"
+                            },
+                            "config": {
+                                "description": "Configuration parameters related to the sensor\nprofile for a subscription",
+                                "$ref": "#/definitions/telemetry-sensor-profile-config"
+                            },
+                            "state": {
+                                "description": "State information relating to the sensor profile\nfor a subscription",
+                                "$ref": "#/definitions/telemetry-sensor-profile-config"
+                            }
+                        }
+                    },
+                    "x-key": "sensor-group"
+                }
+            }
+        },
+        "sensor-profile_schema": {
+            "properties": {
+                "sensor-group": {
+                    "type": "string",
+                    "x-path": "../config/sensor-group",
+                    "description": "Reference to the telemetry sensor group name"
+                },
+                "config": {
+                    "description": "Configuration parameters related to the sensor\nprofile for a subscription",
+                    "$ref": "#/definitions/telemetry-sensor-profile-config"
+                },
+                "state": {
+                    "description": "State information relating to the sensor profile\nfor a subscription",
+                    "$ref": "#/definitions/telemetry-sensor-profile-config"
+                }
+            }
+        },
+        "dynamic_schema": {
+            "description": "This container holds information relating to dynamic\ntelemetry subscriptions. A dynamic subscription is\ntypically configured through an RPC channel, and does not\npersist across device restarts, or if the RPC channel is\nreset or otherwise torn down.",
+            "properties": {
+                "subscription": {
+                    "description": "List representation of telemetry subscriptions that\nare configured via an inline RPC, otherwise known\nas dynamic telemetry subscriptions.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "subscription-id": {
+                                "type": "string",
+                                "x-path": "../state/subscription-id",
+                                "description": "Reference to the identifier of the subscription\nitself. The id will be the handle to refer to the\nsubscription once created"
+                            },
+                            "state": {
+                                "description": "State information relating to dynamic telemetry\nsubscriptions.",
+                                "$ref": "#/definitions/telemetry-stream-encoding-config"
+                            },
+                            "sensor-paths": {
+                                "description": "Top level container to hold a set of sensor\npaths grouped together",
+                                "properties": {
+                                    "sensor-path": {
+                                        "description": "List of paths in the model which together\ncomprise a sensor grouping. Filters for each path\nto exclude items are also provided.",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string",
+                                                    "x-path": "../state/path",
+                                                    "description": "Reference to the path of interest"
+                                                },
+                                                "state": {
+                                                    "description": "State information for a dynamic subscription's\npaths of interest",
+                                                    "$ref": "#/definitions/telemetry-sensor-path-config"
+                                                }
+                                            }
+                                        },
+                                        "x-key": "path"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "x-key": "subscription-id"
+                }
+            }
+        },
+        "global_schema": {
+            "description": "Configure the global attribute of telemetry.",
+            "properties": {
+                "config": {
+                    "description": "Configure the parameters relating to the telemetry global attribute.",
+                    "$ref": "#/definitions/telemetry-global-attribute-config"
+                },
+                "state": {
+                    "description": "Operational state of information relating to the telemetry global attribute.",
+                    "$ref": "#/definitions/telemetry-global-attribute-config"
+                }
+            }
+        }
+    }
+}

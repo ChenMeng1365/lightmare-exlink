@@ -1,0 +1,102 @@
+module zxr10-of-controller {
+  namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/of-controller'
+            ;
+  prefix of-controller ;
+  import zxr10-netconf-defs {
+    prefix ncd ;
+  }
+  organization 'ZTE Corporation'
+               ;
+  contact 'ZTE Corporation  '+"\n"
+        + '   Nanjing Institute of ZTE Corporation '+"\n"
+        + '   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China '+"\n"
+        + '   Tel: +86-25-52870000'
+          ;
+  revision 2018-03-26 {
+    description 'Initial version.'
+                ;
+  }
+  container configuration {
+    description 'Configuration for openflow controller'
+                ;
+    container of-controllers {
+      list of-controller {
+        key name ;
+        leaf name {
+          description 'Configure Name of openflow controller'
+                      ;
+          type string ;
+        }
+        container listen {
+          presence listen ;
+          leaf proto {
+            description 'Configure type of transport layer protocol'
+                        ;
+            type enumeration {
+              enum tcp {
+                value 1 ;
+              }
+              enum tls {
+                value 2 ;
+              }
+            }
+            mandatory true ;
+          }
+          leaf listen-port {
+            description 'Configure listen port'
+                        ;
+            type uint32 {
+              range 1025..65535 ;
+            }
+            mandatory true ;
+          }
+          leaf listen-ip {
+            description 'Configure ipv4 address for listen'
+                        ;
+            type ncd:ipv4-address ;
+          }
+          leaf vrf {
+            description 'Configure VRF for listen command'
+                        ;
+            type string ;
+          }
+        }
+        container keepalive {
+          presence keepalive ;
+          leaf probe-interval {
+            description 'Configure time of keepalive interval'
+                        ;
+            type uint32 {
+              range 1..65535 ;
+            }
+            default 60 ;
+          }
+          leaf probe-count {
+            description 'Configure keepalive count'
+                        ;
+            type uint16 {
+              range 1..10 ;
+            }
+            default 3 ;
+          }
+        }
+        container bind-tls-cert {
+          description 'bind tls cert'
+                      ;
+          presence TLS ;
+          leaf context-name {
+            description 'Configure context-name for TLS'
+                        ;
+            type string ;
+            mandatory true ;
+          }
+          leaf profile-name {
+            description 'Configure profile-name for TLS'
+                        ;
+            type string ;
+          }
+        }
+      }
+    }
+  }
+}

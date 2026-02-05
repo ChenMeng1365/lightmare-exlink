@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-dns"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dns="urn:huawei:yang:huawei-dns"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-dns"/>
+  <prefix value="dns"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>DNS management.</text>
+  </description>
+  <revision date="2020-04-24">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="dns"/>
+  <container name="dns">
+    <description>
+      <text>DNS management.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure determine whether to enable DNS.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DNS enable flag.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="src-ips">
+      <description>
+        <text>List of IPv4 Source Server.</text>
+      </description>
+      <list name="src-ip">
+        <key value="vrf-name source-ipv4-addr"/>
+        <description>
+          <text>Configure IPv4 Source Server.</text>
+        </description>
+        <leaf name="vrf-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <description>
+            <text>VPN name.</text>
+          </description>
+        </leaf>
+        <leaf name="source-ipv4-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IPv4 address of source server.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="timeout">
+      <description>
+        <text>Configure specifies the amount of time to wait for a response to a DNS query. If the ip domain timeout command is not configured, system will wait 3 seconds for a response to a DNS query.</text>
+      </description>
+      <leaf name="interval-time">
+        <type name="uint32">
+          <range value="1..10"/>
+        </type>
+        <units name="s"/>
+        <default value="5"/>
+        <description>
+          <text>The amount of time to wait for a response to a DNS query (s).</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="try-number">
+      <description>
+        <text>Configure specifies the number of times to retry sending DNS queries. If the ip domain retry command is not configured, system will retry DNS queries twice.</text>
+      </description>
+      <leaf name="probe-count">
+        <type name="uint32">
+          <range value="1..3"/>
+        </type>
+        <default value="2"/>
+        <description>
+          <text>Specifies the number of times to retry sending DNS queries.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="domains">
+      <description>
+        <text>List of domain.</text>
+      </description>
+      <list name="domain">
+        <key value="vpn name"/>
+        <description>
+          <text>Configure domain name.</text>
+        </description>
+        <leaf name="vpn">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <description>
+            <text>VPN name.</text>
+          </description>
+        </leaf>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..63"/>
+          </type>
+          <description>
+            <text>Domain name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="ipv4-servers">
+      <description>
+        <text>List of DNS IPv4 server.</text>
+      </description>
+      <list name="ipv4-server">
+        <key value="vpn address"/>
+        <description>
+          <text>Configure DNS IPv4 server.</text>
+        </description>
+        <leaf name="vpn">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name = current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <description>
+            <text>VPN name.</text>
+          </description>
+        </leaf>
+        <leaf name="address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Address of IPv4 server.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="dns-pkt-stats">
+      <config value="false"/>
+      <description>
+        <text>Statistics of DNS packets.</text>
+      </description>
+      <leaf name="input-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of received packets.</text>
+        </description>
+      </leaf>
+      <leaf name="output-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of sent packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of discarded packets.</text>
+        </description>
+      </leaf>
+      <leaf name="rr-a">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of received 'A' resource record types.</text>
+        </description>
+      </leaf>
+      <leaf name="rr-aaaa">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of received 'AAAA' resource record types.</text>
+        </description>
+      </leaf>
+      <leaf name="rr-ptr">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of received 'PTR' resource record types.</text>
+        </description>
+      </leaf>
+      <leaf name="rr-cname">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of received 'CNAME' resource record types.</text>
+        </description>
+      </leaf>
+      <leaf name="rr-unknown">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of received unknown resource record types.</text>
+        </description>
+      </leaf>
+      <leaf name="standard">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of sent standard query packets.</text>
+        </description>
+      </leaf>
+      <leaf name="question-a">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of sent 'A' query types.</text>
+        </description>
+      </leaf>
+      <leaf name="question-aaaa">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of sent 'AAAA' query types.</text>
+        </description>
+      </leaf>
+      <leaf name="question-ptr">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of sent 'PTR' query types.</text>
+        </description>
+      </leaf>
+      <leaf name="rcv-tcp-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of received TCP packets.</text>
+        </description>
+      </leaf>
+      <leaf name="rcv-udp-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of received UDP packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-tcp-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of discarded TCP packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-udp-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of discarded UDP packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-len">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded length error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-id">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded ID error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-server">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded server error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-code">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded code error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-tc">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded truncated error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-query-cnt">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded query count error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-answer-cnt">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded answer count error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-expand-name">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded expand name error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-class">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded class error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="drop-other">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Count of discarded other error packets.</text>
+        </description>
+      </leaf>
+      <leaf name="sent-udp-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of sent UDP packets.</text>
+        </description>
+      </leaf>
+      <leaf name="sent-tcp-total">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>Total count of sent TCP packets.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+</module>

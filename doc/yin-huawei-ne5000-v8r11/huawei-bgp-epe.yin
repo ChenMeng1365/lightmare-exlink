@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bgp-epe"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bgp-epe="urn:huawei:yang:huawei-bgp-epe"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp"
+        xmlns:srv6="urn:huawei:yang:huawei-srv6"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-bgp-epe"/>
+  <prefix value="bgp-epe"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <import module="huawei-srv6">
+    <prefix value="srv6"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>BGP EPE configuration.</text>
+  </description>
+  <revision date="2020-03-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bgp"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process">
+    <description>
+      <text>BGP egress engineering segment-routing IPv6 configuration.</text>
+    </description>
+    <container name="epe-srv6">
+      <when condition="../../../ni:name='_public_'"/>
+      <description>
+        <text>Configure BGP egress engineering segment-routing IPv6 information.</text>
+      </description>
+      <leaf name="locator-name">
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+        </type>
+        <description>
+          <text>Referenced locator name.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:peers/bgp:peer">
+    <description>
+      <text>BGP peer egress engineering segment-routing IPv6 configuration.</text>
+    </description>
+    <container name="epe-srv6">
+      <when condition="../../../../../ni:name='_public_' and ../bgp:egress-engineer='enable'"/>
+      <description>
+        <text>Configure BGP peer egress engineering segment-routing IPv6 information.</text>
+      </description>
+      <choice name="sid-option">
+        <description>
+          <text>Set automatic SID or static SID.</text>
+        </description>
+        <case name="auto-sid">
+          <description>
+            <text>Set automatic SID.</text>
+          </description>
+          <leaf name="locator-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+            </type>
+            <description>
+              <text>Name of the locator referenced by a BGP peer.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="static-sid">
+          <when condition="../../../bgp-epe:epe-srv6/bgp-epe:locator-name"/>
+          <description>
+            <text>Set static SID value.</text>
+          </description>
+          <leaf name="psp-sid">
+            <type name="inet:ipv6-address-no-zone"/>
+            <must condition="not(../no-psp-usp-sid) or (../psp-sid != ../no-psp-usp-sid)"/>
+            <description>
+              <text>Static End.X SID (PSP) of a BGP peer.</text>
+            </description>
+          </leaf>
+          <leaf name="no-psp-usp-sid">
+            <type name="inet:ipv6-address-no-zone"/>
+            <must condition="not(../psp-sid) or (../psp-sid != ../no-psp-usp-sid)"/>
+            <description>
+              <text>Static End.X SID (no PSP, no USP) of a BGP peer.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+    </container>
+  </augment>
+</module>

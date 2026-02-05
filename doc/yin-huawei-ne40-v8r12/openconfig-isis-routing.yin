@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-isis-routing"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-isis="http://openconfig.net/yang/openconfig-isis"
+           xmlns:oc-isis-types="http://openconfig.net/yang/isis-types"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+           xmlns:oc-mplst="http://openconfig.net/yang/mpls-types"
+           xmlns:oc-sr="http://openconfig.net/yang/sr">
+  <belongs-to module="openconfig-isis">
+    <prefix value="oc-isis"/>
+  </belongs-to>
+  <import module="openconfig-isis-types">
+    <prefix value="oc-isis-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-mpls-types">
+    <prefix value="oc-mplst"/>
+  </import>
+  <import module="openconfig-segment-routing">
+    <prefix value="oc-sr"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This module describes YANG model for ISIS Routing</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.4.2"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.4.2</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-05">
+    <description>
+      <text>Fix bugs in when statements.</text>
+    </description>
+    <reference>
+      <text>0.4.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-05-14">
+    <description>
+      <text>Update LSDB model to correct Extended IS reach TLV
+bug. This change is backwards incompatible due to
+adding an additional level of hierarchy to support
+multiple instances of the TLV.</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-26">
+    <description>
+      <text>Update LSDB and fix bugs.</text>
+    </description>
+    <reference>
+      <text>0.3.2</text>
+    </reference>
+  </revision>
+  <revision date="2017-05-15">
+    <description>
+      <text>Refactor LSDB.</text>
+    </description>
+    <reference>
+      <text>0.3.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-01-13">
+    <description>
+      <text>Remove top-level /isis container</text>
+    </description>
+    <reference>
+      <text>0.2.1</text>
+    </reference>
+  </revision>
+  <revision date="2016-12-15">
+    <description>
+      <text>Add segment routing to IS-IS module</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-10-18">
+    <description>
+      <text>Initial revision of IS-IS models.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <grouping name="rt-admin-config">
+    <description>
+      <text>Re-usable grouping to enable or disable a particular IS-IS feature.</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <description>
+        <text>When set to true, the functionality within which this leaf is
+defined is enabled, when set to false it is explicitly disabled.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="isis-afi-safi-config">
+    <description>
+      <text>This grouping defines Address-Family configuration parameters</text>
+    </description>
+    <leaf name="afi-name">
+      <type name="identityref">
+        <base name="oc-isis-types:AFI_TYPE"/>
+      </type>
+      <description>
+        <text>Address-family type.</text>
+      </description>
+    </leaf>
+    <leaf name="safi-name">
+      <type name="identityref">
+        <base name="oc-isis-types:SAFI_TYPE"/>
+      </type>
+      <description>
+        <text>Subsequent address-family type.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="isis-shortcuts-afi-config">
+    <description>
+      <text>This grouping defines ISIS Shortcuts configuration parameters</text>
+    </description>
+    <leaf name="afi-name">
+      <type name="identityref">
+        <base name="oc-isis-types:AFI_TYPE"/>
+      </type>
+      <description>
+        <text>Address-family type.</text>
+      </description>
+    </leaf>
+    <leaf-list name="nh-type">
+      <type name="identityref">
+        <base name="oc-mplst:PATH_SETUP_PROTOCOL"/>
+      </type>
+      <description>
+        <text>Tunnel NH Type(RSVP,SR). When present it implies
+that nh-type shortcut is enabled for a specified AFI.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="isis-shortcuts-config">
+    <description>
+      <text>This grouping defines ISIS Shortcuts consfiguration parameters</text>
+    </description>
+    <container name="config">
+      <description>
+        <text>This container defines ISIS shortcuts configuration.</text>
+      </description>
+      <uses name="rt-admin-config"/>
+    </container>
+    <container name="state">
+      <config value="false"/>
+      <description>
+        <text>This container defines state for ISIS shortcuts.</text>
+      </description>
+      <uses name="rt-admin-config"/>
+    </container>
+  </grouping>
+  <grouping name="isis-mt-config">
+    <description>
+      <text>This grouping defines ISIS multi-topology configuration parameters</text>
+    </description>
+    <leaf name="afi-name">
+      <type name="identityref">
+        <base name="oc-isis-types:AFI_TYPE"/>
+      </type>
+      <description>
+        <text>Address-family type.</text>
+      </description>
+    </leaf>
+    <leaf name="safi-name">
+      <type name="identityref">
+        <base name="oc-isis-types:SAFI_TYPE"/>
+      </type>
+      <description>
+        <text>Subsequent address-family type.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="isis-metric-config">
+    <description>
+      <text>This grouping defines ISIS metric configuration</text>
+    </description>
+    <leaf name="metric">
+      <type name="uint32"/>
+      <default value="10"/>
+      <description>
+        <text>ISIS metric value(default=10).</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="isis-afi-safi-list">
+    <description>
+      <text>This grouping defines address-family configuration and state
+information</text>
+    </description>
+    <list name="af">
+      <key value="afi-name safi-name"/>
+      <description>
+        <text>Address-family/Subsequent Address-family list.</text>
+      </description>
+      <leaf name="afi-name">
+        <type name="leafref">
+          <path value="../config/afi-name"/>
+        </type>
+        <description>
+          <text>Reference to address-family type</text>
+        </description>
+      </leaf>
+      <leaf name="safi-name">
+        <type name="leafref">
+          <path value="../config/safi-name"/>
+        </type>
+        <description>
+          <text>Reference to subsequent address-family type</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>This container defines AFI-SAFI configuration parameters</text>
+        </description>
+        <uses name="isis-afi-safi-config"/>
+        <uses name="isis-metric-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>This container defines AFI-SAFI State information</text>
+        </description>
+        <uses name="isis-afi-safi-config"/>
+        <uses name="isis-metric-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+      <uses name="isis-mt-list"/>
+    </list>
+  </grouping>
+  <grouping name="isis-if-afi-safi-list">
+    <description>
+      <text>This grouping defines address-family configuration and state
+information</text>
+    </description>
+    <list name="af">
+      <key value="afi-name safi-name"/>
+      <description>
+        <text>Address-family/Subsequent Address-family list.</text>
+      </description>
+      <leaf name="afi-name">
+        <type name="leafref">
+          <path value="../config/afi-name"/>
+        </type>
+        <description>
+          <text>Reference to address-family type</text>
+        </description>
+      </leaf>
+      <leaf name="safi-name">
+        <type name="leafref">
+          <path value="../config/safi-name"/>
+        </type>
+        <description>
+          <text>Reference to subsequent address-family type</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>This container defines AFI-SAFI configuration parameters. Single
+topology is the default setting.</text>
+        </description>
+        <uses name="isis-afi-safi-config"/>
+        <uses name="isis-metric-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>This container defines AFI-SAFI State information</text>
+        </description>
+        <uses name="isis-afi-safi-config"/>
+        <uses name="isis-metric-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+      <uses name="oc-sr:sr-igp-interface-top"/>
+    </list>
+  </grouping>
+  <grouping name="isis-if-global-afi-safi-list">
+    <description>
+      <text>This grouping defines address-family configuration and state
+information</text>
+    </description>
+    <list name="af">
+      <key value="afi-name safi-name"/>
+      <description>
+        <text>Address-family/Subsequent Address-family list.</text>
+      </description>
+      <leaf name="afi-name">
+        <type name="leafref">
+          <path value="../config/afi-name"/>
+        </type>
+        <description>
+          <text>Reference to address-family type</text>
+        </description>
+      </leaf>
+      <leaf name="safi-name">
+        <type name="leafref">
+          <path value="../config/safi-name"/>
+        </type>
+        <description>
+          <text>Reference to subsequent address-family type</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>This container defines AFI-SAFI configuration parameters. Single
+topology is the default setting.</text>
+        </description>
+        <uses name="isis-afi-safi-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>This container defines AFI-SAFI State information</text>
+        </description>
+        <uses name="isis-afi-safi-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+    </list>
+  </grouping>
+  <grouping name="isis-shortcuts-afi-list">
+    <description>
+      <text>This grouping defines ISIS Shorcuts configuration and
+state information</text>
+    </description>
+    <list name="afi">
+      <key value="afi-name"/>
+      <description>
+        <text>Address-family list.</text>
+      </description>
+      <leaf name="afi-name">
+        <type name="leafref">
+          <path value="../config/afi-name"/>
+        </type>
+        <description>
+          <text>Reference to address-family type.</text>
+        </description>
+      </leaf>
+      <container name="config">
+        <description>
+          <text>This container defines ISIS Shortcuts configuration parameters</text>
+        </description>
+        <uses name="isis-shortcuts-afi-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>This container defines ISIS Shortcuts state information</text>
+        </description>
+        <uses name="isis-shortcuts-afi-config"/>
+      </container>
+    </list>
+  </grouping>
+  <grouping name="isis-mt-list">
+    <description>
+      <text>This grouping defines multi-topology address-family configuration and
+state information. MT0 - IPv4 Unicast, MT2 - IPv6 Unicast, MT3 -
+IPv4 Multicast, MT4 - IPv6 Multicast</text>
+    </description>
+    <container name="multi-topology">
+      <description>
+        <text>This container defines multi-topology address-family configuration
+and state information. ISIS TLV 235, 237.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>This container defines AFI-SAFI multi-topology configuration
+parameters</text>
+        </description>
+        <uses name="isis-mt-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>This container defines AFI-SAFI multi-topology state information</text>
+        </description>
+        <uses name="isis-mt-config"/>
+        <uses name="rt-admin-config"/>
+      </container>
+    </container>
+  </grouping>
+</submodule>

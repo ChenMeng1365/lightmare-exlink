@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="openconfig-pf-path-groups"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:oc-pf="http://openconfig.net/yang/policy-forwarding"
+           xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <belongs-to module="openconfig-policy-forwarding">
+    <prefix value="oc-pf"/>
+  </belongs-to>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>This submodule contains configuration and operational state
+relating to path-selection-groups which are used to group
+forwarding entities together to be used as policy forwarding
+targets.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.2.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.2.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-06-21">
+    <description>
+      <text>Amend policy forwarding model based on ACL changes.</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-28">
+    <description>
+      <text>Initial public release of policy forwarding.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-11-08">
+    <description>
+      <text>Initial revision</text>
+    </description>
+    <reference>
+      <text>0.0.1</text>
+    </reference>
+  </revision>
+  <grouping name="pf-path-groups-structural">
+    <description>
+      <text>Structural grouping containing the definition of path groups
+within the context of policy-based forwarding.</text>
+    </description>
+    <container name="path-selection-groups">
+      <description>
+        <text>Surrounding container for the path selection groups defined
+within the policy forwarding model.</text>
+      </description>
+      <list name="path-selection-group">
+        <key value="group-id"/>
+        <leaf name="group-id">
+          <type name="leafref">
+            <path value="../config/group-id"/>
+          </type>
+          <description>
+            <text>Reference to a unique identifier for the path selection
+group</text>
+          </description>
+        </leaf>
+        <description>
+          <text>A path selection group is a set of forwarding resources,
+which are grouped as eligible paths for a particular
+policy-based forwarding rule. A policy rule may select a
+path-selection-group as the egress for a particular type of
+traffic (e.g., DSCP value). The system then utilises its
+standard forwarding lookup mechanism to select from the
+paths that are specified within the group - for IP packets,
+the destination IP address is used such that the packet is
+routed to the entity within the path-selection-group that
+corresponds to the next-hop for the destination IP address
+of the packet; for L2 packets, the selection is based on the
+destination MAC address. If multiple paths within the
+selection group are eligible to be used for forwarding,
+the packets are load-balanced between them according to
+the system's usual load balancing logic.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration parameters relating to the path selection
+group.</text>
+          </description>
+          <uses name="pf-path-selection-group-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state parameters relating to the path
+selection group.</text>
+          </description>
+          <uses name="pf-path-selection-group-config"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="pf-path-selection-group-config">
+    <description>
+      <text>Configuration parameters relating to a path selection group.</text>
+    </description>
+    <leaf name="group-id">
+      <type name="string"/>
+      <description>
+        <text>A unique name for the path-selection-group</text>
+      </description>
+    </leaf>
+    <leaf-list name="mpls-lsp">
+      <type name="leafref">
+        <path value="../../../../../mpls/lsps/constrained-path/tunnels/tunnel/config/name"/>
+      </type>
+      <description>
+        <text>A set of MPLS constrained-path LSPs which should be
+considered for the policy forwarding next-hop. In order to
+select between the LSPs within the path-selection-group, the
+system should determine which LSP provides the best path to
+the next-hop for the routed packet.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+</submodule>

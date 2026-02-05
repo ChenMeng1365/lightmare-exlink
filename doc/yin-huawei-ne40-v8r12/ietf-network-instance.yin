@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-network-instance"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ni="urn:ietf:params:xml:ns:yang:ietf-network-instance"
+        xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces"
+        xmlns:ip="urn:ietf:params:xml:ns:yang:ietf-ip"
+        xmlns:yangmnt="urn:ietf:params:xml:ns:yang:ietf-yang-schema-mount">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-network-instance"/>
+  <prefix value="ni"/>
+  <import module="ietf-interfaces">
+    <prefix value="if"/>
+    <reference>
+      <text>RFC 8343: A YANG Data Model for Interface Management</text>
+    </reference>
+  </import>
+  <import module="ietf-ip">
+    <prefix value="ip"/>
+    <reference>
+      <text>RFC 8344: A YANG Data Model for IP Management</text>
+    </reference>
+  </import>
+  <import module="ietf-yang-schema-mount">
+    <prefix value="yangmnt"/>
+    <reference>
+      <text>RFC 8528: YANG Schema Mount</text>
+    </reference>
+  </import>
+  <organization>
+    <text>IETF Routing Area (rtgwg) Working Group</text>
+  </organization>
+  <contact>
+    <text>WG Web:   &lt;https://datatracker.ietf.org/wg/rtgwg&gt;
+WG List:  &lt;mailto:rtgwg@ietf.org&gt;
+
+Author:   Lou Berger
+          &lt;mailto:lberger@labn.net&gt;
+Author:   Christian Hopps
+          &lt;mailto:chopps@chopps.org&gt;
+Author:   Acee Lindem
+          &lt;mailto:acee@cisco.com&gt;
+Author:   Dean Bogdanovic
+          &lt;mailto:ivandean@gmail.com&gt;</text>
+  </contact>
+  <description>
+    <text>This module is used to support multiple network instances
+within a single physical or virtual device.  Network
+instances are commonly known as VRFs (VPN Routing and
+Forwarding) and VSIs (Virtual Switching Instances).
+
+The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+are to be interpreted as described in BCP 14 (RFC 2119)
+(RFC 8174) when, and only when, they appear in all capitals,
+ as shown here.
+
+Copyright (c) 2019 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD
+License set forth in Section 4.c of the IETF Trust's Legal
+Provisions Relating to IETF Documents
+(https://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC 8529; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2019-01-21">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>RFC 8529</text>
+    </reference>
+  </revision>
+  <container name="network-instances">
+    <description>
+      <text>Network instances, each of which consists of
+VRFs and/or VSIs.</text>
+    </description>
+    <reference>
+      <text>RFC 8349: A YANG Data Model for Routing Management</text>
+    </reference>
+    <list name="network-instance">
+      <key value="name"/>
+      <description>
+        <text>List of network instances.</text>
+      </description>
+      <leaf name="name">
+        <type name="string"/>
+        <mandatory value="true"/>
+        <description>
+          <text>device-scoped identifier for the network
+instance.</text>
+        </description>
+      </leaf>
+      <leaf name="enabled">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Flag indicating whether or not the network
+instance is enabled.</text>
+        </description>
+      </leaf>
+      <leaf name="description">
+        <type name="string"/>
+        <description>
+          <text>Description of the network instance
+and its intended purpose.</text>
+        </description>
+      </leaf>
+      <choice name="ni-type">
+        <description>
+          <text>This node serves as an anchor point for different types
+of network instances.  Each 'case' is expected to
+differ in terms of the information needed in the
+parent/core to support the NI and may differ in their
+mounted-schema definition.  When the mounted schema is
+not expected to be the same for a specific type of NI,
+a mount point should be defined.</text>
+        </description>
+      </choice>
+      <choice name="root-type">
+        <mandatory value="true"/>
+        <description>
+          <text>Well-known mount points.</text>
+        </description>
+        <container name="vrf-root">
+          <description>
+            <text>Container for mount point.</text>
+          </description>
+          <yangmnt:mount-point label="vrf-root">
+            <description>
+              <text>Root for L3VPN-type models.  This will typically
+not be an inline-type mount point.</text>
+            </description>
+          </yangmnt:mount-point>
+        </container>
+        <container name="vsi-root">
+          <description>
+            <text>Container for mount point.</text>
+          </description>
+          <yangmnt:mount-point label="vsi-root">
+            <description>
+              <text>Root for L2VPN-type models.  This will typically
+not be an inline-type mount point.</text>
+            </description>
+          </yangmnt:mount-point>
+        </container>
+        <container name="vv-root">
+          <description>
+            <text>Container for mount point.</text>
+          </description>
+          <yangmnt:mount-point label="vv-root">
+            <description>
+              <text>Root models that support both L2VPN-type bridging
+and L3VPN-type routing.  This will typically
+not be an inline-type mount point.</text>
+            </description>
+          </yangmnt:mount-point>
+        </container>
+      </choice>
+    </list>
+  </container>
+  <augment target-node="/if:interfaces/if:interface">
+    <description>
+      <text>Add a node for the identification of the network
+instance associated with the information configured
+on a interface.
+
+Note that a standard error will be returned if the
+identified leafref isn't present.  If an interface cannot
+be assigned for any other reason, the operation SHALL fail
+with an error-tag of 'operation-failed' and an
+error-app-tag of 'ni-assignment-failed'.  A meaningful
+error-info that indicates the source of the assignment
+failure SHOULD also be provided.</text>
+    </description>
+    <leaf name="bind-ni-name">
+      <type name="leafref">
+        <path value="/network-instances/network-instance/name"/>
+      </type>
+      <description>
+        <text>Network instance to which an interface is bound.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/if:interfaces/if:interface/ip:ipv4">
+    <description>
+      <text>Add a node for the identification of the network
+instance associated with the information configured
+on an IPv4 interface.
+
+Note that a standard error will be returned if the
+identified leafref isn't present.  If an interface cannot
+be assigned for any other reason, the operation SHALL fail
+with an error-tag of 'operation-failed' and an
+error-app-tag of 'ni-assignment-failed'.  A meaningful
+error-info that indicates the source of the assignment
+failure SHOULD also be provided.</text>
+    </description>
+    <leaf name="bind-ni-name">
+      <type name="leafref">
+        <path value="/network-instances/network-instance/name"/>
+      </type>
+      <description>
+        <text>Network instance to which IPv4 interface is bound.</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/if:interfaces/if:interface/ip:ipv6">
+    <description>
+      <text>Add a node for the identification of the network
+instance associated with the information configured
+on an IPv6 interface.
+
+Note that a standard error will be returned if the
+identified leafref isn't present.  If an interface cannot
+be assigned for any other reason, the operation SHALL fail
+with an error-tag of 'operation-failed' and an
+error-app-tag of 'ni-assignment-failed'.  A meaningful
+error-info that indicates the source of the assignment
+failure SHOULD also be provided.</text>
+    </description>
+    <leaf name="bind-ni-name">
+      <type name="leafref">
+        <path value="/network-instances/network-instance/name"/>
+      </type>
+      <description>
+        <text>Network instance to which IPv6 interface is bound.</text>
+      </description>
+    </leaf>
+  </augment>
+  <notification name="bind-ni-name-failed">
+    <description>
+      <text>Indicates an error in the association of an interface to an
+NI.  Only generated after success is initially returned when
+bind-ni-name is set.
+
+Note: Some errors may need to be reported for multiple
+associations, e.g., a single error may need to be reported
+for an IPv4 and an IPv6 bind-ni-name.
+
+At least one container with a bind-ni-name leaf MUST be
+included in this notification.</text>
+    </description>
+    <leaf name="name">
+      <type name="leafref">
+        <path value="/if:interfaces/if:interface/if:name"/>
+      </type>
+      <mandatory value="true"/>
+      <description>
+        <text>Contains the interface name associated with the
+failure.</text>
+      </description>
+    </leaf>
+    <container name="interface">
+      <description>
+        <text>Generic interface type.</text>
+      </description>
+      <leaf name="bind-ni-name">
+        <type name="leafref">
+          <path value="/if:interfaces/if:interface/ni:bind-ni-name"/>
+        </type>
+        <description>
+          <text>Contains the bind-ni-name associated with the
+failure.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="ipv4">
+      <description>
+        <text>IPv4 interface type.</text>
+      </description>
+      <leaf name="bind-ni-name">
+        <type name="leafref">
+          <path value="/if:interfaces/if:interface/ip:ipv4/ni:bind-ni-name"/>
+        </type>
+        <description>
+          <text>Contains the bind-ni-name associated with the
+failure.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="ipv6">
+      <description>
+        <text>IPv6 interface type.</text>
+      </description>
+      <leaf name="bind-ni-name">
+        <type name="leafref">
+          <path value="/if:interfaces/if:interface/ip:ipv6/ni:bind-ni-name"/>
+        </type>
+        <description>
+          <text>Contains the bind-ni-name associated with the
+failure.</text>
+        </description>
+      </leaf>
+    </container>
+    <leaf name="error-info">
+      <type name="string"/>
+      <description>
+        <text>Optionally, indicates the source of the assignment
+failure.</text>
+      </description>
+    </leaf>
+  </notification>
+</module>

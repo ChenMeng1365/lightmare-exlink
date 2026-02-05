@@ -1,0 +1,1569 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "ietf-alarms-x733 API generated from ietf-alarms-x733@2019-09-11.yang",
+        "version": "1.0.0",
+        "title": "ietf-alarms-x733 API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "x733-alarm-parameters": {
+            "description": "Common X.733 parameters for alarms.",
+            "properties": {
+                "event-type": {
+                    "type": "string",
+                    "enum": [
+                        "other",
+                        "communications-alarm",
+                        "quality-of-service-alarm",
+                        "processing-error-alarm",
+                        "equipment-alarm",
+                        "environmental-alarm",
+                        "integrity-violation",
+                        "operational-violation",
+                        "physical-violation",
+                        "security-service-or-mechanism-violation",
+                        "time-domain-violation"
+                    ],
+                    "description": "The X.733/X.736 event type for this alarm."
+                },
+                "probable-cause": {
+                    "type": "string",
+                    "description": "The X.733 probable cause for this alarm."
+                },
+                "probable-cause-string": {
+                    "type": "string",
+                    "description": "The user-friendly string matching\nthe probable cause integer value.  The string\nSHOULD match the X.733 enumeration.  For example,\nvalue 27 is 'localNodeTransmissionError'."
+                },
+                "threshold-information": {
+                    "description": "This parameter shall be present when the alarm\nis a result of crossing a threshold. ",
+                    "properties": {
+                        "triggered-threshold": {
+                            "type": "string",
+                            "description": "The identifier of the threshold attribute that\ncaused the notification."
+                        },
+                        "observed-value": {
+                            "type": "string",
+                            "description": "The value of the gauge or counter that crossed\nthe threshold.  This may be different from the\nthreshold value if, for example, the gauge may\nonly take on discrete values."
+                        },
+                        "threshold-level": {
+                            "description": "In the case of a gauge, the threshold level specifies\na pair of threshold values: the first is the value\nof the crossed threshold, and the second is its\ncorresponding hysteresis; in the case of a counter,\nthe threshold level specifies only the threshold\nvalue.",
+                            "properties": {
+                                "up": {
+                                    "properties": {
+                                        "up-high": {
+                                            "type": "string",
+                                            "description": "The going-up threshold for raising the alarm."
+                                        },
+                                        "up-low": {
+                                            "type": "string",
+                                            "description": "The going-down threshold for clearing the alarm.\nThis is used for hysteresis functions for gauges."
+                                        }
+                                    }
+                                },
+                                "down": {
+                                    "properties": {
+                                        "down-low": {
+                                            "type": "string",
+                                            "description": "The going-down threshold for raising the alarm."
+                                        },
+                                        "down-high": {
+                                            "type": "string",
+                                            "description": "The going-up threshold for clearing the alarm.\nThis is used for hysteresis functions for gauges."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "arm-time": {
+                            "type": "string",
+                            "description": "For a gauge threshold, it's the time at which the\nthreshold was last re-armed; namely, it's the time after\nthe previous threshold crossing at which the hysteresis\nvalue of the threshold was exceeded, thus again permitting\nthe generation of notifications when the threshold is\ncrossed.  For a counter threshold, it's the later of the\ntime at which the threshold offset was last applied or the\ncounter was last initialized (for resettable counters)."
+                        }
+                    }
+                },
+                "monitored-attributes": {
+                    "description": "The Monitored attributes parameter, when present, defines\none or more attributes of the resource and their\ncorresponding values at the time of the alarm.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/attribute"
+                    },
+                    "x-key": "id"
+                },
+                "proposed-repair-actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "This parameter, when present, is used if the cause is\nknown and the system being managed can suggest one or\nmore solutions (such as switch in standby equipment,\nretry, and replace media)."
+                    }
+                },
+                "trend-indication": {
+                    "type": "string",
+                    "enum": [
+                        "less-severe",
+                        "no-change",
+                        "more-severe"
+                    ],
+                    "description": "This parameter specifies the current severity\ntrend of the resource.  If present, it indicates\nthat there are one or more alarms ('outstanding\nalarms') that have not been cleared and that\npertain to the same resource as this alarm\n('current alarm') does.  The possible values are:\n  more-severe: The Perceived severity in the current\n    alarm is higher (more severe) than that reported in\n    any of the outstanding alarms.\n  no-change: The Perceived severity reported in the\n    current alarm is the same as the highest (most severe)\n    of any of the outstanding alarms.\n  less-severe: There is at least one outstanding alarm\n    of a severity higher (more severe) than that in the\n    current alarm."
+                },
+                "backedup-status": {
+                    "type": "boolean",
+                    "description": "This parameter, when present, specifies whether or not the\nobject emitting the alarm has been backed up; therefore, it\nis possible to know whether or not services provided to the\nuser have been disrupted when this parameter is included.\nThe use of this field in conjunction with the\n'perceived-severity' field provides information in an\nindependent form to qualify the seriousness of the alarm and\nthe ability of the system as a whole to continue to provide\nservices.  If the value of this parameter is true, it\nindicates that the object emitting the alarm has been backed\nup; if false, the object has not been backed up."
+                },
+                "backup-object": {
+                    "type": "string",
+                    "description": "This parameter SHALL be present when the 'backedup-status'\nparameter is present and has the value 'true'.  This\nparameter specifies the managed object instance that is\nproviding back-up services for the managed object to which\nthe notification pertains.  This parameter is useful, for\nexample, when the back-up object is from a pool of objects,\nany of which may be dynamically allocated to replace a\nfaulty object."
+                },
+                "additional-information": {
+                    "description": "This parameter allows the inclusion of an additional\ninformation set in the alarm.  It is a series of data\nstructures, each of which contains three items of\ninformation: an identifier, a significance indicator,\nand the problem information.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "identifier": {
+                                "type": "string",
+                                "description": "Identifies the data type of the information parameter."
+                            },
+                            "significant": {
+                                "type": "boolean",
+                                "description": "Set to 'true' if the receiving system must be able to\nparse the contents of the information subparameter\nfor the event report to be fully understood."
+                            },
+                            "information": {
+                                "type": "string",
+                                "description": "Additional information about the alarm."
+                            }
+                        }
+                    },
+                    "x-key": "identifier"
+                },
+                "security-alarm-detector": {
+                    "type": "string",
+                    "description": "This parameter identifies the detector of the security\nalarm."
+                },
+                "service-user": {
+                    "type": "string",
+                    "description": "This parameter identifies the service-user whose request\nfor service led to the generation of the security alarm."
+                },
+                "service-provider": {
+                    "type": "string",
+                    "description": "This parameter identifies the intended service-provider\nof the service that led to the generation of the security\nalarm."
+                }
+            }
+        },
+        "x733-alarm-definition-parameters": {
+            "description": "Common X.733 parameters for alarm definitions.\nThis grouping is used to define those alarm\nattributes that can be mapped from the alarm-type\nmechanism in the ietf-alarms module.",
+            "properties": {
+                "event-type": {
+                    "type": "string",
+                    "enum": [
+                        "other",
+                        "communications-alarm",
+                        "quality-of-service-alarm",
+                        "processing-error-alarm",
+                        "equipment-alarm",
+                        "environmental-alarm",
+                        "integrity-violation",
+                        "operational-violation",
+                        "physical-violation",
+                        "security-service-or-mechanism-violation",
+                        "time-domain-violation"
+                    ],
+                    "description": "The alarm type has this X.733/X.736 event type."
+                },
+                "probable-cause": {
+                    "type": "string",
+                    "description": "The alarm type has this X.733 probable cause value.\nThis module defines probable cause as an integer\nand not as an enumeration.  The reason being that the\nprimary use of probable cause is in the management\napplication if it is based on the X.733 standard.\nHowever, most management applications have their own\ndefined enum definitions and merging enums from\ndifferent systems might create conflicts.  By using\na configurable uint32, the system can be configured\nto match the enum values in the management application."
+                },
+                "probable-cause-string": {
+                    "type": "string",
+                    "description": "This string can be used to give a user-friendly string\nto the probable cause value."
+                }
+            }
+        },
+        "attribute": {
+            "description": "A grouping to match the ITU generic reference to\nan attribute.",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "The resource representing the attribute."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "The value represented as a string since it could\nbe of any type."
+                }
+            }
+        },
+        "alarms_schema": {
+            "description": "The top container for this module.",
+            "properties": {
+                "control": {
+                    "description": "Configuration to control the alarm behavior.",
+                    "properties": {
+                        "max-alarm-status-changes": {
+                            "type": "string",
+                            "description": "The 'status-change' entries are kept in a circular list\nper alarm.  When this number is exceeded, the oldest\nstatus change entry is automatically removed.  If the\nvalue is 'infinite', the status-change entries are\naccumulated infinitely."
+                        },
+                        "notify-status-changes": {
+                            "type": "string",
+                            "enum": [
+                                "all-state-changes",
+                                "raise-and-clear",
+                                "severity-level"
+                            ],
+                            "description": "This leaf controls the notifications sent for alarm status\nupdates.  There are three options:\n1.  Notifications are sent for all updates, severity-level\n    changes, and alarm-text changes.\n2.  Notifications are only sent for alarm raise and clear.\n3.  Notifications are sent for status changes equal to or\n    above the specified severity level.  Clear\n    notifications shall always be sent.  Notifications\n    shall also be sent for state changes that make an\n    alarm less severe than the specified level.\nFor example, in option 3, assume that the severity level\nis set to major and that the alarm has the following state\nchanges:\n[(Time, severity, clear)]:\n[(T1, major, -), (T2, minor, -), (T3, warning, -),\n (T4, minor, -), (T5, major, -), (T6, critical, -),\n (T7, major.  -), (T8, major, clear)]\nIn that case, notifications will be sent at times\nT1, T2, T5, T6, T7, and T8."
+                        },
+                        "notify-severity-level": {
+                            "type": "string",
+                            "description": "Only send notifications for alarm-state changes crossing\nthe specified level.  Always send clear notifications."
+                        },
+                        "alarm-shelving": {
+                            "description": "The 'alarm-shelving/shelf' list is used to shelve\n(block/filter) alarms.  The conditions in the shelf\ncriteria are logically ANDed.  The first matching shelf is\nused, and an alarm is shelved only for this first match.\nMatching alarms MUST appear in the\n/alarms/shelved-alarms/shelved-alarm list, and\nnon-matching /alarms MUST appear in the\n/alarms/alarm-list/alarm list.  The server does not send\nany notifications for shelved alarms.\nThe server MUST maintain states (e.g., severity\nchanges) for the shelved alarms.\nAlarms that match the criteria shall have an\noperator state 'shelved'.  When the shelf\nconfiguration removes an alarm from the shelf, the server\nshall add the operator state 'un-shelved'.",
+                            "properties": {
+                                "shelf": {
+                                    "description": "Each entry defines the criteria for shelving alarms.\nCriteria are ANDed.  If no criteria are specified,\nall alarms will be shelved.",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "description": "An arbitrary name for the alarm shelf."
+                                            },
+                                            "resource": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "description": "Shelve alarms for matching resources."
+                                                }
+                                            },
+                                            "alarm-type": {
+                                                "description": "Any alarm matching the combined criteria of\n'alarm-type-id' and 'alarm-type-qualifier-match'\nMUST be matched.",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "alarm-type-id": {
+                                                            "type": "string",
+                                                            "description": "Shelve all alarms that have an 'alarm-type-id' that\nis equal to or derived from the given\n'alarm-type-id'."
+                                                        },
+                                                        "alarm-type-qualifier-match": {
+                                                            "type": "string",
+                                                            "description": "An XML Schema regular expression that is used to\nmatch an alarm type qualifier.  Shelve all alarms\nthat match this regular expression for the alarm\ntype qualifier."
+                                                        }
+                                                    }
+                                                },
+                                                "x-key": "alarm-type-id alarm-type-qualifier-match"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "description": "An optional textual description of the shelf.  This\ndescription should include the reason for shelving\nthese alarms."
+                                            }
+                                        }
+                                    },
+                                    "x-key": "name"
+                                }
+                            }
+                        },
+                        "x733-mapping": {
+                            "description": "This list allows a management application to control the\nX.733 mapping for all alarm types in the system.  Any entry\nin this list will allow the alarm manager to override the\ndefault X.733 mapping in the system, and the final mapping\nwill be shown in the alarm inventory.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/x733-alarm-definition-parameters"
+                                    },
+                                    {
+                                        "properties": {
+                                            "alarm-type-id": {
+                                                "type": "string",
+                                                "description": "Map the alarm type with this alarm type identifier."
+                                            },
+                                            "alarm-type-qualifier-match": {
+                                                "type": "string",
+                                                "description": "A W3C regular expression that is used when mapping an\nalarm type and alarm-type-qualifier to X.733 parameters."
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "alarm-type-id alarm-type-qualifier-match"
+                        }
+                    }
+                },
+                "alarm-inventory": {
+                    "description": "The 'alarm-inventory/alarm-type' list contains all possible\nalarm types for the system.\nIf the system knows for which resources a specific alarm\ntype can appear, it is also identified in the inventory.\nThe list also tells if each alarm type has a corresponding\nclear state.  The inventory shall only contain concrete\nalarm types.\nThe alarm inventory MUST be updated by the system when new\nalarms can appear.  This can be the case when installing new\nsoftware modules or inserting new card types.  A\nnotification 'alarm-inventory-changed' is sent when the\ninventory is changed.",
+                    "properties": {
+                        "alarm-type": {
+                            "description": "An entry in this list defines a possible alarm.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "alarm-type-id": {
+                                        "type": "string",
+                                        "description": "The statically defined alarm type identifier for this\npossible alarm."
+                                    },
+                                    "alarm-type-qualifier": {
+                                        "type": "string",
+                                        "description": "The optionally dynamically defined alarm type identifier\nfor this possible alarm."
+                                    },
+                                    "resource": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "Optionally, specifies for which resources the alarm type\nis valid."
+                                        }
+                                    },
+                                    "will-clear": {
+                                        "type": "boolean",
+                                        "description": "This leaf tells the operator if the alarm will be\ncleared when the correct corrective action has been\ntaken.  Implementations SHOULD strive for detecting the\ncleared state for all alarm types.\nIf this leaf is 'true', the operator can monitor the\nalarm until it becomes cleared after the corrective\naction has been taken.\nIf this leaf is 'false', the operator needs to validate\nthat the alarm is no longer active using other\nmechanisms.  Alarms can lack a corresponding clear due\nto missing instrumentation or no logical\ncorresponding clear state."
+                                    },
+                                    "severity-level": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "This leaf-list indicates the possible severity levels of\nthis alarm type.  Note well that 'clear' is not part of\nthe severity type.  In general, the severity level\nshould be defined by the instrumentation based on the\ndynamic state, rather than being defined statically by\nthe alarm type, in order to provide a relevant severity\nlevel based on dynamic state and context.  However, most\nalarm types have a defined set of possible severity\nlevels, and this should be provided here."
+                                        }
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "A description of the possible alarm.  It SHOULD include\ninformation on possible underlying root causes and\ncorrective actions."
+                                    },
+                                    "event-type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "other",
+                                            "communications-alarm",
+                                            "quality-of-service-alarm",
+                                            "processing-error-alarm",
+                                            "equipment-alarm",
+                                            "environmental-alarm",
+                                            "integrity-violation",
+                                            "operational-violation",
+                                            "physical-violation",
+                                            "security-service-or-mechanism-violation",
+                                            "time-domain-violation"
+                                        ],
+                                        "description": "The alarm type has this X.733/X.736 event type."
+                                    },
+                                    "probable-cause": {
+                                        "type": "string",
+                                        "description": "The alarm type has this X.733 probable cause value.\nThis module defines probable cause as an integer\nand not as an enumeration.  The reason being that the\nprimary use of probable cause is in the management\napplication if it is based on the X.733 standard.\nHowever, most management applications have their own\ndefined enum definitions and merging enums from\ndifferent systems might create conflicts.  By using\na configurable uint32, the system can be configured\nto match the enum values in the management application."
+                                    },
+                                    "probable-cause-string": {
+                                        "type": "string",
+                                        "description": "This string can be used to give a user-friendly string\nto the probable cause value."
+                                    }
+                                }
+                            },
+                            "x-key": "alarm-type-id alarm-type-qualifier"
+                        }
+                    }
+                },
+                "summary": {
+                    "description": "This container gives a summary of the number of alarms.",
+                    "properties": {
+                        "alarm-summary": {
+                            "description": "A global summary of all alarms in the system.  The summary\ndoes not include shelved alarms.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "severity": {
+                                        "type": "string",
+                                        "description": "Alarm summary for this severity level."
+                                    },
+                                    "total": {
+                                        "type": "string",
+                                        "description": "Total number of alarms of this severity level."
+                                    },
+                                    "not-cleared": {
+                                        "type": "string",
+                                        "description": "Total number of alarms of this severity level\nthat are not cleared."
+                                    },
+                                    "cleared": {
+                                        "type": "string",
+                                        "description": "For this severity level, the number of alarms that are\ncleared."
+                                    },
+                                    "cleared-not-closed": {
+                                        "type": "string",
+                                        "description": "For this severity level, the number of alarms that are\ncleared but not closed."
+                                    },
+                                    "cleared-closed": {
+                                        "type": "string",
+                                        "description": "For this severity level, the number of alarms that are\ncleared and closed."
+                                    },
+                                    "not-cleared-closed": {
+                                        "type": "string",
+                                        "description": "For this severity level, the number of alarms that are\nnot cleared but closed."
+                                    },
+                                    "not-cleared-not-closed": {
+                                        "type": "string",
+                                        "description": "For this severity level, the number of alarms that are\nnot cleared and not closed."
+                                    }
+                                }
+                            },
+                            "x-key": "severity"
+                        },
+                        "shelves-active": {
+                            "type": "string",
+                            "description": "This is a hint to the operator that there are active\nalarm shelves.  This leaf MUST exist if the\n/alarms/shelved-alarms/number-of-shelved-alarms is > 0."
+                        }
+                    }
+                },
+                "alarm-list": {
+                    "description": "The alarms in the system.",
+                    "properties": {
+                        "number-of-alarms": {
+                            "type": "string",
+                            "description": "This object shows the total number of\nalarms in the system, i.e., the total number\nof entries in the alarm list."
+                        },
+                        "last-changed": {
+                            "type": "string",
+                            "description": "A timestamp when the alarm list was last\nchanged.  The value can be used by a manager to\ninitiate an alarm resynchronization procedure."
+                        },
+                        "alarm": {
+                            "description": "The list of alarms.  Each entry in the list holds one\nalarm for a given alarm type and resource.  An alarm can\nbe updated from the underlying resource or by the user.\nThe following leafs are maintained by the resource:\n'is-cleared', 'last-change', 'perceived-severity', and\n'alarm-text'.  An operator can change 'operator-state' and\n'operator-text'.\nEntries appear in the alarm list the first time an alarm\nbecomes active for a given alarm type and resource.\nEntries do not get deleted when the alarm is cleared.\nClear status is represented as a boolean flag.\nAlarm entries are removed, i.e., purged, from the list by\nan explicit purge action.  For example, purge all alarms\nthat are cleared and in closed operator state that are\nolder than 24 hours.  Purged alarms are removed from the\nalarm list.  If the alarm resource state changes after a\npurge, the alarm will reappear in the alarm list.\nSystems may also remove alarms based on locally configured\npolicies; this is out of scope for this module.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/common-alarm-parameters"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/resource-alarm-parameters"
+                                    },
+                                    {
+                                        "properties": {
+                                            "time-created": {
+                                                "type": "string",
+                                                "description": "The timestamp when this alarm entry was created.  This\nrepresents the first time the alarm appeared; it can\nalso represent that the alarm reappeared after a purge.\nFurther state changes of the same alarm do not change\nthis leaf; these changes will update the 'last-changed'\nleaf."
+                                            },
+                                            "operator-state-change": {
+                                                "description": "This list is used by operators to indicate the state of\nhuman intervention on an alarm.  For example, if an\noperator has seen an alarm, the operator can add a new\nitem to this list indicating that the alarm is\nacknowledged.",
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/operator-parameters"
+                                                },
+                                                "x-key": "time"
+                                            },
+                                            "set-operator-state": {
+                                                "description": "This is a means for the operator to indicate the level\nof human intervention on an alarm.",
+                                                "properties": {
+                                                    "output": {},
+                                                    "input": {
+                                                        "properties": {
+                                                            "state": {
+                                                                "type": "string",
+                                                                "description": "Set this operator state."
+                                                            },
+                                                            "text": {
+                                                                "type": "string",
+                                                                "description": "Additional optional textual information."
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "operator-action": {
+                                                "description": "This notification is used to report that an operator\nacted upon an alarm.",
+                                                "$ref": "#/definitions/operator-parameters"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "resource alarm-type-id alarm-type-qualifier"
+                        },
+                        "purge-alarms": {
+                            "description": "This operation requests that the server delete entries\nfrom the alarm list according to the supplied criteria.\nTypically, this operation is used to delete alarms that\nare in closed operator state and older than a specified\ntime.\nThe number of purged alarms is returned as an output\nparameter.",
+                            "properties": {
+                                "input": {
+                                    "$ref": "#/definitions/filter-input"
+                                },
+                                "output": {
+                                    "properties": {
+                                        "purged-alarms": {
+                                            "type": "string",
+                                            "description": "Number of purged alarms."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "compress-alarms": {
+                            "description": "This operation requests that the server compress\nentries in the alarm list by removing all but the\nlatest 'status-change' entry for all matching alarms.\nConditions in the input are logically ANDed.  If no\ninput condition is given, all alarms are compressed.",
+                            "properties": {
+                                "input": {
+                                    "properties": {
+                                        "resource": {
+                                            "type": "string",
+                                            "description": "Compress the alarms matching this resource."
+                                        },
+                                        "alarm-type-id": {
+                                            "type": "string",
+                                            "x-path": "/alarms/alarm-list/alarm/alarm-type-id",
+                                            "description": "Compress alarms with this 'alarm-type-id'."
+                                        },
+                                        "alarm-type-qualifier": {
+                                            "type": "string",
+                                            "x-path": "/alarms/alarm-list/alarm/alarm-type-qualifier",
+                                            "description": "Compress the alarms with this\n'alarm-type-qualifier'."
+                                        }
+                                    }
+                                },
+                                "output": {
+                                    "properties": {
+                                        "compressed-alarms": {
+                                            "type": "string",
+                                            "description": "Number of compressed alarm entries."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "shelved-alarms": {
+                    "description": "The shelved alarms.  Alarms appear here if they match the\ncriteria in /alarms/control/alarm-shelving.  This list does\nnot generate any notifications.  The list represents alarms\nthat are considered not relevant by the operator.  Alarms in\nthis list have an 'operator-state' of 'shelved'.  This\ncannot be changed.",
+                    "properties": {
+                        "number-of-shelved-alarms": {
+                            "type": "string",
+                            "description": "This object shows the total number of current\nalarms, i.e., the total number of entries\nin the alarm list."
+                        },
+                        "shelved-alarms-last-changed": {
+                            "type": "string",
+                            "description": "A timestamp when the shelved-alarm list was last changed.\nThe value can be used by a manager to initiate an alarm\nresynchronization procedure."
+                        },
+                        "shelved-alarm": {
+                            "description": "The list of shelved alarms.  Shelved alarms can only be\nupdated from the underlying resource; no operator actions\nare supported.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/common-alarm-parameters"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/resource-alarm-parameters"
+                                    },
+                                    {
+                                        "properties": {
+                                            "shelf-name": {
+                                                "type": "string",
+                                                "x-path": "/alarms/control/alarm-shelving/shelf/name",
+                                                "description": "The name of the shelf."
+                                            },
+                                            "operator-state-change": {
+                                                "description": "This list is used by operators to indicate the state of\nhuman intervention on an alarm.  For shelved alarms, the\nsystem has set the list item in the list to 'shelved'.",
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/operator-parameters"
+                                                },
+                                                "x-key": "time"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "resource alarm-type-id alarm-type-qualifier"
+                        },
+                        "purge-shelved-alarms": {
+                            "description": "This operation requests that the server delete entries from\nthe shelved-alarm list according to the supplied criteria.\nIn the shelved-alarm list, it makes sense to delete alarms\nthat are not relevant anymore.\nThe number of purged alarms is returned as an output\nparameter.",
+                            "properties": {
+                                "input": {
+                                    "$ref": "#/definitions/filter-input"
+                                },
+                                "output": {
+                                    "properties": {
+                                        "purged-alarms": {
+                                            "type": "string",
+                                            "description": "Number of purged alarms."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "compress-shelved-alarms": {
+                            "description": "This operation requests that the server compress entries\nin the shelved-alarm list by removing all but the latest\n'status-change' entry for all matching shelved alarms.\nConditions in the input are logically ANDed.  If no input\ncondition is given, all alarms are compressed.",
+                            "properties": {
+                                "input": {
+                                    "properties": {
+                                        "resource": {
+                                            "type": "string",
+                                            "x-path": "/alarms/shelved-alarms/shelved-alarm/resource",
+                                            "description": "Compress the alarms with this resource."
+                                        },
+                                        "alarm-type-id": {
+                                            "type": "string",
+                                            "x-path": "/alarms/shelved-alarms/shelved-alarm/alarm-type-id",
+                                            "description": "Compress alarms with this 'alarm-type-id'."
+                                        },
+                                        "alarm-type-qualifier": {
+                                            "type": "string",
+                                            "x-path": "/alarms/shelved-alarms/shelved-alarm/alarm-type-qualifier",
+                                            "description": "Compress the alarms with this\n'alarm-type-qualifier'."
+                                        }
+                                    }
+                                },
+                                "output": {
+                                    "properties": {
+                                        "compressed-alarms": {
+                                            "type": "string",
+                                            "description": "Number of compressed alarm entries."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "alarm-profile": {
+                    "description": "This list is used to assign further information or\nconfiguration for each alarm type.  This module supports a\nmechanism where the client can override the system-default\nalarm severity levels.  The 'alarm-profile' is also a useful\naugmentation point for specific additions to alarm types.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "alarm-type-id": {
+                                "type": "string",
+                                "description": "The alarm type identifier to match."
+                            },
+                            "alarm-type-qualifier-match": {
+                                "type": "string",
+                                "description": "An XML Schema regular expression that is used to match the\nalarm type qualifier."
+                            },
+                            "resource": {
+                                "type": "string",
+                                "description": "Specifies which resources to match."
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "A description of the alarm profile."
+                            },
+                            "alarm-severity-assignment-profile": {
+                                "description": "The client can override the system-default severity\nlevel.",
+                                "properties": {
+                                    "severity-level": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "Specifies the configured severity level(s) for the\nmatching alarm.  If the alarm has several severity\nlevels, the leaf-list shall be given in rising severity\norder.  The original M3100/M3160 ASAP function only\nallows for a one-to-one mapping between alarm type and\nseverity, but since YANG module supports stateful\nalarms, the mapping must allow for several severity\nlevels.\nAssume a high-utilization alarm type with two thresholds\nwith the system-default severity levels of threshold1 =\nwarning and threshold2 = minor.  Setting this leaf-list\nto (minor, major) will assign the severity levels as\nthreshold1 = minor and threshold2 = major"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "x-key": "alarm-type-id alarm-type-qualifier-match resource"
+                }
+            }
+        },
+        "control_schema": {
+            "description": "Configuration to control the alarm behavior.",
+            "properties": {
+                "max-alarm-status-changes": {
+                    "type": "string",
+                    "description": "The 'status-change' entries are kept in a circular list\nper alarm.  When this number is exceeded, the oldest\nstatus change entry is automatically removed.  If the\nvalue is 'infinite', the status-change entries are\naccumulated infinitely."
+                },
+                "notify-status-changes": {
+                    "type": "string",
+                    "enum": [
+                        "all-state-changes",
+                        "raise-and-clear",
+                        "severity-level"
+                    ],
+                    "description": "This leaf controls the notifications sent for alarm status\nupdates.  There are three options:\n1.  Notifications are sent for all updates, severity-level\n    changes, and alarm-text changes.\n2.  Notifications are only sent for alarm raise and clear.\n3.  Notifications are sent for status changes equal to or\n    above the specified severity level.  Clear\n    notifications shall always be sent.  Notifications\n    shall also be sent for state changes that make an\n    alarm less severe than the specified level.\nFor example, in option 3, assume that the severity level\nis set to major and that the alarm has the following state\nchanges:\n[(Time, severity, clear)]:\n[(T1, major, -), (T2, minor, -), (T3, warning, -),\n (T4, minor, -), (T5, major, -), (T6, critical, -),\n (T7, major.  -), (T8, major, clear)]\nIn that case, notifications will be sent at times\nT1, T2, T5, T6, T7, and T8."
+                },
+                "notify-severity-level": {
+                    "type": "string",
+                    "description": "Only send notifications for alarm-state changes crossing\nthe specified level.  Always send clear notifications."
+                },
+                "alarm-shelving": {
+                    "description": "The 'alarm-shelving/shelf' list is used to shelve\n(block/filter) alarms.  The conditions in the shelf\ncriteria are logically ANDed.  The first matching shelf is\nused, and an alarm is shelved only for this first match.\nMatching alarms MUST appear in the\n/alarms/shelved-alarms/shelved-alarm list, and\nnon-matching /alarms MUST appear in the\n/alarms/alarm-list/alarm list.  The server does not send\nany notifications for shelved alarms.\nThe server MUST maintain states (e.g., severity\nchanges) for the shelved alarms.\nAlarms that match the criteria shall have an\noperator state 'shelved'.  When the shelf\nconfiguration removes an alarm from the shelf, the server\nshall add the operator state 'un-shelved'.",
+                    "properties": {
+                        "shelf": {
+                            "description": "Each entry defines the criteria for shelving alarms.\nCriteria are ANDed.  If no criteria are specified,\nall alarms will be shelved.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "An arbitrary name for the alarm shelf."
+                                    },
+                                    "resource": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "Shelve alarms for matching resources."
+                                        }
+                                    },
+                                    "alarm-type": {
+                                        "description": "Any alarm matching the combined criteria of\n'alarm-type-id' and 'alarm-type-qualifier-match'\nMUST be matched.",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "alarm-type-id": {
+                                                    "type": "string",
+                                                    "description": "Shelve all alarms that have an 'alarm-type-id' that\nis equal to or derived from the given\n'alarm-type-id'."
+                                                },
+                                                "alarm-type-qualifier-match": {
+                                                    "type": "string",
+                                                    "description": "An XML Schema regular expression that is used to\nmatch an alarm type qualifier.  Shelve all alarms\nthat match this regular expression for the alarm\ntype qualifier."
+                                                }
+                                            }
+                                        },
+                                        "x-key": "alarm-type-id alarm-type-qualifier-match"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "An optional textual description of the shelf.  This\ndescription should include the reason for shelving\nthese alarms."
+                                    }
+                                }
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                },
+                "x733-mapping": {
+                    "description": "This list allows a management application to control the\nX.733 mapping for all alarm types in the system.  Any entry\nin this list will allow the alarm manager to override the\ndefault X.733 mapping in the system, and the final mapping\nwill be shown in the alarm inventory.",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/x733-alarm-definition-parameters"
+                            },
+                            {
+                                "properties": {
+                                    "alarm-type-id": {
+                                        "type": "string",
+                                        "description": "Map the alarm type with this alarm type identifier."
+                                    },
+                                    "alarm-type-qualifier-match": {
+                                        "type": "string",
+                                        "description": "A W3C regular expression that is used when mapping an\nalarm type and alarm-type-qualifier to X.733 parameters."
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "alarm-type-id alarm-type-qualifier-match"
+                }
+            }
+        },
+        "alarm-shelving_schema": {
+            "description": "The 'alarm-shelving/shelf' list is used to shelve\n(block/filter) alarms.  The conditions in the shelf\ncriteria are logically ANDed.  The first matching shelf is\nused, and an alarm is shelved only for this first match.\nMatching alarms MUST appear in the\n/alarms/shelved-alarms/shelved-alarm list, and\nnon-matching /alarms MUST appear in the\n/alarms/alarm-list/alarm list.  The server does not send\nany notifications for shelved alarms.\nThe server MUST maintain states (e.g., severity\nchanges) for the shelved alarms.\nAlarms that match the criteria shall have an\noperator state 'shelved'.  When the shelf\nconfiguration removes an alarm from the shelf, the server\nshall add the operator state 'un-shelved'.",
+            "properties": {
+                "shelf": {
+                    "description": "Each entry defines the criteria for shelving alarms.\nCriteria are ANDed.  If no criteria are specified,\nall alarms will be shelved.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "An arbitrary name for the alarm shelf."
+                            },
+                            "resource": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Shelve alarms for matching resources."
+                                }
+                            },
+                            "alarm-type": {
+                                "description": "Any alarm matching the combined criteria of\n'alarm-type-id' and 'alarm-type-qualifier-match'\nMUST be matched.",
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "alarm-type-id": {
+                                            "type": "string",
+                                            "description": "Shelve all alarms that have an 'alarm-type-id' that\nis equal to or derived from the given\n'alarm-type-id'."
+                                        },
+                                        "alarm-type-qualifier-match": {
+                                            "type": "string",
+                                            "description": "An XML Schema regular expression that is used to\nmatch an alarm type qualifier.  Shelve all alarms\nthat match this regular expression for the alarm\ntype qualifier."
+                                        }
+                                    }
+                                },
+                                "x-key": "alarm-type-id alarm-type-qualifier-match"
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "An optional textual description of the shelf.  This\ndescription should include the reason for shelving\nthese alarms."
+                            }
+                        }
+                    },
+                    "x-key": "name"
+                }
+            }
+        },
+        "shelf_schema": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "An arbitrary name for the alarm shelf."
+                },
+                "resource": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Shelve alarms for matching resources."
+                    }
+                },
+                "alarm-type": {
+                    "description": "Any alarm matching the combined criteria of\n'alarm-type-id' and 'alarm-type-qualifier-match'\nMUST be matched.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "alarm-type-id": {
+                                "type": "string",
+                                "description": "Shelve all alarms that have an 'alarm-type-id' that\nis equal to or derived from the given\n'alarm-type-id'."
+                            },
+                            "alarm-type-qualifier-match": {
+                                "type": "string",
+                                "description": "An XML Schema regular expression that is used to\nmatch an alarm type qualifier.  Shelve all alarms\nthat match this regular expression for the alarm\ntype qualifier."
+                            }
+                        }
+                    },
+                    "x-key": "alarm-type-id alarm-type-qualifier-match"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "An optional textual description of the shelf.  This\ndescription should include the reason for shelving\nthese alarms."
+                }
+            }
+        },
+        "alarm-type_schema": {
+            "properties": {
+                "alarm-type-id": {
+                    "type": "string",
+                    "description": "The statically defined alarm type identifier for this\npossible alarm."
+                },
+                "alarm-type-qualifier": {
+                    "type": "string",
+                    "description": "The optionally dynamically defined alarm type identifier\nfor this possible alarm."
+                },
+                "resource": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Optionally, specifies for which resources the alarm type\nis valid."
+                    }
+                },
+                "will-clear": {
+                    "type": "boolean",
+                    "description": "This leaf tells the operator if the alarm will be\ncleared when the correct corrective action has been\ntaken.  Implementations SHOULD strive for detecting the\ncleared state for all alarm types.\nIf this leaf is 'true', the operator can monitor the\nalarm until it becomes cleared after the corrective\naction has been taken.\nIf this leaf is 'false', the operator needs to validate\nthat the alarm is no longer active using other\nmechanisms.  Alarms can lack a corresponding clear due\nto missing instrumentation or no logical\ncorresponding clear state."
+                },
+                "severity-level": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "This leaf-list indicates the possible severity levels of\nthis alarm type.  Note well that 'clear' is not part of\nthe severity type.  In general, the severity level\nshould be defined by the instrumentation based on the\ndynamic state, rather than being defined statically by\nthe alarm type, in order to provide a relevant severity\nlevel based on dynamic state and context.  However, most\nalarm types have a defined set of possible severity\nlevels, and this should be provided here."
+                    }
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A description of the possible alarm.  It SHOULD include\ninformation on possible underlying root causes and\ncorrective actions."
+                },
+                "event-type": {
+                    "type": "string",
+                    "enum": [
+                        "other",
+                        "communications-alarm",
+                        "quality-of-service-alarm",
+                        "processing-error-alarm",
+                        "equipment-alarm",
+                        "environmental-alarm",
+                        "integrity-violation",
+                        "operational-violation",
+                        "physical-violation",
+                        "security-service-or-mechanism-violation",
+                        "time-domain-violation"
+                    ],
+                    "description": "The alarm type has this X.733/X.736 event type."
+                },
+                "probable-cause": {
+                    "type": "string",
+                    "description": "The alarm type has this X.733 probable cause value.\nThis module defines probable cause as an integer\nand not as an enumeration.  The reason being that the\nprimary use of probable cause is in the management\napplication if it is based on the X.733 standard.\nHowever, most management applications have their own\ndefined enum definitions and merging enums from\ndifferent systems might create conflicts.  By using\na configurable uint32, the system can be configured\nto match the enum values in the management application."
+                },
+                "probable-cause-string": {
+                    "type": "string",
+                    "description": "This string can be used to give a user-friendly string\nto the probable cause value."
+                }
+            }
+        },
+        "x733-mapping_schema": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/x733-alarm-definition-parameters"
+                },
+                {
+                    "properties": {
+                        "alarm-type-id": {
+                            "type": "string",
+                            "description": "Map the alarm type with this alarm type identifier."
+                        },
+                        "alarm-type-qualifier-match": {
+                            "type": "string",
+                            "description": "A W3C regular expression that is used when mapping an\nalarm type and alarm-type-qualifier to X.733 parameters."
+                        }
+                    }
+                }
+            ]
+        },
+        "alarm-inventory_schema": {
+            "description": "The 'alarm-inventory/alarm-type' list contains all possible\nalarm types for the system.\nIf the system knows for which resources a specific alarm\ntype can appear, it is also identified in the inventory.\nThe list also tells if each alarm type has a corresponding\nclear state.  The inventory shall only contain concrete\nalarm types.\nThe alarm inventory MUST be updated by the system when new\nalarms can appear.  This can be the case when installing new\nsoftware modules or inserting new card types.  A\nnotification 'alarm-inventory-changed' is sent when the\ninventory is changed.",
+            "properties": {
+                "alarm-type": {
+                    "description": "An entry in this list defines a possible alarm.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "alarm-type-id": {
+                                "type": "string",
+                                "description": "The statically defined alarm type identifier for this\npossible alarm."
+                            },
+                            "alarm-type-qualifier": {
+                                "type": "string",
+                                "description": "The optionally dynamically defined alarm type identifier\nfor this possible alarm."
+                            },
+                            "resource": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Optionally, specifies for which resources the alarm type\nis valid."
+                                }
+                            },
+                            "will-clear": {
+                                "type": "boolean",
+                                "description": "This leaf tells the operator if the alarm will be\ncleared when the correct corrective action has been\ntaken.  Implementations SHOULD strive for detecting the\ncleared state for all alarm types.\nIf this leaf is 'true', the operator can monitor the\nalarm until it becomes cleared after the corrective\naction has been taken.\nIf this leaf is 'false', the operator needs to validate\nthat the alarm is no longer active using other\nmechanisms.  Alarms can lack a corresponding clear due\nto missing instrumentation or no logical\ncorresponding clear state."
+                            },
+                            "severity-level": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "This leaf-list indicates the possible severity levels of\nthis alarm type.  Note well that 'clear' is not part of\nthe severity type.  In general, the severity level\nshould be defined by the instrumentation based on the\ndynamic state, rather than being defined statically by\nthe alarm type, in order to provide a relevant severity\nlevel based on dynamic state and context.  However, most\nalarm types have a defined set of possible severity\nlevels, and this should be provided here."
+                                }
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "A description of the possible alarm.  It SHOULD include\ninformation on possible underlying root causes and\ncorrective actions."
+                            },
+                            "event-type": {
+                                "type": "string",
+                                "enum": [
+                                    "other",
+                                    "communications-alarm",
+                                    "quality-of-service-alarm",
+                                    "processing-error-alarm",
+                                    "equipment-alarm",
+                                    "environmental-alarm",
+                                    "integrity-violation",
+                                    "operational-violation",
+                                    "physical-violation",
+                                    "security-service-or-mechanism-violation",
+                                    "time-domain-violation"
+                                ],
+                                "description": "The alarm type has this X.733/X.736 event type."
+                            },
+                            "probable-cause": {
+                                "type": "string",
+                                "description": "The alarm type has this X.733 probable cause value.\nThis module defines probable cause as an integer\nand not as an enumeration.  The reason being that the\nprimary use of probable cause is in the management\napplication if it is based on the X.733 standard.\nHowever, most management applications have their own\ndefined enum definitions and merging enums from\ndifferent systems might create conflicts.  By using\na configurable uint32, the system can be configured\nto match the enum values in the management application."
+                            },
+                            "probable-cause-string": {
+                                "type": "string",
+                                "description": "This string can be used to give a user-friendly string\nto the probable cause value."
+                            }
+                        }
+                    },
+                    "x-key": "alarm-type-id alarm-type-qualifier"
+                }
+            }
+        },
+        "summary_schema": {
+            "description": "This container gives a summary of the number of alarms.",
+            "properties": {
+                "alarm-summary": {
+                    "description": "A global summary of all alarms in the system.  The summary\ndoes not include shelved alarms.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "severity": {
+                                "type": "string",
+                                "description": "Alarm summary for this severity level."
+                            },
+                            "total": {
+                                "type": "string",
+                                "description": "Total number of alarms of this severity level."
+                            },
+                            "not-cleared": {
+                                "type": "string",
+                                "description": "Total number of alarms of this severity level\nthat are not cleared."
+                            },
+                            "cleared": {
+                                "type": "string",
+                                "description": "For this severity level, the number of alarms that are\ncleared."
+                            },
+                            "cleared-not-closed": {
+                                "type": "string",
+                                "description": "For this severity level, the number of alarms that are\ncleared but not closed."
+                            },
+                            "cleared-closed": {
+                                "type": "string",
+                                "description": "For this severity level, the number of alarms that are\ncleared and closed."
+                            },
+                            "not-cleared-closed": {
+                                "type": "string",
+                                "description": "For this severity level, the number of alarms that are\nnot cleared but closed."
+                            },
+                            "not-cleared-not-closed": {
+                                "type": "string",
+                                "description": "For this severity level, the number of alarms that are\nnot cleared and not closed."
+                            }
+                        }
+                    },
+                    "x-key": "severity"
+                },
+                "shelves-active": {
+                    "type": "string",
+                    "description": "This is a hint to the operator that there are active\nalarm shelves.  This leaf MUST exist if the\n/alarms/shelved-alarms/number-of-shelved-alarms is > 0."
+                }
+            }
+        },
+        "alarm-summary_schema": {
+            "properties": {
+                "severity": {
+                    "type": "string",
+                    "description": "Alarm summary for this severity level."
+                },
+                "total": {
+                    "type": "string",
+                    "description": "Total number of alarms of this severity level."
+                },
+                "not-cleared": {
+                    "type": "string",
+                    "description": "Total number of alarms of this severity level\nthat are not cleared."
+                },
+                "cleared": {
+                    "type": "string",
+                    "description": "For this severity level, the number of alarms that are\ncleared."
+                },
+                "cleared-not-closed": {
+                    "type": "string",
+                    "description": "For this severity level, the number of alarms that are\ncleared but not closed."
+                },
+                "cleared-closed": {
+                    "type": "string",
+                    "description": "For this severity level, the number of alarms that are\ncleared and closed."
+                },
+                "not-cleared-closed": {
+                    "type": "string",
+                    "description": "For this severity level, the number of alarms that are\nnot cleared but closed."
+                },
+                "not-cleared-not-closed": {
+                    "type": "string",
+                    "description": "For this severity level, the number of alarms that are\nnot cleared and not closed."
+                }
+            }
+        },
+        "alarm-list_schema": {
+            "description": "The alarms in the system.",
+            "properties": {
+                "number-of-alarms": {
+                    "type": "string",
+                    "description": "This object shows the total number of\nalarms in the system, i.e., the total number\nof entries in the alarm list."
+                },
+                "last-changed": {
+                    "type": "string",
+                    "description": "A timestamp when the alarm list was last\nchanged.  The value can be used by a manager to\ninitiate an alarm resynchronization procedure."
+                },
+                "alarm": {
+                    "description": "The list of alarms.  Each entry in the list holds one\nalarm for a given alarm type and resource.  An alarm can\nbe updated from the underlying resource or by the user.\nThe following leafs are maintained by the resource:\n'is-cleared', 'last-change', 'perceived-severity', and\n'alarm-text'.  An operator can change 'operator-state' and\n'operator-text'.\nEntries appear in the alarm list the first time an alarm\nbecomes active for a given alarm type and resource.\nEntries do not get deleted when the alarm is cleared.\nClear status is represented as a boolean flag.\nAlarm entries are removed, i.e., purged, from the list by\nan explicit purge action.  For example, purge all alarms\nthat are cleared and in closed operator state that are\nolder than 24 hours.  Purged alarms are removed from the\nalarm list.  If the alarm resource state changes after a\npurge, the alarm will reappear in the alarm list.\nSystems may also remove alarms based on locally configured\npolicies; this is out of scope for this module.",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/common-alarm-parameters"
+                            },
+                            {
+                                "$ref": "#/definitions/resource-alarm-parameters"
+                            },
+                            {
+                                "properties": {
+                                    "time-created": {
+                                        "type": "string",
+                                        "description": "The timestamp when this alarm entry was created.  This\nrepresents the first time the alarm appeared; it can\nalso represent that the alarm reappeared after a purge.\nFurther state changes of the same alarm do not change\nthis leaf; these changes will update the 'last-changed'\nleaf."
+                                    },
+                                    "operator-state-change": {
+                                        "description": "This list is used by operators to indicate the state of\nhuman intervention on an alarm.  For example, if an\noperator has seen an alarm, the operator can add a new\nitem to this list indicating that the alarm is\nacknowledged.",
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/definitions/operator-parameters"
+                                        },
+                                        "x-key": "time"
+                                    },
+                                    "set-operator-state": {
+                                        "description": "This is a means for the operator to indicate the level\nof human intervention on an alarm.",
+                                        "properties": {
+                                            "output": {},
+                                            "input": {
+                                                "properties": {
+                                                    "state": {
+                                                        "type": "string",
+                                                        "description": "Set this operator state."
+                                                    },
+                                                    "text": {
+                                                        "type": "string",
+                                                        "description": "Additional optional textual information."
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "operator-action": {
+                                        "description": "This notification is used to report that an operator\nacted upon an alarm.",
+                                        "$ref": "#/definitions/operator-parameters"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "resource alarm-type-id alarm-type-qualifier"
+                },
+                "purge-alarms": {
+                    "description": "This operation requests that the server delete entries\nfrom the alarm list according to the supplied criteria.\nTypically, this operation is used to delete alarms that\nare in closed operator state and older than a specified\ntime.\nThe number of purged alarms is returned as an output\nparameter.",
+                    "properties": {
+                        "input": {
+                            "$ref": "#/definitions/filter-input"
+                        },
+                        "output": {
+                            "properties": {
+                                "purged-alarms": {
+                                    "type": "string",
+                                    "description": "Number of purged alarms."
+                                }
+                            }
+                        }
+                    }
+                },
+                "compress-alarms": {
+                    "description": "This operation requests that the server compress\nentries in the alarm list by removing all but the\nlatest 'status-change' entry for all matching alarms.\nConditions in the input are logically ANDed.  If no\ninput condition is given, all alarms are compressed.",
+                    "properties": {
+                        "input": {
+                            "properties": {
+                                "resource": {
+                                    "type": "string",
+                                    "description": "Compress the alarms matching this resource."
+                                },
+                                "alarm-type-id": {
+                                    "type": "string",
+                                    "x-path": "/alarms/alarm-list/alarm/alarm-type-id",
+                                    "description": "Compress alarms with this 'alarm-type-id'."
+                                },
+                                "alarm-type-qualifier": {
+                                    "type": "string",
+                                    "x-path": "/alarms/alarm-list/alarm/alarm-type-qualifier",
+                                    "description": "Compress the alarms with this\n'alarm-type-qualifier'."
+                                }
+                            }
+                        },
+                        "output": {
+                            "properties": {
+                                "compressed-alarms": {
+                                    "type": "string",
+                                    "description": "Number of compressed alarm entries."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "alarm_schema": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/common-alarm-parameters"
+                },
+                {
+                    "$ref": "#/definitions/resource-alarm-parameters"
+                },
+                {
+                    "properties": {
+                        "time-created": {
+                            "type": "string",
+                            "description": "The timestamp when this alarm entry was created.  This\nrepresents the first time the alarm appeared; it can\nalso represent that the alarm reappeared after a purge.\nFurther state changes of the same alarm do not change\nthis leaf; these changes will update the 'last-changed'\nleaf."
+                        },
+                        "operator-state-change": {
+                            "description": "This list is used by operators to indicate the state of\nhuman intervention on an alarm.  For example, if an\noperator has seen an alarm, the operator can add a new\nitem to this list indicating that the alarm is\nacknowledged.",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/operator-parameters"
+                            },
+                            "x-key": "time"
+                        },
+                        "set-operator-state": {
+                            "description": "This is a means for the operator to indicate the level\nof human intervention on an alarm.",
+                            "properties": {
+                                "output": {},
+                                "input": {
+                                    "properties": {
+                                        "state": {
+                                            "type": "string",
+                                            "description": "Set this operator state."
+                                        },
+                                        "text": {
+                                            "type": "string",
+                                            "description": "Additional optional textual information."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "operator-action": {
+                            "description": "This notification is used to report that an operator\nacted upon an alarm.",
+                            "$ref": "#/definitions/operator-parameters"
+                        }
+                    }
+                }
+            ]
+        },
+        "related-alarm_schema": {
+            "properties": {
+                "resource": {
+                    "type": "string",
+                    "x-path": "/alarms/alarm-list/alarm/resource",
+                    "description": "The alarming resource for the related alarm."
+                },
+                "alarm-type-id": {
+                    "type": "string",
+                    "x-path": "/alarms/alarm-list/alarm[resource=current()/../resource]/alarm-type-id",
+                    "description": "The alarm type identifier for the related alarm."
+                },
+                "alarm-type-qualifier": {
+                    "type": "string",
+                    "x-path": "/alarms/alarm-list/alarm[resource=current()/../resource][alarm-type-id=current()/../alarm-type-id]/alarm-type-qualifier",
+                    "description": "The alarm qualifier for the related alarm."
+                }
+            }
+        },
+        "threshold-information_schema": {
+            "description": "This parameter shall be present when the alarm\nis a result of crossing a threshold. ",
+            "properties": {
+                "triggered-threshold": {
+                    "type": "string",
+                    "description": "The identifier of the threshold attribute that\ncaused the notification."
+                },
+                "observed-value": {
+                    "type": "string",
+                    "description": "The value of the gauge or counter that crossed\nthe threshold.  This may be different from the\nthreshold value if, for example, the gauge may\nonly take on discrete values."
+                },
+                "threshold-level": {
+                    "description": "In the case of a gauge, the threshold level specifies\na pair of threshold values: the first is the value\nof the crossed threshold, and the second is its\ncorresponding hysteresis; in the case of a counter,\nthe threshold level specifies only the threshold\nvalue.",
+                    "properties": {
+                        "up": {
+                            "properties": {
+                                "up-high": {
+                                    "type": "string",
+                                    "description": "The going-up threshold for raising the alarm."
+                                },
+                                "up-low": {
+                                    "type": "string",
+                                    "description": "The going-down threshold for clearing the alarm.\nThis is used for hysteresis functions for gauges."
+                                }
+                            }
+                        },
+                        "down": {
+                            "properties": {
+                                "down-low": {
+                                    "type": "string",
+                                    "description": "The going-down threshold for raising the alarm."
+                                },
+                                "down-high": {
+                                    "type": "string",
+                                    "description": "The going-up threshold for clearing the alarm.\nThis is used for hysteresis functions for gauges."
+                                }
+                            }
+                        }
+                    }
+                },
+                "arm-time": {
+                    "type": "string",
+                    "description": "For a gauge threshold, it's the time at which the\nthreshold was last re-armed; namely, it's the time after\nthe previous threshold crossing at which the hysteresis\nvalue of the threshold was exceeded, thus again permitting\nthe generation of notifications when the threshold is\ncrossed.  For a counter threshold, it's the later of the\ntime at which the threshold offset was last applied or the\ncounter was last initialized (for resettable counters)."
+                }
+            }
+        },
+        "additional-information_schema": {
+            "properties": {
+                "identifier": {
+                    "type": "string",
+                    "description": "Identifies the data type of the information parameter."
+                },
+                "significant": {
+                    "type": "boolean",
+                    "description": "Set to 'true' if the receiving system must be able to\nparse the contents of the information subparameter\nfor the event report to be fully understood."
+                },
+                "information": {
+                    "type": "string",
+                    "description": "Additional information about the alarm."
+                }
+            }
+        },
+        "older-than_schema": {
+            "description": "Matches the 'last-status-change' leaf in the alarm.",
+            "properties": {
+                "age-spec": {
+                    "description": "Filter using date and time age.",
+                    "properties": {
+                        "seconds": {
+                            "properties": {
+                                "seconds": {
+                                    "type": "string",
+                                    "description": "Age expressed in seconds."
+                                }
+                            }
+                        },
+                        "minutes": {
+                            "properties": {
+                                "minutes": {
+                                    "type": "string",
+                                    "description": "Age expressed in minutes."
+                                }
+                            }
+                        },
+                        "hours": {
+                            "properties": {
+                                "hours": {
+                                    "type": "string",
+                                    "description": "Age expressed in hours."
+                                }
+                            }
+                        },
+                        "days": {
+                            "properties": {
+                                "days": {
+                                    "type": "string",
+                                    "description": "Age expressed in days."
+                                }
+                            }
+                        },
+                        "weeks": {
+                            "properties": {
+                                "weeks": {
+                                    "type": "string",
+                                    "description": "Age expressed in weeks."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "severity_schema": {
+            "description": "Filter based on severity.",
+            "properties": {
+                "sev-spec": {
+                    "description": "Filter based on severity level.",
+                    "properties": {
+                        "below": {
+                            "properties": {
+                                "below": {
+                                    "type": "string",
+                                    "description": "Severity less than this leaf."
+                                }
+                            }
+                        },
+                        "is": {
+                            "properties": {
+                                "is": {
+                                    "type": "string",
+                                    "description": "Severity level equal to this leaf."
+                                }
+                            }
+                        },
+                        "above": {
+                            "properties": {
+                                "above": {
+                                    "type": "string",
+                                    "description": "Severity level higher than this leaf."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "operator-state-filter_schema": {
+            "description": "Filter based on operator state.",
+            "properties": {
+                "state": {
+                    "type": "string",
+                    "description": "Filter on operator state."
+                },
+                "user": {
+                    "type": "string",
+                    "description": "Filter based on which operator."
+                }
+            }
+        },
+        "shelved-alarms_schema": {
+            "description": "The shelved alarms.  Alarms appear here if they match the\ncriteria in /alarms/control/alarm-shelving.  This list does\nnot generate any notifications.  The list represents alarms\nthat are considered not relevant by the operator.  Alarms in\nthis list have an 'operator-state' of 'shelved'.  This\ncannot be changed.",
+            "properties": {
+                "number-of-shelved-alarms": {
+                    "type": "string",
+                    "description": "This object shows the total number of current\nalarms, i.e., the total number of entries\nin the alarm list."
+                },
+                "shelved-alarms-last-changed": {
+                    "type": "string",
+                    "description": "A timestamp when the shelved-alarm list was last changed.\nThe value can be used by a manager to initiate an alarm\nresynchronization procedure."
+                },
+                "shelved-alarm": {
+                    "description": "The list of shelved alarms.  Shelved alarms can only be\nupdated from the underlying resource; no operator actions\nare supported.",
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/common-alarm-parameters"
+                            },
+                            {
+                                "$ref": "#/definitions/resource-alarm-parameters"
+                            },
+                            {
+                                "properties": {
+                                    "shelf-name": {
+                                        "type": "string",
+                                        "x-path": "/alarms/control/alarm-shelving/shelf/name",
+                                        "description": "The name of the shelf."
+                                    },
+                                    "operator-state-change": {
+                                        "description": "This list is used by operators to indicate the state of\nhuman intervention on an alarm.  For shelved alarms, the\nsystem has set the list item in the list to 'shelved'.",
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/definitions/operator-parameters"
+                                        },
+                                        "x-key": "time"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "x-key": "resource alarm-type-id alarm-type-qualifier"
+                },
+                "purge-shelved-alarms": {
+                    "description": "This operation requests that the server delete entries from\nthe shelved-alarm list according to the supplied criteria.\nIn the shelved-alarm list, it makes sense to delete alarms\nthat are not relevant anymore.\nThe number of purged alarms is returned as an output\nparameter.",
+                    "properties": {
+                        "input": {
+                            "$ref": "#/definitions/filter-input"
+                        },
+                        "output": {
+                            "properties": {
+                                "purged-alarms": {
+                                    "type": "string",
+                                    "description": "Number of purged alarms."
+                                }
+                            }
+                        }
+                    }
+                },
+                "compress-shelved-alarms": {
+                    "description": "This operation requests that the server compress entries\nin the shelved-alarm list by removing all but the latest\n'status-change' entry for all matching shelved alarms.\nConditions in the input are logically ANDed.  If no input\ncondition is given, all alarms are compressed.",
+                    "properties": {
+                        "input": {
+                            "properties": {
+                                "resource": {
+                                    "type": "string",
+                                    "x-path": "/alarms/shelved-alarms/shelved-alarm/resource",
+                                    "description": "Compress the alarms with this resource."
+                                },
+                                "alarm-type-id": {
+                                    "type": "string",
+                                    "x-path": "/alarms/shelved-alarms/shelved-alarm/alarm-type-id",
+                                    "description": "Compress alarms with this 'alarm-type-id'."
+                                },
+                                "alarm-type-qualifier": {
+                                    "type": "string",
+                                    "x-path": "/alarms/shelved-alarms/shelved-alarm/alarm-type-qualifier",
+                                    "description": "Compress the alarms with this\n'alarm-type-qualifier'."
+                                }
+                            }
+                        },
+                        "output": {
+                            "properties": {
+                                "compressed-alarms": {
+                                    "type": "string",
+                                    "description": "Number of compressed alarm entries."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "shelved-alarm_schema": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/common-alarm-parameters"
+                },
+                {
+                    "$ref": "#/definitions/resource-alarm-parameters"
+                },
+                {
+                    "properties": {
+                        "shelf-name": {
+                            "type": "string",
+                            "x-path": "/alarms/control/alarm-shelving/shelf/name",
+                            "description": "The name of the shelf."
+                        },
+                        "operator-state-change": {
+                            "description": "This list is used by operators to indicate the state of\nhuman intervention on an alarm.  For shelved alarms, the\nsystem has set the list item in the list to 'shelved'.",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/operator-parameters"
+                            },
+                            "x-key": "time"
+                        }
+                    }
+                }
+            ]
+        },
+        "alarm-profile_schema": {
+            "properties": {
+                "alarm-type-id": {
+                    "type": "string",
+                    "description": "The alarm type identifier to match."
+                },
+                "alarm-type-qualifier-match": {
+                    "type": "string",
+                    "description": "An XML Schema regular expression that is used to match the\nalarm type qualifier."
+                },
+                "resource": {
+                    "type": "string",
+                    "description": "Specifies which resources to match."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A description of the alarm profile."
+                },
+                "alarm-severity-assignment-profile": {
+                    "description": "The client can override the system-default severity\nlevel.",
+                    "properties": {
+                        "severity-level": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Specifies the configured severity level(s) for the\nmatching alarm.  If the alarm has several severity\nlevels, the leaf-list shall be given in rising severity\norder.  The original M3100/M3160 ASAP function only\nallows for a one-to-one mapping between alarm type and\nseverity, but since YANG module supports stateful\nalarms, the mapping must allow for several severity\nlevels.\nAssume a high-utilization alarm type with two thresholds\nwith the system-default severity levels of threshold1 =\nwarning and threshold2 = minor.  Setting this leaf-list\nto (minor, major) will assign the severity levels as\nthreshold1 = minor and threshold2 = major"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "alarm-severity-assignment-profile_schema": {
+            "description": "The client can override the system-default severity\nlevel.",
+            "properties": {
+                "severity-level": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Specifies the configured severity level(s) for the\nmatching alarm.  If the alarm has several severity\nlevels, the leaf-list shall be given in rising severity\norder.  The original M3100/M3160 ASAP function only\nallows for a one-to-one mapping between alarm type and\nseverity, but since YANG module supports stateful\nalarms, the mapping must allow for several severity\nlevels.\nAssume a high-utilization alarm type with two thresholds\nwith the system-default severity levels of threshold1 =\nwarning and threshold2 = minor.  Setting this leaf-list\nto (minor, major) will assign the severity levels as\nthreshold1 = minor and threshold2 = major"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-l2tpv3"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:l2tpv3="urn:huawei:yang:huawei-l2tpv3"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ip="urn:huawei:yang:huawei-ip"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet">
+  <namespace uri="urn:huawei:yang:huawei-l2tpv3"/>
+  <prefix value="l2tpv3"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ip">
+    <prefix value="ip"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>L2TPv3.</text>
+  </description>
+  <revision date="2020-04-02">
+    <description>
+      <text>Modify the module of remote-cookie, local-cookie and local-secondary-cookie.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-13">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-06">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="l2tpv3"/>
+  <typedef name="cookie-length">
+    <type name="enumeration">
+      <enum name="4-bytes">
+        <value value="4"/>
+        <description>
+          <text>4 bytes.</text>
+        </description>
+      </enum>
+      <enum name="8-bytes">
+        <value value="8"/>
+        <description>
+          <text>8 bytes.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Cookie length.</text>
+    </description>
+  </typedef>
+  <typedef name="instance-type">
+    <type name="enumeration">
+      <enum name="local-connect">
+        <value value="1"/>
+        <description>
+          <text>Local connect type.</text>
+        </description>
+      </enum>
+      <enum name="normal">
+        <value value="2"/>
+        <description>
+          <text>Normal type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Instance type.</text>
+    </description>
+  </typedef>
+  <typedef name="pw-role-type">
+    <type name="enumeration">
+      <enum name="primary">
+        <value value="1"/>
+        <description>
+          <text>Primary tunnel.</text>
+        </description>
+      </enum>
+      <enum name="injected">
+        <value value="2"/>
+        <description>
+          <text>Injected tunnel.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>PW role type.</text>
+    </description>
+  </typedef>
+  <typedef name="state">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>Up state.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="2"/>
+        <description>
+          <text>Down state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>L2TPv3 state.</text>
+    </description>
+  </typedef>
+  <container name="l2tpv3">
+    <presence value="Enable L2TPv3."/>
+    <description>
+      <text>L2TPv3 configurations.</text>
+    </description>
+    <container name="pws">
+      <description>
+        <text>List of L2TPv3 tunnels.</text>
+      </description>
+      <list name="pw">
+        <key value="name"/>
+        <unique tag="ip-type/ipv4/source-ip ip-type/ipv4/destination-ip local-session-id"/>
+        <unique tag="ip-type/ipv6/source-ipv6 ip-type/ipv6/destination-ipv6"/>
+        <description>
+          <text>Configure L2TPv3 tunnel.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..19"/>
+            <pattern value="[a-zA-Z]([^\s]*)"/>
+          </type>
+          <description>
+            <text>Name of a tunnel.</text>
+          </description>
+        </leaf>
+        <leaf name="source-interface">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="(../source-interface and (../source-ip or ../source-ipv6)) or (not (../source-interface) and not (../source-ip or ../source-ipv6))"/>
+          <description>
+            <text>Source interface name. The interface must be a physical interface or loopback interface.</text>
+          </description>
+        </leaf>
+        <choice name="ip-type">
+          <description>
+            <text>Source and destination configuration.</text>
+          </description>
+          <case name="ipv4">
+            <description>
+              <text>IPv4 type.</text>
+            </description>
+            <leaf name="source-ip">
+              <when condition="../source-interface"/>
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()/../source-interface]/ip:ipv4/ip:addresses/ip:address/ip:ip"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Source IP address of tunnel.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-ip">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Destination IP address of tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="ipv6">
+            <description>
+              <text>IPv6 type.</text>
+            </description>
+            <leaf name="source-ipv6">
+              <when condition="../source-interface"/>
+              <type name="inet:ipv6-address-no-zone"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Source IPv6 address of tunnel. If the source inferface is a physical interface, the source IPv6 address references the IPv6 address of the physical interface. If the source inferface is a loopback interface, the source IPv6 address must be on the same network segment as the IPv6 address of the loopback interface.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-ipv6">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Destination IPv6 address of tunnel.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="local-session-id">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <default value="4294967295"/>
+          <description>
+            <text>Local session ID.</text>
+          </description>
+        </leaf>
+        <leaf name="remote-session-id">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <default value="4294967295"/>
+          <description>
+            <text>Remote session ID.</text>
+          </description>
+        </leaf>
+        <choice name="local-cookie">
+          <description>
+            <text>The local cookie.</text>
+          </description>
+          <case name="cipher">
+            <description>
+              <text>Local ciphertext cookie.</text>
+            </description>
+            <leaf name="local-cookie-cipher">
+              <type name="pub-type:password">
+                <length value="1..108"/>
+              </type>
+              <description>
+                <text>The value of the local ciphertext cookie. The ciphertext cookie is a string ranging from 1 to 8 characters for a unencrypted password and 48 or 108 characters for a encrypted password.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="plain">
+            <description>
+              <text>Local plaintext cookie.</text>
+            </description>
+            <leaf name="local-cookie-length">
+              <type name="cookie-length"/>
+              <description>
+                <text>The length of the local cookie.</text>
+              </description>
+            </leaf>
+            <leaf name="local-cookie-low">
+              <when condition="../local-cookie-length"/>
+              <type name="pub-type:hex-binary">
+                <pattern value="(0x)[0-9a-f]+"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>The value of the lower 4 bytes of the local cookie.</text>
+              </description>
+            </leaf>
+            <leaf name="local-cookie-high">
+              <when condition="../local-cookie-length='8-bytes'"/>
+              <type name="pub-type:hex-binary">
+                <pattern value="(0x)[0-9a-f]+"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>The value of the upper 4 bytes of the local cookie.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="local-secondary-cookie">
+          <description>
+            <text>The local secondary cookie.</text>
+          </description>
+          <case name="cipher">
+            <description>
+              <text>Local secondary ciphertext cookie.</text>
+            </description>
+            <leaf name="local-secondary-cookie-cipher">
+              <when condition="../local-cookie-cipher or ../local-cookie-length"/>
+              <type name="pub-type:password">
+                <length value="1..108"/>
+              </type>
+              <description>
+                <text>The value of the local secondary ciphertext cookie. The ciphertext cookie is a string ranging from 1 to 8 characters for a unencrypted password and 48 or 108 characters for a encrypted password.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="plain">
+            <description>
+              <text>Local secondary plaintext cookie.</text>
+            </description>
+            <leaf name="local-secondary-cookie-length">
+              <when condition="../local-cookie-cipher or ../local-cookie-length"/>
+              <type name="cookie-length"/>
+              <description>
+                <text>The length of the local secondary cookie.</text>
+              </description>
+            </leaf>
+            <leaf name="local-secondary-cookie-low">
+              <when condition="../local-secondary-cookie-length"/>
+              <type name="pub-type:hex-binary">
+                <pattern value="(0x)[0-9a-f]+"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>The value of the lower 4 bytes of the local secondary cookie.</text>
+              </description>
+            </leaf>
+            <leaf name="local-secondary-cookie-high">
+              <when condition="../local-secondary-cookie-length='8-bytes'"/>
+              <type name="pub-type:hex-binary">
+                <pattern value="(0x)[0-9a-f]+"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>The value of the upper 4 bytes of the local secondary cookie.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="remote-cookie">
+          <description>
+            <text>The remote cookie.</text>
+          </description>
+          <case name="cipher">
+            <description>
+              <text>Remote ciphertext cookie.</text>
+            </description>
+            <leaf name="remote-cookie-cipher">
+              <type name="pub-type:password">
+                <length value="1..108"/>
+              </type>
+              <description>
+                <text>The value of the remote ciphertext cookie. The ciphertext cookie is a string ranging from 1 to 8 characters for a unencrypted password and 48 or 108 characters for a encrypted password.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="plain">
+            <description>
+              <text>Remote plaintext cookie.</text>
+            </description>
+            <leaf name="remote-cookie-length">
+              <type name="cookie-length"/>
+              <description>
+                <text>The length of the remote cookie.</text>
+              </description>
+            </leaf>
+            <leaf name="remote-cookie-low">
+              <when condition="../remote-cookie-length"/>
+              <type name="pub-type:hex-binary">
+                <pattern value="(0x)[0-9a-f]+"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>The value of the lower 4 bytes of the remote cookie.</text>
+              </description>
+            </leaf>
+            <leaf name="remote-cookie-high">
+              <when condition="../remote-cookie-length='8-bytes'"/>
+              <type name="pub-type:hex-binary">
+                <pattern value="(0x)[0-9a-f]+"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>The value of the upper 4 bytes of the remote cookie.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+      </list>
+    </container>
+    <container name="instances">
+      <description>
+        <text>List of L2TPv3 instances.</text>
+      </description>
+      <list name="instance">
+        <key value="name type"/>
+        <unique tag="interface-name"/>
+        <unique tag="out-interface-name"/>
+        <description>
+          <text>Configure L2TPv3 instance.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..31"/>
+            <pattern value="[a-zA-Z]([^\s]*)"/>
+          </type>
+          <description>
+            <text>Instance name.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="instance-type"/>
+          <description>
+            <text>Instance type.</text>
+          </description>
+        </leaf>
+        <leaf name="interface-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:default or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:dot1q/ethernet:vlans/ethernet:vlan-list and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:flow-action/ethernet:action-type='pop-outer') or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:qinqs/ethernet:qinq-vids/ethernet:qinq-vid/ethernet:ce-vlan-list and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:flow-action/ethernet:action-type='pop-double')) or (../l2tpv3:type = 'normal' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm:class = 'sub-interface' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm:l2-mode-enable = 'false')"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Name of a sub-interface.</text>
+          </description>
+        </leaf>
+        <leaf name="out-interface-name">
+          <when condition="../type='local-connect'"/>
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:default or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:dot1q/ethernet:vlans/ethernet:vlan-list and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:flow-action/ethernet:action-type='pop-outer') or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:qinqs/ethernet:qinq-vids/ethernet:qinq-vid/ethernet:ce-vlan-list and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:flow-action/ethernet:action-type='pop-double')"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Name of a sub-interface.</text>
+          </description>
+        </leaf>
+        <container name="pws">
+          <when condition="../type='normal'"/>
+          <description>
+            <text>List of L2TPv3 tunnel informations.</text>
+          </description>
+          <list name="pw">
+            <must condition="(../../../../pws/pw/source-interface and (../../../../pws/pw/destination-ip or ../../../../pws/pw/destination-ipv6))"/>
+            <key value="name"/>
+            <unique tag="role"/>
+            <max-elements value="2"/>
+            <description>
+              <text>Configure L2TPv3 tunnel information.</text>
+            </description>
+            <leaf name="name">
+              <type name="leafref">
+                <path value="../../../../../pws/pw/name"/>
+              </type>
+              <must condition="(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:default or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:dot1q/ethernet:vlans/ethernet:vlan-list and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:flow-action/ethernet:action-type='pop-outer') or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:qinqs/ethernet:qinq-vids/ethernet:qinq-vid/ethernet:ce-vlan-list and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l2-sub-interface/ethernet:flow-action/ethernet:action-type='pop-double')) or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination/ethernet:symmetry-mode/ethernet:symmetry-type = 'asymmetry' and count(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination/ethernet:qinq-vids/ethernet:qinq-vid) = 1) or (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../../../l2tpv3:interface-name]/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:vlan-type-dot1q/ethernet:vlan-type-vid)"/>
+              <description>
+                <text>Name of a tunnel.</text>
+              </description>
+            </leaf>
+            <leaf name="role">
+              <ext:operation-exclude value="update"/>
+              <type name="pw-role-type"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Whether the tunnel is a primary or injected tunnel.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

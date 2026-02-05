@@ -1,0 +1,1564 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "openconfig-ospfv2-global API generated from openconfig-ospfv2-global.yang",
+        "version": "1.0.0",
+        "title": "openconfig-ospfv2-global API"
+    },
+    "host": "localhost:8080",
+    "basePath": "/restconf",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {
+        "ospfv2-global-config": {
+            "description": "Global configuration for OSPFv2",
+            "properties": {
+                "router-id": {
+                    "type": "string",
+                    "description": "A 32-bit number represented as a dotted quad assigned to\neach router running the OSPFv2 protocol. This number should\nbe unique within the autonomous system"
+                },
+                "summary-route-cost-mode": {
+                    "type": "string",
+                    "enum": [
+                        "RFC1583_COMPATIBLE",
+                        "RFC2328_COMPATIBLE"
+                    ],
+                    "description": "Specify how costs for the summary routes should be specified\nas per the behaviour in the original OSPF specification\nRFC1583, or alternatively whether the revised behaviour\ndescribed in RFC2328 should be utilised"
+                },
+                "igp-shortcuts": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, OSPFv2 will route traffic to\na remote system via any LSP to the system that is marked as\nshortcut eligible."
+                },
+                "log-adjacency-changes": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, a log message will be\ngenerated when the state of an OSPFv2 neighbour changes."
+                },
+                "hide-transit-only-networks": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, do not advertise prefixes\ninto OSPFv2 that correspond to transit interfaces, as per\nthe behaviour discussed in RFC6860."
+                }
+            }
+        },
+        "ospfv2-global-spf-timers-config": {
+            "description": "Configuration parameters relating to global SPF timer\nparameters for OSPFv2",
+            "properties": {
+                "initial-delay": {
+                    "type": "string",
+                    "description": "The value of this leaf specifies the time between a change\nin topology being detected and the first run of the SPF\nalgorithm."
+                },
+                "maximum-delay": {
+                    "type": "string",
+                    "description": "The value of this leaf specifies the maximum delay between\na topology change being detected and the SPF algorithm\nrunning. This value is used for implementations that support\nincreasing the wait time between SPF runs."
+                }
+            }
+        },
+        "ospfv2-global-lsa-generation-timers-config": {
+            "description": "Configuration parameters relating to global LSA generation\nparameters for OSPFv2",
+            "properties": {
+                "initial-delay": {
+                    "type": "string",
+                    "description": "The value of this leaf specifies the time between the first\ntime an LSA is generated and advertised and the subsequent\ngeneration of that LSA."
+                },
+                "maximum-delay": {
+                    "type": "string",
+                    "description": "The value of this leaf specifies the maximum time between the\ngeneration of an LSA and the subsequent re-generation of that\nLSA. This value is used in implementations that support\nincreasing delay between generation of an LSA"
+                }
+            }
+        },
+        "ospfv2-global-spf-timers-state": {
+            "description": "Operational state parameters relating to OSPFv2 global\ntimers",
+            "$ref": "#/definitions/ospfv2-common-timers"
+        },
+        "ospfv2-global-lsa-generation-timers-state": {
+            "description": "Operational state parameters relating to OSPFv2 global\ntimers",
+            "$ref": "#/definitions/ospfv2-common-timers"
+        },
+        "ospfv2-global-graceful-restart-config": {
+            "description": "Configuration parameters relating to graceful restart for\nOSPFv2",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "When the value of this leaf is set to true, graceful restart\nis enabled on the local system. In this case, the system will\nuse Grace-LSAs to signal that it is restarting to its\nneighbors."
+                },
+                "helper-only": {
+                    "type": "boolean",
+                    "description": "Operate graceful-restart only in helper mode. When this leaf\nis set to true, the local system does not use Grace-LSAs to\nindicate that it is restarting, but will accept Grace-LSAs\nfrom remote systems, and suppress withdrawl of adjacencies\nof the system for the grace period specified"
+                }
+            }
+        },
+        "ospfv2-global-mpls-config": {
+            "description": "Configuration parameters for OSPFv2 options which\nrelate to MPLS",
+            "properties": {
+                "traffic-engineering-extensions": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, use traffic engineering\nextensions for OSPF to advertise TE parameters via type 10\nOpaque LSAs"
+                }
+            }
+        },
+        "ospfv2-global-inter-areapp-config": {
+            "description": "Configuration parameters for OSPFv2 policies which propagate\nprefixes between areas",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/apply-policy-import-config"
+                },
+                {
+                    "properties": {
+                        "src-area": {
+                            "type": "string",
+                            "x-path": "../../../../../areas/area/identifier",
+                            "description": "The area from which prefixes are to be exported."
+                        },
+                        "dst-area": {
+                            "type": "string",
+                            "x-path": "../../../../../areas/area/identifier",
+                            "description": "The destination area to which prefixes are to be imported"
+                        }
+                    }
+                }
+            ]
+        },
+        "ospfv2-global-max-metric-config": {
+            "description": "Configuration paramters relating to setting the OSPFv2\nmaximum metric.",
+            "properties": {
+                "set": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, all non-stub interfaces of\nthe local system are advertised with the maximum metric,\nsuch that the router does not act as a transit system,\n(similarly to the IS-IS overload functionality)."
+                },
+                "timeout": {
+                    "type": "string",
+                    "description": "The delay, in seconds, after which the advertisement of\nentities with the maximum metric should be cleared, and\nthe system reverts to the default, or configured, metrics."
+                },
+                "include": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "By default, the maximum metric is advertised for all\nnon-stub interfaces of a device. When identities are\nspecified within this leaf-list, additional entities\nare also advertised with the maximum metric according\nto the values within the list."
+                    }
+                },
+                "trigger": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "By default, the maximum metric is only advertised\nwhen the max-metric/set leaf is specified as true.\nIn the case that identities are specified within this\nlist, they provide additional triggers (e.g., system\nboot) that may cause the max-metric to be set. In this\ncase, the system should still honour the timeout specified\nby the max-metric/timeout leaf, and clear the max-metric\nadvertisements after the expiration of this timer."
+                    }
+                }
+            }
+        },
+        "ospfv2-global-structural": {
+            "description": "Top level structural grouping for OSPFv2 global parameters",
+            "properties": {
+                "global": {
+                    "description": "Configuration and operational state parameters for settings\nthat are global to the OSPFv2 instance",
+                    "properties": {
+                        "config": {
+                            "description": "Global configuration parameters for OSPFv2",
+                            "$ref": "#/definitions/ospfv2-global-config"
+                        },
+                        "state": {
+                            "description": "Operational state parameters for OSPFv2",
+                            "$ref": "#/definitions/ospfv2-global-config"
+                        },
+                        "timers": {
+                            "description": "Configuration and operational state parameters for OSPFv2\ntimers",
+                            "properties": {
+                                "spf": {
+                                    "description": "Configuration and operational state parameters relating\nto timers governing the operation of SPF runs",
+                                    "properties": {
+                                        "config": {
+                                            "description": "Configuration parameters relating to global OSPFv2\nSPF timers",
+                                            "$ref": "#/definitions/ospfv2-global-spf-timers-config"
+                                        },
+                                        "state": {
+                                            "description": "Operational state parameters relating to the global\nOSPFv2 SPF timers",
+                                            "$ref": "#/definitions/ospfv2-global-spf-timers-state"
+                                        }
+                                    }
+                                },
+                                "max-metric": {
+                                    "description": "Configuration and operational state parameters relating\nto setting the OSPFv2 maximum metric.",
+                                    "properties": {
+                                        "config": {
+                                            "description": "Configuration parameters relating to setting the OSPFv2\nmaximum metric for a set of advertised entities.",
+                                            "$ref": "#/definitions/ospfv2-global-max-metric-config"
+                                        },
+                                        "state": {
+                                            "description": "Operational state parameters relating to setting the\nOSPFv2 maximum metric for a set of advertised entities.",
+                                            "$ref": "#/definitions/ospfv2-global-max-metric-config"
+                                        }
+                                    }
+                                },
+                                "lsa-generation": {
+                                    "description": "Configuration and operational state parameters relating\nto timers governing the generation of LSAs by the local\nsystem",
+                                    "properties": {
+                                        "config": {
+                                            "description": "Configuration parameters relating to the generation of\nLSAs by the local system",
+                                            "$ref": "#/definitions/ospfv2-global-lsa-generation-timers-config"
+                                        },
+                                        "state": {
+                                            "description": "Operational state parameters relating to the generation\nof LSAs by the local system",
+                                            "$ref": "#/definitions/ospfv2-global-lsa-generation-timers-state"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "graceful-restart": {
+                            "description": "Configuration and operational state parameters for OSPFv2\ngraceful restart",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to OSPFv2 graceful\nrestart",
+                                    "$ref": "#/definitions/ospfv2-global-graceful-restart-config"
+                                },
+                                "state": {
+                                    "description": "Operational state parameters relating to OSPFv2 graceful\nrestart",
+                                    "$ref": "#/definitions/ospfv2-global-graceful-restart-config"
+                                }
+                            }
+                        },
+                        "mpls": {
+                            "description": "OSPFv2 parameters relating to MPLS",
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration parameters relating to MPLS for OSPFv2",
+                                    "$ref": "#/definitions/ospfv2-global-mpls-config"
+                                },
+                                "state": {
+                                    "description": "Operational state parameters relating to MPLS for\nOSPFv2",
+                                    "$ref": "#/definitions/ospfv2-global-mpls-config"
+                                },
+                                "igp-ldp-sync": {
+                                    "description": "OSPFv2 parameters relating to LDP/IGP synchronization",
+                                    "properties": {
+                                        "config": {
+                                            "description": "Configuration parameters relating to LDP/IG\nsynchronization.",
+                                            "$ref": "#/definitions/ospfv2-common-mpls-igp-ldp-sync-config"
+                                        },
+                                        "state": {
+                                            "description": "Operational state variables relating to LDP/IGP\nsynchronization",
+                                            "$ref": "#/definitions/ospfv2-common-mpls-igp-ldp-sync-config"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "inter-area-propagation-policies": {
+                            "description": "Policies defining how inter-area propagation should be performed\nby the OSPF instance",
+                            "properties": {
+                                "inter-area-propagation-policy": {
+                                    "description": "A list of connections between pairs of areas - routes are\npropagated from the source (src) area to the destination (dst)\narea according to the policy specified",
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "src-area": {
+                                                "type": "string",
+                                                "x-path": "../config/src-area",
+                                                "description": "Reference to the source area"
+                                            },
+                                            "dst-area": {
+                                                "type": "string",
+                                                "x-path": "../config/dst-area",
+                                                "description": "Reference to the destination area"
+                                            },
+                                            "config": {
+                                                "description": "Configuration parameters relating to the inter-area\npropagation policy",
+                                                "$ref": "#/definitions/ospfv2-global-inter-areapp-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state parameters relating to the inter-area\npropagation policy",
+                                                "$ref": "#/definitions/ospfv2-global-inter-areapp-config"
+                                            }
+                                        }
+                                    },
+                                    "x-key": "src-area dst-area"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "ospfv2-common-mpls-igp-ldp-sync-config": {
+            "description": "Configuration parameters used for OSPFv2 MPLS/IGP\nsynchronization",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "When this leaf is set to true, do not utilise this link for\nforwarding via the IGP until such time as LDP adjacencies to\nthe neighbor(s) over the link are established."
+                },
+                "post-session-up-delay": {
+                    "type": "string",
+                    "description": "This leaf specifies a delay, expressed in units of milliseconds,\nbetween the LDP session to the IGP neighbor being established, and\nit being considered synchronized by the IGP."
+                }
+            }
+        },
+        "ospfv2-common-timers": {
+            "description": "Common definition of the type of timers that the OSPFv2 implementation\nuses",
+            "properties": {
+                "timer-type": {
+                    "type": "string",
+                    "enum": [
+                        "LINEAR_BACKOFF",
+                        "EXPONENTIAL_BACKOFF"
+                    ],
+                    "description": "The timer mode that is utilised by the implementation."
+                }
+            }
+        },
+        "prefix-set-config": {
+            "description": "Configuration data for prefix sets used in policy\ndefinitions.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name / label of the prefix set -- this is used to\nreference the set in match conditions"
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "IPV4",
+                        "IPV6",
+                        "MIXED"
+                    ],
+                    "description": "Indicates the mode of the prefix set, in terms of which\naddress families (IPv4, IPv6, or both) are present.  The\nmode provides a hint, but the device must validate that all\nprefixes are of the indicated type, and is expected to\nreject the configuration if there is a discrepancy.  The\nMIXED mode may not be supported on devices that require\nprefix sets to be of only one address family."
+                }
+            }
+        },
+        "prefix-set-state": {
+            "description": "Operational state data for prefix sets"
+        },
+        "prefix-set-top": {
+            "description": "Top-level data definitions for a list of IPv4 or IPv6\nprefixes which are matched as part of a policy",
+            "properties": {
+                "prefix-sets": {
+                    "description": "Enclosing container ",
+                    "properties": {
+                        "prefix-set": {
+                            "description": "List of the defined prefix sets",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/prefix-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Reference to prefix name list key"
+                                            },
+                                            "config": {
+                                                "description": "Configuration data for prefix sets",
+                                                "$ref": "#/definitions/prefix-set-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data ",
+                                                "$ref": "#/definitions/prefix-set-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "prefix-config": {
+            "description": "Configuration data for a prefix definition",
+            "properties": {
+                "ip-prefix": {
+                    "type": "string",
+                    "description": "The prefix member in CIDR notation -- while the\nprefix may be either IPv4 or IPv6, most\nimplementations require all members of the prefix set\nto be the same address family.  Mixing address types in\nthe same prefix set is likely to cause an error."
+                },
+                "masklength-range": {
+                    "type": "string",
+                    "description": "Defines a range for the masklength, or 'exact' if\nthe prefix has an exact length.\n\nExample: 10.3.192.0/21 through 10.3.192.0/24 would be\nexpressed as prefix: 10.3.192.0/21,\nmasklength-range: 21..24.\n\nExample: 10.3.192.0/21 would be expressed as\nprefix: 10.3.192.0/21,\nmasklength-range: exact"
+                }
+            }
+        },
+        "prefix-state": {
+            "description": "Operational state data for prefix definitions"
+        },
+        "prefix-top": {
+            "description": "Top-level grouping for prefixes in a prefix list",
+            "properties": {
+                "prefixes": {
+                    "description": "Enclosing container for the list of prefixes in a policy\nprefix list",
+                    "properties": {
+                        "prefix": {
+                            "description": "List of prefixes in the prefix set",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "ip-prefix": {
+                                        "type": "string",
+                                        "x-path": "../config/ip-prefix",
+                                        "description": "Reference to the ip-prefix list key."
+                                    },
+                                    "masklength-range": {
+                                        "type": "string",
+                                        "x-path": "../config/masklength-range",
+                                        "description": "Reference to the masklength-range list key"
+                                    },
+                                    "config": {
+                                        "description": "Configuration data for prefix definition",
+                                        "$ref": "#/definitions/prefix-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for prefix definition",
+                                        "$ref": "#/definitions/prefix-state"
+                                    }
+                                }
+                            },
+                            "x-key": "ip-prefix masklength-range"
+                        }
+                    }
+                }
+            }
+        },
+        "neighbor-set-config": {
+            "description": "Configuration data for neighbor set definitions",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name / label of the neighbor set -- this is used to\nreference the set in match conditions"
+                },
+                "address": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "List of IP addresses in the neighbor set"
+                    }
+                }
+            }
+        },
+        "neighbor-set-state": {
+            "description": "Operational state data for neighbor set definitions"
+        },
+        "neighbor-set-top": {
+            "description": "Top-level data definition for a list of IPv4 or IPv6\nneighbors which can be matched in a routing policy",
+            "properties": {
+                "neighbor-sets": {
+                    "description": "Enclosing container for the list of neighbor set\ndefinitions",
+                    "properties": {
+                        "neighbor-set": {
+                            "description": "List of defined neighbor sets for use in policies.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "x-path": "../config/name",
+                                        "description": "Reference to the neighbor set name list key."
+                                    },
+                                    "config": {
+                                        "description": "Configuration data for neighbor sets.",
+                                        "$ref": "#/definitions/neighbor-set-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for neighbor sets.",
+                                        "$ref": "#/definitions/neighbor-set-state"
+                                    }
+                                }
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "tag-set-config": {
+            "description": "Configuration data for tag set definitions.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name / label of the tag set -- this is used to reference\nthe set in match conditions"
+                },
+                "tag-value": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Value of the tag set member"
+                    }
+                }
+            }
+        },
+        "tag-set-state": {
+            "description": "Operational state data for tag set definitions."
+        },
+        "tag-set-top": {
+            "description": "Top-level data definitions for a list of tags which can\nbe matched in policies",
+            "properties": {
+                "tag-sets": {
+                    "description": "Enclosing container for the list of tag sets.",
+                    "properties": {
+                        "tag-set": {
+                            "description": "List of tag set definitions.",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "x-path": "../config/name",
+                                        "description": "Reference to the tag set name list key"
+                                    },
+                                    "config": {
+                                        "description": "Configuration data for tag sets",
+                                        "$ref": "#/definitions/tag-set-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for tag sets",
+                                        "$ref": "#/definitions/tag-set-state"
+                                    }
+                                }
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "generic-defined-sets": {
+            "description": "Data definitions for pre-defined sets of attributes used in\npolicy match conditions.  These sets are generic and can\nbe used in matching conditions in different routing\nprotocols.",
+            "$ref": "#/definitions/tag-set-top"
+        },
+        "match-set-options-group": {
+            "description": "Grouping containing options relating to how a particular set\nshould be matched",
+            "properties": {
+                "match-set-options": {
+                    "type": "string",
+                    "description": "Optional parameter that governs the behaviour of the\nmatch operation"
+                }
+            }
+        },
+        "match-set-options-restricted-group": {
+            "description": "Grouping for a restricted set of match operation modifiers",
+            "properties": {
+                "match-set-options": {
+                    "type": "string",
+                    "description": "Optional parameter that governs the behaviour of the\nmatch operation.  This leaf only supports matching on ANY\nmember of the set or inverting the match.  Matching on ALL is\nnot supported"
+                }
+            }
+        },
+        "match-interface-condition-config": {
+            "description": "Configuration data for interface match condition",
+            "$ref": "#/definitions/interface-ref-common"
+        },
+        "match-interface-condition-state": {
+            "description": "Operational state data for interface match condition"
+        },
+        "match-interface-condition-top": {
+            "description": "Top-level grouping for the interface match condition",
+            "properties": {
+                "match-interface": {
+                    "description": "Top-level container for interface match conditions",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for interface match conditions",
+                            "$ref": "#/definitions/match-interface-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for interface match conditions",
+                            "$ref": "#/definitions/match-interface-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "prefix-set-condition-config": {
+            "description": "Configuration data for prefix-set conditions",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/match-set-options-restricted-group"
+                },
+                {
+                    "properties": {
+                        "prefix-set": {
+                            "type": "string",
+                            "x-path": "../../../../../../../../defined-sets/prefix-sets/prefix-set/config/name",
+                            "description": "References a defined prefix set"
+                        }
+                    }
+                }
+            ]
+        },
+        "prefix-set-condition-state": {
+            "description": "Operational state data for prefix-set conditions"
+        },
+        "prefix-set-condition-top": {
+            "description": "Top-level grouping for prefix-set conditions",
+            "properties": {
+                "match-prefix-set": {
+                    "description": "Match a referenced prefix-set according to the logic\ndefined in the match-set-options leaf",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for a prefix-set condition",
+                            "$ref": "#/definitions/prefix-set-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for a prefix-set condition",
+                            "$ref": "#/definitions/prefix-set-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "neighbor-set-condition-config": {
+            "description": "Configuration data for neighbor-set conditions",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/match-set-options-restricted-group"
+                },
+                {
+                    "properties": {
+                        "neighbor-set": {
+                            "type": "string",
+                            "x-path": "../../../../../../../../defined-sets/neighbor-sets/neighbor-set/name",
+                            "description": "References a defined neighbor set"
+                        }
+                    }
+                }
+            ]
+        },
+        "neighbor-set-condition-state": {
+            "description": "Operational state data for neighbor-set conditions"
+        },
+        "neighbor-set-condition-top": {
+            "description": "Top-level grouping for neighbor-set conditions",
+            "properties": {
+                "match-neighbor-set": {
+                    "description": "Match a referenced neighbor set according to the logic\ndefined in the match-set-options-leaf",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data ",
+                            "$ref": "#/definitions/neighbor-set-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data ",
+                            "$ref": "#/definitions/neighbor-set-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "tag-set-condition-config": {
+            "description": "Configuration data for tag-set condition statements",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/match-set-options-restricted-group"
+                },
+                {
+                    "properties": {
+                        "tag-set": {
+                            "type": "string",
+                            "x-path": "../../../../../../../../defined-sets/tag-sets/tag-set/name",
+                            "description": "References a defined tag set"
+                        }
+                    }
+                }
+            ]
+        },
+        "tag-set-condition-state": {
+            "description": "Operational state data for tag-set condition statements"
+        },
+        "tag-set-condition-top": {
+            "description": "Top-level grouping for tag-set conditions",
+            "properties": {
+                "match-tag-set": {
+                    "description": "Match a referenced tag set according to the logic defined\nin the match-options-set leaf",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for tag-set conditions",
+                            "$ref": "#/definitions/tag-set-condition-config"
+                        },
+                        "state": {
+                            "description": "Operational state data tag-set conditions",
+                            "$ref": "#/definitions/tag-set-condition-state"
+                        }
+                    }
+                }
+            }
+        },
+        "generic-conditions": {
+            "description": "Condition statement definitions for checking\nmembership in a generic defined set",
+            "$ref": "#/definitions/tag-set-condition-top"
+        },
+        "generic-actions": {
+            "description": "Definitions for common set of policy action statements that\nmanage the disposition or control flow of the policy",
+            "properties": {
+                "policy-result": {
+                    "type": "string",
+                    "description": "Select the final disposition for the route, either\naccept or reject."
+                }
+            }
+        },
+        "policy-conditions-config": {
+            "description": "Configuration data for general policy conditions, i.e., those\nnot related to match-sets",
+            "properties": {
+                "call-policy": {
+                    "type": "string",
+                    "x-path": "../../../../../../../oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                    "description": "Applies the statements from the specified policy\ndefinition and then returns control the current\npolicy statement. Note that the called policy may\nitself call other policies (subject to\nimplementation limitations). This is intended to\nprovide a policy 'subroutine' capability.  The\ncalled policy should contain an explicit or a\ndefault route disposition that returns an\neffective true (accept-route) or false\n(reject-route), otherwise the behavior may be\nambiguous and implementation dependent"
+                },
+                "install-protocol-eq": {
+                    "type": "string",
+                    "description": "Condition to check the protocol / method used to install\nthe route into the local routing table"
+                }
+            }
+        },
+        "policy-conditions-state": {
+            "description": "Operational state data for policy conditions"
+        },
+        "policy-conditions-top": {
+            "description": "Top-level grouping for policy conditions",
+            "properties": {
+                "conditions": {
+                    "description": "Condition statements for the current policy statement",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/generic-conditions"
+                        },
+                        {
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration data for policy conditions",
+                                    "$ref": "#/definitions/policy-conditions-config"
+                                },
+                                "state": {
+                                    "description": "Operational state data for policy conditions",
+                                    "$ref": "#/definitions/policy-conditions-state"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "policy-statements-config": {
+            "description": "Configuration data for policy statements",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "name of the policy statement"
+                }
+            }
+        },
+        "policy-statements-state": {
+            "description": "Operational state data for policy statements"
+        },
+        "policy-actions-config": {
+            "description": "Configuration data for policy actions",
+            "$ref": "#/definitions/generic-actions"
+        },
+        "policy-actions-state": {
+            "description": "Operational state data for policy actions"
+        },
+        "policy-actions-top": {
+            "description": "Top-level grouping for policy actions",
+            "properties": {
+                "actions": {
+                    "description": "Top-level container for policy action statements",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for policy actions",
+                            "$ref": "#/definitions/policy-actions-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for policy actions",
+                            "$ref": "#/definitions/policy-actions-state"
+                        }
+                    }
+                }
+            }
+        },
+        "policy-statements-top": {
+            "description": "Top-level grouping for the policy statements list",
+            "properties": {
+                "statements": {
+                    "description": "Enclosing container for policy statements",
+                    "properties": {
+                        "statement": {
+                            "description": "Policy statements group conditions and actions\nwithin a policy definition.  They are evaluated in\nthe order specified (see the description of policy\nevaluation at the top of this module.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/policy-conditions-top"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/policy-actions-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Reference to list key"
+                                            },
+                                            "config": {
+                                                "description": "Configuration data for policy statements",
+                                                "$ref": "#/definitions/policy-statements-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data for policy statements",
+                                                "$ref": "#/definitions/policy-statements-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "defined-sets-top": {
+            "description": "Top-level grouping for defined set definitions",
+            "properties": {
+                "defined-sets": {
+                    "description": "Predefined sets of attributes used in policy match\nstatements",
+                    "$ref": "#/definitions/generic-defined-sets"
+                }
+            }
+        },
+        "policy-definitions-config": {
+            "description": "Configuration data for policy definitions",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the top-level policy definition -- this name\nis used in references to the current policy"
+                }
+            }
+        },
+        "policy-definitions-state": {
+            "description": "Operational state data for policy definitions"
+        },
+        "policy-definitions-top": {
+            "description": "Top-level grouping for the policy definition list",
+            "properties": {
+                "policy-definitions": {
+                    "description": "Enclosing container for the list of top-level policy\n definitions",
+                    "properties": {
+                        "policy-definition": {
+                            "description": "List of top-level policy definitions, keyed by unique\nname.  These policy definitions are expected to be\nreferenced (by name) in policy chains specified in import\nor export configuration statements.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/policy-statements-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "Reference to the list key"
+                                            },
+                                            "config": {
+                                                "description": "Configuration data for policy defintions",
+                                                "$ref": "#/definitions/policy-definitions-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data for policy definitions",
+                                                "$ref": "#/definitions/policy-definitions-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "routing-policy-top": {
+            "description": "Top level container for OpenConfig routing policy",
+            "properties": {
+                "routing-policy": {
+                    "description": "Top-level container for all routing policy configuration",
+                    "$ref": "#/definitions/policy-definitions-top"
+                }
+            }
+        },
+        "apply-policy-import-config": {
+            "description": "Configuration data for applying import policies",
+            "properties": {
+                "import-policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                        "description": "list of policy names in sequence to be applied on\nreceiving a routing update in the current context, e.g.,\nfor the current peer group, neighbor, address family,\netc."
+                    }
+                },
+                "default-import-policy": {
+                    "type": "string",
+                    "description": "explicitly set a default policy if no policy definition\nin the import policy chain is satisfied."
+                }
+            }
+        },
+        "apply-policy-export-config": {
+            "description": "Configuration data for applying export policies",
+            "properties": {
+                "export-policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-path": "/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name",
+                        "description": "list of policy names in sequence to be applied on\nsending a routing update in the current context, e.g.,\nfor the current peer group, neighbor, address family,\netc."
+                    }
+                },
+                "default-export-policy": {
+                    "type": "string",
+                    "description": "explicitly set a default policy if no policy definition\nin the export policy chain is satisfied."
+                }
+            }
+        },
+        "apply-policy-config": {
+            "description": "Configuration data for routing policies",
+            "$ref": "#/definitions/apply-policy-export-config"
+        },
+        "apply-policy-state": {
+            "description": "Operational state associated with routing policy"
+        },
+        "apply-policy-group": {
+            "description": "Top level container for routing policy applications. This\ngrouping is intended to be used in routing models where\nneeded.",
+            "properties": {
+                "apply-policy": {
+                    "description": "Anchor point for routing policies in the model.\nImport and export policies are with respect to the local\nrouting table, i.e., export (send) and import (receive),\ndepending on the context.",
+                    "properties": {
+                        "config": {
+                            "description": "Policy configuration data.",
+                            "$ref": "#/definitions/apply-policy-config"
+                        },
+                        "state": {
+                            "description": "Operational state for routing policy",
+                            "$ref": "#/definitions/apply-policy-state"
+                        }
+                    }
+                }
+            }
+        },
+        "interface-ref-common": {
+            "description": "Reference leafrefs to interface / subinterface",
+            "properties": {
+                "interface": {
+                    "type": "string",
+                    "x-path": "/oc-if:interfaces/oc-if:interface/oc-if:name",
+                    "description": "Reference to a base interface.  If a reference to a\nsubinterface is required, this leaf must be specified\nto indicate the base interface."
+                },
+                "subinterface": {
+                    "type": "string",
+                    "x-path": "/oc-if:interfaces/oc-if:interface[oc-if:name=current()/../interface]/oc-if:subinterfaces/oc-if:subinterface/oc-if:index",
+                    "description": "Reference to a subinterface -- this requires the base\ninterface to be specified using the interface leaf in\nthis container.  If only a reference to a base interface\nis requuired, this leaf should not be set."
+                }
+            }
+        },
+        "interface-ref-state-container": {
+            "description": "Reusable opstate w/container for a reference to an\ninterface or subinterface",
+            "properties": {
+                "state": {
+                    "description": "Operational state for interface-ref",
+                    "$ref": "#/definitions/interface-ref-common"
+                }
+            }
+        },
+        "interface-ref": {
+            "description": "Reusable definition for a reference to an interface or\nsubinterface",
+            "properties": {
+                "interface-ref": {
+                    "description": "Reference to an interface or subinterface",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interface-ref-state-container"
+                        },
+                        {
+                            "properties": {
+                                "config": {
+                                    "description": "Configured reference to interface / subinterface",
+                                    "$ref": "#/definitions/interface-ref-common"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "interface-ref-state": {
+            "description": "Reusable opstate w/container for a reference to an\ninterface or subinterface",
+            "properties": {
+                "interface-ref": {
+                    "description": "Reference to an interface or subinterface",
+                    "$ref": "#/definitions/interface-ref-state-container"
+                }
+            }
+        },
+        "base-interface-ref-state": {
+            "description": "Reusable opstate w/container for a reference to a\nbase interface (no subinterface).",
+            "properties": {
+                "state": {
+                    "description": "Operational state for base interface reference",
+                    "properties": {
+                        "interface": {
+                            "type": "string",
+                            "description": "Reference to a base interface."
+                        }
+                    }
+                }
+            }
+        },
+        "interface-common-config": {
+            "description": "Configuration data data nodes common to physical interfaces\nand subinterfaces",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "A textual description of the interface.\n\nA server implementation MAY map this leaf to the ifAlias\nMIB object.  Such an implementation needs to use some\nmechanism to handle the differences in size and characters\nallowed between this leaf and ifAlias.  The definition of\nsuch a mechanism is outside the scope of this document.\n\nSince ifAlias is defined to be stored in non-volatile\nstorage, the MIB implementation MUST map ifAlias to the\nvalue of 'description' in the persistently stored\ndatastore.\n\nSpecifically, if the device supports ':startup', when\nifAlias is read the device MUST return the value of\n'description' in the 'startup' datastore, and when it is\nwritten, it MUST be written to the 'running' and 'startup'\ndatastores.  Note that it is up to the implementation to\n\ndecide whether to modify this single leaf in 'startup' or\nperform an implicit copy-config from 'running' to\n'startup'.\n\nIf the device does not support ':startup', ifAlias MUST\nbe mapped to the 'description' leaf in the 'running'\ndatastore."
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "This leaf contains the configured, desired state of the\ninterface.\n\nSystems that implement the IF-MIB use the value of this\nleaf in the 'running' datastore to set\nIF-MIB.ifAdminStatus to 'up' or 'down' after an ifEntry\nhas been initialized, as described in RFC 2863.\n\nChanges in this leaf in the 'running' datastore are\nreflected in ifAdminStatus, but if ifAdminStatus is\nchanged over SNMP, this leaf is not affected."
+                }
+            }
+        },
+        "interface-phys-config": {
+            "description": "Configuration data for physical interfaces",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/interface-common-config"
+                },
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the interface.\n\nA device MAY restrict the allowed values for this leaf,\npossibly depending on the type of the interface.\nFor system-controlled interfaces, this leaf is the\ndevice-specific name of the interface.  The 'config false'\nlist interfaces/interface[name]/state contains the currently\nexisting interfaces on the device.\n\nIf a client tries to create configuration for a\nsystem-controlled interface that is not present in the\ncorresponding state list, the server MAY reject\nthe request if the implementation does not support\npre-provisioning of interfaces or if the name refers to\nan interface that can never exist in the system.  A\nNETCONF server MUST reply with an rpc-error with the\nerror-tag 'invalid-value' in this case.\n\nThe IETF model in RFC 7223 provides YANG features for the\nfollowing (i.e., pre-provisioning and arbitrary-names),\nhowever they are omitted here:\n\n If the device supports pre-provisioning of interface\n configuration, the 'pre-provisioning' feature is\n advertised.\n\n If the device allows arbitrarily named user-controlled\n interfaces, the 'arbitrary-names' feature is advertised.\n\nWhen a configured user-controlled interface is created by\nthe system, it is instantiated with the same name in the\n/interfaces/interface[name]/state list."
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "The type of the interface.\n\nWhen an interface entry is created, a server MAY\ninitialize the type leaf with a valid value, e.g., if it\nis possible to derive the type from the name of the\ninterface.\n\nIf a client tries to set the type of an interface to a\nvalue that can never be used by the system, e.g., if the\ntype is not supported or if the type does not match the\nname of the interface, the server MUST reject the request.\nA NETCONF server MUST reply with an rpc-error with the\nerror-tag 'invalid-value' in this case."
+                        },
+                        "mtu": {
+                            "type": "string",
+                            "description": "Set the max transmission unit size in octets\nfor the physical interface.  If this is not set, the mtu is\nset to the operational default -- e.g., 1514 bytes on an\nEthernet interface."
+                        },
+                        "loopback-mode": {
+                            "type": "boolean",
+                            "description": "When set to true, the interface is logically looped back,\nsuch that packets that are forwarded via the interface\nare received on the same interface."
+                        }
+                    }
+                }
+            ]
+        },
+        "interface-phys-holdtime-config": {
+            "description": "Configuration data for interface hold-time settings --\napplies to physical interfaces.",
+            "properties": {
+                "up": {
+                    "type": "string",
+                    "description": "Dampens advertisement when the interface\ntransitions from down to up.  A zero value means dampening\nis turned off, i.e., immediate notification."
+                },
+                "down": {
+                    "type": "string",
+                    "description": "Dampens advertisement when the interface transitions from\nup to down.  A zero value means dampening is turned off,\ni.e., immediate notification."
+                }
+            }
+        },
+        "interface-phys-holdtime-state": {
+            "description": "Operational state data for interface hold-time."
+        },
+        "interface-phys-holdtime-top": {
+            "description": "Top-level grouping for setting link transition\ndampening on physical and other types of interfaces.",
+            "properties": {
+                "hold-time": {
+                    "description": "Top-level container for hold-time settings to enable\ndampening advertisements of interface transitions.",
+                    "properties": {
+                        "config": {
+                            "description": "Configuration data for interface hold-time settings.",
+                            "$ref": "#/definitions/interface-phys-holdtime-config"
+                        },
+                        "state": {
+                            "description": "Operational state data for interface hold-time.",
+                            "$ref": "#/definitions/interface-phys-holdtime-state"
+                        }
+                    }
+                }
+            }
+        },
+        "interface-common-state": {
+            "description": "Operational state data (in addition to intended configuration)\nat the global level for this interface",
+            "properties": {
+                "ifindex": {
+                    "type": "string",
+                    "description": "System assigned number for each interface.  Corresponds to\nifIndex object in SNMP Interface MIB"
+                },
+                "admin-status": {
+                    "type": "string",
+                    "enum": [
+                        "UP",
+                        "DOWN",
+                        "TESTING"
+                    ],
+                    "description": "The desired state of the interface.  In RFC 7223 this leaf\nhas the same read semantics as ifAdminStatus.  Here, it\nreflects the administrative state as set by enabling or\ndisabling the interface."
+                },
+                "oper-status": {
+                    "type": "string",
+                    "enum": [
+                        "UP",
+                        "DOWN",
+                        "TESTING",
+                        "UNKNOWN",
+                        "DORMANT",
+                        "NOT_PRESENT",
+                        "LOWER_LAYER_DOWN"
+                    ],
+                    "description": "The current operational state of the interface.\n\nThis leaf has the same semantics as ifOperStatus."
+                },
+                "last-change": {
+                    "type": "string",
+                    "description": "This timestamp indicates the time of the last state change\nof the interface (e.g., up-to-down transition). This\ncorresponds to the ifLastChange object in the standard\ninterface MIB.\n\nThe value is the timestamp in nanoseconds relative to\nthe Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                }
+            },
+            "discriminator": "admin-status"
+        },
+        "interface-counters-state": {
+            "description": "Operational state representing interface counters\nand statistics.",
+            "properties": {
+                "counters": {
+                    "description": "A collection of interface-related statistics objects.",
+                    "properties": {
+                        "in-octets": {
+                            "type": "string",
+                            "description": "The total number of octets received on the interface,\nincluding framing characters.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-unicast-pkts": {
+                            "type": "string",
+                            "description": "The number of packets, delivered by this sub-layer to a\nhigher (sub-)layer, that were not addressed to a\nmulticast or broadcast address at this sub-layer.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-broadcast-pkts": {
+                            "type": "string",
+                            "description": "The number of packets, delivered by this sub-layer to a\nhigher (sub-)layer, that were addressed to a broadcast\naddress at this sub-layer.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-multicast-pkts": {
+                            "type": "string",
+                            "description": "The number of packets, delivered by this sub-layer to a\nhigher (sub-)layer, that were addressed to a multicast\naddress at this sub-layer.  For a MAC-layer protocol,\nthis includes both Group and Functional addresses.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-discards": {
+                            "type": "string",
+                            "description": "The number of inbound packets that were chosen to be\ndiscarded even though no errors had been detected to\nprevent their being deliverable to a higher-layer\nprotocol.  One possible reason for discarding such a\npacket could be to free up buffer space.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-errors": {
+                            "type": "string",
+                            "description": "For packet-oriented interfaces, the number of inbound\npackets that contained errors preventing them from being\ndeliverable to a higher-layer protocol.  For character-\noriented or fixed-length interfaces, the number of\ninbound transmission units that contained errors\npreventing them from being deliverable to a higher-layer\nprotocol.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-unknown-protos": {
+                            "type": "string",
+                            "description": "For packet-oriented interfaces, the number of packets\nreceived via the interface that were discarded because\nof an unknown or unsupported protocol.  For\ncharacter-oriented or fixed-length interfaces that\nsupport protocol multiplexing, the number of\ntransmission units received via the interface that were\ndiscarded because of an unknown or unsupported protocol.\nFor any interface that does not support protocol\nmultiplexing, this counter is not present.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "in-fcs-errors": {
+                            "type": "string",
+                            "description": "Number of received packets which had errors in the\nframe check sequence (FCS), i.e., framing errors.\n\nDiscontinuities in the value of this counter can occur\nwhen the device is re-initialization as indicated by the\nvalue of 'last-clear'."
+                        },
+                        "out-octets": {
+                            "type": "string",
+                            "description": "The total number of octets transmitted out of the\ninterface, including framing characters.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-unicast-pkts": {
+                            "type": "string",
+                            "description": "The total number of packets that higher-level protocols\nrequested be transmitted, and that were not addressed\nto a multicast or broadcast address at this sub-layer,\nincluding those that were discarded or not sent.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-broadcast-pkts": {
+                            "type": "string",
+                            "description": "The total number of packets that higher-level protocols\nrequested be transmitted, and that were addressed to a\nbroadcast address at this sub-layer, including those\nthat were discarded or not sent.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-multicast-pkts": {
+                            "type": "string",
+                            "description": "The total number of packets that higher-level protocols\nrequested be transmitted, and that were addressed to a\nmulticast address at this sub-layer, including those\nthat were discarded or not sent.  For a MAC-layer\nprotocol, this includes both Group and Functional\naddresses.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-discards": {
+                            "type": "string",
+                            "description": "The number of outbound packets that were chosen to be\ndiscarded even though no errors had been detected to\nprevent their being transmitted.  One possible reason\nfor discarding such a packet could be to free up buffer\nspace.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "out-errors": {
+                            "type": "string",
+                            "description": "For packet-oriented interfaces, the number of outbound\npackets that could not be transmitted because of errors.\nFor character-oriented or fixed-length interfaces, the\nnumber of outbound transmission units that could not be\ntransmitted because of errors.\n\nDiscontinuities in the value of this counter can occur\nat re-initialization of the management system, and at\nother times as indicated by the value of\n'last-clear'."
+                        },
+                        "carrier-transitions": {
+                            "type": "string",
+                            "description": "Number of times the interface state has transitioned\nbetween up and down since the time the device restarted\nor the last-clear time, whichever is most recent."
+                        },
+                        "last-clear": {
+                            "type": "string",
+                            "description": "Timestamp of the last time the interface counters were\ncleared.\n\nThe value is the timestamp in nanoseconds relative to\nthe Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                        }
+                    }
+                }
+            }
+        },
+        "sub-unnumbered-config": {
+            "description": "Configuration data for unnumbered subinterfaces",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Indicates that the subinterface is unnumbered.  By default\nthe subinterface is numbered, i.e., expected to have an\nIP address configuration."
+                }
+            }
+        },
+        "sub-unnumbered-state": {
+            "description": "Operational state data unnumbered subinterfaces"
+        },
+        "sub-unnumbered-top": {
+            "description": "Top-level grouping unnumbered subinterfaces",
+            "properties": {
+                "unnumbered": {
+                    "description": "Top-level container for setting unnumbered interfaces.\nIncludes reference the interface that provides the\naddress information",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/interface-ref"
+                        },
+                        {
+                            "properties": {
+                                "config": {
+                                    "description": "Configuration data for unnumbered interface",
+                                    "$ref": "#/definitions/sub-unnumbered-config"
+                                },
+                                "state": {
+                                    "description": "Operational state data for unnumbered interfaces",
+                                    "$ref": "#/definitions/sub-unnumbered-state"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "subinterfaces-config": {
+            "description": "Configuration data for subinterfaces",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/interface-common-config"
+                },
+                {
+                    "properties": {
+                        "index": {
+                            "type": "string",
+                            "description": "The index of the subinterface, or logical interface number.\nOn systems with no support for subinterfaces, or not using\nsubinterfaces, this value should default to 0, i.e., the\ndefault subinterface."
+                        }
+                    }
+                }
+            ]
+        },
+        "subinterfaces-state": {
+            "description": "Operational state data for subinterfaces",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/interface-common-state"
+                },
+                {
+                    "$ref": "#/definitions/interface-counters-state"
+                },
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The system-assigned name for the sub-interface.  This MAY\nbe a combination of the base interface name and the\nsubinterface index, or some other convention used by the\nsystem."
+                        }
+                    }
+                }
+            ]
+        },
+        "subinterfaces-top": {
+            "description": "Subinterface data for logical interfaces associated with a\ngiven interface",
+            "properties": {
+                "subinterfaces": {
+                    "description": "Enclosing container for the list of subinterfaces associated\nwith a physical interface",
+                    "properties": {
+                        "subinterface": {
+                            "description": "The list of subinterfaces (logical interfaces) associated\nwith a physical interface",
+                            "type": "array",
+                            "items": {
+                                "properties": {
+                                    "index": {
+                                        "type": "string",
+                                        "x-path": "../config/index",
+                                        "description": "The index number of the subinterface -- used to address\nthe logical interface"
+                                    },
+                                    "config": {
+                                        "description": "Configurable items at the subinterface level",
+                                        "$ref": "#/definitions/subinterfaces-config"
+                                    },
+                                    "state": {
+                                        "description": "Operational state data for logical interfaces",
+                                        "$ref": "#/definitions/subinterfaces-state"
+                                    }
+                                }
+                            },
+                            "x-key": "index"
+                        }
+                    }
+                }
+            }
+        },
+        "interfaces-top": {
+            "description": "Top-level grouping for interface configuration and\noperational state data",
+            "properties": {
+                "interfaces": {
+                    "description": "Top level container for interfaces, including configuration\nand state data.",
+                    "properties": {
+                        "interface": {
+                            "description": "The list of named interfaces on the device.",
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/interface-phys-holdtime-top"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/subinterfaces-top"
+                                    },
+                                    {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "x-path": "../config/name",
+                                                "description": "References the configured name of the interface"
+                                            },
+                                            "config": {
+                                                "description": "Configurable items at the global, physical interface\nlevel",
+                                                "$ref": "#/definitions/interface-phys-config"
+                                            },
+                                            "state": {
+                                                "description": "Operational state data at the global interface level",
+                                                "$ref": "#/definitions/interface-counters-state"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "x-key": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "stat-interval-state": {
+            "description": "Reusable leaf definition for stats computation interval",
+            "properties": {
+                "interval": {
+                    "type": "string",
+                    "description": "If supported by the system, this reports the time interval\nover which the min/max/average statistics are computed by\nthe system."
+                }
+            }
+        },
+        "min-max-time": {
+            "description": "Common grouping for recording the absolute time at which\nthe minimum and maximum values occurred in the statistics",
+            "properties": {
+                "min-time": {
+                    "type": "string",
+                    "description": "The absolute time at which the minimum value occurred.\nThe value is the timestamp in nanoseconds relative to\n the Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                },
+                "max-time": {
+                    "type": "string",
+                    "description": "The absolute time at which the maximum value occurred.\nThe value is the timestamp in nanoseconds relative to\n the Unix Epoch (Jan 1, 1970 00:00:00 UTC)."
+                }
+            }
+        },
+        "avg-min-max-stats-precision1": {
+            "description": "Common nodes for recording average, minimum, and\nmaximum values for a statistic.  These values all have\nfraction-digits set to 1.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed is also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time\ninterval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statitic over the time\ninterval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision1": {
+            "description": "Common grouping for recording an instantaneous statistic value\nin addition to avg-min-max stats",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/avg-min-max-stats-precision1"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision2-dB": {
+            "description": "Common grouping for recording dB values with 2 decimal\nprecision. Values include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        },
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time interval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statistic over the time\ninterval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision2-dBm": {
+            "description": "Common grouping for recording dBm values with 2 decimal\nprecision. Values include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        },
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time\ninterval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statistic over the time interval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-precision2-mA": {
+            "description": "Common grouping for recording mA values with 2 decimal\nprecision. Values include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The instantaneous value of the statistic."
+                        },
+                        "avg": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The arithmetic mean value of the statistic over the\ntime interval."
+                        },
+                        "min": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The minimum value of the statistic over the time\ninterval."
+                        },
+                        "max": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "The maximum value of the statistic over the time\ninterval."
+                        }
+                    }
+                }
+            ]
+        },
+        "avg-min-max-instant-stats-pct": {
+            "description": "Common grouping for percentage statistics.\nValues include the instantaneous, average,\nminimum, and maximum statistics.  Statistics are computed\nand reported based on a moving time interval (e.g., the last\n30s).  If supported by the device, the time interval over which\nthe statistics are computed, and the times at which the minimum\nand maximum values occurred, are also reported.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/stat-interval-state"
+                },
+                {
+                    "$ref": "#/definitions/min-max-time"
+                },
+                {
+                    "properties": {
+                        "instant": {
+                            "type": "string",
+                            "description": "The instantaneous percentage value."
+                        },
+                        "avg": {
+                            "type": "string",
+                            "description": "The arithmetic mean value of the percentage measure of the\nstatistic over the time interval."
+                        },
+                        "min": {
+                            "type": "string",
+                            "description": "The minimum value of the percentage measure of the\nstatistic over the time interval."
+                        },
+                        "max": {
+                            "type": "string",
+                            "description": "The maximum value of the percentage measure of the\nstatistic over the time interval."
+                        }
+                    }
+                }
+            ]
+        },
+        "attribute-compare-operators": {
+            "description": "common definitions for comparison operations in\ncondition statements",
+            "properties": {
+                "operator": {
+                    "type": "string",
+                    "description": "type of comparison to be performed"
+                },
+                "value": {
+                    "type": "string",
+                    "description": "value to compare with the community count"
+                }
+            }
+        }
+    }
+}

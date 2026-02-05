@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ifm-pos-trunk"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ifm-pos-trunk="urn:huawei:yang:huawei-ifm-pos-trunk"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-ifm-pos-trunk"/>
+  <prefix value="ifm-pos-trunk"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Defines the Pos-Trunk bundling technology, which bundles multiple physical interfaces into a logical interface.</text>
+  </description>
+  <revision date="2020-02-13">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="trunk"/>
+  <typedef name="active-status-type">
+    <type name="enumeration">
+      <enum name="invalid">
+        <value value="0"/>
+        <description>
+          <text>Invalid.</text>
+        </description>
+      </enum>
+      <enum name="active">
+        <value value="1"/>
+        <description>
+          <text>The interface is in Active state.</text>
+        </description>
+      </enum>
+      <enum name="inactive">
+        <value value="2"/>
+        <description>
+          <text>The interface is in InActive state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Pos trunk member active state.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <when condition="ifm:type='Pos-Trunk'"/>
+    <description>
+      <text>Active when the interface is set to type Pos-Trunk.</text>
+    </description>
+    <container name="pos-trunk">
+      <description>
+        <text>Configure Pos-Trunk interfaces. It is a logical interface with multiple physical interfaces being bundled.</text>
+      </description>
+      <leaf name="up-member-num">
+        <type name="uint32">
+          <range value="0..2"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Specifies the number of member interfaces in the Up state.</text>
+        </description>
+      </leaf>
+      <container name="members">
+        <description>
+          <text>List of pos-trunk member interfaces.</text>
+        </description>
+        <list name="member">
+          <key value="name"/>
+          <max-elements value="2"/>
+          <description>
+            <text>Configure pos-trunk member interfaces.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Pos'"/>
+            <description>
+              <text>Configures a name for a pos-trunk member interface.</text>
+            </description>
+          </leaf>
+          <leaf name="port-status">
+            <type name="ifm:port-status"/>
+            <config value="false"/>
+            <description>
+              <text>Displays the status of a pos-trunk member interface.</text>
+            </description>
+          </leaf>
+          <leaf name="active-status">
+            <type name="active-status-type"/>
+            <config value="false"/>
+            <description>
+              <text>Displays the active status of a pos-trunk member interface.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

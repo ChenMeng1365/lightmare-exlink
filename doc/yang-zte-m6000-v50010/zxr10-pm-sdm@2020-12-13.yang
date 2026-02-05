@@ -1,0 +1,893 @@
+module zxr10-pm-sdm {
+  namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/pm-sdm'
+            ;
+  prefix zxr10-pm-sdm ;
+  import zxr10-netconf-defs {
+    prefix ncd ;
+  }
+  organization 'ZTE Corporation'
+               ;
+  contact 'ZTE Corporation  '+"\n"
+        + '   Nanjing Institute of ZTE Corporation '+"\n"
+        + '   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China '+"\n"
+        + '   Tel: +86-25-52870000'
+          ;
+  revision 2020-01-06 {
+    description 'Add show boot version number information command'
+                ;
+  }
+  revision 2019-08-01 {
+    description 'Add leaf af-node for contain ports.'
+                ;
+  }
+  container state {
+    config false ;
+    leaf current-software {
+      description 'Current software filename.'
+                  ;
+      type string {
+        length 1..160 ;
+      }
+    }
+    container upgrade {
+      container state {
+        leaf upgrade-type {
+          type enumeration {
+            enum ACTIVATE {
+              value 2 ;
+            }
+            enum ROLLBACK {
+              value 3 ;
+            }
+            enum NULL {
+              value 0 ;
+            }
+            enum COMMIT {
+              value 4 ;
+            }
+          }
+        }
+        leaf software-name {
+          description 'Software filename rollback to.'
+                      ;
+          type string {
+            length 1..160 ;
+          }
+        }
+        leaf software-version {
+          type string ;
+        }
+        leaf upgrade-state {
+          description 'Upgrade state.'
+                      ;
+          type enumeration {
+            enum COMMIT {
+              value 1 ;
+            }
+            enum ROLLBACK {
+              value 2 ;
+            }
+            enum ACTIVATE {
+              value 3 ;
+            }
+            enum COMPLETE {
+              value 4 ;
+            }
+            enum FAIL {
+              value 5 ;
+            }
+            enum ACTIVATE_COMPLETE {
+              value 6 ;
+            }
+            enum ACTIVATE_FAIL {
+              value 7 ;
+            }
+            enum ABORT {
+              value 8 ;
+            }
+            enum DOWNLOAD_FAIL {
+              value 9 ;
+            }
+            enum COMMIT_FAIL {
+              value 10 ;
+            }
+            enum ROLLBACK_FAIL {
+              value 11 ;
+            }
+            enum NULL {
+              value 255 ;
+            }
+          }
+        }
+        leaf upgrade-time {
+          description 'Upgrade finish time.'
+                      ;
+          type ncd:string-with-blank {
+            length 1..32 ;
+            pattern '[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.'
+                  + '[0-9]+)?Z[+-][0-9]{2}:[0-9]{2}'
+                    ;
+          }
+        }
+        leaf fail-reason {
+          type ncd:string-all ;
+        }
+      }
+    }
+    container download {
+      container state {
+        leaf software-name {
+          description 'Download software filename.'
+                      ;
+          type string {
+            length 1..160 ;
+          }
+        }
+        leaf software-version {
+          type string ;
+        }
+        leaf expected-duration {
+          description 'Expected duration.'
+                      ;
+          type string {
+            length 1..32 ;
+          }
+        }
+        leaf download-state {
+          description 'Download state.'
+                      ;
+          type enumeration {
+            enum DOWNLOADING {
+              value 0 ;
+            }
+            enum COMMIT {
+              value 1 ;
+            }
+            enum ROLLBACK {
+              value 2 ;
+            }
+            enum ACTIVATE {
+              value 3 ;
+            }
+            enum COMPLETE {
+              value 4 ;
+            }
+            enum FAIL {
+              value 5 ;
+            }
+            enum ACTIVATE_COMPLETE {
+              value 6 ;
+            }
+            enum ACTIVATE_FAIL {
+              value 7 ;
+            }
+            enum ABORT {
+              value 8 ;
+            }
+            enum DOWNLOAD_FAIL {
+              value 9 ;
+            }
+            enum COMMIT_FAIL {
+              value 10 ;
+            }
+            enum ROLLBACK_FAIL {
+              value 11 ;
+            }
+            enum NULL {
+              value 255 ;
+            }
+          }
+        }
+        leaf download-time {
+          description 'Software download finish time.'
+                      ;
+          type ncd:string-with-blank {
+            length 1..32 ;
+            pattern '[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.'
+                  + '[0-9]+)?Z[+-][0-9]{2}:[0-9]{2}'
+                    ;
+          }
+        }
+        leaf fail-reason {
+          type ncd:string-all ;
+        }
+      }
+    }
+    container firmware {
+      container boot-versions {
+        list boot-version {
+          description 'show boot-firmware list'
+                      ;
+          key 'shelf slot cpu'
+              ;
+          ncd:select 'shelf slot cpu'
+                     ;
+          leaf shelf {
+            description 'shelf number'
+                        ;
+            type uint8 ;
+          }
+          leaf slot {
+            description 'slot number'
+                        ;
+            type uint8 ;
+          }
+          leaf cpu {
+            description 'cpu number'
+                        ;
+            type uint8 ;
+          }
+          leaf board-type {
+            description 'board type'
+                        ;
+            type string ;
+          }
+          leaf board-id {
+            description 'board id'
+                        ;
+            type uint32 ;
+          }
+          leaf firmware-type {
+            description 'firmware type'
+                        ;
+            type string ;
+          }
+          leaf master-version {
+            description 'master boot version number'
+                        ;
+            type string ;
+          }
+          leaf slave-version {
+            description 'slave boot version number'
+                        ;
+            type string ;
+          }
+        }
+      }
+    }
+    container software-storage {
+      container state {
+        leaf software-number {
+          description 'Software number.'
+                      ;
+          type uint32 ;
+        }
+        list software-information {
+          key name ;
+          leaf name {
+            description 'Software version name.'
+                        ;
+            type string ;
+          }
+          leaf status {
+            description 'Software status.'
+                        ;
+            type enumeration {
+              enum ADD {
+                value 1 ;
+              }
+              enum ACTIVATED {
+                value 2 ;
+              }
+              enum COMMITED {
+                value 3 ;
+              }
+            }
+          }
+          leaf source {
+            description 'Source software filename.'
+                        ;
+            type string ;
+          }
+        }
+      }
+    }
+    container delete {
+      container state {
+        leaf target {
+          type string ;
+        }
+        leaf version {
+          type string ;
+        }
+        leaf state {
+          description 'Download state.'
+                      ;
+          type enumeration {
+            enum DOWNLOADING {
+              value 0 ;
+            }
+            enum COMMIT {
+              value 1 ;
+            }
+            enum ROLLBACK {
+              value 2 ;
+            }
+            enum ACTIVATE {
+              value 3 ;
+            }
+            enum COMPLETE {
+              value 4 ;
+            }
+            enum FAIL {
+              value 5 ;
+            }
+            enum ACTIVATE_COMPLETE {
+              value 6 ;
+            }
+            enum ACTIVATE_FAIL {
+              value 7 ;
+            }
+            enum ABORT {
+              value 8 ;
+            }
+            enum DOWNLOAD_FAIL {
+              value 9 ;
+            }
+            enum COMMIT_FAIL {
+              value 10 ;
+            }
+            enum ROLLBACK_FAIL {
+              value 11 ;
+            }
+            enum NULL {
+              value 255 ;
+            }
+          }
+        }
+        leaf fail-reason {
+          type ncd:string-all ;
+        }
+      }
+    }
+    container commit {
+      container state {
+        leaf state {
+          description 'Download state.'
+                      ;
+          type enumeration {
+            enum DOWNLOADING {
+              value 0 ;
+            }
+            enum COMMIT {
+              value 1 ;
+            }
+            enum ROLLBACK {
+              value 2 ;
+            }
+            enum ACTIVATE {
+              value 3 ;
+            }
+            enum COMPLETE {
+              value 4 ;
+            }
+            enum FAIL {
+              value 5 ;
+            }
+            enum ACTIVATE_COMPLETE {
+              value 6 ;
+            }
+            enum ACTIVATE_FAIL {
+              value 7 ;
+            }
+            enum ABORT {
+              value 8 ;
+            }
+            enum DOWNLOAD_FAIL {
+              value 9 ;
+            }
+            enum COMMIT_FAIL {
+              value 10 ;
+            }
+            enum ROLLBACK_FAIL {
+              value 11 ;
+            }
+            enum NULL {
+              value 255 ;
+            }
+          }
+        }
+        leaf fail-reason {
+          type ncd:string-all ;
+        }
+      }
+    }
+  }
+  rpc software-operate {
+    input {
+      leaf software-operation {
+        description 'Operation type.'
+                    ;
+        config false ;
+        type enumeration {
+          enum SWOP_DOWNLOAD {
+            value 1 ;
+          }
+          enum SWOP_ACTIVATE {
+            value 2 ;
+          }
+          enum SWOP_ROLLBACK {
+            value 3 ;
+          }
+          enum SWOP_COMMIT {
+            value 4 ;
+          }
+          enum SWOP_DELETE {
+            value 5 ;
+          }
+          enum SWOP_CLEANUP {
+            value 6 ;
+          }
+          enum SWOP_DOWNLOAD_STOP {
+            value 7 ;
+          }
+        }
+      }
+      leaf file-type {
+        description 'File type.'
+                    ;
+        config false ;
+        type enumeration {
+          enum software {
+            value 1 ;
+          }
+          enum startrun {
+            value 2 ;
+          }
+        }
+      }
+      leaf operate-target {
+        description 'Operation target.'
+                    ;
+        config false ;
+        type string {
+          length 1..180 ;
+        }
+      }
+      choice server-info {
+        config false ;
+        case tftp {
+          container tftp-server-info {
+            leaf port {
+              description 'Tftp server port.'
+                          ;
+              type uint32 ;
+            }
+            leaf ip-address {
+              description 'Tftp server ip address.'
+                          ;
+              type string ;
+            }
+          }
+        }
+        case ftp {
+          container ftp-server-info {
+            leaf port {
+              description 'Ftp server port.'
+                          ;
+              type uint32 ;
+            }
+            leaf user-name {
+              description 'Ftp server username.'
+                          ;
+              type string {
+                length 1..64 ;
+              }
+            }
+            leaf user-password {
+              description 'Ftp server password.'
+                          ;
+              type string {
+                length 1..64 ;
+              }
+            }
+            leaf ip-address {
+              description 'Ftp server ip address.'
+                          ;
+              type string ;
+            }
+          }
+        }
+        case sftp {
+          container sftp-server-info {
+            leaf port {
+              description 'Sftp server port.'
+                          ;
+              type uint32 ;
+            }
+            leaf user-name {
+              description 'Sftp server username.'
+                          ;
+              type string {
+                length 1..64 ;
+              }
+            }
+            leaf user-password {
+              description 'Sftp server password.'
+                          ;
+              type string {
+                length 1..64 ;
+              }
+            }
+            leaf ip-address {
+              description 'Sftp server ip address.'
+                          ;
+              type string ;
+            }
+          }
+        }
+        case storage {
+          container null ;
+        }
+      }
+      leaf upgrade-type {
+        description 'Upgrade type.'
+                    ;
+        config false ;
+        type enumeration {
+          enum issu {
+            value 1 ;
+          }
+          enum parallel-reload {
+            value 2 ;
+          }
+          enum reserve-standby {
+            value 3 ;
+          }
+        }
+      }
+      leaf reboot-type {
+        description 'Reboot type.'
+                    ;
+        config false ;
+        type enumeration {
+          enum soft {
+            value 1 ;
+          }
+          enum hard {
+            value 2 ;
+          }
+        }
+      }
+      leaf vrf-name {
+        description 'Vrf name.'
+                    ;
+        type string ;
+      }
+    }
+    output {
+      leaf result {
+        description 'Operation result.'
+                    ;
+        config false ;
+        type string {
+          length 1..32 ;
+        }
+      }
+    }
+  }
+  notification event {
+    container update {
+      config false ;
+      container software {
+        container state {
+          leaf current-software {
+            description 'Current upgrade software filename.'
+                        ;
+            type string {
+              length 1..160 ;
+            }
+          }
+        }
+        container upgrade {
+          container state {
+            leaf upgrade-type {
+              type enumeration {
+                enum ACTIVATE {
+                  value 2 ;
+                }
+                enum ROLLBACK {
+                  value 3 ;
+                }
+                enum NULL {
+                  value 0 ;
+                }
+              }
+            }
+            leaf software-name {
+              description 'Software filename upgrading'
+                          ;
+              type string {
+                length 1..160 ;
+              }
+            }
+            leaf software-version {
+              type string ;
+            }
+            leaf upgrade-state {
+              description 'Upgrade state.'
+                          ;
+              type enumeration {
+                enum COMMIT {
+                  value 1 ;
+                }
+                enum ROLLBACK {
+                  value 2 ;
+                }
+                enum ACTIVATE {
+                  value 3 ;
+                }
+                enum COMPLETE {
+                  value 4 ;
+                }
+                enum FAIL {
+                  value 5 ;
+                }
+                enum ACTIVATE_COMPLETE {
+                  value 6 ;
+                }
+                enum ACTIVATE_FAIL {
+                  value 7 ;
+                }
+                enum ABORT {
+                  value 8 ;
+                }
+                enum DOWNLOAD_FAIL {
+                  value 9 ;
+                }
+                enum COMMIT_FAIL {
+                  value 10 ;
+                }
+                enum ROLLBACK_FAIL {
+                  value 11 ;
+                }
+                enum NULL {
+                  value 255 ;
+                }
+              }
+            }
+            leaf upgrade-time {
+              description 'Upgrade finish time.'
+                          ;
+              type ncd:string-with-blank {
+                length 1..32 ;
+                pattern '[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2'
+                      + '}(\.[0-9]+)?Z[+-][0-9]{2}:[0-9]{2}'
+                        ;
+              }
+            }
+            leaf fail-reason {
+              type ncd:string-all ;
+            }
+          }
+        }
+        container download {
+          container state {
+            leaf software-name {
+              description 'Download software filename.'
+                          ;
+              type string {
+                length 1..160 ;
+              }
+            }
+            leaf software-version {
+              type string ;
+            }
+            leaf expected-duration {
+              description 'Expected duration.'
+                          ;
+              type string {
+                length 1..32 ;
+              }
+            }
+            leaf download-state {
+              description 'Download state.'
+                          ;
+              type enumeration {
+                enum DOWNLOADING {
+                  value 0 ;
+                }
+                enum COMMIT {
+                  value 1 ;
+                }
+                enum ROLLBACK {
+                  value 2 ;
+                }
+                enum ACTIVATE {
+                  value 3 ;
+                }
+                enum COMPLETE {
+                  value 4 ;
+                }
+                enum FAIL {
+                  value 5 ;
+                }
+                enum ACTIVATE_COMPLETE {
+                  value 6 ;
+                }
+                enum ACTIVATE_FAIL {
+                  value 7 ;
+                }
+                enum ABORT {
+                  value 8 ;
+                }
+                enum DOWNLOAD_FAIL {
+                  value 9 ;
+                }
+                enum COMMIT_FAIL {
+                  value 10 ;
+                }
+                enum ROLLBACK_FAIL {
+                  value 11 ;
+                }
+                enum NULL {
+                  value 255 ;
+                }
+              }
+            }
+            leaf download-time {
+              description 'Download finish time.'
+                          ;
+              type ncd:string-with-blank {
+                length 1..32 ;
+                pattern '[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2'
+                      + '}(\.[0-9]+)?Z[+-][0-9]{2}:[0-9]{2}'
+                        ;
+              }
+            }
+            leaf fail-reason {
+              type ncd:string-all ;
+            }
+          }
+        }
+        container software-storage {
+          container state {
+            leaf software-number {
+              description 'Software number.'
+                          ;
+              type uint32 ;
+            }
+            list software-information {
+              key name ;
+              leaf name {
+                description 'Software version name.'
+                            ;
+                type string ;
+              }
+              leaf status {
+                description 'Software status.'
+                            ;
+                type enumeration {
+                  enum ADD {
+                    value 1 ;
+                  }
+                  enum ACTIVATED {
+                    value 2 ;
+                  }
+                  enum COMMITED {
+                    value 3 ;
+                  }
+                }
+              }
+              leaf source {
+                description 'Source software filename.'
+                            ;
+                type string ;
+              }
+            }
+          }
+        }
+        container delete {
+          container state {
+            leaf target {
+              type string ;
+            }
+            leaf version {
+              type string ;
+            }
+            leaf state {
+              description 'Download state.'
+                          ;
+              type enumeration {
+                enum DOWNLOADING {
+                  value 0 ;
+                }
+                enum COMMIT {
+                  value 1 ;
+                }
+                enum ROLLBACK {
+                  value 2 ;
+                }
+                enum ACTIVATE {
+                  value 3 ;
+                }
+                enum COMPLETE {
+                  value 4 ;
+                }
+                enum FAIL {
+                  value 5 ;
+                }
+                enum ACTIVATE_COMPLETE {
+                  value 6 ;
+                }
+                enum ACTIVATE_FAIL {
+                  value 7 ;
+                }
+                enum ABORT {
+                  value 8 ;
+                }
+                enum DOWNLOAD_FAIL {
+                  value 9 ;
+                }
+                enum COMMIT_FAIL {
+                  value 10 ;
+                }
+                enum ROLLBACK_FAIL {
+                  value 11 ;
+                }
+                enum NULL {
+                  value 255 ;
+                }
+              }
+            }
+            leaf fail-reason {
+              type ncd:string-all ;
+            }
+          }
+        }
+        container commit {
+          container state {
+            leaf state {
+              description 'Download state.'
+                          ;
+              type enumeration {
+                enum DOWNLOADING {
+                  value 0 ;
+                }
+                enum COMMIT {
+                  value 1 ;
+                }
+                enum ROLLBACK {
+                  value 2 ;
+                }
+                enum ACTIVATE {
+                  value 3 ;
+                }
+                enum COMPLETE {
+                  value 4 ;
+                }
+                enum FAIL {
+                  value 5 ;
+                }
+                enum ACTIVATE_COMPLETE {
+                  value 6 ;
+                }
+                enum ACTIVATE_FAIL {
+                  value 7 ;
+                }
+                enum ABORT {
+                  value 8 ;
+                }
+                enum DOWNLOAD_FAIL {
+                  value 9 ;
+                }
+                enum COMMIT_FAIL {
+                  value 10 ;
+                }
+                enum ROLLBACK_FAIL {
+                  value 11 ;
+                }
+                enum NULL {
+                  value 255 ;
+                }
+              }
+            }
+            leaf fail-reason {
+              type ncd:string-all ;
+            }
+          }
+        }
+      }
+    }
+  }
+}

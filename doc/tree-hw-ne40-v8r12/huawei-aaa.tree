@@ -1,0 +1,130 @@
+module: huawei-aaa
+  +--rw aaa
+     +--ro tasks
+     |  +--ro task* [name]
+     |     +--ro name    string
+     +--rw task-groups
+     |  +--rw task-group* [name]
+     |     +--rw name                       string
+     |     +--rw task-group-include-maps
+     |     |  +--rw task-group-include-map* [include-task-group-name]
+     |     |     +--rw include-task-group-name    -> ../../../name
+     |     +--rw task-group-task-maps
+     |        +--rw task-group-task-map* [task-name]
+     |           +--rw task-name    string
+     |           +--rw read?        aaa-enable-type
+     |           +--rw write?       aaa-enable-type
+     |           +--rw execute?     aaa-enable-type
+     |           +--rw debug?       aaa-enable-type
+     +--rw user-groups
+     |  +--rw user-group* [name]
+     |     +--rw name                          string
+     |     +--rw user-group-task-group-maps
+     |     |  +--rw user-group-task-group-map* [task-group-name]
+     |     |     +--rw task-group-name    -> ../../../../../task-groups/task-group/name
+     |     +--rw user-group-include-maps
+     |        +--rw user-group-include-map* [include-user-group-name]
+     |           +--rw include-user-group-name    -> ../../../name
+     +--rw authentication-schemes
+     |  +--rw authentication-scheme* [authen-scheme-name]
+     |     +--rw authen-scheme-name          string
+     |     +--rw (authen-mode-type)?
+     |        +--:(ordered-strictly)
+     |           +--rw first-authen-mode?    aaa-authen-mode
+     |           +--rw second-authen-mode?   aaa-authen-mode
+     |           +--rw third-authen-mode?    aaa-authen-mode
+     |           +--rw fourth-authen-mode?   aaa-authen-mode
+     +--rw authorization-schemes
+     |  +--rw authorization-scheme* [author-scheme-name]
+     |     +--rw author-scheme-name          string
+     |     +--rw (author-mode-type)?
+     |     |  +--:(ordered-strictly)
+     |     |     +--rw first-author-mode?    aaa-author-mode
+     |     |     +--rw second-author-mode?   aaa-author-mode
+     |     |     +--rw third-author-mode?    aaa-author-mode
+     |     |     +--rw fourth-author-mode?   aaa-author-mode
+     |     +--rw no-lvl-first-cmd-author?    aaa-author-cmd-mode
+     |     +--rw no-lvl-second-cmd-author?   aaa-author-cmd-mode
+     |     +--rw no-response-policy?         author-no-res-policy-type
+     |     +--rw no-response-times?          uint32
+     |     +--rw authorization-cmds
+     |        +--rw authorization-cmd* [level]
+     |           +--rw level                      uint32
+     |           +--rw (cmd-author-mode-type)?
+     |              +--:(ordered-strictly)
+     |                 +--rw first-cmd-author?    aaa-author-cmd-mode
+     |                 +--rw second-cmd-author?   aaa-author-cmd-mode
+     +--rw accounting-schemes
+     |  +--rw accounting-scheme* [acct-scheme-name]
+     |     +--rw acct-scheme-name    string
+     |     +--rw accounting-mode?    aaa-acct-mode
+     +--rw domains
+     |  +--rw domain* [name]
+     |     +--rw name                        string
+     |     +--rw admin-level?                uint32
+     |     +--rw authen-scheme-name?         -> ../../../authentication-schemes/authentication-scheme/authen-scheme-name
+     |     +--rw author-scheme-name?         -> ../../../authorization-schemes/authorization-scheme/author-scheme-name
+     |     +--rw acct-scheme-name?           -> ../../../accounting-schemes/accounting-scheme/acct-scheme-name
+     |     +--rw access-limit?               int32
+     |     +--rw radius-server-template?     string
+     |     +--rw hwtacacs-server-template?   -> /hwtacacs:hwtacacs/templates/template/name
+     |     +--rw state?                      aaa-state-type
+     |     +--rw time-range-enable?          boolean
+     |     +--rw service-terminal?           boolean
+     |     +--rw service-telnet?             boolean
+     |     +--rw service-ftp?                boolean
+     |     +--rw service-ppp?                boolean
+     |     +--rw service-ssh?                boolean
+     |     +--rw service-qx?                 boolean
+     |     +--rw service-snmp?               boolean
+     |     +--rw service-mml?                boolean
+     |     +--rw service-http?               boolean
+     |     +--ro online-num?                 int32
+     +--rw login-alarm-threshold
+     |  +--rw report-times?   uint16
+     |  +--rw resume-times?   uint16
+     |  +--rw period?         uint16
+     +--ro alive-user-qrys
+     |  +--ro alive-user-qry* [user-id]
+     |     +--ro user-id            uint32
+     |     +--ro user-name?         string
+     |     +--ro level?             uint32
+     |     +--ro user-group-name?   string
+     |     +--ro name?              string
+     |     +--ro access-type?       aaa-user-access-type
+     |     +--ro authen-type?       aaa-authen-access-type
+     |     +--ro authen-method?     aaa-authen-mode
+     |     +--ro authen-state?      aaa-authen-state-type
+     |     +--ro author-method?     aaa-author-mode
+     |     +--ro author-state?      aaa-author-state-type
+     |     +--ro acct-method?       aaa-acct-mode
+     |     +--ro acct-state?        aaa-acct-state-type
+     +--rw global-policy
+     |  +--rw domain-location?             aaa-domain-location-type
+     |  +--rw domain-parse-direction?      aaa-parse-direction-type
+     |  +--rw default-admin-domain?        -> ../../domains/domain/name
+     |  +--rw default-access-domain?       -> ../../domains/domain/name
+     |  +--rw parse-priority?              aaa-parse-priority-type
+     |  +--rw realm-location?              aaa-realm-location-type
+     |  +--rw real-name-delimiter?         string
+     |  +--rw real-name-parse-direction?   aaa-parse-direction-type
+     |  +--rw roam-character?              string
+     +--rw recording
+     |  +--rw function
+     |  |  +--rw cmd-record-scheme?        -> ../../schemes/scheme/name
+     |  |  +--rw system-record-scheme?     -> ../../schemes/scheme/name
+     |  |  +--rw outbound-record-scheme?   -> ../../schemes/scheme/name
+     |  +--rw schemes
+     |     +--rw scheme* [name]
+     |        +--rw name            string
+     |        +--rw tacacs-group?   -> /hwtacacs:hwtacacs/templates/template/name
+     +--rw online-offline-rec-switch
+     |  +--rw login-fail-rec-switch?        aaa-enable-type
+     |  +--rw logout-rec-switch?            aaa-enable-type
+     |  +--rw abnormal-logout-rec-switch?   aaa-enable-type
+     |  +--rw normal-logout-rec-switch?     aaa-enable-type
+     +--rw abnormal-offline-hidens
+     |  +--rw abnormal-offline-hiden* [hidden-id]
+     |     +--rw hidden-id    uint32
+     +--rw lam
+     +--rw local-server

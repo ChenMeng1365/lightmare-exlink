@@ -1,0 +1,202 @@
+module: zxr10-ipflow
+  +--rw configuration
+  |  +--rw ipflow
+  |     +--rw records
+  |     |  +--rw record* [record-name]
+  |     |     +--rw record-name           string
+  |     |     +--rw counter-fields
+  |     |     |  +--rw counter-field* [field-type]
+  |     |     |     +--rw field-type    enumeration
+  |     |     |     +--rw field-size?   enumeration
+  |     |     +--rw time-fields
+  |     |     |  +--rw time-field* [field-type]
+  |     |     |     +--rw field-type    enumeration
+  |     |     +--rw ipv4-prefix-fields
+  |     |     |  +--rw ipv4-prefix-field* [field-type field-attr]
+  |     |     |     +--rw field-type    enumeration
+  |     |     |     +--rw field-attr    enumeration
+  |     |     |     +--rw field-info    uint8
+  |     |     +--rw ipv6-prefix-fields
+  |     |     |  +--rw ipv6-prefix-field* [field-type field-attr]
+  |     |     |     +--rw field-type    enumeration
+  |     |     |     +--rw field-attr    enumeration
+  |     |     |     +--rw field-info    uint8
+  |     |     +--rw common-fields
+  |     |        +--rw common-field* [field-type field-attr]
+  |     |           +--rw field-type    enumeration
+  |     |           +--rw field-attr    enumeration
+  |     +--rw samplers
+  |     |  +--rw sampler* [sampler-name]
+  |     |     +--rw sampler-name                string
+  |     |     o--rw sample-rate?                uint32
+  |     |     o--rw sample-mode?                enumeration
+  |     |     +--rw (mode)?
+  |     |        +--:(deterministic)
+  |     |        |  +--rw deterministic
+  |     |        |     +--rw sample-rate?   uint32
+  |     |        +--:(time-deterministic)
+  |     |        |  +--rw time-deterministic!
+  |     |        |     +--rw time-space    uint32
+  |     |        +--:(random)
+  |     |           +--rw random!
+  |     |              +--rw random-size          uint32
+  |     |              +--rw random-population    uint32
+  |     +--rw exporters
+  |     |  +--rw exporter* [exporter-name]
+  |     |     +--rw exporter-name              string
+  |     |     +--rw export-protocol?           enumeration
+  |     |     +--rw transport-protocol?        enumeration
+  |     |     +--rw port-num?                  uint16
+  |     |     +--rw template-resend-timeout?   uint32
+  |     |     +--rw template-resend-pkt-num?   uint32
+  |     |     +--rw dscp?                      uint8
+  |     |     +--rw destination
+  |     |     |  +--rw (ip-type)?
+  |     |     |  |  +--:(ipv4)
+  |     |     |  |  |  +--rw ipv4-addr    ncd:ipv4-address
+  |     |     |  |  +--:(ipv6)
+  |     |     |  |     +--rw ipv6-addr    ncd:ipv6-address
+  |     |     |  +--rw (vrf-mode)?
+  |     |     |     +--:(vrf-common)
+  |     |     |     |  +--rw vrf?         string
+  |     |     |     +--:(vrf-dcn)
+  |     |     |        +--rw dcn?         empty
+  |     |     +--rw source
+  |     |        +--rw (source-type)?
+  |     |           +--:(address-type)
+  |     |           |  +--rw address
+  |     |           |     +--rw (ip-type)?
+  |     |           |        +--:(ipv4)
+  |     |           |        |  +--rw ipv4-addr    ncd:ipv4-address
+  |     |           |        +--:(ipv6)
+  |     |           |           +--rw ipv6-addr    ncd:ipv6-address
+  |     |           +--:(interface-type)
+  |     |              +--rw interface
+  |     |                 +--rw interface-name    ncd:ifname
+  |     +--rw monitors
+  |     |  +--rw monitor* [monitor-name]
+  |     |     +--rw monitor-name              string
+  |     |     +--rw cache-entry-num?          uint32
+  |     |     +--rw cache-active-timeout?     uint32
+  |     |     +--rw cache-inactive-timeout?   uint32
+  |     |     +--rw record
+  |     |     |  +--rw (record-in-monitor)?
+  |     |     |     +--:(custom)
+  |     |     |     |  +--rw record-name        string
+  |     |     |     +--:(pre-define)
+  |     |     |        +--rw pre-define-type    enumeration
+  |     |     +--rw exporters
+  |     |        +--rw exporter* [exporter-name]
+  |     |           +--rw exporter-name    string
+  |     +--rw methods
+  |     |  +--rw interface-monitors
+  |     |  |  +--rw ip-flow-monitors
+  |     |  |  |  +--rw default-samplers
+  |     |  |  |  |  +--rw default-sampler* [if-name ip-type sample-dir sample-pkt-type monitor-name]
+  |     |  |  |  |     +--rw if-name            ncd:ifname
+  |     |  |  |  |     +--rw ip-type            enumeration
+  |     |  |  |  |     +--rw sample-dir         enumeration
+  |     |  |  |  |     +--rw sample-pkt-type    enumeration
+  |     |  |  |  |     +--rw monitor-name       string
+  |     |  |  |  +--rw custom-samplers
+  |     |  |  |     +--rw custom-sampler* [if-name ip-type sample-dir sample-pkt-type monitor-name sampler-name]
+  |     |  |  |        +--rw if-name            ncd:ifname
+  |     |  |  |        +--rw ip-type            enumeration
+  |     |  |  |        +--rw sample-dir         enumeration
+  |     |  |  |        +--rw sample-pkt-type    enumeration
+  |     |  |  |        +--rw monitor-name       string
+  |     |  |  |        +--rw sampler-name       string
+  |     |  |  +--rw mpls-flow-monitors {interface-mpls-sample}?
+  |     |  |     +--rw default-samplers
+  |     |  |     |  +--rw default-sampler* [if-name sample-dir monitor-name]
+  |     |  |     |     +--rw if-name         ncd:ifname
+  |     |  |     |     +--rw sample-dir      enumeration
+  |     |  |     |     +--rw monitor-name    string
+  |     |  |     +--rw custom-samplers
+  |     |  |        +--rw custom-sampler* [if-name sample-dir monitor-name sampler-name]
+  |     |  |           +--rw if-name         ncd:ifname
+  |     |  |           +--rw sample-dir      enumeration
+  |     |  |           +--rw monitor-name    string
+  |     |  |           +--rw sampler-name    string
+  |     |  +--rw interface-acl-monitors {interface-acl-sample}?
+  |     |  |  +--rw ip-flow-monitors
+  |     |  |     +--rw default-samplers
+  |     |  |     |  +--rw default-sampler* [if-name ip-type sample-dir acl-name monitor-name]
+  |     |  |     |     +--rw if-name         ncd:ifname
+  |     |  |     |     +--rw ip-type         enumeration
+  |     |  |     |     +--rw sample-dir      enumeration
+  |     |  |     |     +--rw acl-name        string
+  |     |  |     |     +--rw monitor-name    string
+  |     |  |     +--rw custom-samplers
+  |     |  |        +--rw custom-sampler* [if-name ip-type sample-dir acl-name monitor-name sampler-name]
+  |     |  |           +--rw if-name         ncd:ifname
+  |     |  |           +--rw ip-type         enumeration
+  |     |  |           +--rw sample-dir      enumeration
+  |     |  |           +--rw acl-name        string
+  |     |  |           +--rw monitor-name    string
+  |     |  |           +--rw sampler-name    string
+  |     |  +--rw ipv4-flowspec-monitors {ipv4-bgp-flowspec-sample}?
+  |     |  |  +--rw global-monitor!
+  |     |  |  |  +--rw monitor-name    string
+  |     |  |  |  +--rw sampler-name?   string
+  |     |  |  +--rw vrf-monitors
+  |     |  |     +--rw vrf-monitor* [vrf-name]
+  |     |  |        +--rw vrf-name        string
+  |     |  |        +--rw monitor-name    string
+  |     |  |        +--rw sampler-name?   string
+  |     |  +--rw ipv6-flowspec-monitors {ipv6-bgp-flowspec-sample}?
+  |     |     +--rw global-monitor!
+  |     |     |  +--rw monitor-name    string
+  |     |     |  +--rw sampler-name?   string
+  |     |     +--rw vrf-monitors
+  |     |        +--rw vrf-monitor* [vrf-name]
+  |     |           +--rw vrf-name        string
+  |     |           +--rw monitor-name    string
+  |     |           +--rw sampler-name?   string
+  |     +--rw flow-distributions {flow-distributions}?
+  |        +--rw flow-distribution* [board-name]
+  |           +--rw board-name            ncd:board
+  |           +--rw dst-processor-type    enumeration
+  +--ro state
+     +--ro ipflow
+        +--ro monitor-statistics
+        |  +--ro monitor-statistic* [monitor-name cpu-name]
+        |     +--ro monitor-name               string
+        |     +--ro cpu-name                   ncd:cpu
+        |     +--ro max-cache-entry-num?       uint32
+        |     +--ro alloced-cache-entry-num?   uint32
+        |     +--ro active-cache-entry-num?    uint32
+        |     +--ro active-aged-flows?         uint64
+        |     +--ro inactive-aged-flows?       uint64
+        |     +--ro emergency-aged-flows?      uint64
+        |     +--ro counter-wrap-aged-flows?   uint64
+        |     +--ro force-aged-flows?          uint64
+        +--ro exporter-statistics
+        |  +--ro exporter-statistic* [exporter-name cpu-name]
+        |     +--ro exporter-name                          string
+        |     +--ro cpu-name                               ncd:cpu
+        |     +--ro transmitted-messages?                  uint64
+        |     +--ro transmitted-octets?                    uint64
+        |     +--ro discarded-messages?                    uint64
+        |     +--ro discarded-octets?                      uint64
+        |     +--ro transmitted-data-records?              uint64
+        |     +--ro transmitted-templates?                 uint64
+        |     +--ro transmitted-octets-rate-in-5-min?      uint32
+        |     +--ro transmitted-messages-rate-in-5-min?    uint32
+        |     +--ro transmitted-octes-rate-in-1-hour?      uint32
+        |     +--ro transmitted-messages-rate-in-1-hour?   uint32
+        +--ro cpu-statistics
+           +--ro cpu-statistic* [cpu-name]
+              +--ro cpu-name               ncd:cpu
+              +--ro ipv4-ingress-pkts?     uint64
+              +--ro ipv4-egress-pkts?      uint64
+              +--ro ipv6-ingress-pkts?     uint64
+              +--ro ipv6-egress-pkts?      uint64
+              +--ro mpls-ingress-pkts?     uint64
+              +--ro mpls-egress-pkts?      uint64
+              +--ro other-ingress-pkts?    uint64
+              +--ro other-egress-pkts?     uint64
+              +--ro parse-error-pkts?      uint64
+              +--ro other-error-pkts?      uint64
+              +--ro max-cache-entries?     uint32
+              +--ro total-cache-entries?   uint32

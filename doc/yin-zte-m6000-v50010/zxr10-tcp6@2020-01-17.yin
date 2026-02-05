@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-tcp6"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tcp6="http://www.zte.com.cn/zxr10/netconf/schema/rosng/tcp6"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/tcp6"/>
+  <prefix value="tcp6"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>NETCONF of TCP6 module</text>
+  </description>
+  <revision date="2020-01-17">
+    <description>
+      <text>Remove "15K" from feature-send-rst's project-label-info.</text>
+    </description>
+  </revision>
+  <revision date="2019-09-03">
+    <description>
+      <text>Add send-rst switch to determine whether we should send RST packet when there is no listening port number. Add the leaf node of /configuration/tcp6/config/send-rst.</text>
+    </description>
+  </revision>
+  <revision date="2016-06-01">
+    <description>
+      <text>Delete the lenth definition of node: /operation/tcp6/clear-connect-vrf/dest-ipv6-address and /operation/tcp6/clear-connect-vrf/source-ipv6-address.
+Modify the description of node:/state/tcp6/statistics/sent/dallyack-segs.</text>
+    </description>
+  </revision>
+  <revision date="2014-12-03">
+    <description>
+      <text>Change the leaf node of configuraticon/tcp6/config/window-size datatype form uint16 to uint32 
+Change the leaf node of configuraticon/tcp6/config/window-size range form &lt;10-65535&gt; to &lt;10-1048560&gt;</text>
+    </description>
+  </revision>
+  <revision date="2014-08-22">
+    <description>
+      <text>Modify the name of leaf node passive-pens in the command of show tcp6 statistics.</text>
+    </description>
+  </revision>
+  <revision date="2014-06-24">
+    <description>
+      <text>Initial version</text>
+    </description>
+  </revision>
+  <feature name="feature-send-rst">
+    <description>
+      <text>Feature of send-rst</text>
+    </description>
+  </feature>
+  <container name="configuration">
+    <description>
+      <text>Command of TCP6 configuration</text>
+    </description>
+    <container name="tcp6">
+      <description>
+        <text>Command of TCP6 configuration</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configure the basic parameter of TCP6</text>
+        </description>
+        <leaf name="synwait-time">
+          <description>
+            <text>Wait time for establishing a TCP6 connection</text>
+          </description>
+          <type name="uint16">
+            <range value="30..80"/>
+          </type>
+          <units name="seconds"/>
+          <default value="75"/>
+        </leaf>
+        <leaf name="finwait-time">
+          <description>
+            <text>Wait time for closing a TCP6 connection</text>
+          </description>
+          <type name="uint16">
+            <range value="300..675"/>
+          </type>
+          <units name="seconds"/>
+          <default value="675"/>
+        </leaf>
+        <leaf name="window-size">
+          <description>
+            <text>TCP6 window size</text>
+          </description>
+          <type name="uint32">
+            <range value="100..1048560"/>
+          </type>
+          <units name="bytes"/>
+          <default value="32768"/>
+        </leaf>
+        <leaf name="queue-max">
+          <description>
+            <text>Set maximum queue of outgoing TCP6 packets</text>
+          </description>
+          <type name="uint16">
+            <range value="5..50"/>
+          </type>
+          <default value="5"/>
+        </leaf>
+        <leaf name="send-rst">
+          <description>
+            <text>Set TCP6 RST packet sending without listening port nummber</text>
+          </description>
+          <type name="enumeration">
+            <enum name="enable">
+              <value value="1"/>
+              <description>
+                <text>Enable sending TCP6 RST packet</text>
+              </description>
+            </enum>
+            <enum name="disable">
+              <value value="0"/>
+              <description>
+                <text>Disable sending TCP6 RST packet</text>
+              </description>
+            </enum>
+          </type>
+          <default value="enable"/>
+          <ncd:revise-date date="2019-09-03"/>
+        </leaf>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>Command of TCP6 show</text>
+    </description>
+    <container name="tcp6">
+      <description>
+        <text>Command of TCP6 show</text>
+      </description>
+      <list name="brief">
+        <description>
+          <text>Show brief information of TCP6 connections</text>
+        </description>
+        <key value="index"/>
+        <leaf name="index">
+          <description>
+            <text>Index of tcb</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="local-address">
+          <description>
+            <text>Local ipv6 address and port</text>
+          </description>
+          <type name="string">
+            <length value="1..60"/>
+          </type>
+        </leaf>
+        <leaf name="remote-address">
+          <description>
+            <text>Remote ipv6 address and port</text>
+          </description>
+          <type name="string">
+            <length value="1..60"/>
+          </type>
+        </leaf>
+        <leaf name="state">
+          <description>
+            <text>State of TCP6 connection</text>
+          </description>
+          <type name="string">
+            <length value="1..20"/>
+          </type>
+        </leaf>
+      </list>
+      <list name="tcb">
+        <description>
+          <text>Show the detail information of all TCP6 connections or a specific TCP6 connection</text>
+        </description>
+        <key value="index"/>
+        <leaf name="index">
+          <description>
+            <text>Index of tcb</text>
+          </description>
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+        </leaf>
+        <leaf name="local-ip">
+          <description>
+            <text>Local ipv6 address</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="remote-ip">
+          <description>
+            <text>Remote ipv6 address</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="local-port">
+          <description>
+            <text>Local port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+        </leaf>
+        <leaf name="remote-port">
+          <description>
+            <text>Remote port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+        </leaf>
+        <leaf name="state">
+          <description>
+            <text>State of TCP6 connection</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="iss">
+          <description>
+            <text>Initial send sequence number</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="snduna">
+          <description>
+            <text>Sequence number of sent and not acked</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="sndnxt">
+          <description>
+            <text>Sequence number for sending new data</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="sndwnd">
+          <description>
+            <text>Size of foreign window</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="irs">
+          <description>
+            <text>Initial receive sequence number</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="rcvnxt">
+          <description>
+            <text>Sequence number for incoming</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="rcvwnd">
+          <description>
+            <text>Size of local window</text>
+          </description>
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="srtt">
+          <description>
+            <text>Smoothed (mean) round trip time</text>
+          </description>
+          <type name="uint16"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="rtto">
+          <description>
+            <text>Calculated retransmission timeout</text>
+          </description>
+          <type name="uint16"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="krtt">
+          <description>
+            <text>Backed-off RTO, per Karn</text>
+          </description>
+          <type name="uint16"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="min-rtt">
+          <description>
+            <text>Minimum trip time</text>
+          </description>
+          <type name="uint16"/>
+          <units name="milliseconds"/>
+        </leaf>
+        <leaf name="max-rtt">
+          <description>
+            <text>Maximum trip time</text>
+          </description>
+          <type name="uint16"/>
+          <units name="milliseconds"/>
+        </leaf>
+      </list>
+      <container name="statistics">
+        <description>
+          <text>Show the statistics of TCP6</text>
+        </description>
+        <container name="received">
+          <description>
+            <text>Information of receiving</text>
+          </description>
+          <leaf name="in-segs">
+            <description>
+              <text>Number of received segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="noport-errs">
+            <description>
+              <text>Error segments of no port</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="checksum-errs">
+            <description>
+              <text>Error segments of checksum</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="badoffset-errs">
+            <description>
+              <text>Error segments of bad offset</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="tooshort-errs">
+            <description>
+              <text>Error segments of too short length</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="inseq-segs">
+            <description>
+              <text>Number of received precedence segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="inseq-seg-len">
+            <description>
+              <text>Length of received precedence segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+          </leaf>
+          <leaf name="outof-order-segs">
+            <description>
+              <text>Received segments that out of order</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="outof-order-seg-len">
+            <description>
+              <text>Received segment length that out of order</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+          </leaf>
+          <leaf name="toobig-errs">
+            <description>
+              <text>Received segments that out of received window</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="toobig-err-len">
+            <description>
+              <text>Received segment length that out of received window</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+          </leaf>
+          <leaf name="pktafterclose-errs">
+            <description>
+              <text>Received segments after tcp closed</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="wndprobe-insegs">
+            <description>
+              <text>Received window probe segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="wndupdate-insegs">
+            <description>
+              <text>Received window update segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="dupack-segs">
+            <description>
+              <text>Received duplicate ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="ackunsent-errs">
+            <description>
+              <text>Received ack that not send data</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="ack-segs">
+            <description>
+              <text>Number of received ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="ack-seg-len">
+            <description>
+              <text>Length of received ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+          </leaf>
+          <leaf name="dup-packs">
+            <description>
+              <text>Num of received duplicate-only packets</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="dup-pack-len">
+            <description>
+              <text>Length of received duplicate packets</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="part-dup-packs">
+            <description>
+              <text>Receive the num of packets with some duplicate data</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="part-dup-pack-len">
+            <description>
+              <text>Length of part-duplicate packets</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+        </container>
+        <container name="sent">
+          <description>
+            <text>Information of sending</text>
+          </description>
+          <leaf name="out-segs">
+            <description>
+              <text>Number of sent segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="ctr-segs">
+            <description>
+              <text>Number of sent control segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="rtxmctr-segs">
+            <description>
+              <text>Number of control segments that being retransmitted</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="outdata-segs">
+            <description>
+              <text>Number of sent data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="outdata-seg-len">
+            <description>
+              <text>Total length of sent data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+          </leaf>
+          <leaf name="rtxmdata-segs">
+            <description>
+              <text>Number of retransmitted data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="rtxmdata-seg-len">
+            <description>
+              <text>Length of retransmitted data segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <units name="bytes"/>
+          </leaf>
+          <leaf name="ackonly-segs">
+            <description>
+              <text>Number of sent ack segments only</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="dallyack-segs">
+            <description>
+              <text>Number of delayed ack segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="wndprobe-out-segs">
+            <description>
+              <text>Number of sent window probe segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="wndupdate-out-segs">
+            <description>
+              <text>Number of sent window update segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+        </container>
+        <container name="common-info">
+          <description>
+            <text>Common information</text>
+          </description>
+          <leaf name="active-opens">
+            <description>
+              <text>Number of active connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="passive-opens">
+            <description>
+              <text>Number of passive connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="connects">
+            <description>
+              <text>Number of TCP6 connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="conn-closes">
+            <description>
+              <text>Number of being closed connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="rxmt-tmos">
+            <description>
+              <text>Number of retransmitted segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="connclose-inrxmts">
+            <description>
+              <text>Number of closed connections that being retransmitted</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="keepalive-tmos">
+            <description>
+              <text>Number of keepalive segments that being out of interval of keepalive timer</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="keepalive-probes">
+            <description>
+              <text>Number of keepalive segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="connclose-in-keepalive">
+            <description>
+              <text>Number of closed connections because of not receiving keepalive segments</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="drops">
+            <description>
+              <text>Num of dropped connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+          <leaf name="conn-drops">
+            <description>
+              <text>Num of dropped  embryonic connections</text>
+            </description>
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+          </leaf>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>Command of TCP6 clear</text>
+    </description>
+    <container name="tcp6">
+      <description>
+        <text>Commad of TCP6 clear</text>
+      </description>
+      <container name="clear">
+        <description>
+          <text>Closed a TCP6 connection or clear the statistics of all TCP6 connections</text>
+        </description>
+        <presence value="clear"/>
+        <container name="tcbs">
+          <description>
+            <text>Closed a TCP6 connetion based on the index of tcb</text>
+          </description>
+          <presence value="Clear TCP6 connections based on index of tcb"/>
+          <leaf name="tcb">
+            <description>
+              <text>Closed a TCP6 connetion based on the index of tcb</text>
+            </description>
+            <type name="uint32">
+              <range value="1..4294967295"/>
+            </type>
+            <mandatory value="true"/>
+          </leaf>
+        </container>
+        <container name="statistics">
+          <description>
+            <text>Clear statistics data of TCP6</text>
+          </description>
+          <leaf name="statistic">
+            <description>
+              <text>Clear statistics data of TCP6</text>
+            </description>
+            <type name="empty"/>
+          </leaf>
+        </container>
+      </container>
+      <container name="clear-connect-address">
+        <description>
+          <text>Closed a TCP6 connection based on ip address and port</text>
+        </description>
+        <presence value="clear-connect-address"/>
+        <leaf name="source-port">
+          <description>
+            <text>Source-port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-port">
+          <description>
+            <text>Dest-port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-ipv6-address">
+          <description>
+            <text>Dest ipv6 address</text>
+          </description>
+          <type name="ncd:ipv6-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="source-ipv6-address">
+          <description>
+            <text>Source ipv6 address</text>
+          </description>
+          <type name="ncd:ipv6-address"/>
+          <mandatory value="true"/>
+        </leaf>
+      </container>
+      <container name="clear-connect-vrf">
+        <description>
+          <text>Closed a TCP6 connection based on ip address,port and vrf</text>
+        </description>
+        <presence value="clear-connect-vrf"/>
+        <leaf name="source-port">
+          <description>
+            <text>Source port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-port">
+          <description>
+            <text>Dest port</text>
+          </description>
+          <type name="uint16">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="dest-ipv6-address">
+          <description>
+            <text>Dest ipv6 address</text>
+          </description>
+          <type name="ncd:ipv6-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="source-ipv6-address">
+          <description>
+            <text>source ipv6 address</text>
+          </description>
+          <type name="ncd:ipv6-address"/>
+          <mandatory value="true"/>
+        </leaf>
+        <leaf name="vrf-name">
+          <description>
+            <text>Vrf name</text>
+          </description>
+          <type name="string">
+            <length value="1..32"/>
+          </type>
+          <mandatory value="true"/>
+        </leaf>
+      </container>
+    </container>
+  </container>
+</module>

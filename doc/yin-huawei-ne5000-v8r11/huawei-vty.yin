@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-vty"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:vty="urn:huawei:yang:huawei-vty"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-vty"/>
+  <prefix value="vty"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>VTY.</text>
+  </description>
+  <revision date="2020-03-02">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="tty"/>
+  <typedef name="vty-authmode-type">
+    <type name="enumeration">
+      <enum name="none">
+        <value value="1"/>
+        <description>
+          <text>VTY authentication mode none.</text>
+        </description>
+      </enum>
+      <enum name="password">
+        <value value="2"/>
+        <description>
+          <text>VTY authentication mode password.</text>
+        </description>
+      </enum>
+      <enum name="aaa">
+        <value value="3"/>
+        <description>
+          <text>VTY authentication mode aaa.</text>
+        </description>
+      </enum>
+      <enum name="init">
+        <value value="4"/>
+        <description>
+          <text>Undo authentication mode.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>VTY and TTY authentication mode type.</text>
+    </description>
+  </typedef>
+  <typedef name="vty-proto-inbnd-type">
+    <type name="enumeration">
+      <enum name="all">
+        <value value="0"/>
+        <description>
+          <text>Protocol inbound all.</text>
+        </description>
+      </enum>
+      <enum name="ssh">
+        <value value="1"/>
+        <description>
+          <text>Protocol inbound ssh.</text>
+        </description>
+      </enum>
+      <enum name="telnet">
+        <value value="2"/>
+        <description>
+          <text>Protocol inbound telnet.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>VTY and TTY ProtoInbnd.</text>
+    </description>
+  </typedef>
+  <typedef name="vty-bool-type">
+    <type name="enumeration">
+      <enum name="false">
+        <value value="0"/>
+        <description>
+          <text>VTY shell disable.</text>
+        </description>
+      </enum>
+      <enum name="true">
+        <value value="1"/>
+        <description>
+          <text>VTY shell enable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>VTY and TTY boolean type.</text>
+    </description>
+  </typedef>
+  <container name="vty">
+    <description>
+      <text>VTY.</text>
+    </description>
+    <container name="lines">
+      <description>
+        <text>List of VTY specific configuration list.</text>
+      </description>
+      <list name="line">
+        <key value="index"/>
+        <max-elements value="21"/>
+        <description>
+          <text>Configure VTY specific configuration policy.</text>
+        </description>
+        <ext:generated-by value="system"/>
+        <leaf name="index">
+          <type name="uint8">
+            <range value="34..54"/>
+          </type>
+          <description>
+            <text>Terminal line index.</text>
+          </description>
+        </leaf>
+        <leaf name="idle-timeout-min">
+          <type name="uint16">
+            <range value="0..35791"/>
+          </type>
+          <units name="min"/>
+          <default value="10"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Idle timeout in minutes.</text>
+          </description>
+        </leaf>
+        <leaf name="idle-timeout-sec">
+          <type name="uint16">
+            <range value="0..59"/>
+          </type>
+          <units name="s"/>
+          <default value="0"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Idle timeout in seconds.</text>
+          </description>
+        </leaf>
+        <leaf name="auth-mode">
+          <type name="vty-authmode-type"/>
+          <must condition="(../auth-mode='aaa' and ../proto-inbound='ssh') or not(../proto-inbound='ssh')"/>
+          <default value="init"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Authentication Mode.</text>
+          </description>
+        </leaf>
+        <leaf name="auth-password">
+          <type name="pub-type:password">
+            <length value="8..128"/>
+          </type>
+          <must condition="../auth-mode='password'"/>
+          <description>
+            <text>Authentication Password. The password is a string ranging from 8 to 16 characters for a plaintext password and 48 to 128 characters for a ciphertext password.</text>
+          </description>
+        </leaf>
+        <leaf name="privilege-level">
+          <type name="uint8">
+            <range value="0..15"/>
+          </type>
+          <default value="0"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>User privilege level.</text>
+          </description>
+        </leaf>
+        <leaf name="history-cmd-size">
+          <type name="uint16">
+            <range value="0..256"/>
+          </type>
+          <default value="10"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>History command buffer size. Describes the number of commands will be stored in history.</text>
+          </description>
+        </leaf>
+        <leaf name="screen-length">
+          <type name="uint16">
+            <range value="0..512"/>
+          </type>
+          <default value="24"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>VTY screen length value.</text>
+          </description>
+        </leaf>
+        <leaf name="shell-enable">
+          <type name="vty-bool-type"/>
+          <default value="true"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Shell (Enable/Disable).</text>
+          </description>
+        </leaf>
+        <leaf name="acl4-inbound">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+          <description>
+            <text>Acl inbound name or number for IPv4 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl4-outbound">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+          <description>
+            <text>Acl outbound name or number for IPv4 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl6-inbound">
+          <type name="leafref">
+            <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+          <description>
+            <text>Acl inbound name or number for IPv6 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl6-outbound">
+          <type name="leafref">
+            <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+          <description>
+            <text>Acl outbound name or number for IPv6 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl4-inbound-num">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Acl inbound number for IPv4 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl4-outbound-num">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='advance'"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Acl outbound number for IPv4 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl6-inbound-num">
+          <type name="leafref">
+            <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Acl inbound number for IPv6 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="acl6-outbound-num">
+          <type name="leafref">
+            <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic' or /acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='advance'"/>
+          <status value="deprecated"/>
+          <description>
+            <text>Acl outbound number for IPv6 protocol.</text>
+          </description>
+        </leaf>
+        <leaf name="proto-inbound">
+          <type name="vty-proto-inbnd-type"/>
+          <must condition="(../auth-mode='aaa' and ../proto-inbound='ssh') or not(../proto-inbound='ssh')"/>
+          <default value="all"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>VTY protocol inbound name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="line-global">
+      <description>
+        <text>Configure VTY global configuration.</text>
+      </description>
+      <leaf name="max-users">
+        <type name="uint32">
+          <range value="0..21"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Maximum users can connect to VTY.</text>
+        </description>
+      </leaf>
+      <leaf name="password-lock">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable VTY IP block.</text>
+        </description>
+      </leaf>
+      <leaf name="security-policy">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable VTY security policy. Disabling this may reduce the degree of VTY security. It is strongly recommended to keep this enabled.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+</module>

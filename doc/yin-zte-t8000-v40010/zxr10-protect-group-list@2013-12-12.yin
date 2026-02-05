@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-protect-group-list"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pglist="http://www.zte.com.cn/zxr10/netconf/schema/rosng/protect-group-list"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/protect-group-list"/>
+  <prefix value="pglist"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation
+
+   Nanjing Institute of ZTE Corporation
+
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China
+
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe the protect group list.</text>
+  </description>
+  <revision date="2013-12-12">
+    <description>
+      <text>1.Add import clause.
+
+2.Change the type of master-pw-group-name leaf node from string to "ncd:ifname".
+
+3.Change the type of slave-pw-group-name leaf node from string to "ncd:ifname".</text>
+    </description>
+  </revision>
+  <revision date="2013-11-04">
+    <description>
+      <text>1.Remove the import clause.
+
+2.Add pw-group-list feature and tunnel-group-list feature.
+
+3.Add container slave-tunnel-groups and slave-pw-groups.
+
+4.Add if-feature clause on case clause.</text>
+    </description>
+  </revision>
+  <revision date="2013-07-03">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <feature name="pw-group-list">
+    <description>
+      <text>PW group list.</text>
+    </description>
+  </feature>
+  <feature name="tunnel-group-list">
+    <description>
+      <text>Tunnel group list.</text>
+    </description>
+  </feature>
+  <container name="configuration">
+    <description>
+      <text>Configuration model information of protect group list.</text>
+    </description>
+    <container name="protect-group-list">
+      <description>
+        <text>The configuration information of protect group list, depend zxr10-tunnel-group and zxr10-l2vpn.</text>
+      </description>
+      <list name="group-list">
+        <description>
+          <text>Configure protect group list.ID of tunnel protect group list is between [1,x], ID of PW protect group list is between [y+1,z].The value of x,y and z depends on the performance parameters, the default value of x is 4096, the default value of y is 4096, the default value of z is 8192.</text>
+        </description>
+        <key value="group-list-id"/>
+        <unique tag="group-list-id"/>
+        <max-elements value="8192"/>
+        <leaf name="group-list-id">
+          <description>
+            <text>Configure ID of protect group list.</text>
+          </description>
+          <type name="uint32">
+            <range value="1..8192">
+              <description>
+                <text>ID of protect group list.</text>
+              </description>
+            </range>
+          </type>
+        </leaf>
+        <choice name="type">
+          <description>
+            <text>You can configure tunnel protect group list or PW protect group list.</text>
+          </description>
+          <mandatory value="true"/>
+          <case name="tunnel-group">
+            <description>
+              <text>Configure tunnel protect group list.The maximum number of tunnel protect group list instance depends on the performance parameter, the default value is 4096.The maximum member number each tunnel protect group list depends on the performance parameter, the default value is 32, one master tunnel group and 31 slave tunnel groups.The maximum member number of all tunnel protect group list depends on the performance parameter, the default value is 8192.</text>
+            </description>
+            <leaf name="master-tunnel-group-id">
+              <description>
+                <text>Configure master tunnel group of tunnel protect group list.Each tunnel protect group list can only configure one master tunnel group.</text>
+              </description>
+              <type name="uint32">
+                <range value="1..32768">
+                  <description>
+                    <text>Tunnel group ID.</text>
+                  </description>
+                </range>
+              </type>
+              <mandatory value="true"/>
+            </leaf>
+            <container name="slave-tunnel-groups">
+              <description>
+                <text>Configure slave tunnel groups of tunnel protect group list.The maximum member number each tunnel protect group list depends on the performance parameter, the default value is 32, one master tunnel group and 31 slave tunnel groups.Because each tunnel protect group list can only configure one master tunnel group,so the slave tunnel group number depends on the performance parameter too.</text>
+              </description>
+              <presence value="Configure slave tunnel groups"/>
+              <list name="slave-tunnel-group">
+                <description>
+                  <text>Configure slave tunnel group of tunnel protect group list.</text>
+                </description>
+                <key value="slave-tunnel-group-id"/>
+                <max-elements value="31"/>
+                <leaf name="slave-tunnel-group-id">
+                  <description>
+                    <text>Configure slave tunnel group ID.</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..32768">
+                      <description>
+                        <text>Tunnel group ID.</text>
+                      </description>
+                    </range>
+                  </type>
+                </leaf>
+              </list>
+            </container>
+          </case>
+          <case name="pw-group">
+            <description>
+              <text>Configure PW protect group list.The maximum number of PW protect group list instance depends on the performance parameter, the default value is 4096.The maximum member number each PW protect group list depends on the performance parameter, the default value is 32, one master PW group and 31 slave PW groups.The maximum member number of all PW protect group list depends on the performance parameter, the default value is 8192.</text>
+            </description>
+            <leaf name="master-pw-group-name">
+              <description>
+                <text>Configure master PW group of PW protect group list.Each PW protect group list can only configure one master PW group.</text>
+              </description>
+              <type name="ncd:ifname"/>
+              <mandatory value="true"/>
+            </leaf>
+            <container name="slave-pw-groups">
+              <description>
+                <text>Configure slave PW groups of PW protect group list.The maximum member number each PW protect group list depends on the performance parameter, the default value is 32, one master PW group and 31 slave PW groups.Because each PW protect group list can only configure one master PW group,so the slave PW group number depends on the performance parameter too.</text>
+              </description>
+              <presence value="Configure slave PW groups"/>
+              <list name="slave-pw-group">
+                <description>
+                  <text>Configure slave PW group of PW protect group list.</text>
+                </description>
+                <key value="slave-pw-group-name"/>
+                <max-elements value="31"/>
+                <leaf name="slave-pw-group-name">
+                  <description>
+                    <text>Configure slave PW group name.</text>
+                  </description>
+                  <type name="ncd:ifname"/>
+                </leaf>
+              </list>
+            </container>
+          </case>
+        </choice>
+      </list>
+    </container>
+  </container>
+</module>

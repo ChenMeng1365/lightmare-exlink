@@ -1,0 +1,5028 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ipv6-nd"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ipv6-nd="urn:huawei:yang:huawei-ipv6-nd"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ip="urn:huawei:yang:huawei-ip"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:bd="urn:huawei:yang:huawei-bd"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-ipv6-nd"/>
+  <prefix value="ipv6-nd"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ip">
+    <prefix value="ip"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-bd">
+    <prefix value="bd"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>ND management.</text>
+  </description>
+  <revision date="2021-07-16">
+    <description>
+      <text>Leaf min-interval is added under container if-property;
+leaf proxy-reply is added under container instance;
+leaf mismatch-discard is added under container instance.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2021-02-02">
+    <description>
+      <text>Containers dns-server-addresses and dns-search-suffixs are added.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-10-15">
+    <description>
+      <text>ND rate limit and drop statistics are added;
+add some leaf nodes for the if-property and the proxys container;
+add some containers for the static-neighbor and ra-property container;
+add strict-prefix-learn container.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-26">
+    <description>
+      <text>Leaf ns-send-rate-limit is added.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-29">
+    <description>
+      <text>Default value of stale-time is deleted.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-26">
+    <description>
+      <text>Default value.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-30">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="nd-flag">
+    <type name="enumeration">
+      <enum name="false">
+        <value value="0"/>
+        <description>
+          <text>NO.</text>
+        </description>
+      </enum>
+      <enum name="true">
+        <value value="1"/>
+        <description>
+          <text>YES.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Description of nd-flag.</text>
+    </description>
+  </typedef>
+  <typedef name="nd-switch-state">
+    <type name="enumeration">
+      <enum name="off">
+        <value value="0"/>
+        <description>
+          <text>Off.</text>
+        </description>
+      </enum>
+      <enum name="on">
+        <value value="1"/>
+        <description>
+          <text>On.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The state of the switch.</text>
+    </description>
+  </typedef>
+  <typedef name="nd-ngb-state">
+    <type name="enumeration">
+      <enum name="incomplete">
+        <value value="0"/>
+        <description>
+          <text>Address resolution is being performed on the entry.</text>
+        </description>
+      </enum>
+      <enum name="reachable">
+        <value value="1"/>
+        <description>
+          <text>The neighbor is known to have been reachable recently.</text>
+        </description>
+      </enum>
+      <enum name="stale">
+        <value value="2"/>
+        <description>
+          <text>The neighbor is no longer known to be reachable, but until traffic is sent to the neighbor no attempt should be made to verify its reachability.</text>
+        </description>
+      </enum>
+      <enum name="delay">
+        <value value="3"/>
+        <description>
+          <text>The neighbor is no longer known to be reachable, and traffic has recently been sent to the neighbor. Rather than probe the neighbor immediately, however,
+ delay sending probes for a short while in order to give upper-layer protocols a chance to provide reachability confirmation.</text>
+        </description>
+      </enum>
+      <enum name="probe">
+        <value value="4"/>
+        <description>
+          <text>The neighbor is no longer known to be reachable, and unicast neighbor solicitation probes are being sent to verify reachability.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The neighbor unreachability detection state.</text>
+    </description>
+    <reference>
+      <text>RFC 4861: Neighbor Discovery for IP version 6 (IPv6) Section 7.3.2</text>
+    </reference>
+  </typedef>
+  <typedef name="nd-route-preference">
+    <type name="enumeration">
+      <enum name="medium">
+        <value value="0"/>
+        <description>
+          <text>Preference medium.</text>
+        </description>
+      </enum>
+      <enum name="high">
+        <value value="1"/>
+        <description>
+          <text>Preference high.</text>
+        </description>
+      </enum>
+      <enum name="low">
+        <value value="3"/>
+        <description>
+          <text>Preference low.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The RA router preference level.</text>
+    </description>
+  </typedef>
+  <typedef name="nd-nb-type">
+    <type name="enumeration">
+      <enum name="remote">
+        <value value="0"/>
+        <description>
+          <text>Remote pushed.</text>
+        </description>
+      </enum>
+      <enum name="static">
+        <value value="1"/>
+        <description>
+          <text>Statically configured.</text>
+        </description>
+      </enum>
+      <enum name="dynamic">
+        <value value="2"/>
+        <description>
+          <text>Dynamically resolved.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The origin of neighbor entry.</text>
+    </description>
+  </typedef>
+  <typedef name="nd-pkt-type">
+    <type name="enumeration">
+      <enum name="RS">
+        <value value="0"/>
+        <description>
+          <text>Router solicitation packet.</text>
+        </description>
+      </enum>
+      <enum name="RA">
+        <value value="1"/>
+        <description>
+          <text>Router advertisement packet.</text>
+        </description>
+      </enum>
+      <enum name="NS">
+        <value value="2"/>
+        <description>
+          <text>Neighbor solicitation packet.</text>
+        </description>
+      </enum>
+      <enum name="NA">
+        <value value="3"/>
+        <description>
+          <text>Neighbor advertisement packet.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The ND packet type value.</text>
+    </description>
+  </typedef>
+  <typedef name="nd-pkt-evt-type">
+    <type name="enumeration">
+      <enum name="RS">
+        <value value="0"/>
+        <description>
+          <text>Router solicitation packet.</text>
+        </description>
+      </enum>
+      <enum name="RA">
+        <value value="1"/>
+        <description>
+          <text>Router advertisement packet.</text>
+        </description>
+      </enum>
+      <enum name="NS">
+        <value value="2"/>
+        <description>
+          <text>Neighbor solicitation packet.</text>
+        </description>
+      </enum>
+      <enum name="NA">
+        <value value="3"/>
+        <description>
+          <text>Neighbor advertisement packet.</text>
+        </description>
+      </enum>
+      <enum name="NDMISS">
+        <value value="4"/>
+        <description>
+          <text>ND miss.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The ND packet type or event value.</text>
+    </description>
+  </typedef>
+  <typedef name="nd-tgt-pkt-type">
+    <type name="enumeration">
+      <enum name="NS">
+        <value value="2"/>
+        <description>
+          <text>Neighbor solicitation packet.</text>
+        </description>
+      </enum>
+      <enum name="NA">
+        <value value="3"/>
+        <description>
+          <text>Neighbor advertisement packet.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type value of ND packet that supports the target address.</text>
+    </description>
+  </typedef>
+  <grouping name="nd-ip-rate-limits-type">
+    <description>
+      <text>Rate limits for receiving ND packets or ND miss based on specified source IP address.</text>
+    </description>
+    <container name="ip-rate-limits">
+      <description>
+        <text>List of rate limits for receiving ND packets or ND miss based on specified source IP address.</text>
+      </description>
+      <list name="ip-rate-limit">
+        <key value="packet-type ipv6-addr"/>
+        <description>
+          <text>Configure the rate limit for receiving ND packets or ND miss based on specified source IP address.</text>
+        </description>
+        <leaf name="packet-type">
+          <type name="nd-pkt-evt-type"/>
+          <description>
+            <text>ND packet type or ND miss.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv6-addr">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Source IPv6 address, the address cannot be a multicast address, that is, cannot start with FFXX or ffXX, X represents hexadecimal character. When the type is NDMISS, the source address cannot be the unspecified address.</text>
+          </description>
+        </leaf>
+        <leaf name="value">
+          <type name="uint16">
+            <range value="0..5000"/>
+          </type>
+          <units name="pps"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Rate limit of receiving ND packet or ND miss.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <container name="ipv6-nd">
+    <description>
+      <text>ND management.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure global configuration of ND.</text>
+      </description>
+      <leaf name="ns-send-rate-limit">
+        <type name="uint16">
+          <range value="1..1000"/>
+        </type>
+        <units name="pps"/>
+        <default value="550"/>
+        <description>
+          <text>Rate limit of sending NS packet.</text>
+        </description>
+      </leaf>
+      <leaf name="na-send-rate-limit">
+        <type name="uint16">
+          <range value="1..10240"/>
+        </type>
+        <units name="pps"/>
+        <default value="5000"/>
+        <description>
+          <text>Rate limit of sending NA packet.</text>
+        </description>
+      </leaf>
+      <leaf name="rs-send-rate-limit">
+        <type name="uint16">
+          <range value="1..1000"/>
+        </type>
+        <units name="pps"/>
+        <default value="550"/>
+        <description>
+          <text>Rate limit of sending RS packet.</text>
+        </description>
+      </leaf>
+      <leaf name="ra-send-rate-limit">
+        <type name="uint16">
+          <range value="1..1000"/>
+        </type>
+        <units name="pps"/>
+        <default value="550"/>
+        <description>
+          <text>Rate limit of sending RA packet.</text>
+        </description>
+      </leaf>
+      <leaf name="dad-detect">
+        <type name="nd-flag"/>
+        <default value="true"/>
+        <description>
+          <text>The switch of DAD enhanced detection.</text>
+        </description>
+      </leaf>
+      <leaf name="mac-check-flag">
+        <type name="nd-flag"/>
+        <default value="false"/>
+        <description>
+          <text>Enable IPv6 ND MAC check.</text>
+        </description>
+      </leaf>
+      <leaf name="auto-detect-flag">
+        <type name="nd-switch-state"/>
+        <default value="on"/>
+        <description>
+          <text>To enable the automatic detection of ND entries.</text>
+        </description>
+      </leaf>
+      <leaf name="prefix-strict-flag">
+        <type name="nd-switch-state"/>
+        <default value="on"/>
+        <description>
+          <text>ND prefix learning strict.</text>
+        </description>
+      </leaf>
+      <leaf name="pre-detect-flag">
+        <type name="nd-switch-state"/>
+        <default value="off"/>
+        <description>
+          <text>To determine whether to enable pre-detection.</text>
+        </description>
+      </leaf>
+      <leaf name="hop-limit">
+        <type name="uint8">
+          <range value="1..255"/>
+        </type>
+        <default value="64"/>
+        <description>
+          <text>IPv6 packet hoplimit.</text>
+        </description>
+      </leaf>
+      <leaf name="stale-time">
+        <type name="uint32">
+          <range value="60..172800"/>
+        </type>
+        <units name="s"/>
+        <default value="1200"/>
+        <description>
+          <text>Aging time of the global stale state.</text>
+        </description>
+      </leaf>
+      <leaf name="rsa-calculate-rate-limit">
+        <type name="uint32">
+          <range value="0..100"/>
+          <ext:value-meaning>
+            <ext:item value="0">
+              <ext:meaning value="disabling the function of rsa calculation limit"/>
+            </ext:item>
+          </ext:value-meaning>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Rate limit for RSA option calculation.</text>
+        </description>
+      </leaf>
+      <leaf name="log-trap-time">
+        <type name="uint32">
+          <range value="60..3600"/>
+        </type>
+        <units name="s"/>
+        <default value="600"/>
+        <description>
+          <text>The interval for sending speed-limit logs and alarms.</text>
+        </description>
+      </leaf>
+      <leaf name="rs-receive-rate-limit">
+        <type name="uint16">
+          <range value="1..5000"/>
+        </type>
+        <units name="pps"/>
+        <ext:dynamic-default/>
+        <description>
+          <text>Rate limit of receiving RS packet.</text>
+        </description>
+      </leaf>
+      <leaf name="ra-receive-rate-limit">
+        <type name="uint16">
+          <range value="1..5000"/>
+        </type>
+        <units name="pps"/>
+        <ext:dynamic-default/>
+        <description>
+          <text>Rate limit of receiving RA packet.</text>
+        </description>
+      </leaf>
+      <leaf name="ns-receive-rate-limit">
+        <type name="uint16">
+          <range value="1..5000"/>
+        </type>
+        <units name="pps"/>
+        <ext:dynamic-default/>
+        <description>
+          <text>Rate limit of receiving NS packet.</text>
+        </description>
+      </leaf>
+      <leaf name="na-receive-rate-limit">
+        <type name="uint16">
+          <range value="1..5000"/>
+        </type>
+        <units name="pps"/>
+        <ext:dynamic-default/>
+        <description>
+          <text>Rate limit of receiving NA packet.</text>
+        </description>
+      </leaf>
+      <leaf name="miss-receive-rate-limit">
+        <type name="uint16">
+          <range value="1..5000"/>
+        </type>
+        <units name="pps"/>
+        <ext:dynamic-default/>
+        <description>
+          <text>Rate limit of receiving ND miss.</text>
+        </description>
+      </leaf>
+      <leaf name="dad-detect-rate-limit">
+        <type name="uint16">
+          <range value="1..100"/>
+        </type>
+        <units name="pps"/>
+        <default value="50"/>
+        <description>
+          <text>Rate limit of sending DAD detect packet.</text>
+        </description>
+      </leaf>
+      <leaf name="dad-detect-attempts">
+        <type name="uint16">
+          <range value="1..5"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Number of attempts to resolve address conflicts.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="m-lag-global">
+      <description>
+        <text>Configure M-LAG global configuration of ND.</text>
+      </description>
+      <leaf name="ipv6-neighbor-backup-rate">
+        <type name="uint32">
+          <range value="1..2000"/>
+        </type>
+        <description>
+          <text>Specifies the number of IPv6 neighbor entries synchronized per second through M-LAG.</text>
+        </description>
+        <ext:dynamic-default/>
+      </leaf>
+    </container>
+    <container name="ipv6-neighbors">
+      <config value="false"/>
+      <description>
+        <text>List of information about neighbor entry query.</text>
+      </description>
+      <list name="ipv6-neighbor">
+        <key value="if-name ipv6-addr"/>
+        <description>
+          <text>Statistics of query neighbor entries which can be static, or dynamic.</text>
+        </description>
+        <leaf name="if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv6-addr">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>IPv6 address of a neighbor entry.</text>
+          </description>
+        </leaf>
+        <leaf name="slot-id">
+          <type name="string">
+            <length value="1..24"/>
+          </type>
+          <description>
+            <text>Slot ID.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="mac-addr">
+          <type name="pub-type:mac-address"/>
+          <description>
+            <text>MAC address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <description>
+            <text>VPN name.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="vlan-id">
+          <type name="uint32">
+            <range value="1..4094"/>
+          </type>
+          <description>
+            <text>VLAN ID.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+        <leaf name="state">
+          <type name="nd-ngb-state"/>
+          <description>
+            <text>Status of a neighbor entry.</text>
+          </description>
+        </leaf>
+        <leaf name="static-flag">
+          <type name="nd-nb-type"/>
+          <description>
+            <text>Type of a neighbor entry. The available options are static, dynamic or remote.</text>
+          </description>
+        </leaf>
+        <leaf name="age">
+          <type name="uint32">
+            <range value="0..4294967293"/>
+          </type>
+          <units name="min"/>
+          <description>
+            <text>Time when a neighbor entry is established.</text>
+          </description>
+        </leaf>
+        <leaf name="is-router">
+          <type name="nd-flag"/>
+          <description>
+            <text>Is a router.</text>
+          </description>
+        </leaf>
+        <leaf name="cevid">
+          <type name="uint32">
+            <range value="1..4094"/>
+          </type>
+          <description>
+            <text>Inner VLAN tag. If this parameter is not set, the value of the VLAN ID is considered to be 0. If this parameter is set, it indicates that the ND entry is in the associated VLAN.</text>
+          </description>
+        </leaf>
+        <leaf name="strict-flag">
+          <type name="boolean"/>
+          <description>
+            <text>Enable/disable strict security mode.</text>
+          </description>
+        </leaf>
+        <leaf name="nickname">
+          <type name="uint32">
+            <range value="1..65535"/>
+          </type>
+          <description>
+            <text>Nickname which uniquely identifies an RB on a TRILL network.</text>
+          </description>
+        </leaf>
+        <leaf name="bd-id">
+          <type name="uint32">
+            <range value="1..16777215"/>
+          </type>
+          <description>
+            <text>Bridge-domain ID.</text>
+          </description>
+        </leaf>
+        <leaf name="vni">
+          <type name="uint32">
+            <range value="1..16777215"/>
+          </type>
+          <description>
+            <text>Vxlan VNI.</text>
+          </description>
+        </leaf>
+        <leaf name="source-addr">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Tunnel SourceIPAddr.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-addr">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Tunnel PeerIPAddr.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="nd-pkt-stats">
+      <config value="false"/>
+      <description>
+        <text>Statistics of ND packets.</text>
+      </description>
+      <container name="ns-stats">
+        <description>
+          <text>Statistics of NS packets.</text>
+        </description>
+        <container name="ns-global">
+          <description>
+            <text>Statistics of global NS packets.</text>
+          </description>
+          <leaf name="send-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NS packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NS packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-target-linklocal">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NS packets with the target address as a link-local address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-target-global">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NS packets with the target address as a global address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received NS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-valid-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received valid NS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received NS packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-target-linklocal">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets with the target address as a link-local address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-target-global">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets with the target address as a global address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of discarded NS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-checksum-err">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to checksum errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-len">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad packet length.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-code">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad code.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-hoplimit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad hoplimit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad source MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad destination MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-tgt-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad target MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad source IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad destination IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-tgt-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad target IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-option">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to bad options.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-local-addr">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded because the source address is the local address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-mac-check">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to source MAC address consistency check errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to global rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-attack">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to source MAC address attacks.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to source MAC rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to interface source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to interface rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-lr-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to LR rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="send-sip-unspecified">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NS packets with the source address as an unspecified address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-sip-unspecified">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received NS packets with the source address as an unspecified address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-dst-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to destination IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-tgt-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NS packets discarded due to target IP rate limit.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="ns-slots">
+          <config value="false"/>
+          <description>
+            <text>List of NS packets in these slots.</text>
+          </description>
+          <list name="ns-slot">
+            <key value="slot-id"/>
+            <description>
+              <text>Statistics of NS packets in the slot.</text>
+            </description>
+            <leaf name="slot-id">
+              <type name="string">
+                <length value="1..24"/>
+              </type>
+              <description>
+                <text>Slot ID.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the target address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the target address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NS packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets with the destination address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets with the destination address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad target IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="send-sip-unspecified">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the source address as an unspecified address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-sip-unspecified">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NS packets with the source address as an unspecified address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-tgt-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to target IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ns-ifs">
+          <config value="false"/>
+          <description>
+            <text>List of NS packets in these interfaces.</text>
+          </description>
+          <list name="ns-if">
+            <key value="if-name"/>
+            <description>
+              <text>Statistics of NS packets in the interface.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <description>
+                <text>Interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the target address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the target address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NS packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets with the destination address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets with the destination address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded NS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad target IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="send-sip-unspecified">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of sent NS packets with the source address as an unspecified address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-sip-unspecified">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NS packets with the source address as an unspecified address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-tgt-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NS packets discarded due to target IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="na-stats">
+        <description>
+          <text>Statistics of NA packets.</text>
+        </description>
+        <container name="na-global">
+          <description>
+            <text>Statistics of global NA packets.</text>
+          </description>
+          <leaf name="send-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NA packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NA packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-target-linklocal">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NA packets with the target address as a link-local address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-target-global">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of sent NA packets with the target address as a global address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received NA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-valid-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received valid NA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received NA packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-target-linklocal">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets with the destination address as a link-local address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-target-global">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets with the destination address as a global address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of discarded NA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-checksum-err">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to checksum errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-len">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad packet length.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-code">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad code.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-hoplimit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad hoplimit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad source MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad destination MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-tgt-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad target MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad source IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad destination IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-tgt-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad target IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-option">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to bad options.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-local-addr">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded because the source address is the local address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-mac-check">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to source MAC address consistency check errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to global rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-attack">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to source MAC address attacks.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to source MAC rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to interface source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to interface rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-lr-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to LR rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-dst-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to destination IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-tgt-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of NA packets discarded due to target IP rate limit.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="na-slots">
+          <description>
+            <text>List of NA packets in these slots.</text>
+          </description>
+          <list name="na-slot">
+            <key value="slot-id"/>
+            <description>
+              <text>Statistics of NA packets in the slot.</text>
+            </description>
+            <leaf name="slot-id">
+              <type name="string">
+                <length value="1..24"/>
+              </type>
+              <description>
+                <text>Slot ID.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the target address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the target address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets with the destination address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets with the destination address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad target IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-tgt-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to target IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="na-ifs">
+          <description>
+            <text>List of NA packets in these interfaces.</text>
+          </description>
+          <list name="na-if">
+            <key value="if-name"/>
+            <description>
+              <text>Statistics of NA packets in the interface.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <description>
+                <text>Interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the target address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send NA packets with the target address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received NA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-linklocal">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets with the destination address as a link-local address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-target-global">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets with the destination address as a global address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded NA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad target IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-tgt-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of NA packets discarded due to target IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="rs-stats">
+        <description>
+          <text>Statistics of RS packets.</text>
+        </description>
+        <container name="rs-global">
+          <description>
+            <text>Statistics of global RS packets.</text>
+          </description>
+          <leaf name="send-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of send RS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of send RS packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received RS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-valid-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received valid RS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received RS packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of discarded RS packets.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-checksum-err">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to checksum errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-len">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad packet length.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-code">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad code.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-hoplimit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad hoplimit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad source MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad destination MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-tgt-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad target MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad source IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad destination IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-option">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to bad options.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-local-addr">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded because the source address is the local address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-mac-check">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to source MAC address consistency check errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to global rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-attack">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to source MAC address attacks.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to source MAC rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to interface source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to interface rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-lr-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to LR rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-dst-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RS packets discarded due to destination IP rate limit.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="rs-slots">
+          <description>
+            <text>List of RS packets in these slots.</text>
+          </description>
+          <list name="rs-slot">
+            <key value="slot-id"/>
+            <description>
+              <text>Statistics of RS packets in the slot.</text>
+            </description>
+            <leaf name="slot-id">
+              <type name="string">
+                <length value="1..24"/>
+              </type>
+              <description>
+                <text>Slot ID.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RS packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="rs-ifs">
+          <description>
+            <text>List of RS packets in these interfaces.</text>
+          </description>
+          <list name="rs-if">
+            <key value="if-name"/>
+            <description>
+              <text>Statistics of RS packets in the interface.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <description>
+                <text>Interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RS packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded RS packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RS packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="ra-stats">
+        <description>
+          <text>Statistics of RA packets.</text>
+        </description>
+        <container name="ra-global">
+          <description>
+            <text>Statistics of global RA packets.</text>
+          </description>
+          <leaf name="send-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of send RA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of send RA packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="send-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of send RA packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received RA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-valid-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received valid RA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-ucast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received RA packets with the destination address as a unicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-dip-mcast">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets with the destination address as a multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of discarded RA packets.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-checksum-err">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to checksum errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-len">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad packet length.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-code">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad code.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-hoplimit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad hoplimit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad source MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad destination MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-tgt-mac">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad target MAC addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-src-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad source IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-dst-ip">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad destination IP addresses.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-bad-option">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to bad options.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-local-addr">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded because the source address is the local address.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-mac-check">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to source MAC address consistency check errors.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to global rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-attack">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to source MAC address attacks.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-mac-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to source MAC rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to interface source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to interface rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-lr-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to LR rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-dst-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of RA packets discarded due to destination IP rate limit.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="ra-slots">
+          <description>
+            <text>List of RA packets in these slots.</text>
+          </description>
+          <list name="ra-slot">
+            <key value="slot-id"/>
+            <description>
+              <text>Statistics of RA packets in the slot.</text>
+            </description>
+            <leaf name="slot-id">
+              <type name="string">
+                <length value="1..24"/>
+              </type>
+              <description>
+                <text>Slot ID.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ra-ifs">
+          <description>
+            <text>List of RA packets in these interfaces.</text>
+          </description>
+          <list name="ra-if">
+            <key value="if-name"/>
+            <description>
+              <text>Statistics of RA packets in the interface.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <description>
+                <text>Interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="send-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="send-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of send RA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-ucast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received RA packets with the destination address as a unicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-dip-mcast">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets with the destination address as a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded RA packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-checksum-err">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to checksum errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-len">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad packet length.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-code">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad code.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-hoplimit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad hoplimit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad source MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad destination MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-tgt-mac">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad target MAC addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-src-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad source IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-dst-ip">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad destination IP addresses.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-bad-option">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to bad options.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-local-addr">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded because the source address is the local address.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-mac-check">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source MAC address consistency check errors.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-attack">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source MAC address attacks.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-mac-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source MAC rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-dst-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of RA packets discarded due to destination IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="ndmiss-stats">
+        <description>
+          <text>Statistics of ND miss packets.</text>
+        </description>
+        <container name="ndmiss-global">
+          <description>
+            <text>Statistics of global ND miss packets.</text>
+          </description>
+          <leaf name="recv-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received ND miss packets.</text>
+            </description>
+          </leaf>
+          <leaf name="recv-valid-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of received valid ND miss packets.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-total">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of discarded ND miss packets.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of ND miss packets discarded due to global rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of ND miss discarded due to interface rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-lr-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of ND miss discarded due to LR rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of ND miss discarded due to source IP rate limit.</text>
+            </description>
+          </leaf>
+          <leaf name="drop-if-src-ip-rate-limit">
+            <type name="uint32"/>
+            <units name="packet"/>
+            <description>
+              <text>Number of ND miss discarded due to interface source IP rate limit.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="ndmiss-slots">
+          <description>
+            <text>List of ND miss packets in these slots.</text>
+          </description>
+          <list name="ndmiss-slot">
+            <key value="slot-id"/>
+            <description>
+              <text>Statistics of ND miss packets in the slot.</text>
+            </description>
+            <leaf name="slot-id">
+              <type name="string">
+                <length value="1..24"/>
+              </type>
+              <description>
+                <text>Slot ID.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received ND miss packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid ND miss packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded ND miss packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ndmiss-ifs">
+          <description>
+            <text>List of ND miss packets in these interfaces.</text>
+          </description>
+          <list name="ndmiss-if">
+            <key value="if-name"/>
+            <description>
+              <text>Statistics of ND miss packets in the interface.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <description>
+                <text>Interface name.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received ND miss packets.</text>
+              </description>
+            </leaf>
+            <leaf name="recv-valid-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of received valid ND miss packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-total">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of discarded ND miss packets.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss packets discarded due to global rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to interface rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-lr-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to LR rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to source IP rate limit.</text>
+              </description>
+            </leaf>
+            <leaf name="drop-if-src-ip-rate-limit">
+              <type name="uint32"/>
+              <units name="packet"/>
+              <description>
+                <text>Number of ND miss discarded due to interface source IP rate limit.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+    <container name="anti-attack">
+      <description>
+        <text>Configure ND anti-attack for global.</text>
+      </description>
+      <container name="source-mac-receive">
+        <description>
+          <text>Configure the ND anti-attack based on packet source MAC address.</text>
+        </description>
+        <container name="every-mac-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets based on every source MAC address.</text>
+          </description>
+          <list name="every-mac-rate-limit">
+            <key value="packet-type"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets based on every source MAC address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-type"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="mac-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets based on specified source MAC address.</text>
+          </description>
+          <list name="mac-rate-limit">
+            <key value="packet-type mac-addr"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets based on specified source MAC address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-type"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="mac-addr">
+              <type name="pub-type:mac-address">
+                <pattern value="[0-9a-fA-F][0|2|4|6|8|aA|cC|eE][0-9a-fA-F]{2}(-[0-9a-fA-F]{4}){2}"/>
+              </type>
+              <description>
+                <text>Source MAC address.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="source-ip-receive">
+        <description>
+          <text>Configure the ND anti-attack based on packet or miss source IP address.</text>
+        </description>
+        <container name="every-ip-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets or ND miss based on every source IP address.</text>
+          </description>
+          <list name="every-ip-rate-limit">
+            <key value="packet-type"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets or ND miss based on every source IP address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-evt-type"/>
+              <description>
+                <text>ND packet type or ND miss.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet or ND miss.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <uses name="nd-ip-rate-limits-type"/>
+      </container>
+      <container name="destination-ip-receive">
+        <description>
+          <text>Configure the ND anti-attack based on packet destination IP address.</text>
+        </description>
+        <container name="every-ip-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets based on every destination IP address.</text>
+          </description>
+          <list name="every-ip-rate-limit">
+            <key value="packet-type"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets based on every destination IP address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-type"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ip-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets based on specified destination IP address.</text>
+          </description>
+          <list name="ip-rate-limit">
+            <key value="packet-type ipv6-addr"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets based on specified destination IP address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-type"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="ipv6-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Destination IPv6 address, the address cannot be the unspecified address.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="target-ip-receive">
+        <description>
+          <text>Configure the ND anti-attack based on packet target IP address.</text>
+        </description>
+        <container name="every-ip-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets based on every target IP address.</text>
+          </description>
+          <list name="every-ip-rate-limit">
+            <key value="packet-type"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets based on every target IP address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-tgt-pkt-type"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ip-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets based on specified target IP address.</text>
+          </description>
+          <list name="ip-rate-limit">
+            <key value="packet-type ipv6-addr"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packets based on specified target IP address.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-tgt-pkt-type"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="ipv6-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Target IPv6 address, the address cannot be the unspecified address or a multicast address.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+    <container name="send-rate-limit">
+      <description>
+        <text>Configure ND send rate limit for global.</text>
+      </description>
+      <container name="multicast-rate-limits">
+        <description>
+          <text>List of ND multicast packet sending rate limits.</text>
+        </description>
+        <list name="multicast-rate-limit">
+          <key value="packet-type"/>
+          <description>
+            <text>Configure the rate limit of sending ND multicast packet.</text>
+          </description>
+          <leaf name="packet-type">
+            <type name="nd-pkt-type"/>
+            <description>
+              <text>ND packet type.</text>
+            </description>
+          </leaf>
+          <leaf name="value">
+            <type name="uint16">
+              <range value="1..10240"/>
+            </type>
+            <units name="pps"/>
+            <must condition="((../packet-type = 'NA') and (../value &lt;= 10240)) or (not(../packet-type = 'NA') and (../value &lt;= 1000))"/>
+            <mandatory value="true"/>
+            <description>
+              <text>Rate limit of sending ND multicast packet, when the packet type is NS, RS or RA, the maximum value is 1000.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="anti-attack-records">
+      <config value="false"/>
+      <description>
+        <text>Statistics of query anti-attack record.</text>
+      </description>
+      <container name="packet-records">
+        <description>
+          <text>List of query packet anti-attack record.</text>
+        </description>
+        <list name="packet-record">
+          <key value="if-name record-index"/>
+          <description>
+            <text>Statistics of query packet anti-attack record.</text>
+          </description>
+          <leaf name="if-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Interface name.</text>
+            </description>
+          </leaf>
+          <leaf name="record-index">
+            <type name="uint32"/>
+            <description>
+              <text>Record index.</text>
+            </description>
+          </leaf>
+          <leaf name="packet-type">
+            <type name="nd-pkt-type"/>
+            <description>
+              <text>ND packet type.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Source IPv6 address of a packet.</text>
+            </description>
+          </leaf>
+          <leaf name="dest-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Destination IPv6 address of a packet.</text>
+            </description>
+          </leaf>
+          <leaf name="target-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Target IPv6 address of a packet.</text>
+            </description>
+          </leaf>
+          <leaf name="source-mac">
+            <type name="pub-type:mac-address"/>
+            <description>
+              <text>Source MAC address of a packet.</text>
+            </description>
+          </leaf>
+          <leaf name="dest-mac">
+            <type name="pub-type:mac-address"/>
+            <description>
+              <text>Destination MAC address of a packet.</text>
+            </description>
+          </leaf>
+          <leaf name="pe-vlan">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Outer VLAN tag.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-vlan">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>Inner VLAN tag.</text>
+            </description>
+          </leaf>
+          <leaf name="attack-times">
+            <type name="uint32"/>
+            <description>
+              <text>Attacked times.</text>
+            </description>
+          </leaf>
+          <leaf name="last-attack-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Last attacked time.</text>
+            </description>
+          </leaf>
+          <leaf name="dropped-reason">
+            <type name="string">
+              <length value="1..63"/>
+            </type>
+            <description>
+              <text>Dropped reason.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="miss-records">
+        <description>
+          <text>List of query miss anti-attack record.</text>
+        </description>
+        <list name="miss-record">
+          <key value="if-name target-address"/>
+          <description>
+            <text>Statistics of query miss anti-attack record.</text>
+          </description>
+          <leaf name="if-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <description>
+              <text>Interface name.</text>
+            </description>
+          </leaf>
+          <leaf name="target-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Target IPv6 address of a miss message.</text>
+            </description>
+          </leaf>
+          <leaf name="source-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Source IPv6 address of a miss message.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <rpc name="nd-pkt-clear-all">
+    <description>
+      <text>To clear all ND statistics.</text>
+    </description>
+    <ext:node-ref value="/ipv6-nd:ipv6-nd/ipv6-nd:nd-pkt-stats"/>
+  </rpc>
+  <rpc name="ipv6-neighbor-clear">
+    <description>
+      <text>To clear IPv6 dynamic neighbors.</text>
+    </description>
+    <ext:node-ref value="/ipv6-nd:ipv6-nd/ipv6-nd:ipv6-neighbors"/>
+    <input>
+      <choice name="clear-type">
+        <description>
+          <text>IPv6 neighbor clear type.</text>
+        </description>
+        <case name="if-ip">
+          <description>
+            <text>Clear by specified Interface name or Interface name and IPv6 address.</text>
+          </description>
+          <leaf name="if-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Interface name.</text>
+            </description>
+          </leaf>
+          <leaf name="ipv6-addr">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>IPv6 address.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+    </input>
+  </rpc>
+  <rpc name="anti-attack-packet-record-clear">
+    <description>
+      <text>To clear packet anti-attack records.</text>
+    </description>
+    <ext:node-ref value="/ipv6-nd:ipv6-nd/ipv6-nd:anti-attack-records/ipv6-nd:packet-records"/>
+    <input>
+      <leaf name="if-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <description>
+          <text>Interface name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <rpc name="anti-attack-miss-record-clear">
+    <description>
+      <text>To clear miss anti-attack records.</text>
+    </description>
+    <ext:node-ref value="/ipv6-nd:ipv6-nd/ipv6-nd:anti-attack-records/ipv6-nd:miss-records"/>
+    <input>
+      <leaf name="if-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <description>
+          <text>Interface name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+  <augment target-node="/bd:bd/bd:instances/bd:instance">
+    <description>
+      <text>List of Bridge-Domain Neighbor Multicast-Suppress Information.</text>
+    </description>
+    <container name="nd-bd-property">
+      <must condition="not(unicast-forward and proxy-reply)"/>
+      <description>
+        <text>Configure Bridge-Domain neighbor multicast-suppress information.</text>
+      </description>
+      <leaf name="unicast-forward">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Bridge-Domain unicast forward.</text>
+        </description>
+      </leaf>
+      <leaf name="proxy-reply">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Bridge-Domain proxy reply.</text>
+        </description>
+      </leaf>
+      <leaf name="mismatch-discard">
+        <when condition="../unicast-forward='true' or ../proxy-reply='true'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Bridge-Domain mismatch discard.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ip:ipv6">
+    <when condition="../ifm:type!='Tunnel' and ../ifm:type!='LoopBack' and ../ifm:type!='ServiceIf' and ../ifm:type!='Virtual-if'"/>
+    <description>
+      <text>All configurations of the ND under the interface.</text>
+    </description>
+    <container name="nd-collection">
+      <description>
+        <text>Configure ND interface configurations.</text>
+      </description>
+      <container name="if-property">
+        <description>
+          <text>Configure ND interface configurations.</text>
+        </description>
+        <leaf name="retrans-timer">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint32">
+            <range value="1000..4294967295"/>
+          </type>
+          <units name="ms"/>
+          <default value="1000"/>
+          <description>
+            <text>To set the retransmission timer of a router.</text>
+          </description>
+        </leaf>
+        <leaf name="nud-reach-time">
+          <when condition="../../../../ifm:type!='Ip-Trunk' and ../../../../ifm:type!='Pos' and ../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="uint32">
+            <range value="1..3600000"/>
+          </type>
+          <units name="ms"/>
+          <default value="1200000"/>
+          <description>
+            <text>To set the reachable time of a neighbor.</text>
+          </description>
+        </leaf>
+        <leaf name="attempts-value">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint32">
+            <range value="0..600"/>
+          </type>
+          <default value="1"/>
+          <description>
+            <text>To set the number of sent NS messages during DAD.</text>
+          </description>
+        </leaf>
+        <leaf name="ns-mcast-flag">
+          <when condition="../../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination or ../../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of enabling multicast.</text>
+          </description>
+        </leaf>
+        <leaf name="max-dyn-nb-num">
+          <when condition="../../../../ifm:type!='Ip-Trunk' and ../../../../ifm:type!='Pos' and ../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="uint64">
+            <range value="0..147456"/>
+          </type>
+          <default value="0"/>
+          <description>
+            <text>The maximum of limitation of dynamic neighbor.</text>
+          </description>
+        </leaf>
+        <leaf name="dad-timeout">
+          <when condition="../../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination or ../../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <type name="uint32">
+            <range value="1..60"/>
+          </type>
+          <units name="s"/>
+          <default value="1"/>
+          <description>
+            <text>Timeout of DAD.</text>
+          </description>
+        </leaf>
+        <leaf name="nud-attempts">
+          <when condition="../../../../ifm:type!='Ip-Trunk' and ../../../../ifm:type!='Pos' and ../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="uint8">
+            <range value="1..10"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>ND entries NUD attempts.</text>
+          </description>
+        </leaf>
+        <leaf name="na-glean">
+          <when condition="../../../../ifm:type!='Ip-Trunk' and ../../../../ifm:type!='Pos' and ../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of generating NB when receiving NA packet.</text>
+          </description>
+        </leaf>
+        <leaf name="ma-flag">
+          <when condition="../../../../ifm:type!='MEth' and ../../../../ifm:type!='Serial'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of obtaining the routable address through state-based automatic configuration.</text>
+          </description>
+        </leaf>
+        <leaf name="o-flag">
+          <when condition="../../../../ifm:type!='MEth' and ../../../../ifm:type!='Serial'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of setting state-based automatic configuration.</text>
+          </description>
+        </leaf>
+        <leaf name="ra-halt-flag">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="nd-switch-state"/>
+          <default value="on"/>
+          <description>
+            <text>To suppress the advertisement of RA packets.</text>
+          </description>
+        </leaf>
+        <leaf name="max-interval">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="uint32">
+            <range value="4..1800"/>
+          </type>
+          <units name="s"/>
+          <default value="600"/>
+          <description>
+            <text>The maximum interval between periodic RA packets sent on this interface.</text>
+          </description>
+        </leaf>
+        <leaf name="min-interval">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="uint32">
+            <range value="3..1350"/>
+          </type>
+          <units name="s"/>
+          <must condition="../max-interval &gt;= ../min-interval and ../min-interval &lt;= 0.75 * ../max-interval"/>
+          <description>
+            <text>The minimum interval between periodic RA packets sent on this interface.</text>
+          </description>
+        </leaf>
+        <leaf name="ra-lifetime">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="uint32">
+            <range value="0|4..9000"/>
+          </type>
+          <units name="s"/>
+          <must condition="../ra-lifetime = 0 or (../ra-lifetime != 0 and ../ra-lifetime &gt;= ../max-interval)"/>
+          <description>
+            <text>TTL of RA packets. If the value is 0, it implies that this node is not a router. And the value from 1 to 3 is invalid.</text>
+          </description>
+        </leaf>
+        <leaf name="ra-preference">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="nd-route-preference"/>
+          <default value="medium"/>
+          <description>
+            <text>RA router preference.</text>
+          </description>
+        </leaf>
+        <leaf name="ra-prefix-flag">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="nd-switch-state"/>
+          <default value="on"/>
+          <description>
+            <text>Flag of RA packet carry prefix information.</text>
+          </description>
+        </leaf>
+        <leaf name="ra-mtu-flag">
+          <when condition="../../../../ifm:type!='MEth'"/>
+          <type name="nd-switch-state"/>
+          <default value="on"/>
+          <description>
+            <text>Flag of RA packet carry MTU option.</text>
+          </description>
+        </leaf>
+        <leaf name="strict-flag">
+          <when condition="../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable strict security mode.</text>
+          </description>
+        </leaf>
+        <leaf name="ts-fuzz-factor">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint16">
+            <range value="0..1000"/>
+          </type>
+          <units name="s"/>
+          <default value="1"/>
+          <description>
+            <text>Fuzz factor for timestamp option.</text>
+          </description>
+        </leaf>
+        <leaf name="ts-clock-drift">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint8">
+            <range value="0..100"/>
+          </type>
+          <default value="1"/>
+          <description>
+            <text>Drift for timestamp option.</text>
+          </description>
+        </leaf>
+        <leaf name="ts-delta">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint16">
+            <range value="0..1000"/>
+          </type>
+          <units name="s"/>
+          <default value="300"/>
+          <description>
+            <text>Delta for timestamp option.</text>
+          </description>
+        </leaf>
+        <leaf name="rsa-min-key-len">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint16">
+            <range value="384..4096"/>
+          </type>
+          <units name="bit"/>
+          <must condition="(../rsa-min-key-len&lt;=../rsa-max-key-len)"/>
+          <default value="512"/>
+          <description>
+            <text>The minimum length of acceptable RSA key pair.</text>
+          </description>
+        </leaf>
+        <leaf name="rsa-max-key-len">
+          <when condition="../../../../ifm:type!='Serial'"/>
+          <type name="uint16">
+            <range value="384..4096"/>
+          </type>
+          <units name="bit"/>
+          <default value="2048"/>
+          <description>
+            <text>The maximum length of acceptable RSA key pair.</text>
+          </description>
+        </leaf>
+        <leaf name="stale-time">
+          <when condition="../../../../ifm:type!='Ip-Trunk' and ../../../../ifm:type!='Pos' and ../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="uint32">
+            <range value="60..172800"/>
+          </type>
+          <units name="s"/>
+          <description>
+            <text>Aging time of the stale state.</text>
+          </description>
+        </leaf>
+        <leaf name="collect-host-flag">
+          <when condition="../../../../ifm:type='Vbdif'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of collecting host Information.</text>
+          </description>
+        </leaf>
+        <leaf name="generate-rd-enable">
+          <when condition="../../../../ifm:type='Vbdif'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of generating redirect ND table.</text>
+          </description>
+        </leaf>
+        <leaf name="nud-interval">
+          <when condition="../../../../ifm:type!='Ip-Trunk' and ../../../../ifm:type!='Pos' and ../../../../ifm:type!='Mp-group' and ../../../../ifm:type!='Serial'"/>
+          <type name="uint32">
+            <range value="1000..4294967295"/>
+          </type>
+          <units name="ms"/>
+          <default value="5000"/>
+          <description>
+            <text>ND entries NUD interval.</text>
+          </description>
+        </leaf>
+        <leaf name="hop-limit">
+          <type name="uint8">
+            <range value="0..255"/>
+          </type>
+          <description>
+            <text>IPv6 packet hop limit.</text>
+          </description>
+        </leaf>
+        <leaf name="link-down-trigger-del-flag">
+          <when condition="../../../../ifm:type='Vlanif'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Flag of link down trigger fast deletion of ND entries.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="proxys">
+        <when condition="../../../ifm:type!='MEth' and ../../../ifm:type!='Ip-Trunk' and ../../../ifm:type!='Serial' and ../../../ifm:type!='Pos' and ../../../ifm:type!='Mp-group'"/>
+        <description>
+          <text>Configure list of ND proxy.</text>
+        </description>
+        <leaf name="route-proxy">
+          <when condition="../../../../ifm:type!='PW-VE'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Router proxy.</text>
+          </description>
+        </leaf>
+        <leaf name="inner-vlan-proxy">
+          <when condition="(../../../../ifm:class='sub-interface' and ../../../../ifm:type!='PW-VE') or ../../../../ifm:type='Vlanif'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>InnerVLAN proxy.</text>
+          </description>
+        </leaf>
+        <leaf name="inter-vlan-proxy">
+          <when condition="(../../../../ifm:class='sub-interface' and ../../../../ifm:type!='PW-VE') or ../../../../ifm:type='Vlanif'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>InterVLAN proxy.</text>
+          </description>
+        </leaf>
+        <leaf name="anyway-proxy">
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Anyway proxy.</text>
+          </description>
+        </leaf>
+        <leaf name="local-proxy">
+          <when condition="../../../../ifm:type='Vbdif'"/>
+          <type name="nd-switch-state"/>
+          <default value="off"/>
+          <description>
+            <text>Local proxy.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="anti-attack">
+        <when condition="../../../ifm:type!='Serial'"/>
+        <description>
+          <text>Configure ND anti-attack for interface.</text>
+        </description>
+        <container name="receive-rate-limits">
+          <description>
+            <text>List of rate limits for receiving ND packets.</text>
+          </description>
+          <list name="receive-rate-limit">
+            <key value="type"/>
+            <description>
+              <text>Configure the rate limit for receiving ND packet or ND miss.</text>
+            </description>
+            <leaf name="type">
+              <type name="nd-pkt-evt-type"/>
+              <description>
+                <text>ND packet type or ND miss.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="0..5000"/>
+              </type>
+              <units name="pps"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of receiving ND packet or ND miss.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="source-ip-receive">
+          <description>
+            <text>Configure the ND anti-attack based on packet or miss source IP address.</text>
+          </description>
+          <uses name="nd-ip-rate-limits-type"/>
+        </container>
+      </container>
+      <container name="static-neighbor">
+        <description>
+          <text>Configure static neighbor entry.</text>
+        </description>
+        <container name="common-ifs">
+          <when condition="../../../../ifm:type!='Vlanif' and ../../../../ifm:type!='Vbdif'"/>
+          <description>
+            <text>List of static neighbor entry on common interface.</text>
+          </description>
+          <list name="common-if">
+            <key value="ipv6-addr"/>
+            <description>
+              <text>Configure static neighbor entry on common interface.</text>
+            </description>
+            <leaf name="ipv6-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address of a static neighbor entry.</text>
+              </description>
+            </leaf>
+            <leaf name="mac-addr">
+              <type name="pub-type:mac-address"/>
+              <mandatory value="true"/>
+              <description>
+                <text>MAC address.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="dot1q-termination-ifs">
+          <when condition="../../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination"/>
+          <description>
+            <text>List of static neighbor entry on dot1q termination interface.</text>
+          </description>
+          <list name="dot1q-termination-if">
+            <key value="ipv6-addr"/>
+            <description>
+              <text>Configure static neighbor entry on dot1q termination interface.</text>
+            </description>
+            <leaf name="ipv6-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address of a static neighbor entry.</text>
+              </description>
+            </leaf>
+            <leaf name="mac-addr">
+              <type name="pub-type:mac-address">
+                <pattern value="[0-9a-fA-F][0|2|4|6|8|aA|cC|eE][0-9a-fA-F]{2}(-[0-9a-fA-F]{4}){2}"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>MAC address.</text>
+              </description>
+            </leaf>
+            <leaf name="pe-vlan">
+              <type name="uint16">
+                <range value="1..4094"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Outer VLAN tag.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="qinq-termination-ifs">
+          <when condition="../../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <description>
+            <text>List of static neighbor entry on qinq termination interface.</text>
+          </description>
+          <list name="qinq-termination-if">
+            <key value="ipv6-addr"/>
+            <description>
+              <text>Configure static neighbor entry on qinq termination interface.</text>
+            </description>
+            <leaf name="ipv6-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address of a static neighbor entry.</text>
+              </description>
+            </leaf>
+            <leaf name="mac-addr">
+              <type name="pub-type:mac-address">
+                <pattern value="[0-9a-fA-F][0|2|4|6|8|aA|cC|eE][0-9a-fA-F]{2}(-[0-9a-fA-F]{4}){2}"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>MAC address.</text>
+              </description>
+            </leaf>
+            <leaf name="pe-vlan">
+              <type name="uint16">
+                <range value="1..4094"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Outer VLAN tag.</text>
+              </description>
+            </leaf>
+            <leaf name="ce-vlan">
+              <type name="uint16">
+                <range value="1..4094"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Inner VLAN tag.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="vlan-ifs">
+          <when condition="../../../../ifm:type='Vlanif'"/>
+          <description>
+            <text>List of static neighbor entry on VLAN interface.</text>
+          </description>
+          <list name="vlan-if">
+            <key value="ipv6-addr"/>
+            <description>
+              <text>Configure static neighbor entry on VLAN interface.</text>
+            </description>
+            <leaf name="ipv6-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>IPv6 address of a static neighbor entry.</text>
+              </description>
+            </leaf>
+            <leaf name="mac-addr">
+              <type name="pub-type:mac-address">
+                <pattern value="[0-9a-fA-F][0|2|4|6|8|aA|cC|eE][0-9a-fA-F]{2}(-[0-9a-fA-F]{4}){2}"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>MAC address.</text>
+              </description>
+            </leaf>
+            <leaf name="vlan-id">
+              <type name="uint16">
+                <range value="1..4094"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>VLAN ID.</text>
+              </description>
+              <ext:support-filter value="true"/>
+            </leaf>
+            <leaf name="port-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <mandatory value="true"/>
+              <description>
+                <text>Port name.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="send-rate-limit">
+        <when condition="../../../ifm:type!='Serial'"/>
+        <description>
+          <text>Configure ND send rate limit for interface.</text>
+        </description>
+        <container name="packet-rate-limits">
+          <description>
+            <text>List of ND packet sending rate limits.</text>
+          </description>
+          <list name="packet-rate-limit">
+            <key value="packet-type"/>
+            <description>
+              <text>Configure the rate limit of sending ND packet.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-type"/>
+              <must condition="not((../packet-type = 'RA') and (../../../../../../ifm:type='MEth'))"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="1..10240"/>
+              </type>
+              <units name="pps"/>
+              <must condition="((../packet-type = 'NA') and (../value &lt;= 10240)) or (not(../packet-type = 'NA') and (../value &lt;= 1000))"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of sending ND packet, when the packet type is NS, RS or RA, the maximum value is 1000.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="multicast-rate-limits">
+          <description>
+            <text>List of ND multicast packet sending rate limits.</text>
+          </description>
+          <list name="multicast-rate-limit">
+            <key value="packet-type"/>
+            <description>
+              <text>Configure the rate limit of sending ND multicast packet.</text>
+            </description>
+            <leaf name="packet-type">
+              <type name="nd-pkt-type"/>
+              <must condition="not((../packet-type = 'RA') and (../../../../../../ifm:type='MEth'))"/>
+              <description>
+                <text>ND packet type.</text>
+              </description>
+            </leaf>
+            <leaf name="value">
+              <type name="uint16">
+                <range value="1..10240"/>
+              </type>
+              <units name="pps"/>
+              <must condition="((../packet-type = 'NA') and (../value &lt;= 10240)) or (not(../packet-type = 'NA') and (../value &lt;= 1000))"/>
+              <mandatory value="true"/>
+              <description>
+                <text>Rate limit of sending ND multicast packet, when the packet type is NS, RS or RA, the maximum value is 1000.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="ra-property">
+        <when condition="../../../ifm:type!='MEth'"/>
+        <description>
+          <text>Configure ND RA configurations under the interface.</text>
+        </description>
+        <container name="ra-control">
+          <description>
+            <text>Configure ND RA configurations.</text>
+          </description>
+          <leaf name="unicast-send">
+            <type name="nd-switch-state"/>
+            <default value="off"/>
+            <description>
+              <text>Flag of Sending RA unicast packet when receive a RS packet.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="ra-routes">
+          <description>
+            <text>List of RA route information option.</text>
+          </description>
+          <list name="ra-route">
+            <key value="prefix-addr prefix-len"/>
+            <description>
+              <text>Configure RA route information option.</text>
+            </description>
+            <leaf name="prefix-addr">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>The IPv6 prefix address of RA route information.</text>
+              </description>
+            </leaf>
+            <leaf name="prefix-len">
+              <type name="uint32">
+                <range value="0..128"/>
+              </type>
+              <description>
+                <text>The prefix length of RA route information.</text>
+              </description>
+            </leaf>
+            <leaf name="lifetime">
+              <type name="uint32"/>
+              <units name="s"/>
+              <mandatory value="true"/>
+              <description>
+                <text>The lifetime of RA route information.</text>
+              </description>
+            </leaf>
+            <leaf name="preference">
+              <type name="nd-route-preference"/>
+              <default value="medium"/>
+              <description>
+                <text>The preference of RA route information.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="dns-server-addresses">
+          <description>
+            <text>List of DNS server address.</text>
+          </description>
+          <list name="dns-server-address">
+            <key value="ipv6-address"/>
+            <description>
+              <text>Configure the DNS server address.</text>
+            </description>
+            <leaf name="ipv6-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Address of IPv6 recursive DNS server. The address cannot be a multicast address or an unspecified address.</text>
+              </description>
+            </leaf>
+            <leaf name="lifetime">
+              <type name="uint32">
+                <range value="1..max"/>
+              </type>
+              <units name="s"/>
+              <description>
+                <text>The maximum time over which this RDNSS address may be used for name resolution.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="dns-search-suffixes">
+          <description>
+            <text>List of DNS search list.</text>
+          </description>
+          <list name="dns-search-suffix">
+            <key value="suffix-name"/>
+            <description>
+              <text>Configure DNS suffix name.</text>
+            </description>
+            <leaf name="suffix-name">
+              <type name="string">
+                <length value="1..63"/>
+              </type>
+              <ext:case-sensitivity value="lower-or-upper"/>
+              <description>
+                <text>Domain name of DNS search list.</text>
+              </description>
+            </leaf>
+            <leaf name="lifetime">
+              <type name="uint32">
+                <range value="1..max"/>
+              </type>
+              <units name="s"/>
+              <description>
+                <text>The maximum time over which this DNSSL domain name may be used for name resolution.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </container>
+      <container name="strict-prefix-learn">
+        <when condition="../../../ifm:type!='Vlanif' and ../../../ifm:type!='Vbdif' and ../../../ifm:type!='Global-VE'"/>
+        <description>
+          <text>Configure strict prefix learning of interface.</text>
+        </description>
+        <leaf name="switch">
+          <type name="nd-switch-state"/>
+          <description>
+            <text>ND prefix learning strict.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>List of ND configurations under ifm interface.</text>
+    </description>
+    <container name="nd-dyn-nb-limit">
+      <description>
+        <text>Configure the maximum of limitation of dynamic neighbor.</text>
+      </description>
+      <container name="vlan-limits">
+        <description>
+          <text>List of the maximum of limitation of dynamic neighbor based on VLAN.</text>
+        </description>
+        <list name="vlan-limit">
+          <key value="vlan-id"/>
+          <description>
+            <text>Configure the maximum of limitation of dynamic neighbor based on VLAN.</text>
+          </description>
+          <leaf name="vlan-id">
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>VLAN ID.</text>
+            </description>
+          </leaf>
+          <leaf name="max-dyn-nb-num">
+            <type name="uint32">
+              <range value="0..147456"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>The maximum of limitation of dynamic neighbor.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <ext:task-name value="nd"/>
+</module>

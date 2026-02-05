@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-dhcpv6"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dhcpv6="urn:huawei:yang:huawei-dhcpv6"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type">
+  <namespace uri="urn:huawei:yang:huawei-dhcpv6"/>
+  <prefix value="dhcpv6"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <include module="huawei-dhcpv6-relay"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Dynamic Host Configuration Protocol for IPv6.</text>
+  </description>
+  <revision date="2021-09-04">
+    <description>
+      <text>Add must condition.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="dhcp"/>
+  <typedef name="dhcpv6-duid">
+    <type name="enumeration">
+      <enum name="invalid">
+        <value value="0"/>
+        <description>
+          <text>-</text>
+        </description>
+      </enum>
+      <enum name="llt">
+        <value value="1"/>
+        <description>
+          <text>Link-layer address plus time.</text>
+        </description>
+      </enum>
+      <enum name="ll">
+        <value value="2"/>
+        <description>
+          <text>Link-layer address.</text>
+        </description>
+      </enum>
+      <enum name="user-defined">
+        <value value="3"/>
+        <description>
+          <text>User-defined.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of DHCPv6 DUID.</text>
+    </description>
+  </typedef>
+  <typedef name="remote-id-format">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Default format.</text>
+        </description>
+      </enum>
+      <enum name="user-defined">
+        <value value="1"/>
+        <description>
+          <text>User-defined format.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of DHCPv6 remote-id format.</text>
+    </description>
+  </typedef>
+  <container name="dhcpv6">
+    <description>
+      <text>Configure a Dynamic Host Configuration Protocol for IPv6.</text>
+    </description>
+    <container name="common">
+      <description>
+        <text>Configure basic attributes.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>Configure DHCPv6 global attributes.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable Dynamic Host Configuration Protocol for IPv6.</text>
+          </description>
+        </leaf>
+        <leaf name="duid-format">
+          <type name="dhcpv6-duid"/>
+          <must condition="(../duid-format = 'user-defined' and ../duid-string) or (../duid-format != 'user-defined')"/>
+          <default value="invalid"/>
+          <description>
+            <text>DHCPv6 unique identifier format.</text>
+          </description>
+        </leaf>
+        <leaf name="duid-string">
+          <when condition="../duid-format='user-defined'"/>
+          <type name="string">
+            <length value="8..28"/>
+            <pattern value="([^\t]{8,})"/>
+          </type>
+          <description>
+            <text>DUID string, in hexadecimal notation.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-limit-enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable DHCPv6 packets rate limit.</text>
+          </description>
+        </leaf>
+        <leaf name="rate-limit">
+          <type name="uint32">
+            <range value="1..2000"/>
+          </type>
+          <units name="pps"/>
+          <default value="512"/>
+          <description>
+            <text>DHCPv6 packets rate limit value.</text>
+          </description>
+        </leaf>
+        <leaf name="source-ip-adaptive">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable DHCPv6 source-ip-address format adaptive.</text>
+          </description>
+        </leaf>
+        <leaf name="aging-time">
+          <type name="uint32">
+            <range value="1..1440"/>
+          </type>
+          <units name="min"/>
+          <default value="30"/>
+          <description>
+            <text>DHCPv6 session CAR aging time.</text>
+          </description>
+        </leaf>
+        <leaf name="active-duid">
+          <type name="string">
+            <length value="8..28"/>
+            <pattern value="([^\t]{8,})"/>
+          </type>
+          <config value="false"/>
+          <description>
+            <text>DUID string, in hexadecimal notation.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="session-car">
+        <must condition="pir-value &gt;= cir-value and pbs-value &gt;= cbs-value"/>
+        <description>
+          <text>Configure session CAR.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable session CAR.</text>
+          </description>
+        </leaf>
+        <leaf name="cir-value">
+          <type name="uint32">
+            <range value="0..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <default value="256"/>
+          <description>
+            <text>Specify the session CAR CIR value.</text>
+          </description>
+        </leaf>
+        <leaf name="cbs-value">
+          <type name="uint32">
+            <range value="0..9000000"/>
+          </type>
+          <units name="Byte"/>
+          <default value="32000"/>
+          <description>
+            <text>Specify the session CAR CBS value.</text>
+          </description>
+        </leaf>
+        <leaf name="pir-value">
+          <type name="uint32">
+            <range value="0..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <default value="512"/>
+          <description>
+            <text>Specify the session CAR PIR value.</text>
+          </description>
+        </leaf>
+        <leaf name="pbs-value">
+          <type name="uint32">
+            <range value="0..9000000"/>
+          </type>
+          <units name="Byte"/>
+          <default value="64000"/>
+          <description>
+            <text>Specify the session CAR PBS value.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="ipsec-peers">
+        <description>
+          <text>List of DHCPv6 IPsecs.</text>
+        </description>
+        <list name="ipsec-peer">
+          <must condition="(peer-address='::' and vpn-name='_public_') or (peer-address!='::')"/>
+          <key value="peer-address vpn-name"/>
+          <description>
+            <text>Configure DHCPv6 IPsec attributes.</text>
+          </description>
+          <leaf name="peer-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Peer address.</text>
+            </description>
+          </leaf>
+          <leaf name="vpn-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="(/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])"/>
+            <description>
+              <text>VPN name.</text>
+            </description>
+          </leaf>
+          <leaf name="sa-name">
+            <type name="string">
+              <length value="1..15"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>SA name.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="relay">
+      <description>
+        <text>Configure DHCPv6 Relay.</text>
+      </description>
+      <uses name="dhcpv6:dhcpv6-relay-type"/>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Extend interface attribute.</text>
+    </description>
+    <container name="dhcpv6-relay-attribute">
+      <must condition="not(source-address and source-interface)"/>
+      <description>
+        <text>Configure DHCPv6 relay attributes on an interface.</text>
+      </description>
+      <leaf name="gateway-switch-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable DHCPv6 gateway-switch function.</text>
+        </description>
+      </leaf>
+      <leaf name="source-address">
+        <type name="inet:ipv6-address-no-zone"/>
+        <description>
+          <text>Source address.</text>
+        </description>
+      </leaf>
+      <leaf name="link-address">
+        <type name="inet:ipv6-address-no-zone"/>
+        <description>
+          <text>Link address.</text>
+        </description>
+      </leaf>
+      <leaf name="strict-check">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable strict check on interfaces.</text>
+        </description>
+      </leaf>
+      <leaf name="server-group-name">
+        <type name="leafref">
+          <path value="/dhcpv6:dhcpv6/dhcpv6:relay/dhcpv6:server-groups/dhcpv6:server-group/dhcpv6:name"/>
+        </type>
+        <description>
+          <text>DHCPv6 relay server group name.</text>
+        </description>
+      </leaf>
+      <leaf name="source-interface">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <description>
+          <text>Configure the IPv6 address of an interface as the source IPv6 address of packets.</text>
+        </description>
+      </leaf>
+      <leaf name="current-link-address">
+        <type name="inet:ipv6-address-no-zone"/>
+        <config value="false"/>
+        <description>
+          <text>Current link address.</text>
+        </description>
+      </leaf>
+      <container name="destination-addresses">
+        <description>
+          <text>List of DHCPv6 relay destination addresses.</text>
+        </description>
+        <list name="destination-address">
+          <key value="ipv6-address"/>
+          <max-elements value="8"/>
+          <description>
+            <text>Configure the DHCPv6 relay destination address.</text>
+          </description>
+          <leaf name="ipv6-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Destination address.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="destination-ifs">
+        <description>
+          <text>List of DHCPv6 relay destination interfaces.</text>
+        </description>
+        <list name="destination-if">
+          <key value="if-name"/>
+          <max-elements value="8"/>
+          <description>
+            <text>Configure DHCPv6 relay destination interface.</text>
+          </description>
+          <leaf name="if-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <must condition="not(((../../../../ifm:type = 'Virtual-Ethernet') or (../../../../ifm:type = 'Global-VE')) and (../../../../ifm:class = 'main-interface'))"/>
+            <description>
+              <text>Destination interface name.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="option">
+        <description>
+          <text>Configure DHCPv6 relay option attributes.</text>
+        </description>
+        <choice name="interface-id-mode">
+          <description>
+            <text>Configure the interface-id-mode.</text>
+          </description>
+          <case name="cn-telecom">
+            <description>
+              <text>CN-telecom interface-id mode.</text>
+            </description>
+            <leaf name="cn-telecom-mode">
+              <type name="empty"/>
+              <description>
+                <text>CN-telecom interface-id mode.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="cn-telecom-inherit">
+            <description>
+              <text>CN-telecom-inherit interface-id mode.</text>
+            </description>
+            <leaf name="cn-telecom-inherit-mode">
+              <type name="empty"/>
+              <description>
+                <text>CN-telecom-inherit interface-id mode.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="tr-101">
+            <description>
+              <text>TR-101 interface-id mode.</text>
+            </description>
+            <leaf name="tr-101-mode">
+              <type name="empty"/>
+              <description>
+                <text>TR-101 interface-id mode.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="user-defined">
+            <description>
+              <text>User-defined interface-id mode.</text>
+            </description>
+            <leaf name="interface-id-text">
+              <type name="string">
+                <length value="1..255"/>
+                <pattern value="([^\t]{1,})"/>
+              </type>
+              <description>
+                <text>DHCPv6 interface-id string defined by users.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <choice name="remote-id-mode">
+          <description>
+            <text>Configure the remote-id mode.</text>
+          </description>
+          <case name="default">
+            <description>
+              <text>Default remote-id mode.</text>
+            </description>
+            <leaf name="default-format">
+              <type name="empty"/>
+              <description>
+                <text>Default remote-id mode.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="user-defined">
+            <description>
+              <text>User-defined remote-id mode.</text>
+            </description>
+            <leaf name="remote-id-text">
+              <type name="string">
+                <length value="1..255"/>
+                <pattern value="([^\t]{1,})"/>
+              </type>
+              <description>
+                <text>DHCPv6 remote-id string defined by users.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="insert-subscriber-id">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable to insert the subscriber-id option.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="rebuild-option">
+        <description>
+          <text>Configure DHCPv6 relay option rebuild attributes.</text>
+        </description>
+        <leaf name="rebuild-interface-id">
+          <type name="empty"/>
+          <description>
+            <text>Rebuild the interface-id option.</text>
+          </description>
+        </leaf>
+        <leaf name="rebuild-remote-id">
+          <type name="empty"/>
+          <description>
+            <text>Rebuild the remote-id option.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="access-limit-setting">
+        <description>
+          <text>Configure the maximum number of access users on an interface.</text>
+        </description>
+        <leaf name="access-limit">
+          <type name="uint32">
+            <range value="0..65536"/>
+          </type>
+          <description>
+            <text>Maximum number of access users on an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="access-vlan-limit">
+          <when condition="(../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination) or (../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination) or (../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:vlan-type-dot1q)"/>
+          <type name="uint32">
+            <range value="0..65536"/>
+          </type>
+          <description>
+            <text>Maximum number of access users in any VLAN.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="pd-route-track-vrrp">
+        <description>
+          <text>Configure DHCPv6 relay PD routes track VRRP.</text>
+        </description>
+        <leaf name="degrade-cost">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <description>
+            <text>Cost value to be adjusted for DHCPv6 relay PD route.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="dot1q-access-limits">
+        <description>
+          <text>List of maximum number of access users on dot1q interfaces.</text>
+        </description>
+        <list name="dot1q-access-limit">
+          <must condition="(../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:dot1q-termination) or (../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:vlan-type-dot1q)"/>
+          <key value="access-limit"/>
+          <description>
+            <text>Configure maximum number of access users on a dot1q interface.</text>
+          </description>
+          <leaf name="access-limit">
+            <type name="uint32">
+              <range value="0..65536"/>
+            </type>
+            <description>
+              <text>Maximum number of users allowed.</text>
+            </description>
+          </leaf>
+          <leaf name="vlan-list">
+            <type name="pub-type:vlan-range"/>
+            <mandatory value="true"/>
+            <description>
+              <text>VLAN list.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="qinq-access-limits">
+        <description>
+          <text>List of maximum number of access users on QinQ interfaces.</text>
+        </description>
+        <list name="qinq-access-limit">
+          <must condition="../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <key value="access-limit pe-vlan-id"/>
+          <description>
+            <text>Configure maximum number of access users on a QinQ interface.</text>
+          </description>
+          <leaf name="access-limit">
+            <type name="uint32">
+              <range value="0..65536"/>
+            </type>
+            <description>
+              <text>Maximum number of users allowed.</text>
+            </description>
+          </leaf>
+          <leaf name="pe-vlan-id">
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>PE VLAN ID.</text>
+            </description>
+          </leaf>
+          <leaf name="ce-vlan-list">
+            <type name="pub-type:vlan-range"/>
+            <mandatory value="true"/>
+            <description>
+              <text>CE VLAN ID list.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="qinq-any-access-limits">
+        <description>
+          <text>List of maximum number of access users on QinQ interfaces.</text>
+        </description>
+        <list name="qinq-any-access-limit">
+          <must condition="../../../ethernet:ethernet/ethernet:l3-sub-interface/ethernet:qinq-termination"/>
+          <key value="pe-vlan-id"/>
+          <max-elements value="16"/>
+          <description>
+            <text>Configure maximum number of access users on a QinQ interface.</text>
+          </description>
+          <leaf name="pe-vlan-id">
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>PE VLAN ID.</text>
+            </description>
+          </leaf>
+          <leaf name="access-limit">
+            <type name="uint32">
+              <range value="0..65536"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Maximum number of users allowed.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

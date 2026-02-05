@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-evpn-srv6"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:evpn-srv6="urn:huawei:yang:huawei-evpn-srv6"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:evpl="urn:huawei:yang:huawei-evpl"
+        xmlns:bgp="urn:huawei:yang:huawei-bgp"
+        xmlns:bgp-evpn="urn:huawei:yang:huawei-bgp-evpn"
+        xmlns:evpn="urn:huawei:yang:huawei-evpn"
+        xmlns:srv6="urn:huawei:yang:huawei-srv6"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <namespace uri="urn:huawei:yang:huawei-evpn-srv6"/>
+  <prefix value="evpn-srv6"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-evpl">
+    <prefix value="evpl"/>
+  </import>
+  <import module="huawei-bgp">
+    <prefix value="bgp"/>
+  </import>
+  <import module="huawei-bgp-evpn">
+    <prefix value="bgp-evpn"/>
+  </import>
+  <import module="huawei-evpn">
+    <prefix value="evpn"/>
+  </import>
+  <import module="huawei-srv6">
+    <prefix value="srv6"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>EVPN SRv6 configuration.</text>
+  </description>
+  <revision date="2019-03-22">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="evpnbgp"/>
+  <typedef name="apply-sid-mode">
+    <type name="enumeration">
+      <enum name="per-instance">
+        <value value="0"/>
+        <description>
+          <text>Set apply sid per instance mode.</text>
+        </description>
+      </enum>
+      <enum name="per-nexthop-all">
+        <value value="1"/>
+        <description>
+          <text>Set apply sid all nexthop mode.</text>
+        </description>
+      </enum>
+      <enum name="per-nexthop-specify">
+        <value value="2"/>
+        <description>
+          <text>Set apply sid specify nexthop mode.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Apply SID for segment-routing IPv6 in EVPN.</text>
+    </description>
+  </typedef>
+  <typedef name="next-header-type">
+    <type name="enumeration">
+      <enum name="exnh59">
+        <value value="59"/>
+        <description>
+          <text>The value of SRv6 next header type is 59.</text>
+        </description>
+      </enum>
+      <enum name="exnh143">
+        <value value="143"/>
+        <description>
+          <text>The value of SRv6 next header type is 143.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The value of SRv6 next header type.</text>
+    </description>
+  </typedef>
+  <container name="evpn-srv6">
+    <description>
+      <text>EVPN SRv6 configuration.</text>
+    </description>
+    <container name="base-process">
+      <description>
+        <text>Configure EVPN SRv6 base process.</text>
+      </description>
+      <leaf name="srv6-next-header">
+        <type name="next-header-type"/>
+        <default value="exnh143"/>
+        <description>
+          <text>The value of SRv6 next header type.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+  <augment target-node="/evpl:evpl/evpl:instances/evpl:instance/evpn:evpn">
+    <description>
+      <text>EVPN SRv6 configuration.</text>
+    </description>
+    <container name="locators">
+      <when condition="../../evpl:mode='srv6-mode' and ../evpn:name"/>
+      <description>
+        <text>List of locators used by segment-routing IPv6 for EVPN.</text>
+      </description>
+      <list name="locator">
+        <must condition="/evpn:evpn/evpn:instances/evpn:instance[evpn:name=current()/../../evpn:name]/evpn:vpws-evpn/evpn:rd"/>
+        <key value="name"/>
+        <max-elements value="1"/>
+        <description>
+          <text>Configure SRv6 locator.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+          </type>
+          <description>
+            <text>Locator name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af/bgp:ipv4-unicast/bgp-evpn:evpn">
+    <description>
+      <text>EVPN SRv6 configuration.</text>
+    </description>
+    <container name="locators">
+      <when condition="../../../../../../../ni:name!='_public_'"/>
+      <description>
+        <text>List of locators used by segment-routing IPv6 for EVPN.</text>
+      </description>
+      <list name="locator">
+        <key value="name"/>
+        <max-elements value="1"/>
+        <description>
+          <text>Configure SRv6 locator.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+          </type>
+          <description>
+            <text>Locator name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="apply-sid-mode">
+      <when condition="../../../../../../../ni:name!='_public_' and ../../../bgp:type='ipv4uni'"/>
+      <description>
+        <text>Configure apply SID for segment-routing IPv6 in EVPN.</text>
+      </description>
+      <leaf name="mode">
+        <when condition="../../locators/locator/name"/>
+        <type name="apply-sid-mode"/>
+        <default value="per-instance"/>
+        <description>
+          <text>Apply SID mode for segment-routing IPv6 in EVPN.</text>
+        </description>
+      </leaf>
+      <container name="specify-nexthops">
+        <when condition="../mode='per-nexthop-specify'"/>
+        <description>
+          <text>List of locators used by segment-routing IPv6 for EVPN.</text>
+        </description>
+        <list name="specify-nexthop">
+          <key value="nexthop-address"/>
+          <max-elements value="128"/>
+          <description>
+            <text>Configure apply SID for segmet-routing IPv6 in EVPN specify nexthop mode.</text>
+          </description>
+          <leaf name="nexthop-address">
+            <type name="inet:ip-address-no-zone"/>
+            <description>
+              <text>Specify the nexthop address.</text>
+            </description>
+          </leaf>
+          <leaf name="interface-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Out interface name of route.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/bgp:bgp/bgp:base-process/bgp:afs/bgp:af/bgp:ipv6-unicast/bgp-evpn:evpn">
+    <description>
+      <text>EVPN SRv6 configuration.</text>
+    </description>
+    <container name="locators">
+      <when condition="../../../../../../../ni:name!='_public_'"/>
+      <description>
+        <text>List of locators used by segment-routing IPv6 for EVPN.</text>
+      </description>
+      <list name="locator">
+        <key value="name"/>
+        <max-elements value="1"/>
+        <description>
+          <text>Configure SRv6 locator.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+          </type>
+          <description>
+            <text>Locator name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="apply-sid-mode">
+      <when condition="../../../../../../../ni:name!='_public_' and ../../../bgp:type='ipv6uni'"/>
+      <description>
+        <text>Configure apply SID for segment-routing IPv6 in EVPN.</text>
+      </description>
+      <leaf name="mode">
+        <when condition="../../locators/locator/name"/>
+        <type name="apply-sid-mode"/>
+        <default value="per-instance"/>
+        <description>
+          <text>Apply SID mode for segment-routing IPv6 in EVPN.</text>
+        </description>
+      </leaf>
+      <container name="specify-nexthops">
+        <when condition="../mode='per-nexthop-specify'"/>
+        <description>
+          <text>List of locators used by segment-routing IPv6 for EVPN.</text>
+        </description>
+        <list name="specify-nexthop">
+          <key value="nexthop-address"/>
+          <max-elements value="128"/>
+          <description>
+            <text>Configure apply SID for segmet-routing IPv6 in EVPN specify nexthop mode.</text>
+          </description>
+          <leaf name="nexthop-address">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Specify the nexthop IPv6 address.</text>
+            </description>
+          </leaf>
+          <leaf name="interface-name">
+            <type name="leafref">
+              <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Out interface name of route.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/evpn:evpn/evpn:instances/evpn:instance/evpn:bd-evpn">
+    <description>
+      <text>EVPN SRv6 configuration.</text>
+    </description>
+    <container name="locator">
+      <description>
+        <text>Configure segment-routing IPv6 locators to EVPN.</text>
+      </description>
+      <leaf name="srv6-locator">
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+        </type>
+        <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name='_public_']/srv6:srv6/srv6:locators/srv6:locator[srv6:name=current()]/srv6:args-length&gt;0"/>
+        <description>
+          <text>Locator that is used to generate a BUM (DT2M) SID. If unicast-locator is not configured, locator is used to generate a unicast (DT2U) SID.</text>
+        </description>
+      </leaf>
+      <leaf name="unicast-locator">
+        <when condition="../srv6-locator"/>
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+        </type>
+        <must condition="(../unicast-locator and ../unicast-locator!=../srv6-locator) or not(../unicast-locator)"/>
+        <description>
+          <text>Locator that is used to generate a unicast (DT2U) SID.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

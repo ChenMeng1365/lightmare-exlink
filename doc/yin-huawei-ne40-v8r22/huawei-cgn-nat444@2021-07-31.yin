@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-cgn-nat444"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cgn-nat444="urn:huawei:yang:huawei-cgn-nat444"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:cgn-common="urn:huawei:yang:huawei-cgn-common"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-cgn-nat444"/>
+  <prefix value="cgn-nat444"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-cgn-common">
+    <prefix value="cgn-common"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This module contains a collection of YANG definitions for Configurations of cgn NAT444.</text>
+  </description>
+  <revision date="2021-07-31">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <container name="cgn-nat444">
+    <description>
+      <text>NAT444.</text>
+    </description>
+    <container name="nat-instances">
+      <description>
+        <text>List of nat-instance.</text>
+      </description>
+      <list name="nat-instance">
+        <key value="instance-name instance-id"/>
+        <unique tag="instance-id"/>
+        <unique tag="instance-name"/>
+        <description>
+          <text>Configure nat instance, used to translate network address.</text>
+        </description>
+        <leaf name="instance-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Specify the name of a NAT instance.</text>
+          </description>
+        </leaf>
+        <leaf name="instance-id">
+          <type name="uint16">
+            <range value="1..4095"/>
+          </type>
+          <description>
+            <text>Specify the id of a NAT instance.</text>
+          </description>
+        </leaf>
+        <uses name="cgn-common:alg"/>
+        <container name="log">
+          <description>
+            <text>Configure nat log.</text>
+          </description>
+          <container name="hosts">
+            <description>
+              <text>List of host.</text>
+            </description>
+            <list name="host">
+              <key value="host-ip host-port vpn-name"/>
+              <description>
+                <text>Configure a NAT log host.</text>
+              </description>
+              <leaf name="host-ip">
+                <type name="inet:ipv4-address-no-zone"/>
+                <description>
+                  <text>Specifies IP address of a NAT log host.</text>
+                </description>
+              </leaf>
+              <leaf name="host-port">
+                <type name="uint16">
+                  <range value="1..65535"/>
+                </type>
+                <description>
+                  <text>Specifies the port number of a NAT log host.</text>
+                </description>
+              </leaf>
+              <leaf name="vpn-name">
+                <type name="leafref">
+                  <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+                </type>
+                <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+                <description>
+                  <text>Specifiy the name of VPN instance of the log host, the name of public network is _public_.</text>
+                </description>
+              </leaf>
+              <leaf name="source-ip">
+                <type name="inet:ipv4-address-no-zone"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Specifies the source IP address used by a NAT device to communicate with a NAT log host.</text>
+                </description>
+              </leaf>
+              <leaf name="source-port">
+                <type name="uint16">
+                  <range value="1..65535"/>
+                </type>
+                <mandatory value="true"/>
+                <description>
+                  <text>Specifies the source port number used by a NAT device to communicate with a NAT log host.</text>
+                </description>
+              </leaf>
+              <leaf name="inside-vpn-name">
+                <type name="leafref">
+                  <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+                </type>
+                <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+                <description>
+                  <text>Specify the name of VPN instance on the private network side, the name of public network is _public_.</text>
+                </description>
+              </leaf>
+              <leaf name="host-name">
+                <type name="string">
+                  <length value="1..31"/>
+                </type>
+                <description>
+                  <text>Specifies the name of a NAT log host.</text>
+                </description>
+              </leaf>
+              <leaf name="secondary">
+                <type name="boolean"/>
+                <default value="false"/>
+                <description>
+                  <text>Enable/disable the secondary log host group.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </container>
+      </list>
+    </container>
+  </container>
+  <ext:task-name value="nat"/>
+</module>

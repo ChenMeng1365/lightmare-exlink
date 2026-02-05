@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-pim"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-pim="http://openconfig.net/yang/pim"
+        xmlns:oc-pim-types="http://openconfig.net/yang/pim/types"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:oc-acl="http://openconfig.net/yang/acl"
+        xmlns:oc-types="http://openconfig.net/yang/openconfig-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/pim"/>
+  <prefix value="oc-pim"/>
+  <import module="openconfig-pim-types">
+    <prefix value="oc-pim-types"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="openconfig-acl">
+    <prefix value="oc-acl"/>
+  </import>
+  <import module="openconfig-types">
+    <prefix value="oc-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>An OpenConfig model for Protocol Independent Multicast (PIM).</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.2.0"/>
+  <revision date="2019-07-09">
+    <description>
+      <text>Reindent to two spaces.
+Ensure that timeticks64 is consistently expressed in nanoseconds.</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>0.1.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-02-09">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>0.1.0</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="admin-config">
+    <description>
+      <text>Re-usable grouping to enable or disable a particular feature.</text>
+    </description>
+    <leaf name="enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When set to true, the functionality within which this
+leaf is defined is enabled, when set to false it is
+explicitly disabled.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pim-counters-state">
+    <description>
+      <text>Counters related to PIM messages.</text>
+    </description>
+    <leaf name="hello-messages">
+      <type name="uint32"/>
+      <description>
+        <text>Number of hello messages received.</text>
+      </description>
+      <reference>
+        <text>RFC7761 4.9.2 page 108</text>
+      </reference>
+    </leaf>
+    <leaf name="join-prune-messages">
+      <type name="uint32"/>
+      <description>
+        <text>Number of join/prune messages received.</text>
+      </description>
+      <reference>
+        <text>RFC7761 4.5 page 44</text>
+      </reference>
+    </leaf>
+    <leaf name="bootstrap-messages">
+      <type name="uint32"/>
+      <description>
+        <text>Number of bootstrap router messages received.</text>
+      </description>
+      <reference>
+        <text>RFC7761 3.7 page 12</text>
+      </reference>
+    </leaf>
+  </grouping>
+  <grouping name="pim-interface-config">
+    <description>
+      <text>Configuration data for PIM on each interface.</text>
+    </description>
+    <uses name="admin-config"/>
+    <leaf name="interface-id">
+      <type name="oc-if:interface-id"/>
+      <description>
+        <text>Reference to an interface on which PIM is enabled.</text>
+      </description>
+    </leaf>
+    <leaf name="mode">
+      <type name="identityref">
+        <base name="oc-pim-types:PIM_MODE"/>
+      </type>
+      <description>
+        <text>PIM mode to use when delivering multicast traffic via this
+interface.</text>
+      </description>
+    </leaf>
+    <leaf name="bsr-border">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When set to true the device will not send bootstrap router
+messages over this interface. By default these are transmitted
+over all PIM sparse mode (PIM-SM) enabled interfaces.</text>
+      </description>
+    </leaf>
+    <leaf name="border-router">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>When set to true the interface is set as MBR (multicast border
+router) and allows multicast traffic from sources that are
+outside of the PIM domain.</text>
+      </description>
+    </leaf>
+    <leaf name="dr-priority">
+      <type name="oc-pim-types:dr-priority-type"/>
+      <description>
+        <text>The designated router priority of this interface. Larger always
+preferred.</text>
+      </description>
+    </leaf>
+    <leaf name="join-prune-interval">
+      <type name="oc-pim-types:pim-interval-type"/>
+      <description>
+        <text>Interval at which the router sends the PIM join/prune messages
+toward the upstream RPF neighbor.</text>
+      </description>
+    </leaf>
+    <leaf name="hello-interval">
+      <type name="oc-pim-types:pim-interval-type"/>
+      <description>
+        <text>Interval at which the router sends the PIM hello messages.</text>
+      </description>
+    </leaf>
+    <leaf name="dead-timer">
+      <type name="uint16">
+        <range value="1..65535"/>
+      </type>
+      <description>
+        <text>Number of missed hello messages after which a neighbor is
+expired.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pim-neighbor-state">
+    <description>
+      <text>PIM neighbor state.</text>
+    </description>
+    <leaf name="neighbor-address">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>IPv4 address of neighbor router.</text>
+      </description>
+    </leaf>
+    <leaf name="dr-address">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>IPv4 address of designated router.</text>
+      </description>
+    </leaf>
+    <leaf name="neighbor-established">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>This timestamp indicates the time that the
+PIM neighbor adjacency established. It is expressed
+relative to the Unix Epoch (Jan 1, 1970 00:00:00 UTC).
+
+The PIM session uptime can be computed by clients
+as the difference between this value and the
+current time in UTC.</text>
+      </description>
+    </leaf>
+    <leaf name="neighbor-expires">
+      <type name="oc-types:timeticks64"/>
+      <description>
+        <text>This timestamp indicates the time that the
+PIM neighbor adjacency will expire should hello
+messages fail to arrive from the neighbor. The value
+is expressed relative to the Unix Epoch (Jan 1, 1970
+00:00:00 UTC).</text>
+      </description>
+    </leaf>
+    <leaf name="mode">
+      <type name="identityref">
+        <base name="oc-pim-types:PIM_MODE"/>
+      </type>
+      <description>
+        <text>PIM mode in use when delivering multicast traffic
+via this neighbor.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pim-neighbors-top">
+    <description>
+      <text>Details about PIM neighbors.</text>
+    </description>
+    <container name="neighbors">
+      <config value="false"/>
+      <description>
+        <text>Details about PIM neighbors.</text>
+      </description>
+      <list name="neighbor">
+        <key value="neighbor-address"/>
+        <description>
+          <text>Details about a specific PIM neighbor.</text>
+        </description>
+        <leaf name="neighbor-address">
+          <type name="leafref">
+            <path value="../state/neighbor-address"/>
+          </type>
+          <description>
+            <text>IPv4 address of neighbor router.</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Details about a specific PIM neighbor.</text>
+          </description>
+          <uses name="pim-neighbor-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="pim-interfaces-top">
+    <description>
+      <text>Configuration and state data for PIM on each interface.</text>
+    </description>
+    <container name="interfaces">
+      <description>
+        <text>Configuration and state data for PIM on each interface.</text>
+      </description>
+      <list name="interface">
+        <key value="interface-id"/>
+        <description>
+          <text>This container defines interface PIM configuration and
+state information.</text>
+        </description>
+        <leaf name="interface-id">
+          <type name="leafref">
+            <path value="../config/interface-id"/>
+          </type>
+          <description>
+            <text>Reference to an interface on which PIM is enabled.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>PIM interface configuration.</text>
+          </description>
+          <uses name="pim-interface-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State information for PIM interfaces.</text>
+          </description>
+          <uses name="pim-interface-config"/>
+          <container name="counters">
+            <description>
+              <text>PIM counters for each interface.</text>
+            </description>
+            <uses name="pim-counters-state"/>
+          </container>
+        </container>
+        <uses name="pim-neighbors-top"/>
+        <uses name="oc-if:interface-ref"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="pim-global-state">
+    <description>
+      <text>State and session data for PIM on each interface.</text>
+    </description>
+    <leaf name="neighbor-count">
+      <type name="uint8"/>
+      <description>
+        <text>Number of adjacent PIM neighbors.</text>
+      </description>
+    </leaf>
+    <container name="counters">
+      <description>
+        <text>Global PIM counters.</text>
+      </description>
+      <uses name="pim-counters-state"/>
+    </container>
+  </grouping>
+  <grouping name="pim-sources-joined-top">
+    <description>
+      <text>List of multicast sources joined.</text>
+    </description>
+    <container name="sources-joined">
+      <config value="false"/>
+      <description>
+        <text>List of multicast sources joined.</text>
+      </description>
+      <list name="source">
+        <key value="address"/>
+        <description>
+          <text>A multicast source that has been joined.</text>
+        </description>
+        <leaf name="address">
+          <type name="leafref">
+            <path value="../state/address"/>
+          </type>
+          <description>
+            <text>Source address of multicast.</text>
+          </description>
+        </leaf>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for a multicast source that has been joined.</text>
+          </description>
+          <leaf name="address">
+            <type name="inet:ipv4-address"/>
+            <description>
+              <text>Source address of multicast.</text>
+            </description>
+          </leaf>
+          <leaf name="group">
+            <type name="inet:ipv4-address"/>
+            <description>
+              <text>Multicast address.</text>
+            </description>
+          </leaf>
+          <leaf name="upstream-interface-id">
+            <type name="oc-if:interface-id"/>
+            <description>
+              <text>The upstream interface for this multicast source.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="pim-global-ssm-config">
+    <description>
+      <text>Source specific multicast (SSM) configuration.</text>
+    </description>
+    <leaf name="ssm-ranges">
+      <type name="leafref">
+        <path value="/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:config/oc-acl:name"/>
+      </type>
+      <description>
+        <text>List of accepted source specific multicast (SSM) address
+ranges.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pim-global-rp-addresses-config">
+    <description>
+      <text>Defines rendezvous points for sparse mode multicast.</text>
+    </description>
+    <leaf name="address">
+      <type name="inet:ipv4-address"/>
+      <description>
+        <text>IPv4 address of rendezvous point.</text>
+      </description>
+    </leaf>
+    <leaf name="multicast-groups">
+      <type name="string"/>
+      <description>
+        <text>List of multicast groups (multicast IP address ranges) for which
+this entry will be used as a rendezvous point. When not
+present the default is equivalent to all valid IP multicast
+addresses.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="pim-global-top">
+    <description>
+      <text>Top level grouping for global PIM configuration.</text>
+    </description>
+    <container name="ssm">
+      <description>
+        <text>Source specific multicast (SSM).</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration for source specific multicast (SSM).</text>
+        </description>
+        <uses name="pim-global-ssm-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State for source specific multicast (SSM).</text>
+        </description>
+        <uses name="pim-global-ssm-config"/>
+      </container>
+    </container>
+    <container name="rendezvous-points">
+      <description>
+        <text>Defines rendezvous points for sparse mode multicast.</text>
+      </description>
+      <list name="rendezvous-point">
+        <key value="address"/>
+        <description>
+          <text>Defines a rendezvous point (RP) for sparse mode multicast.</text>
+        </description>
+        <leaf name="address">
+          <type name="leafref">
+            <path value="../config/address"/>
+          </type>
+          <description>
+            <text>IPv4 address of rendezvous point.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Rendezvous point configuration.</text>
+          </description>
+          <uses name="pim-global-rp-addresses-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Rendezvous point state.</text>
+          </description>
+          <uses name="pim-global-rp-addresses-config"/>
+        </container>
+      </list>
+    </container>
+    <container name="state">
+      <config value="false"/>
+      <description>
+        <text>Global PIM state.</text>
+      </description>
+      <uses name="pim-global-state"/>
+    </container>
+    <uses name="pim-sources-joined-top"/>
+  </grouping>
+  <grouping name="pim-top">
+    <description>
+      <text>Top-level grouping for PIM.</text>
+    </description>
+    <container name="pim">
+      <description>
+        <text>Top-level PIM configuration and operational state.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>This container defines global PIM configuration and state
+information.</text>
+        </description>
+        <uses name="pim-global-top"/>
+      </container>
+      <uses name="pim-interfaces-top"/>
+    </container>
+  </grouping>
+</module>

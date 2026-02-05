@@ -1,0 +1,782 @@
+module zxr10-quantum {
+  namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/quantum'
+            ;
+  prefix quantum ;
+  yang-version 1 ;
+  import zxr10-netconf-defs {
+    prefix ncd ;
+  }
+  organization 'ZTE Corporation'
+               ;
+  contact 'ZTE Corporation  '+"\n"
+        + '   Nanjing Institute of ZTE Corporation '+"\n"
+        + '   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China '+"\n"
+        + '   Tel: +86-25-52870000'
+          ;
+  description 'The netconf module to describe QUANTUM.'
+              ;
+  revision 2020-12-25 {
+    description 'Support TCP source address configuration.'
+                ;
+  }
+  revision 2020-12-04 {
+    description 'Support multiple QSS device ID configuration.'
+                ;
+  }
+  revision 2020-08-28 {
+    description 'Support KMT version 2.1'
+                ;
+  }
+  revision 2020-06-30 {
+    description 'New algorithm for ciphertext display.'
+                ;
+  }
+  revision 2020-02-12 {
+    description 'Support QSS keep-alive function'
+                ;
+  }
+  revision 2019-12-20 {
+    description 'Support QSS version 1.2 function'
+                ;
+  }
+  revision 2019-06-24 {
+    description 'Support quantum profile role'
+                ;
+  }
+  revision 2019-05-09 {
+    description 'Initial version.'
+                ;
+  }
+  container configuration {
+    description 'Configuration model info.'
+                ;
+    container quantum {
+      description 'Quantum configuration.'
+                  ;
+      container global {
+        description 'Quantum global configuration.'
+                    ;
+        leaf qss-device-id {
+          description 'Quantum QSS device ID.'
+                      ;
+          type uint32 {
+            range 0..4294967295 {
+              description 'Quantum QSS device ID.'
+                          ;
+            }
+          }
+          default 0 ;
+        }
+        leaf kms-device-id {
+          description 'Quantum KMS device ID.'
+                      ;
+          type uint32 {
+            range 0..4294967295 {
+              description 'Quantum KMS device ID.'
+                          ;
+            }
+          }
+          default 0 ;
+        }
+        leaf qss-device-id64 {
+          description 'Quantum QSS device ID.'
+                      ;
+          type ncd:uint64-8bytes {
+            range 0..18446744073709551615 ;
+          }
+          default 0 ;
+          ncd:revise-date 2019-12-20 ;
+        }
+      }
+      container qss-algorithms {
+        description 'Configure quantum QSS algorithm parameters.'
+                    ;
+        list qss-algorithm {
+          description 'Configure quantum QSS algorithm parameters.'
+                      ;
+          key algorithm-name ;
+          leaf algorithm-name {
+            description 'Quantum QSS algorithm-set name.'
+                        ;
+            type string {
+              length 1..18 {
+                description 'Quantum QSS algorithm-set name.'
+                            ;
+              }
+            }
+          }
+          leaf encryption {
+            description 'Quantum QSS encryption algorithm.'
+                        ;
+            type enumeration {
+              enum sm4-ecb {
+                value 1025 ;
+                description 'SM4 cipher(128 bits) using ECB mode'
+                            ;
+              }
+              enum sm4-cbc {
+                value 1026 ;
+                description 'SM4 cipher(128 bits) using CBC mode'
+                            ;
+              }
+              enum aes128-ecb {
+                value 8193 ;
+                description 'AES128 cipher(128 bits) using ECB mode'
+                            ;
+              }
+              enum aes128-cbc {
+                value 8194 ;
+                description 'AES128 cipher(128 bits) using CBC mode'
+                            ;
+              }
+              enum aes256-ecb {
+                value 32769 ;
+                description 'AES256 cipher(256 bits) using ECB mode'
+                            ;
+              }
+              enum aes256-cbc {
+                value 32770 ;
+                description 'AES256 cipher(256 bits) using CBC mode'
+                            ;
+              }
+            }
+            default sm4-ecb ;
+          }
+          leaf hash {
+            description 'Quantum QSS hash algorithm.'
+                        ;
+            type enumeration {
+              enum sm3 {
+                value 1 ;
+                description 'SM3 algorithm'
+                            ;
+              }
+            }
+            default sm3 ;
+          }
+        }
+      }
+      container qss-servers {
+        description 'Configure quantum QSS server parameters.'
+                    ;
+        list qss-server {
+          description 'Configure quantum QSS server parameters.'
+                      ;
+          key qss-server-name ;
+          leaf qss-server-name {
+            description 'Quantum QSS server name.'
+                        ;
+            type string {
+              length 1..18 {
+                description 'Quantum QSS server name.'
+                            ;
+              }
+            }
+          }
+          leaf lifetime {
+            description 'Session key lifetime in seconds.'
+                        ;
+            type uint32 {
+              range 60..4294967295 {
+                description 'Session key lifetime in seconds.'
+                            ;
+              }
+            }
+            default 600 ;
+          }
+          leaf qss-server-type {
+            description 'Quantum QSS server type.'
+                        ;
+            type enumeration {
+              enum qkud {
+                value 1 ;
+                description 'Quantum key user device'
+                            ;
+              }
+              enum qkuc {
+                value 2 ;
+                description 'Quantum key user client'
+                            ;
+              }
+            }
+            default qkud ;
+          }
+          container key-server {
+            description 'QSS key server information.'
+                        ;
+            presence 'Address and port need config together'
+                     ;
+            leaf server-address {
+              description 'IPv4 address of QSS key server.'
+                          ;
+              type ncd:ipv4-address-none-zero ;
+              mandatory true ;
+            }
+            leaf server-port {
+              description 'Port number of QSS key server.'
+                          ;
+              type uint16 {
+                range 1..65535 {
+                  description 'Port number of QSS key server.'
+                              ;
+                }
+              }
+              mandatory true ;
+            }
+          }
+          container algorithms {
+            description 'Configure the algorithms for the QSS server.'
+                        ;
+            list algorithm {
+              description 'Configure the algorithms for the QSS server.'
+                          ;
+              key bind-algorithm-name ;
+              leaf bind-algorithm-name {
+                description 'Quantum QSS algorithm-set name.'
+                            ;
+                type string {
+                  length 1..18 {
+                    description 'Quantum QSS algorithm-set name.'
+                                ;
+                  }
+                }
+              }
+            }
+          }
+          container vrf {
+            description 'Configure out VPN instance name on quantum server.'
+                        ;
+            presence 'VPN instance name'
+                     ;
+            choice vrf {
+              description 'Configure out VPN instance name on quantum server.'
+                          ;
+              case normal-vrf {
+                description 'The normal VRF.'
+                            ;
+                leaf vrf-name {
+                  description 'The VRF name.'
+                              ;
+                  type string {
+                    length 1..32 {
+                      description 'The VRF name.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+              case mng-vrf {
+                description 'The MNG VRF.'
+                            ;
+                leaf mngFlag {
+                  description 'Whether MNG VRF or not.'
+                              ;
+                  type empty ;
+                  mandatory true ;
+                }
+              }
+            }
+          }
+          leaf version {
+            description 'Configure version for QSS server'
+                        ;
+            type enumeration {
+              enum v1.1 {
+                value 17 ;
+                description 'QSS version 1.1'
+                            ;
+              }
+              enum v1.2 {
+                value 18 ;
+                description 'QSS version 1.2'
+                            ;
+              }
+            }
+            default v1.1 ;
+            ncd:revise-date 2019-12-20 ;
+          }
+          leaf keep-alive {
+            description 'Set the keep-alive time for the current link'
+                        ;
+            type uint32 {
+              range 0..65535 {
+                description 'The keep-alive time for the current link'
+                            ;
+              }
+            }
+            default 0 ;
+            ncd:revise-date 2020-02-12 ;
+          }
+          leaf qss-device-id64 {
+            description 'Quantum QSS device ID.'
+                        ;
+            type ncd:uint64-8bytes {
+              range 1..18446744073709551614 ;
+            }
+            ncd:revise-date 2020-12-04 ;
+          }
+          container tcp-local {
+            description 'Set TCP local address'
+                        ;
+            choice local-type {
+              description 'Set local address type'
+                          ;
+              case ipv4 {
+                description 'Set IPv4 local address'
+                            ;
+                leaf ipv4-address {
+                  description 'Set IPv4 local address'
+                              ;
+                  type ncd:ipv4-address-none-zero ;
+                }
+              }
+              case interface {
+                description 'Set local inteface'
+                            ;
+                leaf if-name {
+                  description 'Set local inteface name'
+                              ;
+                  type ncd:ifname ;
+                }
+              }
+            }
+            ncd:revise-date 2020-12-25 ;
+          }
+        }
+      }
+      container kms-servers {
+        description 'Configure quantum KMS server parameters.'
+                    ;
+        list kms-server {
+          description 'Configure quantum KMS server parameters.'
+                      ;
+          key kms-server-name ;
+          leaf kms-server-name {
+            description 'Quantum KMS server name.'
+                        ;
+            type string {
+              length 1..18 {
+                description 'Quantum KMS server name.'
+                            ;
+              }
+            }
+          }
+          leaf version {
+            description 'Quantum KMS server version.'
+                        ;
+            type enumeration {
+              enum 1.0 {
+                value 1 ;
+                description 'Version 1.0'
+                            ;
+              }
+              enum 2.0 {
+                value 2 ;
+                description 'Version 2.0'
+                            ;
+              }
+              enum 2.2 {
+                value 34 ;
+                description 'Version 2.2'
+                            ;
+              }
+              enum 2.1 {
+                value 33 ;
+                description 'Version 2.1'
+                            ;
+              }
+            }
+            default 1.0 ;
+          }
+          container key-server {
+            description 'KMS key server information.'
+                        ;
+            presence 'Address and port need config together'
+                     ;
+            leaf server-address {
+              description 'IPv4 address of KMS key server.'
+                          ;
+              type ncd:ipv4-address-none-zero ;
+              mandatory true ;
+            }
+            leaf server-port {
+              description 'Port number of KMS key server.'
+                          ;
+              type uint16 {
+                range 1..65535 {
+                  description 'Port number of KMS key server.'
+                              ;
+                }
+              }
+              default 8013 ;
+            }
+          }
+          container vrf {
+            description 'Configure out VPN instance name on quantum server.'
+                        ;
+            presence 'VPN instance name'
+                     ;
+            choice vrf {
+              description 'Configure out VPN instance name on quantum server.'
+                          ;
+              case normal-vrf {
+                description 'The normal VRF.'
+                            ;
+                leaf vrf-name {
+                  description 'The VRF name.'
+                              ;
+                  type string {
+                    length 1..32 {
+                      description 'The VRF name.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+              case mng-vrf {
+                description 'The MNG VRF.'
+                            ;
+                leaf mngFlag {
+                  description 'Whether MNG VRF or not.'
+                              ;
+                  type empty ;
+                  mandatory true ;
+                }
+              }
+            }
+          }
+          container preset-v1 {
+            description 'Set preset-key for version 1.0'
+                        ;
+            presence 'Key data'
+                     ;
+            choice key {
+              description 'Set preset-key for version 1.0'
+                          ;
+              case clear {
+                description 'Set clear password.'
+                            ;
+                leaf clear-key {
+                  description 'Set clear password strings.'
+                              ;
+                  type string {
+                    length 1..10 {
+                      description 'Set clear password strings.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+              case encrypt {
+                description 'Set encrypted password.'
+                            ;
+                leaf encrypted-key {
+                  description 'Set encrypted password strings.'
+                              ;
+                  type string {
+                    length 12..64 {
+                      description 'Set encrypted password strings.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+            }
+          }
+          container preset-v2-getkey {
+            description 'Set preset-key for version 2.0 get key.'
+                        ;
+            presence 'Key data'
+                     ;
+            choice key {
+              description 'Set preset-key for version 2.0 get key.'
+                          ;
+              case clear {
+                description 'Set clear password.'
+                            ;
+                leaf clear-key {
+                  description 'Set clear hex password strings.'
+                              ;
+                  type string {
+                    length 1..64 {
+                      description 'Set clear password strings.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+              case encrypt {
+                description 'Set encrypted password.'
+                            ;
+                leaf encrypted-key {
+                  description 'Set encrypted password strings.'
+                              ;
+                  type string {
+                    length 12..148 {
+                      description 'Set encrypted password strings.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+            }
+          }
+          container preset-v2-register {
+            description 'Set preset-key for version 2.0 register key.'
+                        ;
+            presence 'Key data'
+                     ;
+            choice key {
+              description 'Set preset-key for version 2.0 register key.'
+                          ;
+              case clear {
+                description 'Set clear password.'
+                            ;
+                leaf clear-key {
+                  description 'Set clear hex password strings.'
+                              ;
+                  type string {
+                    length 1..64 {
+                      description 'Set clear password strings.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+              case encrypt {
+                description 'Set encrypted password.'
+                            ;
+                leaf encrypted-key {
+                  description 'Set encrypted password strings.'
+                              ;
+                  type string {
+                    length 12..148 {
+                      description 'Set encrypted password strings.'
+                                  ;
+                    }
+                  }
+                  mandatory true ;
+                }
+              }
+            }
+          }
+        }
+      }
+      container profiles {
+        description 'Configure quantum profile parameters.'
+                    ;
+        list profile {
+          description 'Configure quantum profile parameters.'
+                      ;
+          key profile-name ;
+          leaf profile-name {
+            description 'Quantum profile name.'
+                        ;
+            type string {
+              length 1..18 {
+                description 'Quantum profile name.'
+                            ;
+              }
+            }
+          }
+          leaf auth-flag {
+            description 'Authenticate quantum key.'
+                        ;
+            type enumeration {
+              enum enable {
+                value 1 ;
+                description 'enable authentication'
+                            ;
+              }
+              enum disable {
+                value 0 ;
+                description 'disable authentication'
+                            ;
+              }
+            }
+            default enable ;
+          }
+          leaf type {
+            description 'Set quantum profile type.'
+                        ;
+            type enumeration {
+              enum kms {
+                value 1 ;
+                description 'Quantum key management system'
+                            ;
+              }
+              enum qss {
+                value 2 ;
+                description 'The quantum safety service'
+                            ;
+              }
+            }
+            default kms ;
+          }
+          leaf qss-server-name {
+            description 'Set QSS server information.'
+                        ;
+            type string {
+              length 1..18 {
+                description 'Set QSS server information.'
+                            ;
+              }
+            }
+          }
+          leaf kms-server-name {
+            description 'Set KMS server information.'
+                        ;
+            type string {
+              length 1..18 {
+                description 'Set KMS server information.'
+                            ;
+              }
+            }
+          }
+          leaf remote-device-id {
+            description 'Set remote router device ID.'
+                        ;
+            type uint32 {
+              range 0..4294967295 {
+                description 'Set remote router device ID.'
+                            ;
+              }
+            }
+            default 0 ;
+          }
+          leaf remote-id {
+            description 'Set remote quantum key device ID.'
+                        ;
+            type uint32 {
+              range 1..4294967295 {
+                description 'Set remote quantum key device ID.'
+                            ;
+              }
+            }
+          }
+          leaf role {
+            description 'Set quantum profile role.'
+                        ;
+            type enumeration {
+              enum active-party {
+                value 1 ;
+                description 'The party that actively acquires the key.'
+                            ;
+              }
+              enum passive-party {
+                value 2 ;
+                description 'The party that passively acquires the key.'
+                            ;
+              }
+            }
+            ncd:revise-date 2019-06-24 ;
+          }
+          leaf remote-device-id64 {
+            description 'Set remote router device ID.'
+                        ;
+            type ncd:uint64-8bytes {
+              range 0..18446744073709551615 ;
+            }
+            default 0 ;
+            ncd:revise-date 2019-12-20 ;
+          }
+        }
+      }
+    }
+  }
+  rpc load {
+    description 'Load information.'
+                ;
+    input {
+      container qss-key {
+        description 'Load QSS key information.'
+                    ;
+        leaf qss-server-name {
+          description 'QSS server name.'
+                      ;
+          type string {
+            length 1..18 {
+              description 'QSS server name.'
+                          ;
+            }
+          }
+          mandatory true ;
+        }
+        choice load-type {
+          description 'Load type.'
+                      ;
+          mandatory true ;
+          case qkuc {
+            description 'Load QSS key information for QKUC.'
+                        ;
+            leaf user-pin {
+              description 'User pin code.'
+                          ;
+              type string {
+                length 8..16 {
+                  description 'User pin code.'
+                              ;
+                }
+              }
+              mandatory true ;
+            }
+            leaf admin-pin {
+              description 'Administrate pin code.'
+                          ;
+              type string {
+                length 8..16 {
+                  description 'Administrate pin code.'
+                              ;
+                }
+              }
+              mandatory true ;
+            }
+          }
+          case qkud {
+            description 'Load QSS key information for QKUD.'
+                        ;
+            leaf filename {
+              description 'Preset key filename.'
+                          ;
+              type string {
+                length 1..18 {
+                  description 'Preset key filename.'
+                              ;
+                }
+              }
+              mandatory true ;
+            }
+          }
+        }
+      }
+    }
+  }
+  rpc unload {
+    description 'Unload information.'
+                ;
+    input {
+      container qss-key {
+        description 'Unload QSS key information.'
+                    ;
+        leaf qss-server-name {
+          description 'QSS server name.'
+                      ;
+          type string {
+            length 1..18 {
+              description 'QSS server name.'
+                          ;
+            }
+          }
+          mandatory true ;
+        }
+      }
+    }
+  }
+}

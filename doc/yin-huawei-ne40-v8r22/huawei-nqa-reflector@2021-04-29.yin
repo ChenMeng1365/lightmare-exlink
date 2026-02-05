@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<submodule name="huawei-nqa-reflector"
+           xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+           xmlns:nqa="urn:huawei:yang:huawei-nqa"
+           xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+           xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+           xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <yang-version value="1"/>
+  <belongs-to module="huawei-nqa">
+    <prefix value="nqa"/>
+  </belongs-to>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <include module="huawei-nqa-type"/>
+  <include module="huawei-nqa-test-flow"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Description of submodule nqa-reflector.</text>
+  </description>
+  <revision date="2021-04-29">
+    <description>
+      <text>Modify test-flow and exclusive.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-29">
+    <description>
+      <text>Modify range for PE-VLAN and CE-VLAN.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-10-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="reflect-type">
+    <type name="enumeration">
+      <enum name="flow-general">
+        <value value="2"/>
+        <description>
+          <text>General flow.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Description of reflect-type.</text>
+    </description>
+  </typedef>
+  <typedef name="exclusive-mode-type">
+    <type name="enumeration">
+      <enum name="exclusive">
+        <value value="1"/>
+        <description>
+          <text>Specify the exclusive mode on an interface.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Description of exclusive-mode-type.</text>
+    </description>
+  </typedef>
+  <grouping name="reflectors-type">
+    <description>
+      <text>Reflector table.</text>
+    </description>
+    <list name="reflector">
+      <must condition="(ce-vlan and pe-vlan) or (not(ce-vlan) and not(pe-vlan))"/>
+      <key value="reflector-id"/>
+      <max-elements value="1024"/>
+      <description>
+        <text>Configure reflector table.</text>
+      </description>
+      <leaf name="reflector-id">
+        <type name="uint32">
+          <range value="1..65535"/>
+        </type>
+        <description>
+          <text>Reflector ID.</text>
+        </description>
+      </leaf>
+      <leaf name="if-name">
+        <type name="leafref">
+          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Reflector interface name.</text>
+        </description>
+      </leaf>
+      <choice name="reflect-type">
+        <default value="general-flow"/>
+        <description>
+          <text>Reflector type.</text>
+        </description>
+        <case name="interface-exclusive">
+          <description>
+            <text>Specify the exclusive mode on an interface.</text>
+          </description>
+          <leaf name="exclusive">
+            <type name="exclusive-mode-type"/>
+            <description>
+              <text>Specify the exclusive mode on an interface.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="general-flow">
+          <description>
+            <text>Reflects packets based on the packet content.</text>
+          </description>
+          <leaf name="reflector-type">
+            <type name="reflect-type"/>
+            <default value="flow-general"/>
+            <status value="deprecated"/>
+            <description>
+              <text>Reflector type.</text>
+            </description>
+          </leaf>
+          <choice name="address">
+            <description>
+              <text>Reflector address.</text>
+            </description>
+            <case name="ipv4-address">
+              <description>
+                <text>Reflector IPv4 address.</text>
+              </description>
+              <leaf name="ipv4-address">
+                <type name="nqa:valid-abc-ipv4-address"/>
+                <description>
+                  <text>Reflector IPv4 address.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="simulate-ipv4-address">
+              <description>
+                <text>Reflector simulate IPv4 address.</text>
+              </description>
+              <leaf name="simulate-ipv4-address">
+                <type name="nqa:valid-abc-ipv4-address"/>
+                <description>
+                  <text>Reflector simulate IPv4 address.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="mac-address">
+              <description>
+                <text>Reflector MAC address.</text>
+              </description>
+              <leaf name="mac-address">
+                <type name="nqa:unicast-mac-address"/>
+                <description>
+                  <text>Reflector MAC address.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <choice name="vlan-tag-config">
+            <description>
+              <text>VLAN configuration selection. One VLAN tag or two VLAN tags can be configured.</text>
+            </description>
+            <case name="one-vlan-tag">
+              <description>
+                <text>One VLAN tag can be configured.</text>
+              </description>
+              <leaf name="vlan-id">
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+                <description>
+                  <text>Reflector VLAN ID.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="two-vlan-tag">
+              <description>
+                <text>Two VLAN tags can be configured.</text>
+              </description>
+              <leaf name="ce-vlan">
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+                <description>
+                  <text>Reflector CE VLAN ID.</text>
+                </description>
+              </leaf>
+              <leaf name="pe-vlan">
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+                <description>
+                  <text>Reflector PE VLAN ID.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+          <leaf name="source-port">
+            <type name="uint16">
+              <range value="0..65535"/>
+            </type>
+            <default value="49184"/>
+            <description>
+              <text>Reflector source port.</text>
+            </description>
+          </leaf>
+          <leaf name="dest-port">
+            <type name="uint16">
+              <range value="0..65535"/>
+            </type>
+            <default value="7"/>
+            <description>
+              <text>Reflector destination port.</text>
+            </description>
+          </leaf>
+          <leaf name="share-mode">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable the share mode on the reflector.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="test-flow">
+          <description>
+            <text>Reflects packets based on test flows.</text>
+          </description>
+          <leaf-list name="test-flow-id">
+            <type name="leafref">
+              <path value="../../../testflows/test-flow/test-flow-id"/>
+            </type>
+            <max-elements value="16"/>
+            <description>
+              <text>Configure the ID of the test flow bound to the reflector.</text>
+            </description>
+          </leaf-list>
+        </case>
+      </choice>
+      <leaf name="exchange-port">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable reflector UDP port exchange.</text>
+        </description>
+      </leaf>
+      <leaf name="end-time">
+        <type name="yang:date-and-time"/>
+        <mandatory value="true"/>
+        <description>
+          <text>Absolute time of reflector aging, the value must not be earlier than the current system time plus 10s or later than the current system time plus 173400s.</text>
+        </description>
+      </leaf>
+      <leaf name="survival-time">
+        <type name="uint32"/>
+        <units name="s"/>
+        <config value="false"/>
+        <description>
+          <text>Reflector survival time.</text>
+        </description>
+      </leaf>
+      <leaf name="recommended-test-mac">
+        <type name="pub-type:mac-address"/>
+        <config value="false"/>
+        <description>
+          <text>Reflector recommended MAC address.</text>
+        </description>
+      </leaf>
+    </list>
+  </grouping>
+</submodule>

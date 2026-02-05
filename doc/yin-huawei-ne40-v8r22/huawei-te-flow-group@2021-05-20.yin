@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-te-flow-group"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:teflowgroup="urn:huawei:yang:huawei-te-flow-group"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:srv6="urn:huawei:yang:huawei-srv6"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <namespace uri="urn:huawei:yang:huawei-te-flow-group"/>
+  <prefix value="teflowgroup"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-srv6">
+    <prefix value="srv6"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <include module="huawei-te-flow-group-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Flow groups.</text>
+  </description>
+  <revision date="2021-05-20">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="teflowgroup"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/srv6:srv6">
+    <description>
+      <text>Augment for Segment Routing te flow group.</text>
+    </description>
+    <container name="teflowgroup">
+      <when condition="../srv6:enable='true'"/>
+      <description>
+        <text>Configure flow group parameters.</text>
+      </description>
+      <leaf name="group-threshold-upper">
+        <type name="uint32">
+          <range value="2..100"/>
+        </type>
+        <must condition="(../group-threshold-upper&gt;../group-threshold-lower)"/>
+        <default value="80"/>
+        <description>
+          <text>Upper threshold for the number of SRv6 TE flow groups.</text>
+        </description>
+      </leaf>
+      <leaf name="group-threshold-lower">
+        <type name="uint32">
+          <range value="1..99"/>
+        </type>
+        <default value="75"/>
+        <description>
+          <text>Lower threshold for the number of SRv6 TE flow groups.</text>
+        </description>
+      </leaf>
+      <container name="mapping-policys">
+        <description>
+          <text>List of mapping policys.</text>
+        </description>
+        <list name="mapping-policy">
+          <key value="color"/>
+          <unique tag="name"/>
+          <description>
+            <text>Configure a mapping policy.</text>
+          </description>
+          <leaf name="color">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Color of a mapping policy.</text>
+            </description>
+          </leaf>
+          <leaf name="name">
+            <type name="string">
+              <length value="1..31"/>
+              <pattern value="[^ \?]*"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Mapping policy name.</text>
+            </description>
+          </leaf>
+          <leaf name="description">
+            <type name="string">
+              <length value="1..242"/>
+            </type>
+            <description>
+              <text>Description of a mapping policy.</text>
+            </description>
+          </leaf>
+          <leaf name="match-type">
+            <type name="match-type"/>
+            <must condition="(../match-type='service-class') or (../match-type='dscp')"/>
+            <description>
+              <text>Match type of a mapping policy.</text>
+            </description>
+          </leaf>
+          <container name="dscp-maps">
+            <when condition="../match-type='dscp'"/>
+            <description>
+              <text>List of dscp maps.</text>
+            </description>
+            <list name="dscp-map">
+              <key value="default index af-type"/>
+              <max-elements value="130"/>
+              <description>
+                <text>Configure a dscp map.</text>
+              </description>
+              <leaf name="default">
+                <type name="boolean"/>
+                <must condition="(../default='true' and ../index=4294967295) or (../default='false')"/>
+                <description>
+                  <text>Enable/disable the default DSCP.</text>
+                </description>
+              </leaf>
+              <leaf name="index">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Index.</text>
+                </description>
+              </leaf>
+              <leaf name="af-type">
+                <type name="address-family-set-type"/>
+                <description>
+                  <text>Address family type.</text>
+                </description>
+              </leaf>
+              <leaf name="dscp-value">
+                <when condition="../default='false'"/>
+                <type name="dscp-type"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>DSCP list.</text>
+                </description>
+              </leaf>
+              <choice name="match-tunnel">
+                <mandatory value="true"/>
+                <description>
+                  <text>Match tunnel.</text>
+                </description>
+                <case name="sr-policy">
+                  <description>
+                    <text>Flow match sr-policy.</text>
+                  </description>
+                  <leaf name="color">
+                    <type name="uint32">
+                      <range value="0..4294967295"/>
+                    </type>
+                    <must condition="not(../../dscp-map[color=current()][af-type=current()/../af-type][index=current()/../index][default!=current()/../default] or ../../dscp-map[color=current()][af-type=current()/../af-type][default=current()/../default][index!=current()/../index])"/>
+                    <description>
+                      <text>Color of an SR Policy.</text>
+                    </description>
+                  </leaf>
+                </case>
+                <case name="ip">
+                  <description>
+                    <text>Flow match native-ip.</text>
+                  </description>
+                  <leaf name="native-ip">
+                    <type name="empty"/>
+                    <must condition="not(../../dscp-map[af-type=current()/../af-type][index=current()/../index][default!=current()/../default]/native-ip or ../../dscp-map[af-type=current()/../af-type][default=current()/../default][index!=current()/../index]/native-ip)"/>
+                    <description>
+                      <text>Native-ip configured.</text>
+                    </description>
+                  </leaf>
+                </case>
+              </choice>
+            </list>
+          </container>
+          <container name="service-class-maps">
+            <when condition="../match-type='service-class'"/>
+            <description>
+              <text>List of service class maps.</text>
+            </description>
+            <list name="service-class-map">
+              <key value="index"/>
+              <description>
+                <text>Configure a service-class map.</text>
+              </description>
+              <leaf name="index">
+                <type name="uint32">
+                  <range value="1..4294967295"/>
+                </type>
+                <description>
+                  <text>Index.</text>
+                </description>
+              </leaf>
+              <leaf name="service-class">
+                <when condition="../index != 4294967295"/>
+                <type name="service-class-type"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Service-class type.</text>
+                </description>
+              </leaf>
+              <choice name="match-tunnel">
+                <mandatory value="true"/>
+                <description>
+                  <text>Match tunnel.</text>
+                </description>
+                <case name="sr-policy">
+                  <description>
+                    <text>Flow match sr-policy.</text>
+                  </description>
+                  <leaf name="color">
+                    <type name="uint32">
+                      <range value="0..4294967295"/>
+                    </type>
+                    <must condition="not(../../service-class-map[color=current()][index!=current()/../index])"/>
+                    <description>
+                      <text>Color of an SR Policy.</text>
+                    </description>
+                  </leaf>
+                </case>
+                <case name="ip">
+                  <description>
+                    <text>Flow match native-ip.</text>
+                  </description>
+                  <leaf name="native-ip">
+                    <type name="empty"/>
+                    <must condition="not(../../service-class-map[index!=current()/../index]/native-ip)"/>
+                    <description>
+                      <text>Native-ip configured.</text>
+                    </description>
+                  </leaf>
+                </case>
+              </choice>
+            </list>
+          </container>
+        </list>
+      </container>
+      <container name="running-flow-groups">
+        <config value="false"/>
+        <description>
+          <text>List of flow groups.</text>
+        </description>
+        <list name="running-flow-group">
+          <key value="endpoint color name"/>
+          <description>
+            <text>Operational state of a flow group.</text>
+          </description>
+          <leaf name="endpoint">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Endpoint of a flow group.</text>
+            </description>
+          </leaf>
+          <leaf name="color">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Color of a flow group.</text>
+            </description>
+          </leaf>
+          <leaf name="name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Flow group name.</text>
+            </description>
+          </leaf>
+          <leaf name="type">
+            <type name="group-create-type"/>
+            <description>
+              <text>Type of a flow group, static or dynamic.</text>
+            </description>
+          </leaf>
+          <leaf name="tunnel-id">
+            <type name="uint32"/>
+            <description>
+              <text>Tunnel ID.</text>
+            </description>
+          </leaf>
+          <leaf name="tunnel-type">
+            <type name="tunnel-type"/>
+            <description>
+              <text>Tunnel type.</text>
+            </description>
+          </leaf>
+          <leaf name="state">
+            <type name="group-state-type"/>
+            <description>
+              <text>State of a flow group.</text>
+            </description>
+          </leaf>
+          <leaf name="state-change-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Date and time when the state of a flow group changed.</text>
+            </description>
+          </leaf>
+          <leaf name="delay-timer-remain">
+            <type name="uint32"/>
+            <units name="ms"/>
+            <description>
+              <text>Remaining time of the delay timer.</text>
+            </description>
+          </leaf>
+          <leaf name="map-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of mappings in a flow group.</text>
+            </description>
+          </leaf>
+          <leaf name="up-map-count">
+            <type name="uint32"/>
+            <description>
+              <text>Number of mappings that are up in a flow group.</text>
+            </description>
+          </leaf>
+          <container name="flow-maps">
+            <description>
+              <text>List of flow maps.</text>
+            </description>
+            <list name="flow-map">
+              <key value="match-type default index af-type"/>
+              <description>
+                <text>Operational state of a flow map.</text>
+              </description>
+              <leaf name="match-type">
+                <type name="flow-match-type"/>
+                <description>
+                  <text>Flow match type.</text>
+                </description>
+              </leaf>
+              <leaf name="default">
+                <type name="boolean"/>
+                <description>
+                  <text>Default.</text>
+                </description>
+              </leaf>
+              <leaf name="index">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Index.</text>
+                </description>
+              </leaf>
+              <leaf name="af-type">
+                <type name="address-family-type"/>
+                <description>
+                  <text>Address family type.</text>
+                </description>
+              </leaf>
+              <leaf name="dscp-value">
+                <type name="dscp-type"/>
+                <description>
+                  <text>DSCP list.</text>
+                </description>
+              </leaf>
+              <leaf name="service-class">
+                <type name="string">
+                  <length value="2..30"/>
+                </type>
+                <description>
+                  <text>Service class list.</text>
+                </description>
+              </leaf>
+              <leaf name="policy-color">
+                <type name="uint32"/>
+                <description>
+                  <text>Color of an SR Policy.</text>
+                </description>
+              </leaf>
+              <leaf name="policy-tunnel-id">
+                <type name="uint32"/>
+                <description>
+                  <text>Policy tunnel ID.</text>
+                </description>
+              </leaf>
+              <leaf name="native-ip">
+                <type name="boolean"/>
+                <description>
+                  <text>Native-ip.</text>
+                </description>
+              </leaf>
+              <leaf name="state">
+                <type name="tunnel-state-type"/>
+                <description>
+                  <text>State of the match tunnel.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </list>
+      </container>
+      <container name="flow-group-down-reasons">
+        <config value="false"/>
+        <description>
+          <text>List of down records of flow groups.</text>
+        </description>
+        <list name="flow-group-down-reason">
+          <key value="endpoint color name up-time up-millisecond"/>
+          <description>
+            <text>Operational state of down record of a flow group.</text>
+          </description>
+          <leaf name="endpoint">
+            <type name="inet:ipv6-address-no-zone"/>
+            <description>
+              <text>Endpoint of a flow group.</text>
+            </description>
+          </leaf>
+          <leaf name="color">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Color of a flow group.</text>
+            </description>
+          </leaf>
+          <leaf name="name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Flow group name.</text>
+            </description>
+          </leaf>
+          <leaf name="up-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Date and time when a flow group went up.</text>
+            </description>
+          </leaf>
+          <leaf name="up-millisecond">
+            <type name="uint32">
+              <range value="0..1000"/>
+            </type>
+            <units name="ms"/>
+            <description>
+              <text>Millisecond value of the time when a flow group went up.</text>
+            </description>
+          </leaf>
+          <leaf name="tunnel-id">
+            <type name="uint32"/>
+            <description>
+              <text>Tunnel ID.</text>
+            </description>
+          </leaf>
+          <leaf name="tunnel-type">
+            <type name="tunnel-type"/>
+            <description>
+              <text>Tunnel type.</text>
+            </description>
+          </leaf>
+          <leaf name="create-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Date and time when a flow group was created.</text>
+            </description>
+          </leaf>
+          <leaf name="down-time">
+            <type name="yang:date-and-time"/>
+            <description>
+              <text>Date and time when a flow group went down.</text>
+            </description>
+          </leaf>
+          <leaf name="down-reason">
+            <type name="group-down-reason-type"/>
+            <description>
+              <text>Reason why a flow group went down.</text>
+            </description>
+          </leaf>
+          <container name="flow-maps">
+            <description>
+              <text>List of down records of flow maps.</text>
+            </description>
+            <list name="flow-map">
+              <key value="match-type default index af-type"/>
+              <description>
+                <text>Operational state of down record of a flow map.</text>
+              </description>
+              <leaf name="match-type">
+                <type name="flow-match-type"/>
+                <description>
+                  <text>Flow match type.</text>
+                </description>
+              </leaf>
+              <leaf name="default">
+                <type name="boolean"/>
+                <description>
+                  <text>Default.</text>
+                </description>
+              </leaf>
+              <leaf name="index">
+                <type name="uint32">
+                  <range value="0..4294967295"/>
+                </type>
+                <description>
+                  <text>Index.</text>
+                </description>
+              </leaf>
+              <leaf name="af-type">
+                <type name="address-family-type"/>
+                <description>
+                  <text>Address family type.</text>
+                </description>
+              </leaf>
+              <leaf name="policy-color">
+                <type name="uint32"/>
+                <description>
+                  <text>Color of an SR Policy.</text>
+                </description>
+              </leaf>
+              <leaf name="native-ip">
+                <type name="boolean"/>
+                <description>
+                  <text>Native-ip.</text>
+                </description>
+              </leaf>
+              <leaf name="up-time">
+                <type name="yang:date-and-time"/>
+                <description>
+                  <text>Date and time when a flow map went up.</text>
+                </description>
+              </leaf>
+              <leaf name="up-millisecond">
+                <type name="uint32">
+                  <range value="0..1000"/>
+                </type>
+                <units name="ms"/>
+                <description>
+                  <text>Millisecond value of the time when a flow map went up.</text>
+                </description>
+              </leaf>
+              <leaf name="down-time">
+                <type name="yang:date-and-time"/>
+                <description>
+                  <text>Date and time when a flow map went down.</text>
+                </description>
+              </leaf>
+              <leaf name="down-reason">
+                <type name="map-down-reason-type"/>
+                <description>
+                  <text>Reason why a flow map went down.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </list>
+      </container>
+      <container name="flow-group-statistic">
+        <config value="false"/>
+        <description>
+          <text>Statistics of flow groups.</text>
+        </description>
+        <leaf name="mapping-policy-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of mapping policies.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-group-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of flow groups.</text>
+          </description>
+        </leaf>
+        <leaf name="flow-group-up-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of flow groups that are up.</text>
+          </description>
+        </leaf>
+        <leaf name="dynamic-flow-group-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of dynamic flow groups.</text>
+          </description>
+        </leaf>
+        <leaf name="dynamic-flow-group-up-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of dynamic flow groups that are up.</text>
+          </description>
+        </leaf>
+        <leaf name="dscp-map-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of dscp maps.</text>
+          </description>
+        </leaf>
+        <leaf name="dscp-map-up-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of dscp maps that are up.</text>
+          </description>
+        </leaf>
+        <leaf name="service-class-map-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of service class maps.</text>
+          </description>
+        </leaf>
+        <leaf name="service-class-map-up-count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of service class maps that are up.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

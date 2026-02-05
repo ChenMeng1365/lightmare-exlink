@@ -1,0 +1,416 @@
+module: zxr10-performance
+  +--rw configuration
+  |  +--rw performance
+  |     +--rw statistics
+  |     |  +--rw perf-masks
+  |     |  |  +--rw perf-mask* [checkpoint-type tpid-matcher perfcode cycle tpid-mask tpid-class]
+  |     |  |     +--rw checkpoint-type    uint16
+  |     |  |     +--rw tpid-matcher       binary
+  |     |  |     +--rw perfcode           uint16
+  |     |  |     +--rw cycle              enumeration
+  |     |  |     +--rw tpid-mask          binary
+  |     |  |     +--rw tpid-length?       uint8
+  |     |  |     +--rw tpid-class         enumeration
+  |     |  +--rw perf-suppresses
+  |     |  |  +--rw perf-suppress* [checkpoint-type tpid cycle]
+  |     |  |     +--rw checkpoint-type    uint16
+  |     |  |     +--rw tpid               binary
+  |     |  |     +--rw cycle              enumeration
+  |     |  |     +--rw tpid-length?       uint8
+  |     |  |     +--rw state?             enumeration
+  |     |  +--rw minute-cycle!
+  |     |  |  +--rw minute-cycle?   enumeration
+  |     |  +--rw flow! {flow-statistics}?
+  |     |     +--rw phy-frame-octs?   enumeration
+  |     +--rw threshold
+  |        +--rw perf-thresholds
+  |        |  +--rw fifteen-mins
+  |        |  |  +--rw digital
+  |        |  |  |  +--rw perf-threshold* [checkpoint-type tpid perfcode]
+  |        |  |  |     +--rw checkpoint-type    uint16
+  |        |  |  |     +--rw tpid               binary
+  |        |  |  |     +--rw perfcode           uint16
+  |        |  |  |     +--rw low?               binary
+  |        |  |  |     +--rw warn-low?          binary
+  |        |  |  |     +--rw high?              binary
+  |        |  |  |     +--rw warn-high?         binary
+  |        |  |  |     +--rw tpid-length?       uint8
+  |        |  |  +--rw analog
+  |        |  |     +--rw perf-threshold* [checkpoint-type tpid perfcode]
+  |        |  |        +--rw checkpoint-type    uint16
+  |        |  |        +--rw tpid               binary
+  |        |  |        +--rw perfcode           uint16
+  |        |  |        +--rw low?               binary
+  |        |  |        +--rw warn-low?          binary
+  |        |  |        +--rw high?              binary
+  |        |  |        +--rw warn-high?         binary
+  |        |  |        +--rw tpid-length?       uint8
+  |        |  +--rw twenty-four-hours
+  |        |     +--rw digital
+  |        |        +--rw perf-threshold* [checkpoint-type tpid perfcode]
+  |        |           +--rw checkpoint-type    uint16
+  |        |           +--rw tpid               binary
+  |        |           +--rw perfcode           uint16
+  |        |           +--rw low?               binary
+  |        |           +--rw warn-low?          binary
+  |        |           +--rw high?              binary
+  |        |           +--rw warn-high?         binary
+  |        |           +--rw tpid-length?       uint8
+  |        +--rw default-threholds
+  |           +--rw default-threshold* [template-id perfcode]
+  |              +--rw template-id    uint32
+  |              +--rw perfcode       uint16
+  |              +--rw low?           binary
+  |              +--rw warn-low?      binary
+  |              +--rw high?          binary
+  |              +--rw warn-high?     binary
+  |              +--rw minvalue?      binary
+  |              +--rw maxvalue?      binary
+  +--ro state
+  |  +--ro performance
+  |     +--ro statistics
+  |     |  +--ro currentdata
+  |     |  |  +--ro fifteen-mins
+  |     |  |  |  +--ro digitaldata
+  |     |  |  |  |  +--ro zxr10digitaldatum* [inner-index checkpoint-type tpid perfcode tpid-class tpid-length]
+  |     |  |  |  |  |  +--ro inner-index        uint16
+  |     |  |  |  |  |  +--ro checkpoint-type    uint16
+  |     |  |  |  |  |  +--ro tpid               binary
+  |     |  |  |  |  |  +--ro perfcode           uint16
+  |     |  |  |  |  |  +--ro tpid-class         enumeration
+  |     |  |  |  |  |  +--ro tpid-length        uint8
+  |     |  |  |  |  |  +--ro tpid-matcher?      binary
+  |     |  |  |  |  |  +--ro tpid-mask?         binary
+  |     |  |  |  |  |  +--ro value?             binary
+  |     |  |  |  |  |  +--ro isdoubt?           boolean
+  |     |  |  |  |  |  +--ro elapsetime?        uint32
+  |     |  |  |  |  o--ro digitaldatum* [inner-index checkpoint-type tpid perfcode tpid-class]
+  |     |  |  |  |     +--ro inner-index        uint16
+  |     |  |  |  |     +--ro checkpoint-type    uint16
+  |     |  |  |  |     +--ro tpid               binary
+  |     |  |  |  |     +--ro tpid-matcher?      binary
+  |     |  |  |  |     +--ro tpid-mask?         binary
+  |     |  |  |  |     +--ro perfcode           uint16
+  |     |  |  |  |     +--ro value?             binary
+  |     |  |  |  |     +--ro isdoubt?           boolean
+  |     |  |  |  |     +--ro elapsetime?        uint32
+  |     |  |  |  |     +--ro tpid-class         enumeration
+  |     |  |  |  |     +--ro tpid-length?       uint8
+  |     |  |  |  +--ro analogdata
+  |     |  |  |     +--ro zxr10analogdatum* [inner-index checkpoint-type tpid perfcode tpid-class tpid-length]
+  |     |  |  |     |  +--ro inner-index        uint16
+  |     |  |  |     |  +--ro checkpoint-type    uint16
+  |     |  |  |     |  +--ro tpid               binary
+  |     |  |  |     |  +--ro perfcode           uint16
+  |     |  |  |     |  +--ro tpid-class         enumeration
+  |     |  |  |     |  +--ro tpid-length        uint8
+  |     |  |  |     |  +--ro tpid-matcher?      binary
+  |     |  |  |     |  +--ro tpid-mask?         binary
+  |     |  |  |     |  +--ro value?             binary
+  |     |  |  |     |  +--ro max-value?         binary
+  |     |  |  |     |  +--ro min-value?         binary
+  |     |  |  |     |  +--ro avg-value?         binary
+  |     |  |  |     |  +--ro isdoubt?           boolean
+  |     |  |  |     |  +--ro elapsetime?        uint32
+  |     |  |  |     o--ro analogdatum* [inner-index checkpoint-type tpid perfcode tpid-class]
+  |     |  |  |        +--ro inner-index        uint16
+  |     |  |  |        +--ro checkpoint-type    uint16
+  |     |  |  |        +--ro tpid               binary
+  |     |  |  |        +--ro tpid-matcher?      binary
+  |     |  |  |        +--ro tpid-mask?         binary
+  |     |  |  |        +--ro perfcode           uint16
+  |     |  |  |        +--ro value?             binary
+  |     |  |  |        +--ro max-value?         binary
+  |     |  |  |        +--ro min-value?         binary
+  |     |  |  |        +--ro avg-value?         binary
+  |     |  |  |        +--ro isdoubt?           boolean
+  |     |  |  |        +--ro elapsetime?        uint32
+  |     |  |  |        +--ro tpid-class         enumeration
+  |     |  |  |        +--ro tpid-length?       uint8
+  |     |  |  +--ro twenty-four-hours
+  |     |  |     +--ro digitaldata
+  |     |  |     |  +--ro zxr10digitaldatum* [inner-index checkpoint-type tpid perfcode tpid-class tpid-length]
+  |     |  |     |  |  +--ro inner-index        uint16
+  |     |  |     |  |  +--ro checkpoint-type    uint16
+  |     |  |     |  |  +--ro tpid               binary
+  |     |  |     |  |  +--ro perfcode           uint16
+  |     |  |     |  |  +--ro tpid-class         enumeration
+  |     |  |     |  |  +--ro tpid-length        uint8
+  |     |  |     |  |  +--ro tpid-matcher?      binary
+  |     |  |     |  |  +--ro tpid-mask?         binary
+  |     |  |     |  |  +--ro value?             binary
+  |     |  |     |  |  +--ro isdoubt?           boolean
+  |     |  |     |  |  +--ro elapsetime?        uint32
+  |     |  |     |  o--ro digitaldatum* [inner-index checkpoint-type tpid perfcode tpid-class]
+  |     |  |     |     +--ro inner-index        uint16
+  |     |  |     |     +--ro checkpoint-type    uint16
+  |     |  |     |     +--ro tpid               binary
+  |     |  |     |     +--ro tpid-matcher?      binary
+  |     |  |     |     +--ro tpid-mask?         binary
+  |     |  |     |     +--ro perfcode           uint16
+  |     |  |     |     +--ro value?             binary
+  |     |  |     |     +--ro isdoubt?           boolean
+  |     |  |     |     +--ro elapsetime?        uint32
+  |     |  |     |     +--ro tpid-class         enumeration
+  |     |  |     |     +--ro tpid-length?       uint8
+  |     |  |     +--ro analogdata
+  |     |  |        +--ro zxr10analogdatum* [inner-index checkpoint-type tpid perfcode tpid-class tpid-length]
+  |     |  |        |  +--ro inner-index        uint16
+  |     |  |        |  +--ro checkpoint-type    uint16
+  |     |  |        |  +--ro tpid               binary
+  |     |  |        |  +--ro perfcode           uint16
+  |     |  |        |  +--ro tpid-class         enumeration
+  |     |  |        |  +--ro tpid-length        uint8
+  |     |  |        |  +--ro tpid-matcher?      binary
+  |     |  |        |  +--ro tpid-mask?         binary
+  |     |  |        |  +--ro value?             binary
+  |     |  |        |  +--ro max-value?         binary
+  |     |  |        |  +--ro min-value?         binary
+  |     |  |        |  +--ro avg-value?         binary
+  |     |  |        |  +--ro isdoubt?           boolean
+  |     |  |        |  +--ro elapsetime?        uint32
+  |     |  |        o--ro analogdatum* [inner-index checkpoint-type tpid perfcode tpid-class]
+  |     |  |           +--ro inner-index        uint16
+  |     |  |           +--ro checkpoint-type    uint16
+  |     |  |           +--ro tpid               binary
+  |     |  |           +--ro tpid-matcher?      binary
+  |     |  |           +--ro tpid-mask?         binary
+  |     |  |           +--ro perfcode           uint16
+  |     |  |           +--ro value?             binary
+  |     |  |           +--ro max-value?         binary
+  |     |  |           +--ro min-value?         binary
+  |     |  |           +--ro avg-value?         binary
+  |     |  |           +--ro isdoubt?           boolean
+  |     |  |           +--ro elapsetime?        uint32
+  |     |  |           +--ro tpid-class         enumeration
+  |     |  |           +--ro tpid-length?       uint8
+  |     |  +--ro historydata
+  |     |     +--ro fifteen-mins
+  |     |     |  +--ro digitaldata
+  |     |     |  |  +--ro zxr10digitaldatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class tpid-length inner-index]
+  |     |     |  |  |  +--ro checkpoint-type    uint16
+  |     |     |  |  |  +--ro tpid               binary
+  |     |     |  |  |  +--ro perfcode           uint16
+  |     |     |  |  |  +--ro cycle-end-time     ncd:datetime
+  |     |     |  |  |  +--ro tpid-class         enumeration
+  |     |     |  |  |  +--ro tpid-length        uint8
+  |     |     |  |  |  +--ro inner-index        uint16
+  |     |     |  |  |  +--ro tpid-matcher?      binary
+  |     |     |  |  |  +--ro tpid-mask?         binary
+  |     |     |  |  |  +--ro begin-time?        ncd:datetime
+  |     |     |  |  |  +--ro end-time?          ncd:datetime
+  |     |     |  |  |  +--ro value?             binary
+  |     |     |  |  |  +--ro isdoubt?           boolean
+  |     |     |  |  o--ro digitaldatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class inner-index]
+  |     |     |  |     +--ro checkpoint-type    uint16
+  |     |     |  |     +--ro tpid               binary
+  |     |     |  |     +--ro tpid-matcher?      binary
+  |     |     |  |     +--ro tpid-mask?         binary
+  |     |     |  |     +--ro perfcode           uint16
+  |     |     |  |     +--ro cycle-end-time     ncd:datetime
+  |     |     |  |     +--ro begin-time?        ncd:datetime
+  |     |     |  |     +--ro end-time?          ncd:datetime
+  |     |     |  |     +--ro value?             binary
+  |     |     |  |     +--ro isdoubt?           boolean
+  |     |     |  |     +--ro tpid-class         enumeration
+  |     |     |  |     +--ro tpid-length?       uint8
+  |     |     |  |     +--ro inner-index        uint16
+  |     |     |  +--ro analogdata
+  |     |     |     +--ro zxr10analogdatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class tpid-length inner-index]
+  |     |     |     |  +--ro checkpoint-type    uint16
+  |     |     |     |  +--ro tpid               binary
+  |     |     |     |  +--ro perfcode           uint16
+  |     |     |     |  +--ro cycle-end-time     ncd:datetime
+  |     |     |     |  +--ro tpid-class         enumeration
+  |     |     |     |  +--ro tpid-length        uint8
+  |     |     |     |  +--ro inner-index        uint16
+  |     |     |     |  +--ro tpid-matcher?      binary
+  |     |     |     |  +--ro tpid-mask?         binary
+  |     |     |     |  +--ro begin-time?        ncd:datetime
+  |     |     |     |  +--ro end-time?          ncd:datetime
+  |     |     |     |  +--ro value?             binary
+  |     |     |     |  +--ro max-value?         binary
+  |     |     |     |  +--ro min-value?         binary
+  |     |     |     |  +--ro avg-value?         binary
+  |     |     |     |  +--ro isdoubt?           boolean
+  |     |     |     |  +--ro max-value-time?    ncd:datetime
+  |     |     |     o--ro analogdatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class inner-index]
+  |     |     |        +--ro checkpoint-type    uint16
+  |     |     |        +--ro tpid               binary
+  |     |     |        +--ro tpid-matcher?      binary
+  |     |     |        +--ro tpid-mask?         binary
+  |     |     |        +--ro perfcode           uint16
+  |     |     |        +--ro cycle-end-time     ncd:datetime
+  |     |     |        +--ro begin-time?        ncd:datetime
+  |     |     |        +--ro end-time?          ncd:datetime
+  |     |     |        +--ro value?             binary
+  |     |     |        +--ro max-value?         binary
+  |     |     |        +--ro min-value?         binary
+  |     |     |        +--ro avg-value?         binary
+  |     |     |        +--ro isdoubt?           boolean
+  |     |     |        +--ro tpid-class         enumeration
+  |     |     |        +--ro tpid-length?       uint8
+  |     |     |        +--ro inner-index        uint16
+  |     |     |        +--ro max-value-time?    ncd:datetime
+  |     |     +--ro twenty-four-hours
+  |     |        +--ro digitaldata
+  |     |        |  +--ro zxr10digitaldatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class tpid-length inner-index]
+  |     |        |  |  +--ro checkpoint-type    uint16
+  |     |        |  |  +--ro tpid               binary
+  |     |        |  |  +--ro perfcode           uint16
+  |     |        |  |  +--ro cycle-end-time     ncd:datetime
+  |     |        |  |  +--ro tpid-class         enumeration
+  |     |        |  |  +--ro tpid-length        uint8
+  |     |        |  |  +--ro inner-index        uint16
+  |     |        |  |  +--ro tpid-matcher?      binary
+  |     |        |  |  +--ro tpid-mask?         binary
+  |     |        |  |  +--ro begin-time?        ncd:datetime
+  |     |        |  |  +--ro end-time?          ncd:datetime
+  |     |        |  |  +--ro value?             binary
+  |     |        |  |  +--ro isdoubt?           boolean
+  |     |        |  o--ro digitaldatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class inner-index]
+  |     |        |     +--ro checkpoint-type    uint16
+  |     |        |     +--ro tpid               binary
+  |     |        |     +--ro tpid-matcher?      binary
+  |     |        |     +--ro tpid-mask?         binary
+  |     |        |     +--ro perfcode           uint16
+  |     |        |     +--ro cycle-end-time     ncd:datetime
+  |     |        |     +--ro begin-time?        ncd:datetime
+  |     |        |     +--ro end-time?          ncd:datetime
+  |     |        |     +--ro value?             binary
+  |     |        |     +--ro isdoubt?           boolean
+  |     |        |     +--ro tpid-class         enumeration
+  |     |        |     +--ro tpid-length?       uint8
+  |     |        |     +--ro inner-index        uint16
+  |     |        +--ro analogdata
+  |     |           +--ro zxr10analogdatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class tpid-length inner-index]
+  |     |           |  +--ro checkpoint-type    uint16
+  |     |           |  +--ro tpid               binary
+  |     |           |  +--ro perfcode           uint16
+  |     |           |  +--ro cycle-end-time     ncd:datetime
+  |     |           |  +--ro tpid-class         enumeration
+  |     |           |  +--ro tpid-length        uint8
+  |     |           |  +--ro inner-index        uint16
+  |     |           |  +--ro tpid-matcher?      binary
+  |     |           |  +--ro tpid-mask?         binary
+  |     |           |  +--ro begin-time?        ncd:datetime
+  |     |           |  +--ro end-time?          ncd:datetime
+  |     |           |  +--ro value?             binary
+  |     |           |  +--ro max-value?         binary
+  |     |           |  +--ro min-value?         binary
+  |     |           |  +--ro avg-value?         binary
+  |     |           |  +--ro isdoubt?           boolean
+  |     |           o--ro analogdatum* [checkpoint-type tpid perfcode cycle-end-time tpid-class inner-index]
+  |     |              +--ro checkpoint-type    uint16
+  |     |              +--ro tpid               binary
+  |     |              +--ro tpid-matcher?      binary
+  |     |              +--ro tpid-mask?         binary
+  |     |              +--ro perfcode           uint16
+  |     |              +--ro cycle-end-time     ncd:datetime
+  |     |              +--ro begin-time?        ncd:datetime
+  |     |              +--ro end-time?          ncd:datetime
+  |     |              +--ro value?             binary
+  |     |              +--ro max-value?         binary
+  |     |              +--ro min-value?         binary
+  |     |              +--ro avg-value?         binary
+  |     |              +--ro isdoubt?           boolean
+  |     |              +--ro tpid-class         enumeration
+  |     |              +--ro tpid-length?       uint8
+  |     |              +--ro inner-index        uint16
+  |     +--ro monitor
+  |     |  +--ro perfdata
+  |     |     +--ro zxr10perfdatum* [taskid checkpoint-type tpid perfcode cycle-end-time tpid-length]
+  |     |     |  +--ro taskid             uint32
+  |     |     |  +--ro checkpoint-type    uint16
+  |     |     |  +--ro tpid               binary
+  |     |     |  +--ro perfcode           uint16
+  |     |     |  +--ro cycle-end-time     ncd:datetime
+  |     |     |  +--ro tpid-length        uint8
+  |     |     |  +--ro cycle?             uint16
+  |     |     |  +--ro value?             binary
+  |     |     |  +--ro max-value?         binary
+  |     |     |  +--ro min-value?         binary
+  |     |     |  +--ro avg-value?         binary
+  |     |     |  +--ro isdoubt?           boolean
+  |     |     |  +--ro first-cycle?       boolean
+  |     |     |  +--ro begin-time?        ncd:datetime
+  |     |     |  +--ro end-time?          ncd:datetime
+  |     |     |  +--ro perf-type?         enumeration
+  |     |     o--ro perfdatum* [taskid checkpoint-type tpid perfcode cycle-end-time]
+  |     |        +--ro taskid             uint32
+  |     |        +--ro cycle?             uint16
+  |     |        +--ro checkpoint-type    uint16
+  |     |        +--ro tpid               binary
+  |     |        +--ro perfcode           uint16
+  |     |        +--ro cycle-end-time     ncd:datetime
+  |     |        +--ro value?             binary
+  |     |        +--ro max-value?         binary
+  |     |        +--ro min-value?         binary
+  |     |        +--ro avg-value?         binary
+  |     |        +--ro isdoubt?           boolean
+  |     |        +--ro first-cycle?       boolean
+  |     |        +--ro begin-time?        ncd:datetime
+  |     |        +--ro end-time?          ncd:datetime
+  |     |        +--ro perf-type?         enumeration
+  |     |        +--ro tpid-length?       uint8
+  |     +--ro threshold
+  |        +--ro default-thresholds
+  |           +--ro zxr10analog-default-threshold* [checkpoint-type tpid perfcode tpid-length]
+  |           |  +--ro checkpoint-type    uint16
+  |           |  +--ro tpid               binary
+  |           |  +--ro perfcode           uint16
+  |           |  +--ro tpid-length        uint8
+  |           |  +--ro tpid-mask?         binary
+  |           |  +--ro low?               binary
+  |           |  +--ro high?              binary
+  |           |  +--ro warnlow?           binary
+  |           |  +--ro warnhigh?          binary
+  |           |  +--ro curlow?            binary
+  |           |  +--ro curhigh?           binary
+  |           |  +--ro curwarnlow?        binary
+  |           |  +--ro curwarnhigh?       binary
+  |           |  +--ro minvalue?          binary
+  |           |  +--ro maxvalue?          binary
+  |           o--ro analog-default-threshold* [checkpoint-type tpid perfcode]
+  |              +--ro checkpoint-type    uint16
+  |              +--ro tpid               binary
+  |              +--ro perfcode           uint16
+  |              +--ro low?               binary
+  |              +--ro high?              binary
+  |              +--ro warnlow?           binary
+  |              +--ro warnhigh?          binary
+  |              +--ro curlow?            binary
+  |              +--ro curhigh?           binary
+  |              +--ro curwarnlow?        binary
+  |              +--ro curwarnhigh?       binary
+  |              +--ro minvalue?          binary
+  |              +--ro maxvalue?          binary
+  |              +--ro tpid-length?       uint8
+  +--ro operation
+     +--ro performance
+        +--ro clear
+        |  +--ro currentdata
+        |     +--ro currentdatum* [cycle checkpoint-type tpid-matcher tpid-mask perfcode tpid-class]
+        |        +--ro cycle              enumeration
+        |        +--ro checkpoint-type    uint16
+        |        +--ro tpid-matcher       binary
+        |        +--ro tpid-mask          binary
+        |        +--ro perfcode           uint16
+        |        +--ro tpid-class         enumeration
+        |        +--ro tpid-length?       uint8
+        +--ro monitor
+           +--ro start-up
+           |  +--ro task* [taskid]
+           |     +--ro taskid         uint32
+           |     +--ro cycle?         uint16
+           |     +--ro total-time?    uint32
+           |     +--ro auto-report?   boolean
+           |     +--ro checkpoints
+           |        +--ro checkpoint* [type tpid perfcode]
+           |           +--ro type           uint16
+           |           +--ro tpid           binary
+           |           +--ro perfcode       uint16
+           |           +--ro tpid-length?   uint8
+           +--ro stop
+              +--ro task* [taskid]
+                 +--ro taskid    uint32

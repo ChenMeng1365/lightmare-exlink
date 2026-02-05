@@ -1,0 +1,1098 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-etrunk"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:etrunk="urn:huawei:yang:huawei-etrunk"
+        xmlns:bfd="urn:huawei:yang:huawei-bfd"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ifm-trunk="urn:huawei:yang:huawei-ifm-trunk"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-etrunk"/>
+  <prefix value="etrunk"/>
+  <import module="huawei-bfd">
+    <prefix value="bfd"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-ifm-trunk">
+    <prefix value="ifm-trunk"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Enhanced Trunk (E-Trunk) is a mechanism that controls and implements link aggregation among multiple devices. E-Trunk implements device-level not board-level link reliability.</text>
+  </description>
+  <revision date="2021-03-04">
+    <description>
+      <text>Add session-car container and related nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-12">
+    <description>
+      <text>Modify the default value of authen-mode leaf node, change the default value form hmac-sha1 to enhanced-hmac-sha256.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-07">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="etrunk"/>
+  <typedef name="etrunk-state">
+    <type name="enumeration">
+      <enum name="init">
+        <value value="1"/>
+        <description>
+          <text>The E-Trunk state is init.</text>
+        </description>
+      </enum>
+      <enum name="backup">
+        <value value="2"/>
+        <description>
+          <text>The E-Trunk state is backup.</text>
+        </description>
+      </enum>
+      <enum name="master">
+        <value value="3"/>
+        <description>
+          <text>The E-Trunk state is master.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk status.</text>
+    </description>
+  </typedef>
+  <typedef name="ethtrunk-state">
+    <type name="enumeration">
+      <enum name="negotiation">
+        <value value="3"/>
+        <description>
+          <text>Negotiation state.</text>
+        </description>
+      </enum>
+      <enum name="master">
+        <value value="2"/>
+        <description>
+          <text>Master state.</text>
+        </description>
+      </enum>
+      <enum name="backup">
+        <value value="1"/>
+        <description>
+          <text>Backup state.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Eth-Trunk status.</text>
+    </description>
+  </typedef>
+  <typedef name="etrunk-causation">
+    <type name="enumeration">
+      <enum name="priority-change">
+        <value value="1"/>
+        <description>
+          <text>The E-Trunk state is changed because the priority is changed.</text>
+        </description>
+      </enum>
+      <enum name="timeout">
+        <value value="2"/>
+        <description>
+          <text>The E-Trunk state is changed because the local device fails to receive any hello packet before the timeout period expires.</text>
+        </description>
+      </enum>
+      <enum name="bfd-down">
+        <value value="3"/>
+        <description>
+          <text>The E-Trunk state is changed because the BFD is down on the local device.</text>
+        </description>
+      </enum>
+      <enum name="peer-timeout">
+        <value value="4"/>
+        <description>
+          <text>The E-Trunk state is changed because the peer device fails to receive any hello packet before the timeout period expires.</text>
+        </description>
+      </enum>
+      <enum name="peer-bfd-down">
+        <value value="5"/>
+        <description>
+          <text>The E-Trunk state is changed because the BFD is down on the peer device.</text>
+        </description>
+      </enum>
+      <enum name="init-all-member-down">
+        <value value="6"/>
+        <description>
+          <text>The E-Trunk state is changed because all members are down and the E-Trunk enters the initialized state.</text>
+        </description>
+      </enum>
+      <enum name="init">
+        <value value="7"/>
+        <description>
+          <text>The E-Trunk state is changed because the E-Trunk is initialized.</text>
+        </description>
+      </enum>
+      <enum name="peer-node-down">
+        <value value="8"/>
+        <description>
+          <text>The E-Trunk state is changed because the peer device is down.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk status reason.</text>
+    </description>
+  </typedef>
+  <typedef name="ethtrunk-causation">
+    <type name="enumeration">
+      <enum name="force-backup">
+        <value value="1"/>
+        <description>
+          <text>Forcible backup.</text>
+        </description>
+      </enum>
+      <enum name="force-master">
+        <value value="2"/>
+        <description>
+          <text>Forcible master.</text>
+        </description>
+      </enum>
+      <enum name="etrunk-init">
+        <value value="3"/>
+        <description>
+          <text>The E-Trunk state is initialized.</text>
+        </description>
+      </enum>
+      <enum name="etrunk-backup">
+        <value value="4"/>
+        <description>
+          <text>The E-Trunk state is backup.</text>
+        </description>
+      </enum>
+      <enum name="etrunk-master">
+        <value value="5"/>
+        <description>
+          <text>The E-Trunk state is master.</text>
+        </description>
+      </enum>
+      <enum name="peer-member-down">
+        <value value="6"/>
+        <description>
+          <text>The physical state of the peer member is down.</text>
+        </description>
+      </enum>
+      <enum name="peer-member-up">
+        <value value="7"/>
+        <description>
+          <text>The physical state of the peer member is up.</text>
+        </description>
+      </enum>
+      <enum name="active-active">
+        <value value="8"/>
+        <description>
+          <text>The physical state of members at both ends is up.</text>
+        </description>
+      </enum>
+      <enum name="degraded-active">
+        <value value="9"/>
+        <description>
+          <text>The physical state of E-Trunk members (Eth-Trunk interfaces) is degraded active.</text>
+        </description>
+      </enum>
+      <enum name="peerlink-down">
+        <value value="10"/>
+        <description>
+          <text>The peer link is down.</text>
+        </description>
+      </enum>
+      <enum name="link-down">
+        <value value="11"/>
+        <description>
+          <text>The local link is down.</text>
+        </description>
+      </enum>
+      <enum name="all-active">
+        <value value="12"/>
+        <description>
+          <text>The redundancy mode of EVPN instance that E-Trunk member is bound to is all-active.</text>
+        </description>
+      </enum>
+      <enum name="peer-bandwidth-large">
+        <value value="13"/>
+        <description>
+          <text>The available bandwidth of peer member is large.</text>
+        </description>
+      </enum>
+      <enum name="local-bandwidth-large">
+        <value value="14"/>
+        <description>
+          <text>The available bandwidth of local member is large.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Eth-Trunk status reason.</text>
+    </description>
+  </typedef>
+  <typedef name="phy-state">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>The physical state is up.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="2"/>
+        <description>
+          <text>The physical state is down.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Eth-Trunk physical status.</text>
+    </description>
+  </typedef>
+  <typedef name="password-type">
+    <type name="enumeration">
+      <enum name="simple">
+        <value value="1"/>
+        <status value="deprecated"/>
+        <description>
+          <text>Simple password.</text>
+        </description>
+      </enum>
+      <enum name="cipher">
+        <value value="2"/>
+        <description>
+          <text>Ciphertext password.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk password type.</text>
+    </description>
+  </typedef>
+  <typedef name="authen-mode">
+    <type name="enumeration">
+      <enum name="hmac-sha1">
+        <value value="1"/>
+        <description>
+          <text>Configure authentication mode as hmac-sha1.</text>
+        </description>
+      </enum>
+      <enum name="hmac-sha256">
+        <value value="2"/>
+        <description>
+          <text>Configure authentication mode as hmac-sha256.</text>
+        </description>
+      </enum>
+      <enum name="enhanced-hmac-sha256">
+        <value value="3"/>
+        <description>
+          <text>Configure authentication mode as enhanced-hmac-sha256.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk authentication mode.</text>
+    </description>
+  </typedef>
+  <typedef name="revert-enable">
+    <type name="enumeration">
+      <enum name="enable">
+        <value value="0"/>
+        <description>
+          <text>Enable revert mode.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="1"/>
+        <description>
+          <text>Disable revert mode.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk switchback enabling flag.</text>
+    </description>
+  </typedef>
+  <typedef name="sequence-enable">
+    <type name="enumeration">
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable sequence mode.</text>
+        </description>
+      </enum>
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>Disable sequence mode.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk sequence enabling flag.</text>
+    </description>
+  </typedef>
+  <typedef name="etrunk-mode">
+    <type name="enumeration">
+      <enum name="auto">
+        <value value="1"/>
+        <description>
+          <text>Automatic mode.</text>
+        </description>
+      </enum>
+      <enum name="force-backup">
+        <value value="2"/>
+        <description>
+          <text>Forcible backup.</text>
+        </description>
+      </enum>
+      <enum name="force-master">
+        <value value="3"/>
+        <description>
+          <text>Forcible master.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk working mode.</text>
+    </description>
+  </typedef>
+  <typedef name="select-mode">
+    <type name="enumeration">
+      <enum name="default">
+        <value value="0"/>
+        <description>
+          <text>Calculate the active/standby mode according to the default mode.</text>
+        </description>
+      </enum>
+      <enum name="link-number">
+        <value value="1"/>
+        <description>
+          <text>Calculate the active/standby mode according to the active link number.</text>
+        </description>
+      </enum>
+      <enum name="bandwidth">
+        <value value="2"/>
+        <description>
+          <text>Calculate the active/standby mode according to the available bandwidth.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>E-Trunk select mode.</text>
+    </description>
+  </typedef>
+  <typedef name="bfd-state">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="2"/>
+        <description>
+          <text>The BFD state is up.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="1"/>
+        <description>
+          <text>The BFD state is down.</text>
+        </description>
+      </enum>
+      <enum name="unknown">
+        <value value="0"/>
+        <description>
+          <text>The BFD state is unknown.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>BFD session status.</text>
+    </description>
+  </typedef>
+  <container name="etrunk">
+    <description>
+      <text>Enhanced Trunk (E-Trunk) is a mechanism that controls and implements link aggregation among multiple devices. E-Trunk implements device-level not board-level link reliability.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure E-Trunk global configuration.</text>
+      </description>
+      <leaf name="lacp-priority">
+        <type name="uint16">
+          <range value="0..65535"/>
+        </type>
+        <default value="32768"/>
+        <description>
+          <text>Global LACP system priority.</text>
+        </description>
+      </leaf>
+      <leaf name="lacp-sys-id">
+        <ext:dynamic-default/>
+        <type name="pub-type:mac-address"/>
+        <description>
+          <text>Global LACP system MAC address. The default value is the mac address of the system bridge MAC address.</text>
+        </description>
+      </leaf>
+      <leaf name="udp-port">
+        <type name="uint16">
+          <range value="1025..65535"/>
+        </type>
+        <default value="1025"/>
+        <description>
+          <text>UDP port used for global E-Trunk communication.</text>
+        </description>
+      </leaf>
+      <leaf name="udp6-port">
+        <type name="uint16">
+          <range value="1025..65535"/>
+        </type>
+        <default value="1025"/>
+        <description>
+          <text>UDP6 port used for global E-Trunk communication.</text>
+        </description>
+      </leaf>
+      <leaf name="recv-id-errs">
+        <type name="uint64"/>
+        <config value="false"/>
+        <description>
+          <text>Receive E-Trunk ID errors.</text>
+        </description>
+      </leaf>
+      <leaf name="recv-length-errs">
+        <type name="uint64"/>
+        <config value="false"/>
+        <description>
+          <text>Receive length errors.</text>
+        </description>
+      </leaf>
+      <leaf name="all-num">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>All E-Trunk number.</text>
+        </description>
+      </leaf>
+      <leaf name="master-num">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>E-Trunk master number.</text>
+        </description>
+      </leaf>
+      <leaf name="backup-num">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>E-Trunk backup number.</text>
+        </description>
+      </leaf>
+      <leaf name="init-num">
+        <type name="uint32"/>
+        <config value="false"/>
+        <description>
+          <text>E-Trunk init number.</text>
+        </description>
+      </leaf>
+      <container name="etrunk4-session-car">
+        <must condition="pir &gt;= cir and pbs &gt;= cbs"/>
+        <description>
+          <text>Configure IPv4 E-Trunk session CAR.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable IPv4 E-Trunk session CAR.</text>
+          </description>
+        </leaf>
+        <leaf name="cir">
+          <type name="uint32">
+            <range value="0..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <default value="128"/>
+          <description>
+            <text>Specify the session CAR CIR value.</text>
+          </description>
+        </leaf>
+        <leaf name="cbs">
+          <type name="uint32">
+            <range value="0..9000000"/>
+          </type>
+          <units name="Byte"/>
+          <default value="25600"/>
+          <description>
+            <text>Specify the session CAR CBS value.</text>
+          </description>
+        </leaf>
+        <leaf name="pir">
+          <type name="uint32">
+            <range value="0..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <default value="1500"/>
+          <description>
+            <text>Specify the session CAR PIR value.</text>
+          </description>
+        </leaf>
+        <leaf name="pbs">
+          <type name="uint32">
+            <range value="0..9000000"/>
+          </type>
+          <units name="Byte"/>
+          <default value="187500"/>
+          <description>
+            <text>Specify the session CAR PBS value.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="etrunk6-session-car">
+        <must condition="pir &gt;= cir and pbs &gt;= cbs"/>
+        <description>
+          <text>Configure IPv6 E-Trunk session CAR.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable IPv6 E-Trunk session CAR.</text>
+          </description>
+        </leaf>
+        <leaf name="cir">
+          <type name="uint32">
+            <range value="0..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <default value="128"/>
+          <description>
+            <text>Specify the session CAR CIR value.</text>
+          </description>
+        </leaf>
+        <leaf name="cbs">
+          <type name="uint32">
+            <range value="0..9000000"/>
+          </type>
+          <units name="Byte"/>
+          <default value="25600"/>
+          <description>
+            <text>Specify the session CAR CBS value.</text>
+          </description>
+        </leaf>
+        <leaf name="pir">
+          <type name="uint32">
+            <range value="0..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <default value="1500"/>
+          <description>
+            <text>Specify the session CAR PIR value.</text>
+          </description>
+        </leaf>
+        <leaf name="pbs">
+          <type name="uint32">
+            <range value="0..9000000"/>
+          </type>
+          <units name="Byte"/>
+          <default value="187500"/>
+          <description>
+            <text>Specify the session CAR PBS value.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+    <container name="instances">
+      <description>
+        <text>List of E-Trunk.</text>
+      </description>
+      <list name="instance">
+        <must condition="(peer-addr and source-addr and peer-addr != source-addr) or (not(peer-addr) and not(source-addr))"/>
+        <key value="id"/>
+        <description>
+          <text>Configure E-Trunk instance.</text>
+        </description>
+        <leaf name="id">
+          <type name="uint16">
+            <range value="1..128"/>
+          </type>
+          <description>
+            <text>An integer that uniquely identifies an E-Trunk link.</text>
+          </description>
+        </leaf>
+        <leaf name="priority">
+          <type name="uint16">
+            <range value="1..254"/>
+          </type>
+          <default value="100"/>
+          <description>
+            <text>The E-Trunk priority determines the master/backup status of two devices in an aggregation group.</text>
+          </description>
+        </leaf>
+        <leaf name="ni-name">
+          <when condition="../peer-addr and ../source-addr"/>
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af/l3vpn:type"/>
+          <default value="_public_"/>
+          <description>
+            <text>VPN instance name. If peer-addr and source-addr are set to IPv4, the IPv4 address family needs to be configured for the VPN instance. If peer-addr and source-addr are set to IPv6, the IPv6 address family needs to be configured for the VPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-addr">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Configure peer IPv4/IPv6 address, peer-addr and source-addr must be of the same type, either IPv4 or IPv6.</text>
+          </description>
+        </leaf>
+        <leaf name="source-addr">
+          <type name="inet:ip-address-no-zone"/>
+          <description>
+            <text>Configure source IPv4/IPv6 address, peer-addr and source-addr must be of the same type, either IPv4 or IPv6.</text>
+          </description>
+        </leaf>
+        <choice name="bfd-session">
+          <description>
+            <text>BFD session choices.</text>
+          </description>
+          <case name="static-bfd">
+            <description>
+              <text>BFD session choice case as static BFD.</text>
+            </description>
+            <leaf name="bfd-session-name">
+              <type name="leafref">
+                <path value="/bfd:bfd/bfd:sessions/bfd:session/bfd:name"/>
+              </type>
+              <must condition="/bfd:bfd/bfd:sessions/bfd:session[bfd:name=current()]/bfd:local-discriminator"/>
+              <description>
+                <text>Bind the BFD session to an E-Trunk.</text>
+              </description>
+            </leaf>
+          </case>
+          <case name="dyn-bfd">
+            <description>
+              <text>Dynamic BFD session binding to an E-Trunk.</text>
+            </description>
+            <container name="e-trunkbfd">
+              <description>
+                <text>Configure dynamic BFD information.</text>
+              </description>
+              <leaf name="bfd-enable">
+                <when condition="/bfd:bfd"/>
+                <type name="empty"/>
+                <description>
+                  <text>E-Trunk creates BFD session automatically.</text>
+                </description>
+              </leaf>
+              <leaf name="detect-multi">
+                <when condition="../bfd-enable"/>
+                <type name="uint32">
+                  <range value="3..50"/>
+                </type>
+                <default value="3"/>
+                <description>
+                  <text>BFD hello packet detection multiplier.</text>
+                </description>
+              </leaf>
+              <leaf name="min-rx-interval">
+                <when condition="../bfd-enable"/>
+                <type name="uint32">
+                  <range value="3..20000"/>
+                </type>
+                <units name="ms"/>
+                <default value="10"/>
+                <description>
+                  <text>Interval at which BFD hello packets are received.</text>
+                </description>
+              </leaf>
+              <leaf name="min-tx-interval">
+                <when condition="../bfd-enable"/>
+                <type name="uint32">
+                  <range value="3..20000"/>
+                </type>
+                <units name="ms"/>
+                <default value="10"/>
+                <description>
+                  <text>Interval at which BFD hello packets are sent.</text>
+                </description>
+              </leaf>
+              <leaf name="if-name">
+                <when condition="../bfd-enable"/>
+                <type name="leafref">
+                  <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                </type>
+                <description>
+                  <text>Tracked interface name. The interface must be a physical main interface or Eth-Trunk interface.</text>
+                </description>
+              </leaf>
+              <leaf name="bfd-state">
+                <type name="bfd-state"/>
+                <config value="false"/>
+                <description>
+                  <text>Dynamic BFD state.</text>
+                </description>
+              </leaf>
+            </container>
+          </case>
+        </choice>
+        <leaf name="security-key-type">
+          <type name="password-type"/>
+          <description>
+            <text>Configure a password type, the cipher encryption type is recommended.</text>
+          </description>
+        </leaf>
+        <leaf name="security-key">
+          <type name="pub-type:password-extend"/>
+          <description>
+            <text>Configure a password for encrypted packets. The password is a string ranging from 1 to 255 characters for a unencrypted password and 24 characters for an old encrypted password and 20 to 432 characters for a encrypted password.</text>
+          </description>
+        </leaf>
+        <leaf name="authen-mode">
+          <type name="authen-mode"/>
+          <default value="enhanced-hmac-sha256"/>
+          <description>
+            <text>Configure an authentication mode for an E-Trunk.</text>
+          </description>
+        </leaf>
+        <leaf name="timer-hello">
+          <type name="uint8">
+            <range value="5..100"/>
+          </type>
+          <units name="100 ms"/>
+          <default value="10"/>
+          <description>
+            <text>Configure the interval at which hello packets are sent.</text>
+          </description>
+        </leaf>
+        <leaf name="timer-multi">
+          <type name="uint16">
+            <range value="3..300"/>
+          </type>
+          <default value="20"/>
+          <description>
+            <text>Configure the multiplier for detecting hello packets.</text>
+          </description>
+        </leaf>
+        <leaf name="revert-enable">
+          <type name="revert-enable"/>
+          <default value="enable"/>
+          <description>
+            <text>Configure revert enable.</text>
+          </description>
+        </leaf>
+        <leaf name="timer-revert-delay">
+          <type name="uint16">
+            <range value="0..10800"/>
+          </type>
+          <units name="s"/>
+          <default value="120"/>
+          <description>
+            <text>Configure the switchback delay time.</text>
+          </description>
+        </leaf>
+        <leaf name="sequence-enable">
+          <type name="sequence-enable"/>
+          <default value="disable"/>
+          <description>
+            <text>Configure sequence enable.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="pub-type:description-string">
+            <length value="1..242"/>
+            <pattern value="[^\?\s](([^\?\s]*)|[^\t\?]*[^\?\s])"/>
+          </type>
+          <description>
+            <text>Configure a description for an E-Trunk.</text>
+          </description>
+        </leaf>
+        <leaf name="select-mode">
+          <type name="select-mode"/>
+          <default value="default"/>
+          <description>
+            <text>The mode of E-Trunk that is used for calculate the active or standby status.</text>
+          </description>
+        </leaf>
+        <leaf name="sys-id">
+          <type name="pub-type:mac-address"/>
+          <config value="false"/>
+          <description>
+            <text>Local system MAC address.</text>
+          </description>
+        </leaf>
+        <leaf name="state">
+          <type name="etrunk-state"/>
+          <config value="false"/>
+          <description>
+            <text>Local E-Trunk state.</text>
+          </description>
+        </leaf>
+        <leaf name="causation">
+          <type name="etrunk-causation"/>
+          <config value="false"/>
+          <description>
+            <text>The reason for local E-Trunk state change.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-pkts">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Statistics about received packets.</text>
+          </description>
+        </leaf>
+        <leaf name="send-pkts">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Statistics about sent packets.</text>
+          </description>
+        </leaf>
+        <leaf name="recv-drop-pkts">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Statistics about dropped received packets statistics.</text>
+          </description>
+        </leaf>
+        <leaf name="send-drop-pkts">
+          <type name="uint64"/>
+          <config value="false"/>
+          <description>
+            <text>Statistics about dropped sent packets.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-priority">
+          <type name="uint16"/>
+          <config value="false"/>
+          <description>
+            <text>The E-Trunk peer priority determines the master/backup status of two devices in an aggregation group.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-sys-id">
+          <type name="pub-type:mac-address"/>
+          <config value="false"/>
+          <description>
+            <text>Peer system MAC address.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-fail-time">
+          <type name="uint32"/>
+          <units name="100 ms"/>
+          <config value="false"/>
+          <description>
+            <text>Peer timeout period. Timeout period = peer sending period x Multiplier.</text>
+          </description>
+        </leaf>
+        <container name="interfaces">
+          <description>
+            <text>List of E-Trunk member.</text>
+          </description>
+          <list name="interface">
+            <key value="if-name"/>
+            <max-elements value="64"/>
+            <description>
+              <text>Configure E-Trunk member.
+Special explanation: Before adding an interface to an E-Trunk, you must create the interface based on localTrunkId and type.</text>
+            </description>
+            <leaf name="if-name">
+              <type name="leafref">
+                <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+              </type>
+              <must condition="(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm:type = 'Eth-Trunk' and (/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm-trunk:trunk/ifm-trunk:work-mode = 'static' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm-trunk:trunk/ifm-trunk:work-mode = 'manual')) or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()]/ifm:type = 'Global-VE'"/>
+              <description>
+                <text>Local Eth-Trunk name or Global-VE name.</text>
+              </description>
+            </leaf>
+            <leaf name="remote-trunk-id">
+              <ext:dynamic-default/>
+              <type name="uint32"/>
+              <description>
+                <text>Remote Eth-Trunk ID.</text>
+              </description>
+            </leaf>
+            <leaf name="mode">
+              <type name="etrunk-mode"/>
+              <default value="auto"/>
+              <description>
+                <text>E-Trunk member working mode.</text>
+              </description>
+            </leaf>
+            <leaf name="phy-state">
+              <type name="phy-state"/>
+              <config value="false"/>
+              <description>
+                <text>E-Trunk member physical state.</text>
+              </description>
+            </leaf>
+            <leaf name="state">
+              <type name="ethtrunk-state"/>
+              <config value="false"/>
+              <description>
+                <text>E-Trunk member state.</text>
+              </description>
+            </leaf>
+            <leaf name="causation">
+              <type name="ethtrunk-causation"/>
+              <config value="false"/>
+              <description>
+                <text>The reason for E-Trunk member state change.</text>
+              </description>
+            </leaf>
+            <container name="lacp-syscfg">
+              <when condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../if-name]/ifm:type = 'Eth-Trunk' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name = current()/../if-name]/ifm-trunk:trunk/ifm-trunk:work-mode = 'static'"/>
+              <description>
+                <text>Configure Eth-Trunk LACP configuration.</text>
+              </description>
+              <leaf name="lacp-priority">
+                <type name="uint16">
+                  <range value="0..65535"/>
+                </type>
+                <description>
+                  <text>LACP system priority of the Eth-Trunk.</text>
+                </description>
+              </leaf>
+              <leaf name="lacp-sysid">
+                <type name="pub-type:mac-address"/>
+                <description>
+                  <text>LACP system MAC of the Eth-Trunk. The default value is generated by LACP.</text>
+                </description>
+              </leaf>
+              <leaf name="negotiate-delay">
+                <type name="uint16">
+                  <range value="0..1800"/>
+                </type>
+                <default value="0"/>
+                <description>
+                  <text>Set the value of negotiating delay time.</text>
+                </description>
+              </leaf>
+            </container>
+          </list>
+        </container>
+        <container name="pkts-statistics">
+          <config value="false"/>
+          <description>
+            <text>E-Trunk packet statistics.</text>
+          </description>
+          <leaf name="priority-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive priority error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="fail-time-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive failtime error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="state-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive state error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="reason-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive state reason error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="peer-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive peer IP error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="auth-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive authentication mode error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="tlv-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive TLV error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="sysid-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive system ID error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="bfd-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive BFD protection error packets statistics.</text>
+            </description>
+          </leaf>
+          <leaf name="seq-err-pkts">
+            <type name="uint64"/>
+            <config value="false"/>
+            <description>
+              <text>Receive sequence check error packets statistics.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

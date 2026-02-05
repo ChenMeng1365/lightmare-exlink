@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-mpls-te-bfd"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mpls-te-bfd="urn:huawei:yang:huawei-mpls-te-bfd"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:mpls="urn:huawei:yang:huawei-mpls"
+        xmlns:mpls-te="urn:huawei:yang:huawei-mpls-te"
+        xmlns:rsvp-interface="urn:huawei:yang:huawei-rsvp-interface"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:bfd="urn:huawei:yang:huawei-bfd"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance">
+  <namespace uri="urn:huawei:yang:huawei-mpls-te-bfd"/>
+  <prefix value="mpls-te-bfd"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-mpls">
+    <prefix value="mpls"/>
+  </import>
+  <import module="huawei-mpls-te">
+    <prefix value="mpls-te"/>
+  </import>
+  <import module="huawei-rsvp-interface">
+    <prefix value="rsvp-interface"/>
+  </import>
+  <import module="huawei-tunnel-management">
+    <prefix value="tnlm"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-bfd">
+    <prefix value="bfd"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <include module="huawei-mpls-te-bfd-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Specifies the multi-protocol label switching protocol.</text>
+  </description>
+  <revision date="2020-07-04">
+    <description>
+      <text>Fixed BFD for lsp condition for SR-TE, and add BFD initial down for SR-TE.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-24">
+    <description>
+      <text>Fixed some descriptions.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-17">
+    <description>
+      <text>Delete the must constranit for sr-te tunnel bfd-for-lsp's min-rx-interval node.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-11-12">
+    <description>
+      <text>Add BFD configurations in the p2p templates and p2mp templates.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-27">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="mpls-te"/>
+  <augment target-node="/mpls:mpls/mpls-te:te">
+    <when condition="/mpls:mpls/mpls-te:te/mpls-te:enable='true'"/>
+    <description>
+      <text>Global MPLS TE BFD Configuration informations.</text>
+    </description>
+    <container name="bfd-for-lsp">
+      <description>
+        <text>Configure global MPLS TE BFD.</text>
+      </description>
+      <leaf name="enable">
+        <when condition="/bfd:bfd"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable capability of global MPLS TE BFD detection.
+Special explanation:
+Constraint: This capability depends on the configuration of global bfd.</text>
+        </description>
+      </leaf>
+      <leaf name="mode">
+        <when condition="../enable='true'"/>
+        <type name="bfd-for-lsp-mode"/>
+        <description>
+          <text>BFD detect mode.
+Special explanation:
+In one-arm BFD, the configured min-tx-interval does not take effect.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval for sending Global MPLS TE BFD packets.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval for receiving Global MPLS TE BFD packets.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of times for losing Global MPLS TE BFD packets.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="bfd-for-tunnel">
+      <description>
+        <text>Configure global MPLS TE BFD for tunnel.</text>
+      </description>
+      <leaf name="mode">
+        <when condition="/bfd:bfd"/>
+        <type name="bfd-for-tunnel-mode"/>
+        <description>
+          <text>BFD detect mode.
+Special explanation:
+In one-arm BFD, the configured min-tx-interval does not take effect.
+Once mode one-arm-echo is configured, bfd for tunnel is enabled.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval at which packets of global MPLS TE BFD for tunnel are sent.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval at which packets of global MPLS TE BFD for tunnel are received.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of times for losing global MPLS TE BFD for tunnel packets.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/tnlm:tunnel-protocol/tnlm:type/mpls-te:mpls-te/mpls-te:te-tunnel/mpls-te:sr-te">
+    <description>
+      <text>Dynamic BFD configuration for TE LSP of SR-TE tunnel.</text>
+    </description>
+    <container name="bfd-for-lsp">
+      <description>
+        <text>Configure dynamic BFD for TE LSP Parameter of SR-TE tunnel.</text>
+      </description>
+      <leaf name="ability">
+        <type name="bfd-ability-type"/>
+        <must condition="(../ability='enable' and /bfd:bfd) or (../ability='block')"/>
+        <description>
+          <text>BFD for TE LSP enabling state.
+Special explanation:
+Constraint: This capability depends on the configuration of global bfd.</text>
+        </description>
+      </leaf>
+      <leaf name="mode">
+        <when condition="../ability='enable'"/>
+        <type name="te-tunnel-bfd-for-lsp-mode"/>
+        <must condition="(../mode='seamless' and /bfd:bfd/bfd:sbfd) or (../mode='one-arm-echo') or (../mode='option-tlv')"/>
+        <description>
+          <text>BFD detect mode.
+Special explanation:
+In one-arm BFD, the configured min-tx-interval does not take effect.
+In seamless BFD, the configured min-rx-interval does not take effect.
+In option-tlv BFD, option-tlv Enable bfd detection with options.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD sending interval.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD receiving interval.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of BFD loss times. When BFD for TE LSP is enabled for a TE tunnel, a BFD session can be set up. If the number of lost BFD messages exceeds the maximum number of BFD loss times, the TE tunnel is considered to be faulty.</text>
+        </description>
+      </leaf>
+      <leaf name="only-detection-primary">
+        <when condition="../mode='one-arm-echo'"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable BFD for TE primary LSP detection.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="bfd-for-tunnel">
+      <must condition="(ability='enable' and mode) or not(ability='enable')"/>
+      <description>
+        <text>Configure dynamic BFD for TE tunnel parameter of SR-TE tunnels.</text>
+      </description>
+      <leaf name="ability">
+        <type name="bfd-ability-type"/>
+        <must condition="(../ability='enable' and /bfd:bfd) or (../ability='block')"/>
+        <description>
+          <text>BFD for TE LSP enabling state.
+Special explanation:
+Constraint: This capability depends on the configuration of global bfd.</text>
+        </description>
+      </leaf>
+      <leaf name="mode">
+        <when condition="../ability='enable'"/>
+        <type name="te-tunnel-bfd-for-tunnel-mode"/>
+        <must condition="(../mode='seamless' and /bfd:bfd/bfd:sbfd) or (../mode='one-arm-echo')"/>
+        <default value="one-arm-echo"/>
+        <description>
+          <text>BFD Detect Mode.
+Special explanation:
+In one-arm BFD, the configured min-tx-interval does not take effect.
+In seamless BFD, the configured min-rx-interval does not take effect.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval at which packets of BFD for tunnel are sent.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval at which packets of BFD for tunnel are received.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of BFD for tunnel loss times. When BFD for tunnel is enabled for a TE tunnel, a BFD session can be established. If the number of lost BFD messages exceeds the maximum number of BFD loss times, the TE tunnel is considered to be faulty.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="static-bfd-for-lsp">
+      <description>
+        <text>Configure static BFD initial down for TE LSP parameter of SR-TE tunnel.</text>
+      </description>
+      <leaf name="initial-down-enable">
+        <when condition="/bfd:bfd"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable initial down for static BFD for LSP.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/mpls:mpls/mpls-te:te/rsvp-interface:rsvp-interfaces/rsvp-interface:rsvp-interface">
+    <description>
+      <text>BFD for rsvp te interface config.</text>
+    </description>
+    <container name="bfd">
+      <description>
+        <text>Configure BFD for rsvp te interface.</text>
+      </description>
+      <leaf name="ability">
+        <type name="bfd-ability-type"/>
+        <must condition="(../ability='enable' and /bfd:bfd) or (../ability='block')"/>
+        <description>
+          <text>MPLS RSVP-TE BFD Configuration.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval for sending BFD packets.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval for receiving BFD packets.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of BFD packets that can be dropped on an RSVP interface. After BFD is enabled on an RSVP-TE interface and a BFD session is established,
+the interface considers that a fault occurs if the number of dropped BFD packets reaches the specified upper limit.</text>
+        </description>
+      </leaf>
+      <leaf name="set-bfd-pst">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable global process port.</text>
+        </description>
+      </leaf>
+      <leaf name="tos-exp">
+        <type name="uint8">
+          <range value="0..7"/>
+        </type>
+        <description>
+          <text>Priority for sending BFD packets.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/tnlm:tunnel-protocol/tnlm:type/mpls-te:mpls-te/mpls-te:te-tunnel/mpls-te:rsvp-te">
+    <description>
+      <text>Dynamic BFD for TE LSP parameter augment to RSVP-TE tunnel.</text>
+    </description>
+    <container name="bfd-for-lsp">
+      <description>
+        <text>Configure dynamic BFD for TE LSP parameter of a tunnel.</text>
+      </description>
+      <leaf name="ability">
+        <type name="bfd-ability-type"/>
+        <must condition="(../ability='enable' and /bfd:bfd) or (../ability='block')"/>
+        <description>
+          <text>BFD for TE LSP enabling state.
+Special explanation:
+Constraint: This capability depends on the configuration of global bfd.</text>
+        </description>
+      </leaf>
+      <leaf name="mode">
+        <when condition="../ability='enable'"/>
+        <type name="rsvp-te-tunnel-bfd-for-lsp-mode"/>
+        <description>
+          <text>BFD detect mode.
+Special explanation:
+In one-arm BFD, the configured min-tx-interval does not take effect.
+In seamless BFD, the configured min-rx-interval does not take effect.
+In option-tlv BFD, option-tlv Enable bfd detection with options.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD sending interval.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD receiving interval.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of BFD loss times. When BFD for TE LSP is enabled for a TE tunnel, a BFD session can be set up. If the number of lost BFD messages exceeds the maximum number of BFD loss times, the TE tunnel is considered to be faulty.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/mpls:mpls/mpls-te:te/mpls-te:p2mp-templates/mpls-te:p2mp-template">
+    <description>
+      <text>Dynamic BFD for TE LSP parameter of P2MP template.</text>
+    </description>
+    <container name="bfd">
+      <description>
+        <text>Configure dynamic BFD for TE LSP parameter of P2MP template.</text>
+      </description>
+      <leaf name="enable">
+        <when condition="/bfd:bfd"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable BFD for TE LSP enabling state.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD sending interval.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD receiving interval.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of BFD loss times. When BFD for TE LSP is enabled for a TE tunnel, a BFD session can be set up. If the number of lost BFD messages exceeds the maximum number of BFD loss times, the TE tunnel is considered to be faulty.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/mpls:mpls/mpls-te:te/mpls-te:p2p-templates/mpls-te:p2p-template">
+    <description>
+      <text>Dynamic BFD for TE LSP parameter of P2P template.</text>
+    </description>
+    <container name="bfd">
+      <description>
+        <text>Configure dynamic BFD for TE LSP parameter of P2P template.</text>
+      </description>
+      <leaf name="enable">
+        <when condition="/bfd:bfd"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable BFD for TE LSP enabling state.
+Special explanation:
+Constraint: This capability depends on the configuration of global bfd.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD sending interval.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..1000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>BFD receiving interval.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of BFD loss times. When BFD for TE LSP is enabled for a TE tunnel, a BFD session can be set up. If the number of lost BFD messages exceeds the maximum number of BFD loss times, the TE tunnel is considered to be faulty.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/mpls:mpls/mpls-te:te/mpls-te:rsvp">
+    <when condition="/bfd:bfd and /mpls:mpls/mpls-te:te/mpls-te:rsvp/mpls-te:enable='true'"/>
+    <description>
+      <text>Dynamic BFD configuration for all rsvp interfaces.</text>
+    </description>
+    <container name="bfd-all-interfaces">
+      <description>
+        <text>Configure BFD for all interfaces parameters.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the enabling state of bfd for all interfaces capability.</text>
+        </description>
+      </leaf>
+      <leaf name="min-tx-interval">
+        <type name="uint32">
+          <range value="3..20000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval for sending BFD packets for all interfaces.</text>
+        </description>
+      </leaf>
+      <leaf name="min-rx-interval">
+        <type name="uint32">
+          <range value="3..20000"/>
+        </type>
+        <units name="ms"/>
+        <description>
+          <text>Interval for receiving BFD packets for all interfaces.</text>
+        </description>
+      </leaf>
+      <leaf name="detect-multiplier">
+        <type name="uint32">
+          <range value="3..50"/>
+        </type>
+        <default value="3"/>
+        <description>
+          <text>Maximum number of times for losing global MPLS TE BFD for all interfaces packets.</text>
+        </description>
+      </leaf>
+      <leaf name="process-pst">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the global pst flag.</text>
+        </description>
+      </leaf>
+      <leaf name="tos-exp">
+        <type name="uint32">
+          <range value="0..7"/>
+        </type>
+        <description>
+          <text>Configure the priority of the global BFD session packet.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

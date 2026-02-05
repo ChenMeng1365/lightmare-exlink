@@ -1,0 +1,375 @@
+module zxr10-span {
+  namespace 'http://www.zte.com.cn/zxr10/netconf/schema/rosng/span'
+            ;
+  prefix span ;
+  yang-version 1 ;
+  import zxr10-netconf-defs {
+    prefix ncd ;
+  }
+  organization 'ZTE Corporation'
+               ;
+  contact 'ZTE Corporation  '+"\n"
+        + '   Nanjing Institute of ZTE Corporation '+"\n"
+        + '   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China '+"\n"
+        + '   Tel: +86-25-52870000'
+          ;
+  description 'swith monitor support netconf'
+              ;
+  revision 2020-06-15 {
+    description 'Support description for seesion:'+"\n"
+              + '/configuration/span/sessions/session/description.'
+                ;
+  }
+  revision 2020-02-13 {
+    description 'Support destination of VXLAN, add node:'+"\n"
+              + '/configuration/span/sessions/session/default/destination/vxlan'
+              + '.'
+                ;
+  }
+  revision 2016-05-17 {
+    description '1.add switchvlan node.
+2.modefy destination container node.'
+                ;
+  }
+  revision 2016-02-24 {
+    description 'Initial version.'
+                ;
+  }
+  feature default-vxlan {
+    description 'Default destination VXLAN.'
+                ;
+  }
+  container configuration {
+    description 'SPAN module configuration model.'
+                ;
+    container span {
+      description 'SPAN module configuration root node.'
+                  ;
+      container sessions {
+        description 'SPAN sessions.'
+                    ;
+        list session {
+          description 'SPAN session.'
+                      ;
+          max-elements 12 ;
+          key session-id ;
+          leaf session-id {
+            description 'SPAN session ID.'
+                        ;
+            type uint32 {
+              range 1..12 ;
+            }
+          }
+          leaf description {
+            description 'Description for use.'
+                        ;
+            type ncd:string-with-blank {
+              length 1..79 ;
+            }
+            ncd:revise-date 2020-06-15 ;
+          }
+          container source {
+            description 'The sources of SPAN.'
+                        ;
+            container interface-sources {
+              description 'The source of SPAN.'
+                          ;
+              list interface-source {
+                description 'The source of SPAN.'
+                            ;
+                key 'direction interface-name'
+                    ;
+                leaf interface-name {
+                  description 'The interface name of SPAN source.'
+                              ;
+                  type ncd:ifname {
+                    length 1..31 {
+                      description 'interface name 1-31 characters.'
+                                  ;
+                    }
+                  }
+                }
+                leaf direction {
+                  description 'The direction for SPAN source.'
+                              ;
+                  type enumeration {
+                    enum rx {
+                      value 2 ;
+                      description 'The SPAN source direction is receive'
+                                  ;
+                    }
+                    enum tx {
+                      value 3 ;
+                      description 'The SPAN source direction is transmit'
+                                  ;
+                    }
+                    enum both {
+                      value 1 ;
+                      description 'Set direction to both rx and tx'
+                                  ;
+                    }
+                    enum cpu-both {
+                      value 4 ;
+                      description 'Set direction to cpu both rx and tx'
+                                  ;
+                    }
+                    enum cpu-rx {
+                      value 5 ;
+                      description 'Set direction to cpu receive'
+                                  ;
+                    }
+                    enum cpu-tx {
+                      value 6 ;
+                      description 'Set direction to cpu transmit'
+                                  ;
+                    }
+                  }
+                }
+              }
+            }
+            container switchvlan-sources {
+              description 'The switchvlan source.'
+                          ;
+              list switchvlan-source {
+                description 'The switchvlan source.'
+                            ;
+                key 'switchvlan-id direction'
+                    ;
+                leaf switchvlan-id {
+                  description 'The vlanid of switchvlan source.'
+                              ;
+                  type uint16 {
+                    range 1..4094 ;
+                  }
+                }
+                leaf direction {
+                  description 'The direction for SPAN source.'
+                              ;
+                  type enumeration {
+                    enum rx {
+                      value 2 ;
+                      description 'The SPAN source direction is receive'
+                                  ;
+                    }
+                    enum tx {
+                      value 3 ;
+                      description 'The SPAN source direction is transmit'
+                                  ;
+                    }
+                    enum both {
+                      value 1 ;
+                      description 'Set direction to both rx and tx'
+                                  ;
+                    }
+                  }
+                }
+              }
+            }
+            ncd:revise-date 2016-05-17 ;
+          }
+          container default {
+            description 'The default SPAN destination.'
+                        ;
+            container destination {
+              description 'The default SPAN destination.'
+                          ;
+              container interfaces {
+                description 'The destination of RSPAN.'
+                            ;
+                list interface {
+                  description 'The destination of RSPAN.'
+                              ;
+                  key interface-name ;
+                  leaf interface-name {
+                    description 'The interface name of RSPAN destination.'
+                                ;
+                    type ncd:ifname {
+                      length 1..31 {
+                        description 'interface name 1-31 characters.'
+                                    ;
+                      }
+                    }
+                  }
+                  container rspan-vlan {
+                    description 'Configure the RSPAN VLAN ID.'
+                                ;
+                    presence 'Configuration rspan vlan'
+                             ;
+                    leaf vlan-id {
+                      description 'Configure the RSPAN VLAN ID.'
+                                  ;
+                      type uint16 {
+                        range 1..4094 {
+                          description 'RSPAN VLAN ID'
+                                      ;
+                        }
+                      }
+                      mandatory true ;
+                    }
+                    container tpid-priority {
+                      description 'Configure the tpid and priority of RSPAN.'
+                                  ;
+                      leaf tpid {
+                        description 'Configure the MAC header TPID of RSPAN.'
+                                    ;
+                        type enumeration {
+                          enum 0x8100 {
+                            value 1 ;
+                            description 'Configure the MAC header TPID'
+                                        ;
+                          }
+                        }
+                        default 0x8100 ;
+                      }
+                      leaf priority {
+                        description 'Configure the RSPAN priority.'
+                                    ;
+                        type uint8 {
+                          range 0..7 ;
+                        }
+                        default 0 ;
+                      }
+                    }
+                  }
+                }
+                ncd:revise-date 2016-05-17 ;
+              }
+              container erspans {
+                description 'The destination of ERSPAN.'
+                            ;
+                list erspan {
+                  description 'The destination of ERSPAN.'
+                              ;
+                  key interface-name ;
+                  leaf interface-name {
+                    description 'Configure ERSPAN destination interface'
+                                ;
+                    type ncd:ifname {
+                      length 1..31 {
+                        description 'interface name 1-31 characters.'
+                                    ;
+                      }
+                    }
+                  }
+                  leaf tpid {
+                    description 'Configure the MAC header TPID of ERSPAN'
+                                ;
+                    type enumeration {
+                      enum 0x8100 {
+                        value 1 ;
+                      }
+                    }
+                    default 0x8100 ;
+                  }
+                  leaf precedence {
+                    description 'Configure the IP precedence value of ERSPAN.'
+                                ;
+                    type uint8 {
+                      range 0..7 ;
+                    }
+                    default 0 ;
+                  }
+                  leaf flags {
+                    description 'Configure the VLAN flags of ERSPAN traffic'
+                                ;
+                    type enumeration {
+                      enum disable {
+                        value 0 ;
+                      }
+                      enum enable {
+                        value 1 ;
+                      }
+                    }
+                    default disable ;
+                  }
+                  leaf ttl {
+                    description 'Configure the IP time-to-live (TTL) value.'
+                                ;
+                    type uint8 {
+                      range 1..255 ;
+                    }
+                    default 128 ;
+                  }
+                  leaf dscp {
+                    description 'Configure the IP DSCP value.'
+                                ;
+                    type uint8 {
+                      range 0..63 {
+                        description 'dscp range'
+                                    ;
+                      }
+                    }
+                    default 0 ;
+                  }
+                }
+                ncd:revise-date 2016-05-17 ;
+              }
+              container vxlan {
+                // if-feature default-vxlan ;
+                description 'The destination of VXLAN.'
+                            ;
+                container ipv4s {
+                  description 'Specify IPv4 address.'
+                              ;
+                  list ipv4 {
+                    description 'Specify IPv4 address.'
+                                ;
+                    key 'source-ipv4-addr server-ipv4-addr'
+                        ;
+                    leaf source-ipv4-addr {
+                      description 'Source IPv4 address.'
+                                  ;
+                      type ncd:ipv4-address ;
+                    }
+                    leaf server-ipv4-addr {
+                      description 'Server IPv4 address.'
+                                  ;
+                      type ncd:ipv4-address ;
+                    }
+                    leaf vpls {
+                      description 'VPLS instance.'
+                                  ;
+                      type string {
+                        length 1..32 ;
+                      }
+                      mandatory true ;
+                    }
+                  }
+                }
+                container ipv6s {
+                  description 'Specify IPv6 address.'
+                              ;
+                  list ipv6 {
+                    description 'Specify IPv6 address.'
+                                ;
+                    key 'source-ipv6-addr server-ipv6-addr'
+                        ;
+                    leaf source-ipv6-addr {
+                      description 'Source IPv6 address.'
+                                  ;
+                      type ncd:ipv6-address ;
+                    }
+                    leaf server-ipv6-addr {
+                      description 'Server IPv6 address.'
+                                  ;
+                      type ncd:ipv6-address ;
+                    }
+                    leaf vpls {
+                      description 'VPLS instance.'
+                                  ;
+                      type string {
+                        length 1..32 ;
+                      }
+                      mandatory true ;
+                    }
+                  }
+                }
+                ncd:revise-date 2020-02-13 ;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1690 @@
+module: huawei-qos
+  +--rw qos
+     +--rw wred-template
+     |  +--rw flow-wreds
+     |  |  +--rw flow-wred* [name]
+     |  |     +--rw name           string
+     |  |     +--rw queue-depth?   uint32
+     |  |     +--rw wred-colors
+     |  |        +--rw wred-color* [color]
+     |  |           +--rw color                    qos-color
+     |  |           +--rw low-limit-percentage?    uint8
+     |  |           +--rw high-limit-percentage?   uint8
+     |  |           +--rw discard-percentage?      uint8
+     |  +--rw port-wreds
+     |  |  +--rw port-wred* [name]
+     |  |     +--rw name                 string
+     |  |     +--rw queue-depth?         uint32
+     |  |     +--rw wred-colors
+     |  |     |  +--rw wred-color* [color]
+     |  |     |     +--rw color                    qos-color
+     |  |     |     +--rw low-limit-percentage     uint8
+     |  |     |     +--rw high-limit-percentage    uint8
+     |  |     |     +--rw discard-percentage       uint8
+     |  |     +--ro wred-color-states
+     |  |        +--ro wred-color-state* [color]
+     |  |           +--ro color                    qos-color
+     |  |           +--ro low-limit-percentage?    uint8
+     |  |           +--ro high-limit-percentage?   uint8
+     |  |           +--ro discard-percentage?      uint8
+     |  +--rw wreds
+     |     +--rw wred* [name]
+     |        +--rw name                      string
+     |        +--rw buffer-size-percentage?   uint32
+     |        +--rw colors
+     |           +--rw color* [color]
+     |              +--rw color                    qos-color
+     |              +--rw low-limit-percentage?    uint8
+     |              +--rw high-limit-percentage?   uint8
+     |              +--rw discard-percentage?      uint8
+     +--rw queue-scheduler-template
+     |  +--rw flow-queues
+     |  |  +--rw flow-queue* [name]
+     |  |     +--rw name                            template-name
+     |  |     +--rw mode                            flow-queue-template-type
+     |  |     +--rw normal-mode-queues
+     |  |     |  +--rw normal-mode-queue* [service-class]
+     |  |     |     +--rw service-class                     qos-service-class
+     |  |     |     +--rw flow-wred-name?                   -> ../../../../../../wred-template/flow-wreds/flow-wred/name
+     |  |     |     +--rw (config-type)?
+     |  |     |        +--:(shaping-mode)
+     |  |     |        |  +--rw schedule-mode               queue-schedule-mode
+     |  |     |        |  +--rw weight                      uint8
+     |  |     |        |  +--rw pbs?                        uint32
+     |  |     |        |  +--rw low-latency?                queue-low-latency
+     |  |     |        |  +--rw low-jitter?                 queue-low-jitter
+     |  |     |        |  +--rw (shaping-parameters)?
+     |  |     |        |     +--:(shaping)
+     |  |     |        |     |  +--rw shaping-value?        uint32
+     |  |     |        |     +--:(shaping-percent)
+     |  |     |        |     |  +--rw shaping-percentage?   uint8
+     |  |     |        |     +--:(car)
+     |  |     |        |     |  +--rw car-value?            uint32
+     |  |     |        |     +--:(car-percent)
+     |  |     |        |        +--rw car-percentage?       uint8
+     |  |     |        +--:(cir-mode)
+     |  |     |           +--rw cir-schedule-mode           queue-cir-schedule-mode
+     |  |     |           +--rw pir-schedule-mode           queue-schedule-mode
+     |  |     |           +--rw pir-weight                  uint8
+     |  |     |           +--rw cbs?                        uint32
+     |  |     |           +--rw pir-pbs?                    uint32
+     |  |     |           +--rw (cir-parameters)
+     |  |     |              +--:(cir)
+     |  |     |              |  +--rw cir-value             uint32
+     |  |     |              |  +--rw pir-value             uint32
+     |  |     |              +--:(cir-percent)
+     |  |     |                 +--rw cir-percentage        uint8
+     |  |     |                 +--rw pir-percentage        uint8
+     |  |     +--rw share-shapings
+     |  |     |  +--rw share-shaping!
+     |  |     |     +--rw be?                    be-type
+     |  |     |     +--rw af1?                   af1-type
+     |  |     |     +--rw af2?                   af2-type
+     |  |     |     +--rw af3?                   af3-type
+     |  |     |     +--rw af4?                   af4-type
+     |  |     |     +--rw ef?                    ef-type
+     |  |     |     +--rw cs6?                   cs6-type
+     |  |     |     +--rw cs7?                   cs7-type
+     |  |     |     +--rw queue-schedule-mode?   share-shape-mode
+     |  |     |     +--rw weight?                uint8
+     |  |     |     +--rw share-shaping-pir      uint32
+     |  |     |     +--rw pbs?                   uint32
+     |  |     +--rw share-shaping-ids
+     |  |     |  +--rw share-shaping-id* [shap-id]
+     |  |     |     +--rw shap-id                shapid-upritype
+     |  |     |     +--rw be?                    be-type
+     |  |     |     +--rw af1?                   af1-type
+     |  |     |     +--rw af2?                   af2-type
+     |  |     |     +--rw af3?                   af3-type
+     |  |     |     +--rw af4?                   af4-type
+     |  |     |     +--rw ef?                    ef-type
+     |  |     |     +--rw cs6?                   cs6-type
+     |  |     |     +--rw cs7?                   cs7-type
+     |  |     |     +--rw queue-schedule-mode?   share-shape-mode
+     |  |     |     +--rw weight?                uint8
+     |  |     |     +--rw share-shaping-pir      uint32
+     |  |     |     +--rw pbs?                   uint32
+     |  |     +--rw share-shape-random-discards
+     |  |     |  +--rw share-shape-random-discard!
+     |  |     |     +--rw be?               be-type
+     |  |     |     +--rw af1?              af1-type
+     |  |     |     +--rw af2?              af2-type
+     |  |     |     +--rw af3?              af3-type
+     |  |     |     +--rw af4?              af4-type
+     |  |     |     +--rw ef?               ef-type
+     |  |     |     +--rw cs6?              cs6-type
+     |  |     |     +--rw cs7?              cs7-type
+     |  |     |     +--rw random-discard    string
+     |  |     +--rw normal-mode-random-discards
+     |  |     |  +--rw normal-mode-random-discard* [service-class]
+     |  |     |     +--rw service-class     qos-service-class
+     |  |     |     +--rw random-discard    string
+     |  |     +--rw four-cos-mode-queues
+     |  |     |  +--rw four-cos-mode-queue* [cos-value]
+     |  |     |     +--rw cos-value             qos-cos-value
+     |  |     |     +--rw schedule-mode         queue-schedule-mode
+     |  |     |     +--rw weight                uint8
+     |  |     |     +--rw shaping?              uint32
+     |  |     |     +--rw shaping-percentage?   uint8
+     |  |     |     +--rw pbs?                  uint32
+     |  |     |     +--rw flow-wred-name?       -> ../../../../../../wred-template/flow-wreds/flow-wred/name
+     |  |     +--rw priority-mode-queues
+     |  |     |  +--rw priority-mode-queue* [service-class]
+     |  |     |     +--rw service-class         qos-service-class
+     |  |     |     +--rw priority              uint8
+     |  |     |     +--rw weight                uint8
+     |  |     |     +--rw shaping?              uint32
+     |  |     |     +--rw shaping-percentage?   uint8
+     |  |     |     +--rw pbs?                  uint32
+     |  |     |     +--rw flow-wred-name?       -> ../../../../../../wred-template/flow-wreds/flow-wred/name
+     |  |     +--rw priority-mode-schedules
+     |  |     |  +--rw priority-mode-schedule* [priority]
+     |  |     |     +--rw priority         uint8
+     |  |     |     +--rw schedule-mode    priority-flow-queue-schedule-mode
+     |  |     +--rw priority-mode-share-shapings
+     |  |     |  +--rw priority-mode-share-shaping* [shap-id]
+     |  |     |     +--rw shap-id              shap-id-type
+     |  |     |     +--rw be?                  queue-select-be-type
+     |  |     |     +--rw af1?                 queue-select-af1-type
+     |  |     |     +--rw af2?                 queue-select-af2-type
+     |  |     |     +--rw af3?                 queue-select-af3-type
+     |  |     |     +--rw af4?                 queue-select-af4-type
+     |  |     |     +--rw ef?                  queue-select-ef-type
+     |  |     |     +--rw cs6?                 queue-select-cs6-type
+     |  |     |     +--rw cs7?                 queue-select-cs7-type
+     |  |     |     +--rw schedule-mode?       priority-flow-queue-schedule-mode
+     |  |     |     +--rw weight?              uint8
+     |  |     |     +--rw share-shaping-pir    uint32
+     |  |     |     +--rw pbs?                 uint32
+     |  |     +--rw eight-cos-mode-queues
+     |  |        +--rw eight-cos-mode-queue* [cos]
+     |  |           +--rw cos                uint8
+     |  |           +--rw flow-wred
+     |  |           |  +--rw name?   -> ../../../../../../../wred-template/flow-wreds/flow-wred/name
+     |  |           +--rw car-mode!
+     |  |           +--rw remark-color!
+     |  |           +--rw parent-priority!
+     |  |           |  +--rw cir-parent-priority    uint8
+     |  |           |  +--rw cir-weight?            uint8
+     |  |           |  +--rw pir-parent-priority    uint8
+     |  |           |  +--rw pir-weight?            uint8
+     |  |           +--rw pir!
+     |  |              +--rw (parameter)
+     |  |              |  +--:(value-mode)
+     |  |              |  |  +--rw pir-value      uint32
+     |  |              |  |  +--rw cir-value?     uint32
+     |  |              |  +--:(percent-mode)
+     |  |              |     +--rw pir-percent    uint8
+     |  |              |     +--rw cir-percent?   uint8
+     |  |              +--rw pbs?                 uint32
+     |  |              +--rw cbs?                 uint32
+     |  +--rw profiles
+     |  |  +--rw profile* [name]
+     |  |     +--rw name                       qos-profile-template-name
+     |  |     +--rw mode                       profile-template-type
+     |  |     +--rw description?               string
+     |  |     +--rw user-queues
+     |  |     |  +--rw user-queue* [direction]
+     |  |     |     +--rw direction                all-direction-type
+     |  |     |     +--rw (config-type)
+     |  |     |     |  +--:(cir-mode)
+     |  |     |     |  |  +--rw cir                uint32
+     |  |     |     |  |  +--rw pir                uint32
+     |  |     |     |  +--:(cir-percent-mode)
+     |  |     |     |     +--rw cir-percent        uint8
+     |  |     |     |     +--rw pir-percent        uint8
+     |  |     |     +--rw cbs?                     uint32
+     |  |     |     +--rw pbs?                     uint32
+     |  |     |     +--rw priority-level-id?       priority-level-type
+     |  |     |     +--rw flow-queue-name?         -> ../../../../../flow-queues/flow-queue/name
+     |  |     |     +--rw flow-mapping-name?       -> ../../../../../flow-mappings/flow-mapping/name
+     |  |     |     +--rw user-group-queue-name?   -> ../../../../../user-group-queues/user-group-queue/name
+     |  |     |     +--rw service-template-name?   -> ../../../../../service-templates/service-template/name
+     |  |     |     +--rw adjust-on-card?          adjust-on-card-type
+     |  |     +--rw user-queue-weights
+     |  |     |  +--rw user-queue-weight* [direction]
+     |  |     |     +--rw direction    all-direction-type
+     |  |     |     +--rw weight?      uint8
+     |  |     +--rw user-queue-time-ranges
+     |  |     |  +--rw user-queue-time-range* [direction time-range-name]
+     |  |     |     +--rw direction                all-direction-type
+     |  |     |     +--rw time-range-name          -> /timerange:time-range/time-range-instances/time-range-instance/name
+     |  |     |     +--rw cir                      uint32
+     |  |     |     +--rw pir                      uint32
+     |  |     |     +--rw cbs?                     uint32
+     |  |     |     +--rw pbs?                     uint32
+     |  |     |     +--rw priority-level-id?       priority-level-type
+     |  |     |     +--rw flow-queue-name?         -> ../../../../../flow-queues/flow-queue/name
+     |  |     |     +--rw flow-mapping-name?       -> ../../../../../flow-mappings/flow-mapping/name
+     |  |     |     +--rw user-group-queue-name?   -> ../../../../../user-group-queues/user-group-queue/name
+     |  |     |     +--rw service-template-name?   -> ../../../../../service-templates/service-template/name
+     |  |     |     +--rw adjust-on-card?          adjust-on-card-type
+     |  |     +--rw cars
+     |  |     |  +--rw car* [type direction]
+     |  |     |     +--rw type                    qos-car-type
+     |  |     |     +--rw direction               car-direction-type
+     |  |     |     +--rw (cir-parameters)
+     |  |     |     |  +--:(cir)
+     |  |     |     |  |  +--rw cir-value         uint32
+     |  |     |     |  |  +--rw pir-value?        uint32
+     |  |     |     |  +--:(cir-percentage)
+     |  |     |     |     +--rw cir-percent       uint8
+     |  |     |     |     +--rw pir-percent?      uint8
+     |  |     |     +--rw cbs?                    uint32
+     |  |     |     +--rw pbs?                    uint32
+     |  |     |     +--rw green-action            color-action-type
+     |  |     |     +--rw green-service-class?    qos-service-class
+     |  |     |     +--rw green-color             qos-color
+     |  |     |     +--rw yellow-action?          color-action-type
+     |  |     |     +--rw yellow-service-class?   qos-service-class
+     |  |     |     +--rw yellow-color            qos-color
+     |  |     |     +--rw red-action              color-action-type
+     |  |     |     +--rw red-service-class?      qos-service-class
+     |  |     |     +--rw red-color               qos-color
+     |  |     |     +--rw color-aware?            color-aware-type
+     |  |     +--rw profile-cars
+     |  |     |  +--rw profile-car* [type direction]
+     |  |     |     +--rw type                      profile-car-type
+     |  |     |     +--rw direction                 profile-car-direction-type
+     |  |     |     +--rw cir-value                 uint32
+     |  |     |     +--rw pir-value                 uint32
+     |  |     |     +--rw cbs                       uint32
+     |  |     |     +--rw pbs                       uint32
+     |  |     |     +--rw priority-aware?           priority-aware-type
+     |  |     |     +--rw priority-template-name?   -> ../../../../../priority-templates/priority-template/name
+     |  |     |     +--rw adjust-value?             int32
+     |  |     |     +--rw green-action              color-action-type
+     |  |     |     +--rw green-service-class?      qos-service-class
+     |  |     |     +--rw green-color               qos-color
+     |  |     |     +--rw yellow-action             color-action-type
+     |  |     |     +--rw yellow-service-class?     qos-service-class
+     |  |     |     +--rw yellow-color              qos-color
+     |  |     |     +--rw red-action                color-action-type
+     |  |     |     +--rw red-service-class?        qos-service-class
+     |  |     |     +--rw red-color                 qos-color
+     |  |     |     +--rw color-aware?              color-aware-type
+     |  |     +--rw suppressions
+     |  |     |  +--rw suppression* [type direction]
+     |  |     |     +--rw type            qos-suppression-type
+     |  |     |     +--rw direction       suppression-direction-type
+     |  |     |     +--rw cir             uint32
+     |  |     |     +--rw cbs             uint32
+     |  |     |     +--rw adjust-value?   int32
+     |  |     +--rw mpls-tunnel-flow-queues
+     |  |     |  +--rw mpls-tunnel-flow-queue!
+     |  |     |     +--rw flow-queue-name          -> ../../../../../flow-queues/flow-queue/name
+     |  |     |     +--rw flow-mapping-name?       -> ../../../../../flow-mappings/flow-mapping/name
+     |  |     |     +--rw user-group-queue-name?   -> ../../../../../user-group-queues/user-group-queue/name
+     |  |     |     +--rw service-template-name?   -> ../../../../../service-templates/service-template/name
+     |  |     +--rw eight-cos-mode-queues
+     |  |        +--rw eight-cos-mode-queue* [direction]
+     |  |           +--rw direction                all-direction-type
+     |  |           +--rw user-queue-name          -> ../../../../../user-queue-templates/user-queue-template/name
+     |  |           +--rw flow-queue-name?         -> ../../../../../flow-queues/flow-queue/name
+     |  |           +--rw user-group-queue-name?   -> ../../../../../user-group-queues/user-group-queue/name
+     |  +--rw flow-mappings
+     |  |  +--rw flow-mapping* [name]
+     |  |     +--rw name          template-name
+     |  |     +--rw parameters
+     |  |        +--rw parameter* [flow-queue-service-class]
+     |  |           +--rw flow-queue-service-class    qos-service-class
+     |  |           +--rw port-queue-service-class    qos-service-class
+     |  +--rw queue-4cos-mappings
+     |  |  +--rw queue-4cos-mapping* [name]
+     |  |     +--rw name          template-name
+     |  |     +--rw parameters
+     |  |        +--rw parameter* [flow-queue-service-class]
+     |  |           +--rw flow-queue-service-class    qos-service-class
+     |  |           +--rw four-queue-service-class    qos-cos-value
+     |  +--rw user-group-queues
+     |  |  +--rw user-group-queue* [name]
+     |  |     +--rw name                            template-name
+     |  |     +--rw mode                            gq-template-type
+     |  |     +--rw mode-template?                  mode-template-status
+     |  |     +--rw shapings
+     |  |     |  +--rw shaping* [direction]
+     |  |     |     +--rw direction    qos-direction-type
+     |  |     |     +--rw pir          uint32
+     |  |     |     +--rw pbs?         uint32
+     |  |     +--rw shaping-priortys
+     |  |     |  +--rw shaping-priorty* [priority direction]
+     |  |     |     +--rw priority         priority-shaping-type
+     |  |     |     +--rw direction        out-direction-type
+     |  |     |     +--rw shaping-value    uint32
+     |  |     |     +--rw pbs?             uint32
+     |  |     +--rw cir-pirs
+     |  |     |  +--rw cir-pir* [direction]
+     |  |     |     +--rw direction    out-direction-type
+     |  |     |     +--rw cir          uint32
+     |  |     |     +--rw cbs          uint32
+     |  |     |     +--rw pir          uint32
+     |  |     |     +--rw pbs          uint32
+     |  |     +--rw weights
+     |  |     |  +--rw weight* [direction]
+     |  |     |     +--rw direction       out-direction-type
+     |  |     |     +--rw weight-value    uint8
+     |  |     +--ro user-group-queue-statisticss
+     |  |        +--ro user-group-queue-statistics* [slot-id direction service-class]
+     |  |           +--ro slot-id             slot-id
+     |  |           +--ro direction           qos-gq-direction-type
+     |  |           +--ro service-class       qos-service-class-filter
+     |  |           +--ro group-name?         group-name
+     |  |           +--ro pass-packets?       uint64
+     |  |           +--ro pass-bytes?         uint64
+     |  |           +--ro pass-packet-rate?   uint64
+     |  |           +--ro pass-byte-rate?     uint64
+     |  |           +--ro drop-packets?       uint64
+     |  |           +--ro drop-bytes?         uint64
+     |  |           +--ro drop-packet-rate?   uint64
+     |  |           +--ro drop-byte-rate?     uint64
+     |  +--rw service-templates
+     |  |  +--rw service-template* [name]
+     |  |     +--rw name                     template-name
+     |  |     +--rw slot-id?                 slot-id
+     |  |     +--rw service-lengths
+     |  |     |  +--rw service-length* [direction]
+     |  |     |     +--rw direction    qos-direction-type
+     |  |     |     +--rw value        int32
+     |  |     +--rw service-length-on-etm
+     |  |        +--rw value?   int32
+     |  +--rw port-queue-templates
+     |  |  +--rw port-queue-template* [name]
+     |  |     +--rw name            template-name
+     |  |     +--rw queues
+     |  |     |  +--rw queue* [service-class]
+     |  |     |     +--rw service-class                     qos-service-class
+     |  |     |     +--rw port-wred-name?                   -> ../../../../../../wred-template/port-wreds/port-wred/name
+     |  |     |     +--rw (config-type)
+     |  |     |        +--:(shaping-mode)
+     |  |     |        |  +--rw queue-schedule-mode         queue-schedule-mode
+     |  |     |        |  +--rw weight                      uint8
+     |  |     |        |  +--rw pbs?                        uint32
+     |  |     |        |  +--rw low-latency?                queue-low-latency
+     |  |     |        |  +--rw (shaping-parameters)?
+     |  |     |        |     +--:(shaping)
+     |  |     |        |     |  +--rw shaping-value?        uint32
+     |  |     |        |     +--:(shaping-percent)
+     |  |     |        |        +--rw shaping-percentage?   uint8
+     |  |     |        +--:(cir-mode)
+     |  |     |           +--rw cir-schedule-mode           queue-cir-schedule-mode
+     |  |     |           +--rw pir-schedule-mode           queue-schedule-mode
+     |  |     |           +--rw pir-weight                  uint8
+     |  |     |           +--rw cbs?                        uint32
+     |  |     |           +--rw pir-pbs?                    uint32
+     |  |     |           +--rw (cir-parameters)
+     |  |     |              +--:(cir)
+     |  |     |              |  +--rw cir-value             uint32
+     |  |     |              |  +--rw pir-value             uint32
+     |  |     |              +--:(cir-percent)
+     |  |     |                 +--rw cir-percentage        uint8
+     |  |     |                 +--rw pir-percentage        uint8
+     |  |     +--ro queue-states
+     |  |     |  +--ro queue-state* [service-class]
+     |  |     |     +--ro service-class                     qos-service-class
+     |  |     |     +--ro port-wred-name?                   -> ../../../../../../wred-template/port-wreds/port-wred/name
+     |  |     |     +--ro (config-type)?
+     |  |     |        +--:(shaping-mode)
+     |  |     |        |  +--ro queue-schedule-mode?        queue-schedule-mode
+     |  |     |        |  +--ro weight?                     uint8
+     |  |     |        |  +--ro pbs?                        uint32
+     |  |     |        |  +--ro low-latency?                queue-low-latency
+     |  |     |        |  +--ro (shaping-parameters)?
+     |  |     |        |     +--:(shaping)
+     |  |     |        |     |  +--ro shaping-value?        uint32
+     |  |     |        |     +--:(shaping-percent)
+     |  |     |        |        +--ro shaping-percentage?   uint8
+     |  |     |        +--:(cir-mode)
+     |  |     |           +--ro cir-schedule-mode?          queue-cir-schedule-mode
+     |  |     |           +--ro pir-schedule-mode?          queue-schedule-mode
+     |  |     |           +--ro pir-weight?                 uint8
+     |  |     |           +--ro cbs?                        uint32
+     |  |     |           +--ro pir-pbs?                    uint32
+     |  |     |           +--ro (cir-parameters)?
+     |  |     |              +--:(cir)
+     |  |     |              |  +--ro cir-value?            uint32
+     |  |     |              |  +--ro pir-value?            uint32
+     |  |     |              +--:(cir-percent)
+     |  |     |                 +--ro cir-percentage?       uint8
+     |  |     |                 +--ro pir-percentage?       uint8
+     |  |     +--rw share-shapes
+     |  |        +--rw share-shape!
+     |  |           +--rw be?                         be-type
+     |  |           +--rw af1?                        af1-type
+     |  |           +--rw af2?                        af2-type
+     |  |           +--rw af3?                        af3-type
+     |  |           +--rw af4?                        af4-type
+     |  |           +--rw ef?                         ef-type
+     |  |           +--rw cs6?                        cs6-type
+     |  |           +--rw cs7?                        cs7-type
+     |  |           +--rw queue-schedule-mode?        queue-schedule-mode
+     |  |           +--rw weight?                     uint8
+     |  |           +--rw (shaping-parameters)
+     |  |           |  +--:(shaping)
+     |  |           |  |  +--rw shaping-value?        uint32
+     |  |           |  +--:(shaping-percent)
+     |  |           |     +--rw shaping-percentage?   uint8
+     |  |           +--rw pbs?                        uint32
+     |  +--rw channel-profiles
+     |  |  +--rw channel-profile* [name]
+     |  |     +--rw name             template-name
+     |  |     +--rw channel-paras
+     |  |        +--rw channel-para* [channel-id]
+     |  |           +--rw channel-id    uint32
+     |  |           +--rw bandwidth     uint32
+     |  |           +--rw quantity      uint32
+     |  +--rw buffer-policys
+     |  |  +--rw buffer-policy* [name]
+     |  |     +--rw name                      template-name
+     |  |     +--rw buffer-mode-slots
+     |  |     |  +--rw buffer-mode-slot* [slot-id]
+     |  |     |     +--rw slot-id             slot-id
+     |  |     |     +--rw buffer-mode-ge?     buffer-mode-type
+     |  |     |     +--rw buffer-mode-10ge?   buffer-mode-type
+     |  |     +--rw buffer-mode-interfaces
+     |  |        +--rw buffer-mode-interface* [ifname]
+     |  |           +--rw ifname         pub-type:if-name
+     |  |           +--rw buffer-mode    buffer-mode-type
+     |  +--rw qos-queue-templates
+     |  |  +--rw qos-queue-template* [name]
+     |  |     +--rw name                 template-name
+     |  |     +--rw queue-parameterss
+     |  |        +--rw queue-parameters* [service-class]
+     |  |           +--rw service-class    qos-service-class
+     |  |           +--rw cir-percent      uint8
+     |  |           +--rw pir-percent      uint8
+     |  |           +--rw priority         queue-schedule-mode
+     |  +--rw sub-port-queues
+     |  |  +--rw sub-port-queue* [name]
+     |  |     +--rw name       template-name
+     |  |     +--rw shaping!
+     |  |     |  +--rw shaping-value    uint32
+     |  |     |  +--rw pbs?             uint32
+     |  |     +--rw weight
+     |  |        +--rw weight-value?   uint8
+     |  +--rw priority-templates
+     |  |  +--rw priority-template* [name]
+     |  |     +--rw name      string
+     |  |     +--rw queues
+     |  |        +--rw queue* [service-class color]
+     |  |           +--rw service-class    qos-service-class
+     |  |           +--rw color            qos-color
+     |  |           +--rw priority         uint8
+     |  +--rw user-queue-templates
+     |     +--rw user-queue-template* [name]
+     |        +--rw name                       string
+     |        +--rw mode                       user-queue-template-type
+     |        +--rw shaping!
+     |        |  +--rw (parameter)
+     |        |  |  +--:(value-mode)
+     |        |  |  |  +--rw pir-value      uint32
+     |        |  |  |  +--rw cir-value?     uint32
+     |        |  |  +--:(percent-mode)
+     |        |  |     +--rw pir-percent    uint8
+     |        |  |     +--rw cir-percent?   uint8
+     |        |  +--rw pbs?                 uint32
+     |        |  +--rw cbs?                 uint32
+     |        +--rw service-template
+     |        |  +--rw name?   -> ../../../../service-templates/service-template/name
+     |        +--rw priority-sheduler-modes
+     |        |  +--rw priority-sheduler-mode* [priority]
+     |        |     +--rw priority         uint8
+     |        |     +--rw schedule-mode    priority-schedule-mode
+     |        +--rw parent-priority-weights
+     |        |  +--rw parent-priority-weight* [priority]
+     |        |     +--rw priority    uint8
+     |        |     +--rw weight      uint8
+     |        +--rw parent-prioritys
+     |        |  +--rw parent-priority* [priority]
+     |        |     +--rw priority               uint8
+     |        |     +--rw cir-parent-priority    uint8
+     |        |     +--rw pir-parent-priority    uint8
+     |        +--rw priority-shapings
+     |           +--rw priority-shaping* [priority]
+     |              +--rw priority    uint8
+     |              +--rw pir         uint32
+     |              +--rw pbs?        uint32
+     +--rw classifier-template
+     |  +--rw diffserv-domains
+     |  |  +--rw diffserv-domain* [name]
+     |  |     +--rw name                            string
+     |  |     +--rw behavior-aggregations
+     |  |     |  +--rw behavior-aggregation* [type value]
+     |  |     |     +--rw type             qos-ba-type
+     |  |     |     +--rw value            uint8
+     |  |     |     +--rw service-class    qos-service-class
+     |  |     |     +--rw color            qos-color
+     |  |     +--rw per-hop-behaviors
+     |  |     |  +--rw per-hop-behavior* [type service-class color]
+     |  |     |     +--rw type             qos-phb-type
+     |  |     |     +--rw service-class    qos-service-class
+     |  |     |     +--rw color            qos-color
+     |  |     |     +--rw value            uint8
+     |  |     +--ro diffserv-domain-applications
+     |  |        +--ro diffserv-domain-application* [interface-name direction]
+     |  |           +--ro interface-name    string
+     |  |           +--ro direction         trust-direction-type
+     |  +--rw traffic-classifiers
+     |  |  +--rw traffic-classifier* [name]
+     |  |     +--rw name                   string
+     |  |     +--rw operator?              class-operator
+     |  |     +--rw description?           string
+     |  |     +--rw rule-acls
+     |  |     |  +--rw rule-acl* [acl-name]
+     |  |     |     +--rw acl-name    -> /acl:acl/groups/group/identity
+     |  |     +--rw rule-acl-ipv6s
+     |  |     |  +--rw rule-acl-ipv6* [acl-name]
+     |  |     |     +--rw acl-name    -> /acl:acl/group6s/group6/identity
+     |  |     +--rw rule-anys
+     |  |     |  +--rw rule-any* [protocol-family]
+     |  |     |     +--rw protocol-family    ip-family
+     |  |     +--rw rule-prioritys
+     |  |     |  +--rw rule-priority* [type value]
+     |  |     |     +--rw type     priority-type
+     |  |     |     +--rw value    uint8
+     |  |     +--rw rule-service-classs
+     |  |     |  +--rw rule-service-class* [service-class]
+     |  |     |     +--rw service-class    qos-service-class
+     |  |     +--rw local-ids
+     |  |     |  +--rw local-id* [value]
+     |  |     |     +--rw value    uint32
+     |  |     +--rw local-id-ipv6s
+     |  |     |  +--rw local-id-ipv6* [value]
+     |  |     |     +--rw value    uint32
+     |  |     +--rw rule-eth-types
+     |  |     |  +--rw rule-eth-type* [value]
+     |  |     |     +--rw value    pub-type:hex-binary
+     |  |     +--rw rule-address-ipv6s
+     |  |     |  +--rw rule-address-ipv6* [address-type address-value prefix-length]
+     |  |     |     +--rw address-type     qos-address-type
+     |  |     |     +--rw address-value    inet:ipv6-address-no-zone
+     |  |     |     +--rw prefix-length    uint8
+     |  |     +--rw rule-mac-and-masks
+     |  |     |  +--rw rule-mac-and-mask* [mac-type mac-address mac-address-mask]
+     |  |     |     +--rw mac-type            qos-mac-type
+     |  |     |     +--rw mac-address         pub-type:mac-address
+     |  |     |     +--rw mac-address-mask    pub-type:mac-address
+     |  |     +--rw rule-mac-addresss
+     |  |     |  +--rw rule-mac-address* [type address]
+     |  |     |     +--rw type       qos-mac-type
+     |  |     |     +--rw address    pub-type:mac-address
+     |  |     +--rw rule-offsets
+     |  |     |  +--rw rule-offset!
+     |  |     |     +--rw offset-value1    uint32
+     |  |     |     +--rw match-value1     pub-type:hex-binary
+     |  |     |     +--rw match-mask1      pub-type:hex-binary
+     |  |     |     +--rw offset-value2?   uint32
+     |  |     |     +--rw match-value2?    pub-type:hex-binary
+     |  |     |     +--rw match-mask2?     pub-type:hex-binary
+     |  |     |     +--rw offset-value3?   uint32
+     |  |     |     +--rw match-value3?    pub-type:hex-binary
+     |  |     |     +--rw match-mask3?     pub-type:hex-binary
+     |  |     |     +--rw offset-value4?   uint32
+     |  |     |     +--rw match-value4?    pub-type:hex-binary
+     |  |     |     +--rw match-mask4?     pub-type:hex-binary
+     |  |     +--rw rule-protocol-ipv6s
+     |  |     |  +--rw rule-protocol-ipv6* [family number]
+     |  |     |     +--rw family    qos-ipv6-family
+     |  |     |     +--rw number    uint8
+     |  |     +--rw rule-tcp-flags
+     |  |     |  +--rw rule-tcp-flag* [bit-match-type tcp-flag tcp-flag-mask]
+     |  |     |     +--rw bit-match-type    qos-tcp-bit-match
+     |  |     |     +--rw tcp-flag          uint16
+     |  |     |     +--rw tcp-flag-mask     uint16
+     |  |     +--rw rule-tcp-flag-ipv6s
+     |  |     |  +--rw rule-tcp-flag-ipv6* [bit-match-type tcp-flag tcp-flag-mask]
+     |  |     |     +--rw bit-match-type    qos-tcp-bit-match-ipv6
+     |  |     |     +--rw tcp-flag          uint16
+     |  |     |     +--rw tcp-flag-mask     uint16
+     |  |     +--rw rule-vlans
+     |  |     |  +--rw rule-vlan* [vlan-id ce-vlan-id]
+     |  |     |     +--rw vlan-id       uint16
+     |  |     |     +--rw ce-vlan-id    uint16
+     |  |     +--rw src-dest-local-ids
+     |  |        +--rw src-dest-local-id* [source destination]
+     |  |           +--rw source         uint32
+     |  |           +--rw destination    uint32
+     |  +--rw traffic-behaviors
+     |  |  +--rw traffic-behavior* [name]
+     |  |     +--rw name                         string
+     |  |     +--rw description?                 string
+     |  |     +--rw filter-action
+     |  |     |  +--rw filter?   filter-flag
+     |  |     +--rw service-class-actions
+     |  |     |  +--rw service-class-action* [action-type]
+     |  |     |     +--rw action-type         service-class-action
+     |  |     |     +--rw service-class       qos-service-class
+     |  |     |     +--rw color               qos-color
+     |  |     |     +--rw remark-switch?      remark-type
+     |  |     |     +--rw bfd-session-name    -> /bfd:bfd/sessions/session/name
+     |  |     +--rw remark-actions
+     |  |     |  +--rw remark-action* [action-type]
+     |  |     |     +--rw action-type     action-remark
+     |  |     |     +--rw remark-value    uint32
+     |  |     |     +--rw after-trust?    switch-type
+     |  |     +--rw acl-log-action
+     |  |     |  +--rw action-type?   acl-log-action-type
+     |  |     +--rw car-actions
+     |  |     |  +--rw car-action* [action-type]
+     |  |     |     +--rw action-type                   action-car
+     |  |     |     +--rw cir                           uint32
+     |  |     |     +--rw pir?                          uint32
+     |  |     |     +--rw cbs                           uint32
+     |  |     |     +--rw pbs?                          uint32
+     |  |     |     +--rw adjust?                       int32
+     |  |     |     +--rw green-action                  color-action-type
+     |  |     |     +--rw (green-action-parameters)?
+     |  |     |     |  +--:(green-service-class)
+     |  |     |     |  |  +--rw green-service-class?    qos-service-class
+     |  |     |     |  |  +--rw green-color             qos-color
+     |  |     |     |  +--:(green-remark-dscp)
+     |  |     |     |     +--rw green-remark-dscp?      uint8
+     |  |     |     +--rw yellow-action                 color-action-type
+     |  |     |     +--rw (yellow-action-parameters)?
+     |  |     |     |  +--:(yellow-service-class)
+     |  |     |     |  |  +--rw yellow-service-class?   qos-service-class
+     |  |     |     |  |  +--rw yellow-color            qos-color
+     |  |     |     |  +--:(yellow-remark-dscp)
+     |  |     |     |     +--rw yellow-remark-dscp?     uint8
+     |  |     |     +--rw red-action                    color-action-type
+     |  |     |     +--rw (red-action-parameters)?
+     |  |     |     |  +--:(red-service-class)
+     |  |     |     |  |  +--rw red-service-class?      qos-service-class
+     |  |     |     |  |  +--rw red-color               qos-color
+     |  |     |     |  +--:(red-remark-dscp)
+     |  |     |     |     +--rw red-remark-dscp?        uint8
+     |  |     |     +--rw color-aware?                  switch-type
+     |  |     |     +--rw limit-type?                   car-limit-type
+     |  |     +--rw flow-car-actions
+     |  |     |  +--rw flow-car-action!
+     |  |     |     +--rw cir        uint32
+     |  |     |     +--rw pir?       uint32
+     |  |     |     +--rw cbs        uint32
+     |  |     |     +--rw pbs?       uint32
+     |  |     |     +--rw ip-type    qos-flow-type
+     |  |     +--rw increase-priority-action
+     |  |     |  +--rw priority?   increase-priority
+     |  |     +--rw policy-actions
+     |  |     |  +--rw policy-action!
+     |  |     |     +--rw policy-name         -> ../../../../../traffic-policys/traffic-policy/name
+     |  |     |     +--rw hierarchical-car?   enable-type
+     |  |     |     +--rw layer?              qos-policy-layer
+     |  |     +--rw suppression-actions
+     |  |     |  +--rw suppression-action* [suppress-type]
+     |  |     |     +--rw suppress-type          suppress-type
+     |  |     |     +--rw cir                    uint32
+     |  |     |     +--rw cbs                    uint32
+     |  |     |     +--rw green-action           color-action-type
+     |  |     |     +--rw green-service-class?   qos-service-class
+     |  |     |     +--rw green-color?           qos-color
+     |  |     |     +--rw red-action             color-action-type
+     |  |     |     +--rw red-service-class?     qos-service-class
+     |  |     |     +--rw red-color?             qos-color
+     |  |     +--rw load-action
+     |  |     |  +--rw balance-type?   load-balance-type
+     |  |     +--rw match-term-action
+     |  |     |  +--rw match-term?   priority-aware-type
+     |  |     +--rw netstream-sampler-actions
+     |  |     |  +--rw netstream-sampler-action* [flow-type]
+     |  |     |     +--rw flow-type       ip-type
+     |  |     |     +--rw sample-type     sample-type
+     |  |     |     +--rw sample-value    uint16
+     |  |     +--rw urpf-action!
+     |  |     |  +--rw check-type        check-type
+     |  |     |  +--rw allow-default?    priority-aware-type
+     |  |     |  +--rw ignore-default?   ignore-default-type
+     |  |     +--rw except-deny-action
+     |  |     |  +--rw deny-action?   priority-aware-type
+     |  |     +--rw user-queue-action!
+     |  |     |  +--rw cir                      uint32
+     |  |     |  +--rw pir                      uint32
+     |  |     |  +--rw flow-queue-name?         -> ../../../../../queue-scheduler-template/flow-queues/flow-queue/name
+     |  |     |  +--rw flow-mapping-name?       -> ../../../../../queue-scheduler-template/flow-mappings/flow-mapping/name
+     |  |     |  +--rw user-group-queue-name?   -> ../../../../../queue-scheduler-template/user-group-queues/user-group-queue/name
+     |  |     |  +--rw service-template-name?   -> ../../../../../queue-scheduler-template/service-templates/service-template/name
+     |  |     +--rw system-log-action!
+     |  |        +--rw threshold          uint32
+     |  |        +--rw statistics-type    statistics-type
+     |  +--rw traffic-policys
+     |     +--rw traffic-policy* [name]
+     |        +--rw name                       string
+     |        +--rw description?               string
+     |        +--rw step?                      uint16
+     |        +--rw share-mode?                switch-flag
+     |        +--rw stat-flag?                 switch-flag
+     |        +--rw link-exclude?              switch-flag
+     |        +--rw policy-nodes
+     |        |  +--rw policy-node* [classifier-name]
+     |        |     +--rw classifier-name    -> ../../../../../traffic-classifiers/traffic-classifier/name
+     |        |     +--rw behavior-name      -> ../../../../../traffic-behaviors/traffic-behavior/name
+     |        |     +--rw priority?          uint16
+     |        +--rw group-mode-policy-nodes
+     |        |  +--rw group-mode-policy-node* [classifier-name direction group-type group-name]
+     |        |     +--rw classifier-name    -> ../../../../../traffic-classifiers/traffic-classifier/name
+     |        |     +--rw direction          stream-direction-type
+     |        |     +--rw group-type         group-type
+     |        |     +--rw group-name         string
+     |        |     +--rw behavior-name      -> ../../../../../traffic-behaviors/traffic-behavior/name
+     |        |     +--rw priority           uint16
+     |        +--rw ipv6-local-id-switch
+     |           +--rw enable?   switch-type
+     +--rw global-config
+     |  +--rw global-policys
+     |  |  +--rw global-policy* [direction policy-name up-id]
+     |  |     +--rw direction                    qos-direction-type
+     |  |     +--rw policy-name                  -> ../../../../classifier-template/traffic-policys/traffic-policy/name
+     |  |     +--rw up-id                        uint32
+     |  |     +--rw ucl-type                     qos-traffic-type
+     |  |     +--ro global-policy-statisticss
+     |  |        +--ro global-policy-statistics* [slot-id]
+     |  |           +--ro slot-id                   slot-id
+     |  |           +--ro apply-time?               yang:date-and-time
+     |  |           +--ro enable-time?              yang:date-and-time
+     |  |           +--ro clear-time?               yang:date-and-time
+     |  |           +--ro clear-flag?               boolean
+     |  |           +--ro match-packets?            uint64
+     |  |           +--ro match-bytes?              uint64
+     |  |           +--ro match-packet-rate?        uint64
+     |  |           +--ro match-byte-rate?          uint64
+     |  |           +--ro miss-packets?             uint64
+     |  |           +--ro miss-bytes?               uint64
+     |  |           +--ro match-pass-packets?       uint64
+     |  |           +--ro match-pass-bytes?         uint64
+     |  |           +--ro match-drop-packets?       uint64
+     |  |           +--ro match-drop-bytes?         uint64
+     |  |           +--ro miss-packet-rate?         uint64
+     |  |           +--ro miss-byte-rate?           uint64
+     |  |           +--ro match-pass-packet-rate?   uint64
+     |  |           +--ro match-pass-byte-rate?     uint64
+     |  |           +--ro match-drop-packet-rate?   uint64
+     |  |           +--ro match-drop-byte-rate?     uint64
+     |  |           +--ro urpf-packets?             uint64
+     |  |           +--ro urpf-bytes?               uint64
+     |  |           +--ro urpf-packet-rate?         uint64
+     |  |           +--ro urpf-byte-rate?           uint64
+     |  |           +--ro car-packets?              uint64
+     |  |           +--ro car-bytes?                uint64
+     |  |           +--ro car-packet-rate?          uint64
+     |  |           +--ro car-byte-rate?            uint64
+     |  |           +--ro filter-packets?           uint64
+     |  |           +--ro filter-bytes?             uint64
+     |  |           +--ro filter-packet-rate?       uint64
+     |  |           +--ro filter-byte-rate?         uint64
+     |  |           +--ro classifier-statisticss
+     |  |              +--ro classifier-statistics* [classifier-name]
+     |  |                 +--ro classifier-name           string
+     |  |                 +--ro stream-direction?         template-name
+     |  |                 +--ro group-type?               template-name
+     |  |                 +--ro group-name?               template-name
+     |  |                 +--ro match-packets?            uint64
+     |  |                 +--ro match-bytes?              uint64
+     |  |                 +--ro match-packet-rate?        uint64
+     |  |                 +--ro match-byte-rate?          uint64
+     |  |                 +--ro match-pass-packets?       uint64
+     |  |                 +--ro match-pass-bytes?         uint64
+     |  |                 +--ro match-drop-packets?       uint64
+     |  |                 +--ro match-drop-bytes?         uint64
+     |  |                 +--ro match-pass-packet-rate?   uint64
+     |  |                 +--ro match-pass-byte-rate?     uint64
+     |  |                 +--ro match-drop-packet-rate?   uint64
+     |  |                 +--ro match-drop-byte-rate?     uint64
+     |  |                 +--ro filter-packets?           uint64
+     |  |                 +--ro filter-bytes?             uint64
+     |  |                 +--ro filter-paket-rate?        uint64
+     |  |                 +--ro filter-byte-rate?         uint64
+     |  |                 +--ro urpf-drop-packets?        uint64
+     |  |                 +--ro urpf-drop-bytes?          uint64
+     |  |                 +--ro urpf-drop-packet-rate?    uint64
+     |  |                 +--ro urpf-drop-byte-rate?      uint64
+     |  |                 +--ro car-packets?              uint64
+     |  |                 +--ro car-bytes?                uint64
+     |  |                 +--ro car-packet-rate?          uint64
+     |  |                 +--ro car-byte-rate?            uint64
+     |  |                 +--ro car-pass-packets?         uint64
+     |  |                 +--ro car-pass-bytes?           uint64
+     |  |                 +--ro car-drop-packets?         uint64
+     |  |                 +--ro car-drop-bytes?           uint64
+     |  |                 +--ro car-pass-packet-rate?     uint64
+     |  |                 +--ro car-pass-byte-rate?       uint64
+     |  |                 +--ro car-drop-packet-rate?     uint64
+     |  |                 +--ro car-drop-byte-rate?       uint64
+     |  |                 +--ro car-green-packets?        uint64
+     |  |                 +--ro car-green-bytes?          uint64
+     |  |                 +--ro car-yellow-packets?       uint64
+     |  |                 +--ro car-yellow-bytes?         uint64
+     |  |                 +--ro car-red-packets?          uint64
+     |  |                 +--ro car-red-bytes?            uint64
+     |  |                 +--ro car-green-packet-rate?    uint64
+     |  |                 +--ro car-green-byte-rate?      uint64
+     |  |                 +--ro car-yellow-packet-rate?   uint64
+     |  |                 +--ro car-yellow-byte-rate?     uint64
+     |  |                 +--ro car-red-packet-rate?      uint64
+     |  |                 +--ro car-red-byte-rate?        uint64
+     |  +--rw traffic-policy-matchs
+     |  |  +--rw traffic-policy-match* [type]
+     |  |     +--rw type    policy-match-type
+     |  +--rw acl-log
+     |  |  +--rw entry-num?     uint16
+     |  |  +--rw agging-time?   uint8
+     |  +--rw global-set-queue-stat
+     |  |  +--rw interval?   interval-value
+     |  +--rw buffer-policy-applys
+     |  |  +--rw buffer-policy-apply* [name]
+     |  |     +--rw name    -> ../../../../queue-scheduler-template/buffer-policys/buffer-policy/name
+     |  +--rw queue-wreds
+     |  |  +--rw queue-wred* [service-class speed-type]
+     |  |     +--rw service-class    qos-service-class
+     |  |     +--rw speed-type       speed-type
+     |  |     +--rw wred-name        -> ../../../../wred-template/wreds/wred/name
+     |  +--rw low-latency-enables
+     |  |  +--rw low-latency-enable* [enable-type]
+     |  |     +--rw enable-type     low-latency-enable-type
+     |  |     +--rw enable-value    low-latency-enable-value
+     |  +--rw scheduling-modes
+     |  |  +--rw scheduling-mode* [slot-id]
+     |  |     +--rw slot-id      slot-id
+     |  |     +--rw mode-type    scheduling-mode-type
+     |  +--rw convergence-schedule
+     |  |  +--rw mode?   convergence-schedule-mode
+     |  +--rw port-convergence-schedule
+     |  |  +--rw mode?   port-convergence-schedule-mode
+     |  +--rw traffic-policy-untag
+     |  |  +--rw untag-type?   traffic-policy-untag-type
+     |  +--rw host-packets
+     |  |  +--rw host-packet* [dscp]
+     |  |     +--rw dscp             uint32
+     |  |     +--rw service-class    qos-service-class
+     |  |     +--rw color            qos-color
+     |  +--rw exp-phb-disable
+     |  |  +--rw forward-type?   forward-type
+     |  +--rw packs
+     |  |  +--rw pack* [slot-id]
+     |  |     +--rw slot-id        slot-id
+     |  |     +--rw switch-flag    switch-flag
+     |  +--rw packet-block-threshold-all
+     |  |  +--rw size?   uint8
+     |  +--rw burst-sizes
+     |  |  +--rw burst-size* [service-class]
+     |  |     +--rw service-class    qos-service-class
+     |  |     +--rw value            uint8
+     |  +--rw tm-schedule-traffic-statistics-enables
+     |  |  +--rw tm-schedule-traffic-statistics-enable* [slot-id card-id]
+     |  |     +--rw slot-id    slot-id
+     |  |     +--rw card-id    string
+     |  +--rw redback-packet-adjustment!
+     |  |  +--rw user-type    user-type
+     |  +--rw redback-packet-adjustment-slots
+     |  |  +--rw redback-packet-adjustment-slot* [slot-id]
+     |  |     +--rw slot-id      slot-id
+     |  |     +--rw user-type    user-type
+     |  +--rw link-layer-excludes
+     |  |  +--rw link-layer-exclude* [access-type]
+     |  |     +--rw access-type    access-type
+     |  +--rw link-layer-exclude-slots
+     |  |  +--rw link-layer-exclude-slot* [slot-id access-type]
+     |  |     +--rw slot-id        slot-id
+     |  |     +--rw access-type    access-type
+     |  +--rw l2tp-layer-exclude!
+     |  |  +--rw l2tp-user    l2tp-user
+     |  +--rw l2tp-layer-exclude-slots
+     |     +--rw l2tp-layer-exclude-slot* [slot-id]
+     |        +--rw slot-id    slot-id
+     +--ro global-query
+        +--ro default-queue-statisticss
+        |  +--ro default-queue-statistics* [interface-name service-class]
+        |     +--ro interface-name        -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class         qos-service-class
+        |     +--ro dropped-packets?      uint64
+        |     +--ro dropped-bytes?        uint64
+        |     +--ro passed-pps?           uint64
+        |     +--ro passed-bps?           uint64
+        |     +--ro total-packets?        uint64
+        |     +--ro total-bytes?          uint64
+        |     +--ro total-buffer?         uint32
+        |     +--ro current-buffer?       uint32
+        |     +--ro buffer-percent?       uint32
+        |     +--ro max-buffer-percent?   uint32
+        |     +--ro buffer-time?          uint64
+        |     +--ro clean-time?           uint64
+        +--ro all-queue-statisticss
+        |  +--ro all-queue-statistics* [interface-name service-class]
+        |     +--ro interface-name     -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class      qos-service-class
+        |     +--ro dropped-packets?   uint64
+        |     +--ro dropped-bytes?     uint64
+        |     +--ro passed-pps?        uint64
+        |     +--ro passed-bps?        uint64
+        |     +--ro total-packets?     uint64
+        |     +--ro total-bytes?       uint64
+        +--ro channel-queue-statisticss
+        |  +--ro channel-queue-statistics* [interface-name service-class]
+        |     +--ro interface-name        -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class         qos-service-class
+        |     +--ro dropped-packets?      uint64
+        |     +--ro dropped-bytes?        uint64
+        |     +--ro passed-pps?           uint64
+        |     +--ro passed-bps?           uint64
+        |     +--ro total-packets?        uint64
+        |     +--ro total-bytes?          uint64
+        |     +--ro total-buffer?         uint32
+        |     +--ro current-buffer?       uint32
+        |     +--ro buffer-percent?       uint32
+        |     +--ro max-buffer-percent?   uint32
+        |     +--ro buffer-time?          uint64
+        |     +--ro clean-time?           uint64
+        +--ro user-informations
+        |  +--ro user-information* [id direction]
+        |     +--ro id                        uint32
+        |     +--ro direction                 qos-direction-type
+        |     +--ro user-queue-statisticss
+        |     |  +--ro user-queue-statistics* [service-class]
+        |     |     +--ro service-class            hqos-service-class
+        |     |     +--ro pass-packet-rate?        uint64
+        |     |     +--ro pass-byte-rate?          uint64
+        |     |     +--ro pass-packets?            uint64
+        |     |     +--ro pass-bytes?              uint64
+        |     |     +--ro discard-packet-rate?     uint64
+        |     |     +--ro discard-byte-rate?       uint64
+        |     |     +--ro discard-packets?         uint64
+        |     |     +--ro discard-bytes?           uint64
+        |     |     +--ro pass-peak-packet-time?   yang:date-and-time
+        |     |     +--ro pass-peak-packet-rate?   uint64
+        |     |     +--ro pass-peak-byte-time?     yang:date-and-time
+        |     |     +--ro pass-peak-byte-rate?     uint64
+        |     |     +--ro drop-peak-packet-time?   yang:date-and-time
+        |     |     +--ro drop-peak-packet-rate?   uint64
+        |     |     +--ro drop-peak-byte-time?     yang:date-and-time
+        |     |     +--ro drop-peak-byte-rate?     uint64
+        |     |     +--ro tail-peak-packet-time?   yang:date-and-time
+        |     |     +--ro tail-peak-packet-rate?   uint64
+        |     |     +--ro tail-peak-byte-time?     yang:date-and-time
+        |     |     +--ro tail-peak-byte-rate?     uint64
+        |     +--ro car-statisticss
+        |     |  +--ro car-statistics* [resource-type]
+        |     |     +--ro resource-type               qos-res-type
+        |     |     +--ro pass-packet-rate?           uint64
+        |     |     +--ro pass-byte-rate?             uint64
+        |     |     +--ro pass-packets?               uint64
+        |     |     +--ro pass-bytes?                 uint64
+        |     |     +--ro discard-packet-rate?        uint64
+        |     |     +--ro discard-byte-rate?          uint64
+        |     |     +--ro discard-packets?            uint64
+        |     |     +--ro discard-bytes?              uint64
+        |     |     +--ro pass-peak-packet-time?      yang:date-and-time
+        |     |     +--ro pass-peak-packet-rate?      uint64
+        |     |     +--ro pass-peak-byte-time?        yang:date-and-time
+        |     |     +--ro pass-peak-byte-rate?        uint64
+        |     |     +--ro drop-peak-packet-time?      yang:date-and-time
+        |     |     +--ro drop-peak-packet-rate?      uint64
+        |     |     +--ro drop-peak-byte-time?        yang:date-and-time
+        |     |     +--ro drop-peak-byte-rate?        uint64
+        |     |     +--ro v6-pass-peak-packet-time?   yang:date-and-time
+        |     |     +--ro v6-pass-peak-packet-rate?   uint64
+        |     |     +--ro v6-pass-peak-byte-time?     yang:date-and-time
+        |     |     +--ro v6-pass-peak-byte-rate?     uint64
+        |     |     +--ro v6-tail-peak-packet-time?   yang:date-and-time
+        |     |     +--ro v6-tail-peak-packet-rate?   uint64
+        |     |     +--ro v6-tail-peak-byte-time?     yang:date-and-time
+        |     |     +--ro v6-tail-peak-byte-rate?     uint64
+        |     +--ro flow-queue-infos
+        |     |  +--ro flow-queue-info* [service-class]
+        |     |     +--ro service-class    hqos-service-class
+        |     |     +--ro schedule-type?   queue-schedule-mode
+        |     |     +--ro weight?          uint8
+        |     |     +--ro shaping?         uint32
+        |     |     +--ro priority?        uint8
+        |     +--ro cir-info
+        |        +--ro cir?   uint32
+        |        +--ro pir?   uint32
+        +--ro interface-traffic-policy-statisticss
+        |  +--ro interface-traffic-policy-statistics* [interface-name pe-vlan-id vlan-id direction slot-id]
+        |     +--ro interface-name               -> /ifm:ifm/interfaces/interface/name
+        |     +--ro pe-vlan-id                   uint16
+        |     +--ro vlan-id                      uint16
+        |     +--ro direction                    qos-direction-type
+        |     +--ro slot-id                      slot-id
+        |     +--ro traffic-policy-name?         string
+        |     +--ro apply-time?                  yang:date-and-time
+        |     +--ro switch-status?               statistics-switch-status
+        |     +--ro switch-time?                 yang:date-and-time
+        |     +--ro clear-time?                  yang:date-and-time
+        |     +--ro clear-flag?                  boolean
+        |     +--ro match-packets?               uint64
+        |     +--ro match-bytes?                 uint64
+        |     +--ro match-packet-rate?           uint64
+        |     +--ro match-byte-rate?             uint64
+        |     +--ro miss-packets?                uint64
+        |     +--ro miss-bytes?                  uint64
+        |     +--ro match-pass-packets?          uint64
+        |     +--ro match-pass-bytes?            uint64
+        |     +--ro match-drop-packets?          uint64
+        |     +--ro match-drop-bytes?            uint64
+        |     +--ro miss-packet-rate?            uint64
+        |     +--ro miss-byte-rate?              uint64
+        |     +--ro match-pass-packet-rate?      uint64
+        |     +--ro match-pass-byte-rate?        uint64
+        |     +--ro match-drop-packet-rate?      uint64
+        |     +--ro match-drop-byte-rate?        uint64
+        |     +--ro urpf-packets?                uint64
+        |     +--ro urpf-bytes?                  uint64
+        |     +--ro urpf-packet-rate?            uint64
+        |     +--ro urpf-byte-rate?              uint64
+        |     +--ro car-packets?                 uint64
+        |     +--ro car-bytes?                   uint64
+        |     +--ro car-packet-rate?             uint64
+        |     +--ro car-byte-rate?               uint64
+        |     +--ro filter-packets?              uint64
+        |     +--ro filter-bytes?                uint64
+        |     +--ro filter-packet-rate?          uint64
+        |     +--ro filter-byte-rate?            uint64
+        |     +--ro rule-based-staticss
+        |     |  +--ro rule-based-statics* [classifier-name traffic-policy-name]
+        |     |     +--ro classifier-name        -> /qos/classifier-template/traffic-classifiers/traffic-classifier/name
+        |     |     +--ro traffic-policy-name    -> /qos/classifier-template/traffic-policys/traffic-policy/name
+        |     |     +--ro service-type?          qos-rule-service-type
+        |     |     +--ro ifmatch-id?            uint32
+        |     |     +--ro acl-name?              string
+        |     |     +--ro protocol-family?       protocol-family
+        |     |     +--ro rule-id?               uint32
+        |     |     +--ro match-pass-packets?    uint64
+        |     |     +--ro match-pass-bytes?      uint64
+        |     |     +--ro match-drop-packets?    uint64
+        |     |     +--ro match-drop-bytes?      uint64
+        |     +--ro classifier-based-staticss
+        |     |  +--ro classifier-based-statics* [classifier-name traffic-policy-name]
+        |     |     +--ro classifier-name        -> /qos/classifier-template/traffic-classifiers/traffic-classifier/name
+        |     |     +--ro traffic-policy-name    -> /qos/classifier-template/traffic-policys/traffic-policy/name
+        |     |     +--ro service-type?          qos-rule-service-type
+        |     |     +--ro share-mode?            switch-flag
+        |     |     +--ro match-pass-packets?    uint64
+        |     |     +--ro match-pass-bytes?      uint64
+        |     |     +--ro match-drop-packets?    uint64
+        |     |     +--ro match-drop-bytes?      uint64
+        |     +--ro classifier-statisticss
+        |        +--ro classifier-statistics* [classifier-name]
+        |           +--ro classifier-name                   string
+        |           +--ro match-packets?                    uint64
+        |           +--ro match-bytes?                      uint64
+        |           +--ro match-packet-rate?                uint64
+        |           +--ro match-byte-rate?                  uint64
+        |           +--ro match-pass-packets?               uint64
+        |           +--ro match-pass-bytes?                 uint64
+        |           +--ro match-drop-packets?               uint64
+        |           +--ro match-drop-bytes?                 uint64
+        |           +--ro match-pass-packet-rate?           uint64
+        |           +--ro match-pass-byte-rate?             uint64
+        |           +--ro match-drop-packet-rate?           uint64
+        |           +--ro match-drop-byte-rate?             uint64
+        |           +--ro filter-packets?                   uint64
+        |           +--ro filter-bytes?                     uint64
+        |           +--ro filter-packet-rate?               uint64
+        |           +--ro filter-byte-rate?                 uint64
+        |           +--ro urpf-drop-packets?                uint64
+        |           +--ro urpf-drop-bytes?                  uint64
+        |           +--ro urpf-drop-packet-rate?            uint64
+        |           +--ro urpf-drop-byte-rate?              uint64
+        |           +--ro car-packets?                      uint64
+        |           +--ro car-bytes?                        uint64
+        |           +--ro car-packet-rate?                  uint64
+        |           +--ro car-byte-rate?                    uint64
+        |           +--ro car-pass-packets?                 uint64
+        |           +--ro car-pass-bytes?                   uint64
+        |           +--ro car-drop-packets?                 uint64
+        |           +--ro car-drop-bytes?                   uint64
+        |           +--ro car-pass-packet-rate?             uint64
+        |           +--ro car-pass-byte-rate?               uint64
+        |           +--ro car-drop-packet-rate?             uint64
+        |           +--ro car-drop-byte-rate?               uint64
+        |           +--ro car-green-packets?                uint64
+        |           +--ro car-green-bytes?                  uint64
+        |           +--ro car-yellow-packets?               uint64
+        |           +--ro car-yellow-bytes?                 uint64
+        |           +--ro car-red-packets?                  uint64
+        |           +--ro car-red-bytes?                    uint64
+        |           +--ro car-green-packet-rate?            uint64
+        |           +--ro car-green-byte-rate?              uint64
+        |           +--ro car-yellow-packet-rate?           uint64
+        |           +--ro car-yellow-byte-rate?             uint64
+        |           +--ro car-red-packet-rate?              uint64
+        |           +--ro car-red-byte-rate?                uint64
+        |           +--ro unknownunisup-pass-packets?       uint64
+        |           +--ro unknownunisup-pass-bytes?         uint64
+        |           +--ro unknownunisup-pass-packet-rate?   uint64
+        |           +--ro unknownunisup-pass-byte-rate?     uint64
+        |           +--ro unknownunisup-drop-packets?       uint64
+        |           +--ro unknownunisup-drop-bytes?         uint64
+        |           +--ro unknownunisup-drop-packet-rate?   uint64
+        |           +--ro unknownunisup-drop-byte-rate?     uint64
+        |           +--ro multicastsup-pass-packets?        uint64
+        |           +--ro multicastsup-pass-bytes?          uint64
+        |           +--ro multicastsup-pass-packet-rate?    uint64
+        |           +--ro multicastsup-pass-byte-rate?      uint64
+        |           +--ro multicastsup-drop-packets?        uint64
+        |           +--ro multicastsup-drop-bytes?          uint64
+        |           +--ro multicastsup-drop-packet-rate?    uint64
+        |           +--ro multicastsup-drop-byte-rate?      uint64
+        |           +--ro broadcastsup-pass-packets?        uint64
+        |           +--ro broadcastsup-pass-bytes?          uint64
+        |           +--ro broadcastsup-pass-packet-rate?    uint64
+        |           +--ro broadcastsup-pass-byte-rate?      uint64
+        |           +--ro broadcastsup-drop-packets?        uint64
+        |           +--ro broadcastsup-drop-bytes?          uint64
+        |           +--ro broadcastsup-drop-packet-rate?    uint64
+        |           +--ro broadcastsup-drop-byte-rate?      uint64
+        +--ro mpls-te-statisticss
+        |  +--ro mpls-te-statistics* [interface-name direction service-class]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro direction           qos-direction-type
+        |     +--ro service-class       qos-service-class-total
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        |     +--ro total-buffer?       uint32
+        |     +--ro current-buffer?     uint32
+        |     +--ro clear-time?         yang:date-and-time
+        +--ro car-resources
+        |  +--ro car-resource* [slot-id car-type]
+        |     +--ro slot-id              slot-id
+        |     +--ro car-type             string
+        |     +--ro inbound-resource?    uint32
+        |     +--ro outbound-resource?   uint32
+        +--ro traffic-buffer-usages
+        |  +--ro traffic-buffer-usage* [slot-id direction chip-name]
+        |     +--ro slot-id       string
+        |     +--ro direction     all-direction-type
+        |     +--ro chip-name     string
+        |     +--ro chip-type?    string
+        |     +--ro total-size?   uint32
+        |     +--ro used-size?    uint32
+        +--ro traffic-policy-application-resources
+        |  +--ro traffic-policy-application-resource* [slot-id]
+        |     +--ro slot-id    string
+        |     +--ro used?      uint32
+        |     +--ro free?      uint32
+        +--ro user-group-queue-resources
+        |  +--ro user-group-queue-resource* [slot-id direction tm-type pool]
+        |     +--ro slot-id        string
+        |     +--ro direction      qos-direction-type
+        |     +--ro tm-type        string
+        |     +--ro pool           string
+        |     +--ro used-number?   uint32
+        |     +--ro free-number?   uint32
+        +--ro queue-statisticss
+        |  +--ro queue-statistics* [interface-name service-class]
+        |     +--ro interface-name         -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class          qos-service-class
+        |     +--ro pass-packets?          uint64
+        |     +--ro pass-bytes?            uint64
+        |     +--ro pass-packet-rate?      uint64
+        |     +--ro pass-byte-rate?        uint64
+        |     +--ro discard-packets?       uint64
+        |     +--ro discard-bytes?         uint64
+        |     +--ro discard-packet-rate?   uint64
+        |     +--ro discard-byte-rate?     uint64
+        +--ro port-queue-statisticss
+        |  +--ro port-queue-statistics* [interface-name service-class]
+        |     +--ro interface-name           -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class            qos-service-class
+        |     +--ro pass-packets?            uint64
+        |     +--ro pass-bytes?              uint64
+        |     +--ro drop-packets?            uint64
+        |     +--ro drop-bytes?              uint64
+        |     +--ro drop-tail-packets?       uint64
+        |     +--ro drop-tail-bytes?         uint64
+        |     +--ro drop-wred-packets?       uint64
+        |     +--ro drop-wred-bytes?         uint64
+        |     +--ro statistics-interval?     uint32
+        |     +--ro pass-packet-rate?        uint64
+        |     +--ro pass-byte-rate?          uint64
+        |     +--ro drop-packet-rate?        uint64
+        |     +--ro drop-byte-rate?          uint64
+        |     +--ro drop-tail-packet-rate?   uint64
+        |     +--ro drop-tail-byte-rate?     uint64
+        |     +--ro drop-wred-packet-rate?   uint64
+        |     +--ro drop-wred-byte-rate?     uint64
+        |     +--ro peak-time?               yang:date-and-time
+        |     +--ro peak-rate?               uint64
+        |     +--ro current-queue-usage?     uint32
+        |     +--ro total-buffer-size?       uint32
+        |     +--ro used-buffer-size?        uint32
+        |     +--ro traffic-flow?            uint64
+        |     +--ro physical-bandwidth?      uint64
+        +--ro port-queue-default-statisticss
+        |  +--ro port-queue-default-statistics* [interface-name service-class]
+        |     +--ro interface-name            -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class             qos-service-class
+        |     +--ro pass-packets?             uint64
+        |     +--ro pass-bytes?               uint64
+        |     +--ro drop-packets?             uint64
+        |     +--ro drop-bytes?               uint64
+        |     +--ro statistics-interval?      uint32
+        |     +--ro pass-packet-rate?         uint64
+        |     +--ro pass-byte-rate?           uint64
+        |     +--ro drop-packet-rate?         uint64
+        |     +--ro drop-byte-rate?           uint64
+        |     +--ro configured-queue-depth?   uint32
+        |     +--ro used-buffer-size?         uint32
+        |     +--ro reset-time?               yang:date-and-time
+        |     +--ro traffic-flow?             uint64
+        |     +--ro physical-bandwidth?       uint64
+        +--ro port-queue-onboard-statisticss
+        |  +--ro port-queue-onboard-statistics* [interface-name service-class]
+        |     +--ro interface-name    -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class     qos-service-class
+        |     +--ro pass-packets?     uint64
+        |     +--ro pass-bytes?       uint64
+        |     +--ro drop-packets?     uint64
+        |     +--ro drop-bytes?       uint64
+        +--ro default-flow-queue-statisticss
+        |  +--ro default-flow-queue-statistics* [interface-name service-class]
+        |     +--ro interface-name         -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class          qos-service-class-filter
+        |     +--ro pass-packets?          uint64
+        |     +--ro pass-bytes?            uint64
+        |     +--ro pass-packet-rate?      uint64
+        |     +--ro pass-byte-rate?        uint64
+        |     +--ro discard-packets?       uint64
+        |     +--ro discard-bytes?         uint64
+        |     +--ro discard-packet-rate?   uint64
+        |     +--ro discard-byte-rate?     uint64
+        |     +--ro total-buffer-size?     uint32
+        |     +--ro used-buffer-size?      uint32
+        +--ro interface-profile-statistics
+        |  +--ro user-queues
+        |  |  +--ro user-queue* [interface-name pe-vlan-id vlan-id direction service-class]
+        |  |     +--ro interface-name             -> /ifm:ifm/interfaces/interface/name
+        |  |     +--ro pe-vlan-id                 uint32
+        |  |     +--ro vlan-id                    uint32
+        |  |     +--ro direction                  qos-direction-type
+        |  |     +--ro service-class              qos-service-class-8cos
+        |  |     +--ro pass-packets?              uint64
+        |  |     +--ro pass-bytes?                uint64
+        |  |     +--ro pass-packet-rate?          uint64
+        |  |     +--ro pass-byte-rate?            uint64
+        |  |     +--ro drop-packets?              uint64
+        |  |     +--ro drop-bytes?                uint64
+        |  |     +--ro drop-packet-rate?          uint64
+        |  |     +--ro drop-byte-rate?            uint64
+        |  |     +--ro random-drop-packets?       uint64
+        |  |     +--ro random-drop-bytes?         uint64
+        |  |     +--ro random-drop-packet-rate?   uint64
+        |  |     +--ro random-drop-byte-rate?     uint64
+        |  |     +--ro time-stamp?                yang:date-and-time
+        |  |     +--ro buffer-total?              uint32
+        |  |     +--ro buffer-used?               uint32
+        |  |     +--ro clear-time?                yang:date-and-time
+        |  +--ro cars
+        |  |  +--ro car* [car-type interface-name pe-vlan-id vlan-id direction]
+        |  |     +--ro car-type            statistics-car-type
+        |  |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |  |     +--ro pe-vlan-id          uint32
+        |  |     +--ro vlan-id             uint32
+        |  |     +--ro direction           qos-direction-type
+        |  |     +--ro pass-packets?       uint64
+        |  |     +--ro pass-bytes?         uint64
+        |  |     +--ro pass-packet-rate?   uint64
+        |  |     +--ro pass-byte-rate?     uint64
+        |  |     +--ro drop-packets?       uint64
+        |  |     +--ro drop-bytes?         uint64
+        |  |     +--ro drop-packet-rate?   uint64
+        |  |     +--ro drop-byte-rate?     uint64
+        |  +--ro share-shapings
+        |  |  +--ro share-shaping* [interface-name pe-vlan-id vlan-id direction shaping-id]
+        |  |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |  |     +--ro pe-vlan-id          uint32
+        |  |     +--ro vlan-id             uint32
+        |  |     +--ro direction           qos-direction-type
+        |  |     +--ro shaping-id          uint64
+        |  |     +--ro pass-packets?       uint64
+        |  |     +--ro pass-bytes?         uint64
+        |  |     +--ro pass-packet-rate?   uint64
+        |  |     +--ro pass-byte-rate?     uint64
+        |  |     +--ro drop-packets?       uint64
+        |  |     +--ro drop-bytes?         uint64
+        |  |     +--ro drop-packet-rate?   uint64
+        |  |     +--ro drop-byte-rate?     uint64
+        |  +--ro priority-cars
+        |     +--ro priority-car* [interface-name pe-vlan-id vlan-id direction priority-num]
+        |        +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |        +--ro pe-vlan-id          uint32
+        |        +--ro vlan-id             uint32
+        |        +--ro direction           qos-direction-type
+        |        +--ro priority-num        qos-priority-num-type
+        |        +--ro pass-packets?       uint64
+        |        +--ro pass-bytes?         uint64
+        |        +--ro pass-packet-rate?   uint64
+        |        +--ro pass-byte-rate?     uint64
+        |        +--ro drop-packets?       uint64
+        |        +--ro drop-bytes?         uint64
+        |        +--ro drop-packet-rate?   uint64
+        |        +--ro drop-byte-rate?     uint64
+        +--ro hard-pipe-abilitys
+        |  +--ro hard-pipe-ability* [interface-name]
+        |     +--ro interface-name    -> /ifm:ifm/interfaces/interface/name
+        |     +--ro ability?          ability-type
+        +--ro l2vpn-hard-pipe-statisticss
+        |  +--ro l2vpn-hard-pipe-statistics* [interface-name]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro direction?          qos-direction-inbound
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro traffic-policy-template-application
+        |  +--ro total-classifier?     uint32
+        |  +--ro created-classifier?   uint32
+        |  +--ro free-classifier?      uint32
+        |  +--ro total-behavior?       uint32
+        |  +--ro created-behavior?     uint32
+        |  +--ro free-behavior?        uint32
+        |  +--ro total-policy?         uint32
+        |  +--ro created-policy?       uint32
+        |  +--ro free-policy?          uint32
+        +--ro flow-car-statisticss
+        |  +--ro flow-car-statistics* [ip-type slot-id direction]
+        |     +--ro ip-type             stream-direction-type
+        |     +--ro slot-id             slot-id
+        |     +--ro direction           qos-direction-type
+        |     +--ro ip?                 inet:ipv4-address-no-zone
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro interface-action-user-queue-statisticss
+        |  +--ro interface-action-user-queue-statistics* [interface-name pe-vlan-id vlan-id direction classifier-name service-class]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro pe-vlan-id          uint16
+        |     +--ro vlan-id             uint16
+        |     +--ro direction           qos-direction-type
+        |     +--ro classifier-name     -> /qos/classifier-template/traffic-classifiers/traffic-classifier/name
+        |     +--ro service-class       hqos-service-class
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        |     +--ro buffer-total?       uint32
+        |     +--ro buffer-used?        uint32
+        +--ro interface-user-group-queue-statistics
+        |  +--ro interface-user-group-queue-statistic* [interface-name pe-vlan-id vlan-id direction service-class]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro pe-vlan-id          uint32
+        |     +--ro vlan-id             uint16
+        |     +--ro direction           qos-direction-type
+        |     +--ro service-class       qos-service-class-filter
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro interface-sub-port-queue-statistics
+        |  +--ro interface-sub-port-queue-statistic* [interface-name service-class]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro service-class       qos-service-class-total
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro interface-hard-pipe-statisticss
+        |  +--ro interface-hard-pipe-statistics* [interface-name]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro qos-resource-rules
+        |  +--ro qos-resource-rule* [rule-type slot-id resource-pool]
+        |     +--ro rule-type            rule-type
+        |     +--ro slot-id              string
+        |     +--ro resource-pool        string
+        |     +--ro used-resource?       uint32
+        |     +--ro free-resource?       uint32
+        |     +--ro reserved-resource?   uint32
+        |     +--ro total-resource?      uint32
+        |     +--ro utilization-rate?    uint32
+        +--ro sub-port-queue-resources
+        |  +--ro sub-port-queue-resource* [slot-id direction tm-type]
+        |     +--ro slot-id          string
+        |     +--ro direction        out-direction-type
+        |     +--ro tm-type          string
+        |     +--ro used-resource?   uint32
+        |     +--ro free-resource?   uint32
+        +--ro interface-car-statisticss
+        |  +--ro interface-car-statistics* [interface-name direction vlan-id slot-id vid]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro direction           qos-direction-type
+        |     +--ro vlan-id             uint16
+        |     +--ro slot-id             slot-id
+        |     +--ro vid                 uint16
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro interface-car-l2-port-statisticss
+        |  +--ro interface-car-l2-port-statistics* [interface-name direction vlan-id slot-id]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro direction           qos-direction-type
+        |     +--ro vlan-id             uint16
+        |     +--ro slot-id             slot-id
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro interface-car-8021p-dscp-statisticss
+        |  +--ro interface-car-8021p-dscp-statistics* [interface-name direction pe-vlan-id priority-value slot-id]
+        |     +--ro interface-name      -> /ifm:ifm/interfaces/interface/name
+        |     +--ro direction           qos-direction-type
+        |     +--ro pe-vlan-id          uint16
+        |     +--ro priority-value      uint16
+        |     +--ro slot-id             slot-id
+        |     +--ro pass-packets?       uint64
+        |     +--ro pass-bytes?         uint64
+        |     +--ro pass-packet-rate?   uint64
+        |     +--ro pass-byte-rate?     uint64
+        |     +--ro drop-packets?       uint64
+        |     +--ro drop-bytes?         uint64
+        |     +--ro drop-packet-rate?   uint64
+        |     +--ro drop-byte-rate?     uint64
+        +--ro interface-extend-statisticss
+        |  +--ro interface-extend-statistics* [interface-name]
+        |     +--ro interface-name                            -> /ifm:ifm/interfaces/interface/name
+        |     +--ro interface-car-inbound-drop-packets?       uint64
+        |     +--ro interface-car-outbound-drop-packets?      uint64
+        |     +--ro port-queue-outbound-drop-packets?         uint64
+        |     +--ro vlan-car-inbound-drop-packets?            uint64
+        |     +--ro vlan-car-outbound-drop-packets?           uint64
+        |     +--ro receive-packet-equal-64bytes?             string
+        |     +--ro receive-packet-between-65to127bytes?      string
+        |     +--ro receive-packet-between-128to255bytes?     string
+        |     +--ro receive-packet-between-256to511bytes?     string
+        |     +--ro receive-packet-between-512to1023bytes?    string
+        |     +--ro receive-packet-between-1024to1518bytes?   string
+        |     +--ro receive-packet-larger-1518bytes?          string
+        |     +--ro send-packet-equal-64bytes?                string
+        |     +--ro send-packet-between-65to127bytes?         string
+        |     +--ro send-packet-between-128to255bytes?        string
+        |     +--ro send-packet-between-256to511bytes?        string
+        |     +--ro send-packet-between-512to1023bytes?       string
+        |     +--ro send-packet-between-1024to1518bytes?      string
+        |     +--ro send-packet-larger-1518bytes?             string
+        +--ro sub-port-queue-abnormal-allocations
+        |  +--ro sub-port-queue-abnormal-allocation* [slot-id direction]
+        |     +--ro slot-id                    slot-id
+        |     +--ro direction                  out-direction-type
+        |     +--ro total-abnormal-number?     uint32
+        |     +--ro abnormal-configurations
+        |        +--ro abnormal-configuration* [interface-name]
+        |           +--ro interface-name    -> /ifm:ifm/interfaces/interface/name
+        |           +--ro configuration?    string
+        +--ro user-group-queue-abnormal-allocations
+        |  +--ro user-group-queue-abnormal-allocation* [slot-id direction]
+        |     +--ro slot-id                    slot-id
+        |     +--ro direction                  qos-direction-type
+        |     +--ro total-abnormal-number?     uint32
+        |     +--ro abnormal-configurations
+        |        +--ro abnormal-configuration* [interface-name]
+        |           +--ro interface-name    -> /ifm:ifm/interfaces/interface/name
+        |           +--ro configuration?    string
+        +--ro user-queue-abnormal-allocations
+        |  +--ro user-queue-abnormal-allocation* [slot-id direction]
+        |     +--ro slot-id                    slot-id
+        |     +--ro direction                  qos-direction-type
+        |     +--ro total-abnormal-number?     uint32
+        |     +--ro abnormal-configurations
+        |        +--ro abnormal-configuration* [interface-name]
+        |           +--ro interface-name    string
+        |           +--ro configuration?    string
+        +--ro user-queue-resources
+        |  +--ro user-queue-resource* [slot-id direction tm-type resource-pool]
+        |     +--ro slot-id              string
+        |     +--ro direction            qos-direction-type
+        |     +--ro tm-type              string
+        |     +--ro resource-pool        string
+        |     +--ro used-id-resource?    string
+        |     +--ro free-id-resource?    string
+        |     +--ro used-cir-resource?   string
+        |     +--ro used-pir-resource?   string
+        |     +--ro free-cir-resource?   string
+        |     +--ro free-pir-resource?   string
+        +--ro fabric-queue-unicast-statisticss
+        |  +--ro fabric-queue-unicast-statistics* [source-slot-id destination-slot-id]
+        |     +--ro source-slot-id           string
+        |     +--ro destination-slot-id      string
+        |     +--ro cos-value-type?          cos-value-type
+        |     +--ro source-tm-number?        uint32
+        |     +--ro destination-tm-number?   uint32
+        |     +--ro pass-packets?            uint64
+        |     +--ro pass-bytes?              uint64
+        |     +--ro discard-packets?         uint64
+        |     +--ro discard-bytes?           uint64
+        +--ro fabric-queue-multicast-statisticss
+        |  +--ro fabric-queue-multicast-statistics* [source-slot-id]
+        |     +--ro source-slot-id           string
+        |     +--ro cos-value-type?          cos-value-type
+        |     +--ro source-tm-number?        uint32
+        |     +--ro destination-tm-number?   uint32
+        |     +--ro pass-packets?            uint64
+        |     +--ro pass-bytes?              uint64
+        |     +--ro discard-packets?         uint64
+        |     +--ro discard-bytes?           uint64
+        +--ro slot-port-queue-statisticss
+        |  +--ro slot-port-queue-statistics* [slot-id service-class]
+        |     +--ro slot-id                  string
+        |     +--ro service-class            qos-service-class
+        |     +--ro pass-packets?            uint64
+        |     +--ro pass-bytes?              uint64
+        |     +--ro pass-packet-rate?        uint64
+        |     +--ro pass-byte-rate?          uint64
+        |     +--ro drop-packets?            uint64
+        |     +--ro drop-tail-packets?       uint64
+        |     +--ro drop-wred-packets?       uint64
+        |     +--ro drop-bytes?              uint64
+        |     +--ro drop-tail-bytes?         uint64
+        |     +--ro drop-wred-bytes?         uint64
+        |     +--ro drop-packet-rate?        uint64
+        |     +--ro drop-tail-packet-rate?   uint64
+        |     +--ro drop-wred-packet-rate?   uint64
+        |     +--ro drop-byte-rate?          uint64
+        |     +--ro drop-tail-byte-rate?     uint64
+        |     +--ro drop-wred-byte-rate?     uint64
+        +--ro slot-channel-profile-statisticss
+           +--ro slot-channel-profile-statistics* [slot-id tm-id channel-id]
+              +--ro slot-id                      slot-id
+              +--ro tm-id                        uint8
+              +--ro channel-id                   uint8
+              +--ro channel-profile-name?        -> ../../../../queue-scheduler-template/channel-profiles/channel-profile/name
+              +--ro slot-configured-bandwidth?   uint32
+              +--ro slot-real-bandwidth?         uint32
+              +--ro slot-quantity?               uint32
+              +--ro slot-max-quantity?           uint32
+              +--ro bandwidth-pool-0?            uint32
+              +--ro bandwidth-pool-1?            uint32
+              +--ro used-quantity-pool-0?        uint32
+              +--ro free-quantity-pool-0?        uint32
+              +--ro used-quantity-pool-1?        uint32
+              +--ro free-quantity-pool-1?        uint32
+              +--ro used-pir-pool-0?             uint32
+              +--ro free-pir-pool-0?             uint32
+              +--ro used-banknote-pool-0?        uint32
+              +--ro free-banknote-pool-0?        uint32
+              +--ro used-pir-pool-1?             uint32
+              +--ro free-pir-pool-1?             uint32
+              +--ro used-banknote-pool-1?        uint32
+              +--ro free-banknote-pool-1?        uint32
+
+  rpcs:
+    +---x reset-interface-traffic-policy-statistics
+    |  +---w input
+    |     +---w interface-name    -> /ifm:ifm/interfaces/interface/name
+    |     +---w direction         qos-direction-type
+    |     +---w pe-vlan-id        uint32
+    |     +---w vlan-id           uint32
+    +---x reset-mpls-te-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    |     +---w direction         qos-direction-type
+    +---x reset-global-policy-statistics
+    |  +---w input
+    |     +---w direction      qos-direction-type
+    |     +---w slot-id?       slot-id
+    |     +---w policy-name    template-name
+    +---x reset-user-group-queue-statistics
+    |  +---w input
+    |     +---w user-group-queue-name    -> /qos/queue-scheduler-template/user-group-queues/user-group-queue/name
+    |     +---w direction                qos-gq-direction-type
+    |     +---w slot-id?                 slot-id
+    +---x reset-interface-profile-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    |     +---w direction         qos-direction-type
+    |     +---w pe-vlan-id        uint32
+    |     +---w vlan-id           uint32
+    +---x reset-interface-default-flow-queue-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    +---x reset-interface-hard-pipe-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    +---x reset-interface-lv-hard-pipe-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    +---x reset-interface-car-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    |     +---w direction         qos-direction-type
+    |     +---w vlan-id?          uint16
+    |     +---w vid?              uint16
+    |     +---w ce-vid?           uint16
+    +---x reset-interface-user-group-queue-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    |     +---w direction         qos-direction-type
+    |     +---w pe-vlan-id?       uint32
+    |     +---w ce-vlan-id?       uint32
+    |     +---w vlan-id?          uint32
+    +---x reset-interface-user-queue-statistics
+    |  +---w input
+    |     +---w interface-name    string
+    |     +---w direction         qos-direction-type
+    +---x reset-interface-port-queue-statistics
+    |  +---w input
+    |     +---w interface-name?   -> /ifm:ifm/interfaces/interface/name
+    |     +---w service-class?    qos-service-class
+    |     +---w on-board?         empty
+    |     +---w default?          empty
+    +---x reset-slot-port-queue-statistics
+    |  +---w input
+    |     +---w slot-id          slot-id
+    |     +---w service-class?   qos-service-class
+    +---x reset-user-informations
+    |  +---w input
+    |     +---w id           uint32
+    |     +---w direction    qos-direction-type
+    +---x reset-queue-statistics
+    |  +---w input
+    |     +---w interface-name?   -> /ifm:ifm/interfaces/interface/name
+    |     +---w service-class?    qos-service-class
+    +---x reset-interface-sub-port-queue-statistics
+    |  +---w input
+    |     +---w interface-name    -> /ifm:ifm/interfaces/interface/name
+    +---x reset-fabric-queue-unicast-statistics
+    |  +---w input
+    |     +---w source-slot-id         string
+    |     +---w destination-slot-id?   string
+    +---x reset-fabric-queue-multicast-statistics
+       +---w input
+          +---w slot-id    slot-id

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-fim-ethernet"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:fim-ethernet="urn:huawei:yang:huawei-fim-ethernet"
+        xmlns:ethernet="urn:huawei:yang:huawei-ethernet"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm-trunk="urn:huawei:yang:huawei-ifm-trunk">
+  <namespace uri="urn:huawei:yang:huawei-fim-ethernet"/>
+  <prefix value="fim-ethernet"/>
+  <import module="huawei-ethernet">
+    <prefix value="ethernet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm-trunk">
+    <prefix value="ifm-trunk"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Common interface management, which includes the public configuration of interfaces.</text>
+  </description>
+  <reference>
+    <text>Huawei private.</text>
+  </reference>
+  <revision date="2020-03-11">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="forwarding"/>
+  <typedef name="enable-type">
+    <type name="enumeration">
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>Disable.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Enable type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:l3-sub-interface">
+    <description>
+      <text>FIM configuration to the IFM module.</text>
+    </description>
+    <container name="mode-channel">
+      <when condition="(/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:l3-sub-interface/ethernet:vlan-type-dot1q)"/>
+      <description>
+        <text>Configure the mode Channel sub-interface.</text>
+      </description>
+      <leaf name="mode-channel-enable">
+        <type name="enable-type"/>
+        <default value="disable"/>
+        <description>
+          <text>Enable or disable mode channel sub-interface.</text>
+        </description>
+      </leaf>
+      <leaf name="bandwidth">
+        <when condition="../mode-channel-enable='enable'"/>
+        <type name="uint32">
+          <range value="2..1000000"/>
+        </type>
+        <units name="Mbit/s"/>
+        <default value="2"/>
+        <description>
+          <text>Specify bandwidth of an mode channel sub-interface (Mbit/s).</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:main-interface">
+    <description>
+      <text>FIM configuration to the IFM module.</text>
+    </description>
+    <container name="fim-main">
+      <when condition="not((../../../ifm:name) = (/ifm:ifm/ifm:interfaces/ifm:interface/ifm-trunk:trunk/ifm-trunk:members/ifm-trunk:member/ifm-trunk:name)) and ../../../ifm:type!='FlexE-200GE' and ../../../ifm:type!='FlexE-50G' and ../../../ifm:type!='FlexE-100G' and ../../../ifm:type!='FlexE-50|100G' and ../../../ifm:type!='Virtual-Ethernet' and ../../../ifm:type!='Tunnel' and ../../../ifm:type!='NULL' and ../../../ifm:type!='LoopBack' and ../../../ifm:type!='Global-VE' and ../../../ifm:type!='Nve' and ../../../ifm:type!='Vbdif' and ../../../ifm:type!='Vlanif' and ../../../ifm:type!='PW-VE'"/>
+      <description>
+        <text>Configure the FIM configuration to the main interface.</text>
+      </description>
+      <leaf name="outer-vlan-enable">
+        <type name="enable-type"/>
+        <default value="disable"/>
+        <description>
+          <text>Modify one tag ethernet type.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/ethernet:ethernet/ethernet:l2-sub-interface">
+    <description>
+      <text>FIM configuration to the IFM module.</text>
+    </description>
+    <container name="fim-l2-sub">
+      <description>
+        <text>Configure the FIM configuration to L2 sub interface.</text>
+      </description>
+      <leaf name="egress-strict-filter">
+        <type name="enable-type"/>
+        <default value="disable"/>
+        <description>
+          <text>Enable or disable strict filter on an EVC sub-interface.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+</module>

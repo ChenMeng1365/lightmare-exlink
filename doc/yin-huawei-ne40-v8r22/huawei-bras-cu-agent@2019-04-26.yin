@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-cu-agent"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-cu-agent="urn:huawei:yang:huawei-bras-cu-agent"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:monitor-group="urn:huawei:yang:huawei-monitor-group"
+        xmlns:rmg="urn:huawei:yang:huawei-route-monitor-group"
+        xmlns:bfd="urn:huawei:yang:huawei-bfd"
+        xmlns:fim-ifm="urn:huawei:yang:huawei-fim-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-bras-cu-agent"/>
+  <prefix value="bras-cu-agent"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-monitor-group">
+    <prefix value="monitor-group"/>
+  </import>
+  <import module="huawei-route-monitor-group">
+    <prefix value="rmg"/>
+  </import>
+  <import module="huawei-bfd">
+    <prefix value="bfd"/>
+  </import>
+  <import module="huawei-fim-ifm">
+    <prefix value="fim-ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>CU agent.</text>
+  </description>
+  <revision date="2019-04-26">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-control"/>
+  <typedef name="cu-mode-access-type">
+    <type name="enumeration">
+      <enum name="layer2">
+        <value value="2"/>
+        <description>
+          <text>Layer2 access.</text>
+        </description>
+      </enum>
+      <enum name="layer3">
+        <value value="3"/>
+        <description>
+          <text>Layer3 access.</text>
+        </description>
+      </enum>
+      <enum name="layer3-leased-line">
+        <value value="4"/>
+        <description>
+          <text>Layer3 leased line.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>CU mode access type.</text>
+    </description>
+  </typedef>
+  <typedef name="cu-mode-type">
+    <type name="enumeration">
+      <enum name="true">
+        <value value="1"/>
+        <description>
+          <text>CU mode is enabled.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>CU mode type.</text>
+    </description>
+  </typedef>
+  <container name="bras-cu-agent">
+    <description>
+      <text>Specify configuration information of CU agent.</text>
+    </description>
+    <container name="cu-agent">
+      <presence value="Enable the UP mode so that the current device functions as a vBRAS-UP."/>
+      <description>
+        <text>Enable/disable the UP mode so that the current device functions as a vBRAS-UP.</text>
+      </description>
+      <container name="interface-monitoring-groups">
+        <description>
+          <text>List of configuring a vBRAS-UP to track the session status of interface monitoring groups to detect network-side link faults.</text>
+        </description>
+        <list name="interface-monitoring-group">
+          <key value="name"/>
+          <description>
+            <text>Configure a vBRAS-UP to track the session status of a specified interface monitoring group.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/monitor-group:monitor-group/monitor-group:groups/monitor-group:group/monitor-group:name"/>
+            </type>
+            <description>
+              <text>Name of an interface monitoring group.</text>
+            </description>
+          </leaf>
+          <leaf name="down-weight">
+            <type name="uint32">
+              <range value="1..32000"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Interface weight for reporting a network-side fault. A higher weight indicates a higher fault priority.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="route-monitoring-groups">
+        <description>
+          <text>List of configuring a vBRAS-UP to track the session status of a route monitoring group to detect network-side link faults.</text>
+        </description>
+        <list name="route-monitoring-group">
+          <key value="name"/>
+          <description>
+            <text>Configure a vBRAS-UP to track the session status of a specified route monitoring group.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/rmg:route-monitor-group/rmg:monitor-groups/rmg:monitor-group/rmg:group-name"/>
+            </type>
+            <description>
+              <text>Name of a route monitoring group.</text>
+            </description>
+          </leaf>
+          <leaf name="down-weight">
+            <type name="uint32">
+              <range value="1..32000"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Route weight for reporting a network-side fault. A higher weight indicates a higher fault priority.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="bfd-sessions">
+        <description>
+          <text>List of configure a vBRAS-UP to track the status of a BFD session to detect access-side faults.</text>
+        </description>
+        <list name="bfd-session">
+          <key value="name"/>
+          <description>
+            <text>Configure a vBRAS-UP to track the status of a BFD session.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/bfd:bfd/bfd:sessions/bfd:session/bfd:name"/>
+            </type>
+            <description>
+              <text>Name of a BFD session.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="up-nqa-detect">
+        <presence value="Creat up-nqa-detect."/>
+        <description>
+          <text>Enable/disable NQA dectct to the VXLAN tunnel.</text>
+        </description>
+        <leaf name="count">
+          <type name="uint32">
+            <range value="0..4294967295"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>Number of sent Echo Request messages.</text>
+          </description>
+        </leaf>
+        <leaf name="interval">
+          <type name="uint32">
+            <range value="1..10000"/>
+          </type>
+          <units name="min"/>
+          <default value="1"/>
+          <description>
+            <text>Time elapses before a next Echo Request message is sent.</text>
+          </description>
+        </leaf>
+        <leaf name="timeout">
+          <type name="uint32">
+            <range value="1..65535"/>
+          </type>
+          <units name="min"/>
+          <default value="1"/>
+          <description>
+            <text>Timeout period of waiting for an Echo Reply message.</text>
+          </description>
+        </leaf>
+        <leaf name="destination-port">
+          <type name="uint32">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Destination port number.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="up-cusp-agent">
+        <config value="false"/>
+        <description>
+          <text>Operational state of binding a CUSP agent to the vBRAS-UP and the control tunnel between the vBRAS-CP and vBRAS-UP is established.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Name of the CUSP agent bound to the control tunnel. After the CUSP agent is bound to the vBRAS-UP, the control tunnel between the vBRAS-CP and vBRAS-UP is established.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="up-vxlan-channels">
+        <config value="false"/>
+        <description>
+          <text>List of binding VxLAN Tunnel state.</text>
+        </description>
+        <list name="up-vxlan-channel">
+          <key value="vni source-ip-address destination-ip-address"/>
+          <description>
+            <text>Binding VxLAN Tunnel state.</text>
+          </description>
+          <leaf name="vni">
+            <type name="uint32">
+              <range value="1..16777215"/>
+            </type>
+            <description>
+              <text>VxLAN Network Identify.</text>
+            </description>
+          </leaf>
+          <leaf name="source-ip-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <description>
+              <text>Source IP Address.</text>
+            </description>
+          </leaf>
+          <leaf name="destination-ip-address">
+            <type name="inet:ipv4-address-no-zone"/>
+            <description>
+              <text>Destination IP Address.</text>
+            </description>
+          </leaf>
+          <leaf name="vpn-instance-name">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>VPN Instance Name.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+    <container name="up-versions">
+      <config value="false"/>
+      <description>
+        <text>List of Checking CU interface version information on the UP side state.</text>
+      </description>
+      <list name="up-version">
+        <key value="instance"/>
+        <description>
+          <text>Checking CU interface version information on the UP side state.</text>
+        </description>
+        <leaf name="instance">
+          <type name="enumeration">
+            <enum name="master">
+              <value value="0"/>
+              <description>
+                <text>Master type.</text>
+              </description>
+            </enum>
+            <enum name="slave">
+              <value value="1"/>
+              <description>
+                <text>Slave type.</text>
+              </description>
+            </enum>
+            <enum name="no-disaster-environment">
+              <value value="255"/>
+              <description>
+                <text>Not disaster environment.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>UP connect with multiple CP.</text>
+          </description>
+        </leaf>
+        <leaf name="cp-version">
+          <type name="string">
+            <length value="1..7"/>
+          </type>
+          <description>
+            <text>CP version information.</text>
+          </description>
+        </leaf>
+        <leaf name="up-version">
+          <type name="string">
+            <length value="1..7"/>
+          </type>
+          <description>
+            <text>UP version information.</text>
+          </description>
+        </leaf>
+        <leaf name="negotiation-result">
+          <type name="string">
+            <length value="1..15"/>
+          </type>
+          <description>
+            <text>Negotiation result.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="disaster-recoverys">
+      <config value="false"/>
+      <description>
+        <text>List of disaster recovery configurations on a vBRAS-UP.</text>
+      </description>
+      <list name="disaster-recovery">
+        <key value="cp-address"/>
+        <description>
+          <text>Display disaster recovery configurations on a vBRAS-UP statistics.</text>
+        </description>
+        <leaf name="cp-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Source IP address used to establish a connection between the vBRAS-CP and vBRAS-UP.</text>
+          </description>
+        </leaf>
+        <leaf name="master-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IP address of the master vBRAS-CP.</text>
+          </description>
+        </leaf>
+        <leaf name="slave-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IP address of the backup vBRAS-CP.</text>
+          </description>
+        </leaf>
+        <leaf name="openflow-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IP address of an control channel.</text>
+          </description>
+        </leaf>
+        <leaf name="vxlan-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>IP address of a protocol channel.</text>
+          </description>
+        </leaf>
+        <leaf name="priority">
+          <type name="uint32"/>
+          <description>
+            <text>Priority of the vBRAS-CP master/backup role.</text>
+          </description>
+        </leaf>
+        <leaf name="negotiation-master-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Negotiation result IP address of the master vBRAS-CP.</text>
+          </description>
+        </leaf>
+        <leaf name="negotiation-slave-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Negotiation result IP address of the backup vBRAS-CP.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Configure CU agent to interface model.</text>
+    </description>
+    <container name="cu-agent">
+      <description>
+        <text>Configure CU agent to interface model.</text>
+      </description>
+      <container name="up-ve-track">
+        <when condition="../../ifm:type = 'Virtual-Ethernet' and ../../ifm:class='main-interface'"/>
+        <description>
+          <text>Configure the UP VE port to track the status of the UP/CP channel (including CUSP and VXLAN).</text>
+        </description>
+        <leaf name="up-ve-track-tunnel-enable">
+          <type name="empty"/>
+          <description>
+            <text>Enable the UP VE port to track the status of the UP/CP channel (including CUSP and VXLAN).</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="cu-multicast-rbp">
+        <when condition="(../../ifm:type='Virtual-Ethernet' or&#10;../../ifm:type='100GE' or&#10;../../ifm:type='400GE' or&#10;../../ifm:type='25GE' or&#10;../../ifm:type='GigabitEthernet') and ../../ifm:class='main-interface'"/>
+        <description>
+          <text>Configure an RBP to a specified interface on a vBRAS-UP.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..128"/>
+          </type>
+          <must condition="/bras-cu-agent:bras-cu-agent/bras-cu-agent:cu-agent"/>
+          <must condition="(../../../ifm:type='Virtual-Ethernet' and ../../../fim-ifm:ve-group/fim-ifm:type='L3VE') or ../../../ifm:type!='Virtual-Ethernet'"/>
+          <description>
+            <text>Bind an RBP to a specified interface on a vBRAS-UP.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="cu-mode-interface">
+        <config value="false"/>
+        <description>
+          <text>Operational state of the UP mode in the interface and report the interface to the vBRAS-CP for management.</text>
+        </description>
+        <leaf name="cu-mode-enable">
+          <type name="cu-mode-type"/>
+          <description>
+            <text>Enable/disable CU mode.</text>
+          </description>
+        </leaf>
+        <leaf name="user-access-type">
+          <type name="cu-mode-access-type"/>
+          <description>
+            <text>Access type of a user.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

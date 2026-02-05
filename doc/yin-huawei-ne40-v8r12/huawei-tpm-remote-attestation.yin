@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-tpm-remote-attestation"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:hw-tpm-ra="urn:huawei:yang:huawei-tpm-remote-attestation"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-tpm-remote-attestation"/>
+  <prefix value="hw-tpm-ra"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>A YANG module to enable a TPM 1.2 and TPM 2.0 based
+remote attestation procedure using a challenge-response
+interaction model and the TPM 1.2 and TPM 2.0 Quote
+primitive operations.</text>
+  </description>
+  <revision date="2020-09-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>ietf-tpm-remote-attestation.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="trustem"/>
+  <identity name="log-type">
+    <description>
+      <text>The type of logs available.</text>
+    </description>
+  </identity>
+  <identity name="bios">
+    <base name="log-type"/>
+    <description>
+      <text>Measurement log created by the BIOS/UEFI.</text>
+    </description>
+  </identity>
+  <identity name="netequip-boot">
+    <base name="log-type"/>
+    <description>
+      <text>Measurement log created by netequip-boot.</text>
+    </description>
+  </identity>
+  <identity name="ima">
+    <base name="log-type"/>
+    <description>
+      <text>Measurement log created by IMA.</text>
+    </description>
+  </identity>
+  <grouping name="hash-algo">
+    <description>
+      <text>A selector for the hashing algorithm.</text>
+    </description>
+    <leaf name="tcg-hash-algo-id">
+      <type name="uint16"/>
+      <description>
+        <text>This is an index referencing the TCG Algorithm Registry based on tpm-alg-id.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="hash">
+    <description>
+      <text>The hash value including hash-algo identifier.</text>
+    </description>
+    <container name="hash-digests">
+      <description>
+        <text>The list of hashes.</text>
+      </description>
+      <list name="hash-digest">
+        <key value="tcg-hash-algo-id"/>
+        <description>
+          <text>A hash value based on a hash algorithm registered by an SDO.</text>
+        </description>
+        <uses name="hash-algo"/>
+        <leaf name="hash-value">
+          <type name="binary"/>
+          <description>
+            <text>The binary representation of the hash value.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="nonce">
+    <description>
+      <text>A nonce to show freshness and counter replays.</text>
+    </description>
+    <leaf name="nonce-value">
+      <type name="binary"/>
+      <mandatory value="true"/>
+      <description>
+        <text>This nonce SHOULD be generated via a registered
+cryptographic-strength algorithm. In consequence,
+the length of the nonce depends on the hash algorithm
+used. The algorithm used in this case is independent
+from the hash algorithm used to create the hash-value
+in the response of the attestor.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="tpm20-pcr-selection">
+    <description>
+      <text>A Verifier can request one or more PCR values uses its individually created AC.
+The corresponding selection filter is represented in this grouping. Requesting
+a PCR value that is not in scope of the AC used, detailed exposure via error
+msg should be avoided.</text>
+    </description>
+    <container name="pcr-lists">
+      <description>
+        <text>List of pcr-lists.</text>
+      </description>
+      <list name="pcr-list">
+        <key value="tcg-hash-algo-id"/>
+        <description>
+          <text>For each PCR in this list an individual list of banks (hash-algo) can be
+requested. It depends on the datastore, if every bank in this grouping is
+included per PCR (crude), or if each requested bank set is returned for
+each PCR individually (elegant).</text>
+        </description>
+        <leaf-list name="pcr-indices">
+          <type name="uint8"/>
+          <description>
+            <text>The number of the PCR. At the moment this is limited 32.</text>
+          </description>
+        </leaf-list>
+        <uses name="hash-algo"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="tpm20-attestation-key-identifier">
+    <description>
+      <text>A selector for a suitable key identifier.</text>
+    </description>
+    <choice name="key-identifier">
+      <description>
+        <text>Identifier for the attestation key to use for signing attestation evidence.</text>
+      </description>
+      <case name="public-key">
+        <description>
+          <text>The public key of tpm 2.0 attestation.</text>
+        </description>
+        <leaf name="pub-key-id">
+          <type name="binary"/>
+          <description>
+            <text>The value of the identifier for the public key.</text>
+          </description>
+        </leaf>
+      </case>
+      <case name="uuid">
+        <description>
+          <text>Use a YANG agent generated (and maintained) attestation key UUID.</text>
+        </description>
+        <leaf name="uuid-value">
+          <type name="binary"/>
+          <description>
+            <text>The UUID identifying the corresponding public key.</text>
+          </description>
+        </leaf>
+      </case>
+    </choice>
+  </grouping>
+  <grouping name="tpm-identifier">
+    <description>
+      <text>In a system with multiple-TPMs get the data from a specific TPM
+identified by the name and physical-index.</text>
+    </description>
+    <leaf name="tpm-name">
+      <type name="string">
+        <length value="1..64"/>
+      </type>
+      <description>
+        <text>Name value of a single TPM or 'All'.</text>
+      </description>
+    </leaf>
+    <leaf name="tpm-physical-index">
+      <type name="int32">
+        <range value="1..2147483647"/>
+      </type>
+      <config value="false"/>
+      <description>
+        <text>The entPhysicalIndex for the TPM.</text>
+      </description>
+      <reference>
+        <text>RFC 6933: Entity MIB (Version 4) - entPhysicalIndex.</text>
+      </reference>
+    </leaf>
+  </grouping>
+  <grouping name="compute-node-identifier">
+    <description>
+      <text>In a distributed system with multiple compute nodes, this is the node identified by name and physical-index.</text>
+    </description>
+    <leaf name="node-physical-index">
+      <type name="int32">
+        <range value="1..2147483647"/>
+      </type>
+      <description>
+        <text>The entPhysicalIndex for the compute node.</text>
+      </description>
+      <reference>
+        <text>RFC 6933: Entity MIB (Version 4) - entPhysicalIndex.</text>
+      </reference>
+    </leaf>
+    <leaf name="node-location">
+      <type name="string">
+        <length value="1..64"/>
+      </type>
+      <description>
+        <text>Location of the compute node, such as slot number.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="node-uptime">
+    <description>
+      <text>Uptime in seconds of the node.</text>
+    </description>
+    <leaf name="up-time">
+      <type name="uint32"/>
+      <description>
+        <text>Uptime in seconds of this node reporting its data.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="log-identifier">
+    <description>
+      <text>Identifier for type of log to be retrieved.</text>
+    </description>
+    <leaf name="log-type">
+      <type name="identityref">
+        <base name="log-type"/>
+      </type>
+      <mandatory value="true"/>
+      <description>
+        <text>The corresponding measurement log type identity.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="boot-event-log">
+    <description>
+      <text>Defines an event log corresponding to the event that extended the PCR.</text>
+    </description>
+    <leaf name="event-number">
+      <type name="uint32"/>
+      <description>
+        <text>Unique event number of this event.</text>
+      </description>
+    </leaf>
+    <leaf name="event-type">
+      <type name="uint32"/>
+      <description>
+        <text>Log event type.</text>
+      </description>
+    </leaf>
+    <leaf name="pcr-index">
+      <type name="uint16"/>
+      <description>
+        <text>Defines the PCR index that this event extended.</text>
+      </description>
+    </leaf>
+    <container name="digest-lists">
+      <description>
+        <text>List of digest lists.</text>
+      </description>
+      <list name="digest-list">
+        <key value="tcg-hash-algo-id"/>
+        <description>
+          <text>Hash of event data.</text>
+        </description>
+        <uses name="hash-algo"/>
+        <leaf-list name="digest">
+          <type name="binary"/>
+          <description>
+            <text>The hash of the event data.</text>
+          </description>
+        </leaf-list>
+      </list>
+    </container>
+    <leaf name="event-size">
+      <type name="uint32"/>
+      <description>
+        <text>Size of the event data.</text>
+      </description>
+    </leaf>
+    <leaf-list name="event-data">
+      <type name="uint8"/>
+      <description>
+        <text>The event data size determined by event-size.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="ima-event">
+    <description>
+      <text>Defines an hash log extend event for IMA measurements.</text>
+    </description>
+    <leaf name="event-number">
+      <type name="uint64"/>
+      <description>
+        <text>Unique number for this event for sequencing.</text>
+      </description>
+    </leaf>
+    <leaf name="ima-template">
+      <type name="string">
+        <length value="1..256"/>
+      </type>
+      <description>
+        <text>Name of the template used for event logs
+for e.g. ima, ima-ng, ima-sig.</text>
+      </description>
+    </leaf>
+    <leaf name="filename-hint">
+      <type name="string">
+        <length value="1..256"/>
+      </type>
+      <description>
+        <text>File that was measured.</text>
+      </description>
+    </leaf>
+    <leaf name="filedata-hash">
+      <type name="binary"/>
+      <description>
+        <text>Hash of filedata.</text>
+      </description>
+    </leaf>
+    <leaf name="filedata-hash-algorithm">
+      <type name="string">
+        <length value="1..64"/>
+      </type>
+      <description>
+        <text>Algorithm used for filedata-hash.</text>
+      </description>
+    </leaf>
+    <leaf name="template-hash-algorithm">
+      <type name="string">
+        <length value="1..64"/>
+      </type>
+      <description>
+        <text>Algorithm used for template-hash.</text>
+      </description>
+    </leaf>
+    <leaf name="template-hash">
+      <type name="binary"/>
+      <description>
+        <text>Template hash (filedata-hash, filename-hint).</text>
+      </description>
+    </leaf>
+    <leaf name="pcr-index">
+      <type name="uint16"/>
+      <description>
+        <text>Defines the PCR index that this event extended.</text>
+      </description>
+    </leaf>
+    <leaf name="signature">
+      <type name="binary"/>
+      <description>
+        <text>The file signature.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="bios-event-log">
+    <description>
+      <text>Measurement log created by the BIOS/UEFI.</text>
+    </description>
+    <container name="bios-event-entrys">
+      <description>
+        <text>List of bios event entry.</text>
+      </description>
+      <list name="bios-event-entry">
+        <key value="event-number"/>
+        <description>
+          <text>Ordered list of TCG described event log that extended the PCRs in the order they were logged.</text>
+        </description>
+        <uses name="boot-event-log"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="ima-event-log">
+    <container name="ima-event-entrys">
+      <description>
+        <text>List of ima event entry.</text>
+      </description>
+      <list name="ima-event-entry">
+        <key value="event-number"/>
+        <description>
+          <text>Ordered list of ima event logs by event-number.</text>
+        </description>
+        <uses name="ima-event"/>
+      </list>
+    </container>
+    <description>
+      <text>Measurement log created by IMA.</text>
+    </description>
+  </grouping>
+  <grouping name="event-logs">
+    <description>
+      <text>A selector for the log and its type.</text>
+    </description>
+    <choice name="log-type">
+      <mandatory value="true"/>
+      <description>
+        <text>Event log type determines the event logs content.</text>
+      </description>
+      <case name="bios">
+        <description>
+          <text>BIOS/UEFI event logs.</text>
+        </description>
+        <container name="bios-event-logs">
+          <description>
+            <text>This is an index referencing the TCG Algorithm
+Registry based on TPM_ALG_ID.</text>
+          </description>
+          <uses name="bios-event-log"/>
+        </container>
+      </case>
+      <case name="ima">
+        <description>
+          <text>IMA event logs.</text>
+        </description>
+        <container name="ima-event-logs">
+          <description>
+            <text>This is an index referencing the TCG Algorithm
+Registry based on TPM_ALG_ID.</text>
+          </description>
+          <uses name="ima-event-log"/>
+        </container>
+      </case>
+    </choice>
+  </grouping>
+  <grouping name="file-info">
+    <description>
+      <text>Response file information.</text>
+    </description>
+    <container name="response-file">
+      <description>
+        <text>Response file (certification, quote, sml) information.</text>
+      </description>
+      <leaf name="file-path">
+        <type name="string">
+          <length value="1..128"/>
+        </type>
+        <description>
+          <text>The file path.</text>
+        </description>
+      </leaf>
+      <leaf name="file-size">
+        <type name="uint32"/>
+        <description>
+          <text>The file size.</text>
+        </description>
+      </leaf>
+      <leaf name="file-format">
+        <type name="string">
+          <length value="1..32"/>
+        </type>
+        <description>
+          <text>The file format.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <container name="tpm-remote-attestation">
+    <config value="false"/>
+    <description>
+      <text>Root node of huawei remote attestation.</text>
+    </description>
+    <container name="rats-support-structures">
+      <description>
+        <text>Statistics of enabling verifiers or relying parties to discover the information necessary to use the
+remote attestation RPCs appropriately.</text>
+      </description>
+      <leaf-list name="supported-algos">
+        <type name="uint16"/>
+        <description>
+          <text>Statistics of tpm-alg-id values for the TPM in question.
+Will include ComponentIndex soon.</text>
+        </description>
+      </leaf-list>
+      <container name="compute-nodes">
+        <description>
+          <text>List of compute nodes.</text>
+        </description>
+        <list name="compute-node">
+          <key value="node-id"/>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <description>
+            <text>Statistics of hardware componnets in this composite device that RATS can be conducted with.</text>
+          </description>
+          <leaf name="node-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name of the compute node.</text>
+            </description>
+          </leaf>
+          <container name="tpms">
+            <description>
+              <text>List of TPMs in this composite device that RATS can be conducted with.</text>
+            </description>
+            <list name="tpm">
+              <key value="tpm-name"/>
+              <uses name="tpm-identifier"/>
+              <description>
+                <text>Statistics of in this composite device that RATS can be conducted with.</text>
+              </description>
+              <leaf name="tpm-manufacturer">
+                <type name="string">
+                  <length value="1..64"/>
+                </type>
+                <description>
+                  <text>TPM manufacturer name.</text>
+                </description>
+              </leaf>
+              <leaf name="tpm-firmware-version">
+                <type name="string">
+                  <length value="1..64"/>
+                </type>
+                <description>
+                  <text>TPM firmware version.</text>
+                </description>
+              </leaf>
+              <leaf name="tpm-spec-version">
+                <type name="string">
+                  <length value="1..64"/>
+                </type>
+                <description>
+                  <text>TPM1.2 or TPM2.0.</text>
+                </description>
+              </leaf>
+              <leaf name="tpm-status">
+                <type name="string">
+                  <length value="1..64"/>
+                </type>
+                <description>
+                  <text>TPM chip self-test status, normal or abnormal.</text>
+                </description>
+              </leaf>
+              <container name="certificates">
+                <description>
+                  <text>List of TPM's certificates, including EK certificates and AK certificates.</text>
+                </description>
+                <list name="certificate">
+                  <key value="certificate-name"/>
+                  <description>
+                    <text>Statistics of can be accessed via this statement, including Initial Attestation
+Key Cert, Local Attestation Key Cert or Endorsement Key Cert.</text>
+                  </description>
+                  <leaf name="certificate-name">
+                    <type name="string">
+                      <length value="1..64"/>
+                    </type>
+                    <description>
+                      <text>An arbitrary name for this identity certificate or certificate chain.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="certificate-type">
+                    <type name="enumeration">
+                      <enum name="endorsement-cert">
+                        <value value="0"/>
+                        <description>
+                          <text>EK Cert type.</text>
+                        </description>
+                      </enum>
+                      <enum name="initial-attestation-cert">
+                        <value value="1"/>
+                        <description>
+                          <text>IAK Cert type.</text>
+                        </description>
+                      </enum>
+                      <enum name="local-attestation-cert">
+                        <value value="2"/>
+                        <description>
+                          <text>LAK Cert type.</text>
+                        </description>
+                      </enum>
+                    </type>
+                    <description>
+                      <text>Type of this certificate.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="certificate-value">
+                    <type name="string">
+                      <length value="1..256"/>
+                    </type>
+                    <description>
+                      <text>The binary signed public endorsement key (EK), attestation key (AK) and corresponding claims
+(EK, AK Certificate). In a TPM 2.0 the EK, AK Certificate resides in a well-defined NVRAM
+location by the TPM vendor. Maybe certificate-value defined as binary type is a simple way.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="ak-public-structure">
+                    <type name="binary"/>
+                    <description>
+                      <text>Marshalled LAK public structure, used for LAK Certificate verification.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </list>
+          </container>
+        </list>
+      </container>
+    </container>
+  </container>
+  <rpc name="tpm20-challenge-response-attestation">
+    <description>
+      <text>This RPC accepts the input for TSS TPM 2.0 commands of the managed device.
+ComponentIndex from the hardware manager YANG module to refer to dedicated
+TPM in composite devices, e.g. smart NICs, is still a TODO.</text>
+    </description>
+    <input>
+      <uses name="nonce"/>
+      <container name="challenge-objects">
+        <description>
+          <text>List of challenge objects for remote-attestation.</text>
+        </description>
+        <list name="challenge-object">
+          <key value="node-id tpm-name"/>
+          <description>
+            <text>Nodes to fetch attestation information, PCR selection and AK identifier.</text>
+          </description>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <leaf name="tpm-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name value of a single TPM or 'All'.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <uses name="tpm20-pcr-selection"/>
+          <uses name="tpm20-attestation-key-identifier"/>
+        </list>
+      </container>
+    </input>
+    <output>
+      <container name="tpm20-attestation-responses">
+        <description>
+          <text>List of tpm2.0 attestation responses.</text>
+        </description>
+        <list name="tpm20-attestation-response">
+          <key value="node-id tpm-name"/>
+          <description>
+            <text>The binary output of TPM2b_Quote in one TPM chip of the node which identified by node-id. An
+TPMS_ATTEST structure including a length, encapsulated in a signature.</text>
+          </description>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <leaf name="tpm-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name value of a single TPM or 'All'.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <uses name="node-uptime"/>
+          <leaf name="quote">
+            <type name="binary"/>
+            <description>
+              <text>Quote data returned by TPM Quote, including PCR selection, PCR digest and etc.</text>
+            </description>
+          </leaf>
+          <leaf name="quote-signature">
+            <type name="binary"/>
+            <description>
+              <text>Quote signature returned by TPM Quote.</text>
+            </description>
+          </leaf>
+          <container name="pcr-bank-values">
+            <description>
+              <text>List of pcr bank values.</text>
+            </description>
+            <list name="pcr-bank-value">
+              <key value="tcg-hash-algo-id"/>
+              <description>
+                <text>PCR values in each PCR bank.</text>
+              </description>
+              <uses name="hash-algo"/>
+              <container name="pcr-values">
+                <description>
+                  <text>List of pcr values.</text>
+                </description>
+                <list name="pcr-value">
+                  <key value="pcr-index"/>
+                  <description>
+                    <text>List of one PCR bank.</text>
+                  </description>
+                  <leaf name="pcr-index">
+                    <type name="uint16"/>
+                    <description>
+                      <text>PCR index number.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="pcr-value">
+                    <type name="binary"/>
+                    <description>
+                      <text>PCR value.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </list>
+          </container>
+          <container name="pcr-digest-algo-in-quote">
+            <uses name="hash-algo"/>
+            <description>
+              <text>The hash algorithm for PCR value digest in Quote output.</text>
+            </description>
+          </container>
+        </list>
+      </container>
+      <uses name="file-info"/>
+    </output>
+  </rpc>
+  <rpc name="basic-trust-establishment">
+    <description>
+      <text>This RPC creates a tpm-resident, non-migratable key to be used in TPM_Quote commands,
+an attestation certificate.</text>
+    </description>
+    <input>
+      <uses name="nonce"/>
+      <container name="challenge-certs">
+        <description>
+          <text>List of Challenge certificates to remote attestation.</text>
+        </description>
+        <list name="challenge-cert">
+          <key value="node-id"/>
+          <description>
+            <text>Challenge certificates to remote attestation.</text>
+          </description>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <leaf name="tpm-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name value of a single TPM or 'All'.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <leaf name="certificate-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>An arbitrary name for the identity certificate chain requested.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </input>
+    <output>
+      <container name="attestation-certificates">
+        <description>
+          <text>List of Attestation Certificates data from a TPM identified by the TPM name.</text>
+        </description>
+        <list name="attestation-certificate">
+          <key value="node-id tpm-name"/>
+          <description>
+            <text>Attestation Certificate data from a TPM identified by the TPM name.</text>
+          </description>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <leaf name="tpm-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name value of a single TPM or 'All'.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <uses name="node-uptime"/>
+          <leaf name="certificate-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>An arbitrary name for this identity certificate or certificate chain.</text>
+            </description>
+          </leaf>
+          <leaf name="attestation-certificate">
+            <type name="string">
+              <length value="1..256"/>
+            </type>
+            <description>
+              <text>The binary signed certificate chain data for this identity certificate.</text>
+            </description>
+          </leaf>
+          <uses name="tpm20-attestation-key-identifier"/>
+        </list>
+      </container>
+      <uses name="file-info"/>
+    </output>
+  </rpc>
+  <rpc name="log-retrieval">
+    <description>
+      <text>Logs Entries are either identified via indices or via providing the last line
+received. The number of lines returned can be limited. The type of log is a
+choice that can be augmented.</text>
+    </description>
+    <input>
+      <container name="log-selectors">
+        <description>
+          <text>List of log selectors.</text>
+        </description>
+        <list name="log-selector">
+          <key value="node-id tpm-name"/>
+          <description>
+            <text>Selection of log entries to be reported.</text>
+          </description>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <leaf name="tpm-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name value of a single TPM or 'All'.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <choice name="index-type">
+            <description>
+              <text>Last log entry received, log index number, or timestamp.</text>
+            </description>
+            <case name="last-entry">
+              <description>
+                <text>The last entry of the log already retrieved.</text>
+              </description>
+              <leaf name="last-entry-value">
+                <type name="binary"/>
+                <description>
+                  <text>Content of an log event which matches 1:1 with a unique event
+record contained within the log. Log entries subsequent to this
+will be passed to the requester. Note: if log entry values are
+not unique, this MUST return an error.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="index">
+              <description>
+                <text>Numeric index of the last log entry retrieved, or zero.</text>
+              </description>
+              <leaf name="last-index-number">
+                <type name="uint64"/>
+                <description>
+                  <text>The last numeric index number of a log entry. Zero means to
+start at the beginning of the log. Entries subsequent to this
+will be passed to the requester.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="timestamp">
+              <leaf name="timestamp">
+                <type name="yang:date-and-time"/>
+                <description>
+                  <text>Timestamp from which to start the extraction. The next log entry
+subsequent to this timestamp is to be sent.</text>
+                </description>
+              </leaf>
+              <description>
+                <text>Timestamp from which to start the extraction.</text>
+              </description>
+            </case>
+          </choice>
+          <leaf name="log-entry-quantity">
+            <type name="uint16"/>
+            <description>
+              <text>The number of log entries to be returned. If omitted, it means all of them.</text>
+            </description>
+          </leaf>
+          <uses name="tpm20-pcr-selection"/>
+        </list>
+      </container>
+      <uses name="log-identifier"/>
+    </input>
+    <output>
+      <container name="node-datas">
+        <description>
+          <text>List of node datas.</text>
+        </description>
+        <list name="node-data">
+          <key value="node-id tpm-name"/>
+          <description>
+            <text>Event logs of a node in a distributed system identified by the node name.</text>
+          </description>
+          <leaf name="node-id">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>ID of the compute node, such as Board Serial Number.</text>
+            </description>
+          </leaf>
+          <leaf name="tpm-name">
+            <type name="string">
+              <length value="1..64"/>
+            </type>
+            <description>
+              <text>Name value of a single TPM or 'All'.</text>
+            </description>
+          </leaf>
+          <uses name="compute-node-identifier"/>
+          <uses name="node-uptime"/>
+          <container name="log-result">
+            <description>
+              <text>The requested entries of the corresponding log.</text>
+            </description>
+            <uses name="event-logs"/>
+          </container>
+        </list>
+      </container>
+      <uses name="file-info"/>
+    </output>
+  </rpc>
+</module>

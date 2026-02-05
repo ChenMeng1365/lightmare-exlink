@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-codesign"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:codesign="urn:huawei:yang:huawei-codesign"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-codesign"/>
+  <prefix value="codesign"/>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Indicate code signature management.</text>
+  </description>
+  <revision date="2020-06-29">
+    <description>
+      <text>Modify node description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-04-02">
+    <description>
+      <text>Modify YANG check.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="patch"/>
+  <typedef name="crl-status">
+    <type name="enumeration">
+      <enum name="0">
+        <value value="0"/>
+        <description>
+          <text>Invalid file.</text>
+        </description>
+      </enum>
+      <enum name="1">
+        <value value="1"/>
+        <description>
+          <text>Valid file.</text>
+        </description>
+      </enum>
+    </type>
+    <status value="deprecated"/>
+    <description>
+      <text>CRL status value. The alternative enumeration node is valid-type.</text>
+    </description>
+  </typedef>
+  <typedef name="valid-type">
+    <type name="enumeration">
+      <enum name="invalid">
+        <value value="0"/>
+        <description>
+          <text>Invalid file.</text>
+        </description>
+      </enum>
+      <enum name="valid">
+        <value value="1"/>
+        <description>
+          <text>Valid file.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>CRL status value.</text>
+    </description>
+  </typedef>
+  <container name="codesign">
+    <config value="false"/>
+    <description>
+      <text>Indicate code signature management.</text>
+    </description>
+    <container name="software-crls">
+      <description>
+        <text>List of operational state of CRL information.</text>
+      </description>
+      <list name="software-crl">
+        <key value="slot"/>
+        <description>
+          <text>Operational state of CRL information.</text>
+        </description>
+        <leaf name="slot">
+          <type name="string">
+            <length value="1..64"/>
+          </type>
+          <description>
+            <text>Slot ID of a board.</text>
+          </description>
+        </leaf>
+        <leaf name="publisher">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>CRL publisher.</text>
+          </description>
+        </leaf>
+        <leaf name="date">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>CRL publish date.</text>
+          </description>
+        </leaf>
+        <leaf name="valid">
+          <type name="crl-status"/>
+          <status value="deprecated"/>
+          <description>
+            <text>CRL status. The node valid is deprecated. You are advised to use the node valid-type.</text>
+          </description>
+        </leaf>
+        <leaf name="valid-type">
+          <type name="valid-type"/>
+          <description>
+            <text>CRL status.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="packages-verify-faileds">
+      <description>
+        <text>List of operational state of package digital signature verification failed.</text>
+      </description>
+      <list name="packages-verify-failed">
+        <key value="slot"/>
+        <description>
+          <text>Operational state of package digital signature verification failed.</text>
+        </description>
+        <leaf name="slot">
+          <type name="string">
+            <length value="1..64"/>
+          </type>
+          <description>
+            <text>Slot ID of a board.</text>
+          </description>
+        </leaf>
+        <leaf name="name">
+          <type name="string">
+            <length value="4..127"/>
+          </type>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Package name that package digital signature verification failed to be verified.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="crl-names">
+      <description>
+        <text>List of operational data of CRL file.</text>
+      </description>
+      <list name="crl-name">
+        <key value="name"/>
+        <description>
+          <text>Operational data of CRL file.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="5..63"/>
+          </type>
+          <description>
+            <text>CRL file name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <rpc name="software-crl-load">
+    <description>
+      <text>Load CRL file.</text>
+    </description>
+    <ext:node-ref value="/codesign/crl-names/crl-name"/>
+    <input>
+      <leaf name="name">
+        <type name="leafref">
+          <path value="/codesign/crl-names/crl-name/name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>CRL file name.</text>
+        </description>
+      </leaf>
+    </input>
+  </rpc>
+</module>

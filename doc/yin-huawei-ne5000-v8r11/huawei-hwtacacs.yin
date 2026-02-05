@@ -1,0 +1,891 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-hwtacacs"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:hwtacacs="urn:huawei:yang:huawei-hwtacacs"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-hwtacacs"/>
+  <prefix value="hwtacacs"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Huawei Terminal Access Controller Access-Control System.</text>
+  </description>
+  <revision date="2020-06-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="hwtacacs-server-state">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="0"/>
+        <description>
+          <text>The server is active.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="1"/>
+        <description>
+          <text>The server is inactive.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of hwtacacs server state.</text>
+    </description>
+  </typedef>
+  <typedef name="hwtacacs-server-type">
+    <type name="enumeration">
+      <enum name="authentication">
+        <value value="0"/>
+        <description>
+          <text>The server is an authentication server.</text>
+        </description>
+      </enum>
+      <enum name="authorization">
+        <value value="1"/>
+        <description>
+          <text>The server is an authorization server.</text>
+        </description>
+      </enum>
+      <enum name="accounting">
+        <value value="2"/>
+        <description>
+          <text>The server is an accounting server.</text>
+        </description>
+      </enum>
+      <enum name="common">
+        <value value="3"/>
+        <description>
+          <text>The server is a common server.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of hwtacacs server.</text>
+    </description>
+  </typedef>
+  <typedef name="hwtacacs-domain-include">
+    <type name="enumeration">
+      <enum name="domain-exclude">
+        <value value="0"/>
+        <description>
+          <text>User name excludes domain.</text>
+        </description>
+      </enum>
+      <enum name="domain-include">
+        <value value="1"/>
+        <description>
+          <text>User name includes domain.</text>
+        </description>
+      </enum>
+      <enum name="original">
+        <value value="2"/>
+        <description>
+          <text>User name same as user input.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>The type of domain mode.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="hwtacacs"/>
+  <container name="hwtacacs">
+    <description>
+      <text>Huawei Terminal Access Controller Access-Control System.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure HWTACACS global.</text>
+      </description>
+      <leaf name="is-enable">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable the HWTACACS server.</text>
+        </description>
+      </leaf>
+      <leaf name="service-name">
+        <type name="string">
+          <length value="1..32"/>
+        </type>
+        <description>
+          <text>HWTACACS service name.</text>
+        </description>
+      </leaf>
+      <leaf name="default-remote-address">
+        <type name="string">
+          <length value="1..31"/>
+        </type>
+        <description>
+          <text>Default remote address of HWTACACS server.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="templates">
+      <description>
+        <text>List of HWTACACS templates.</text>
+      </description>
+      <list name="template">
+        <key value="name"/>
+        <description>
+          <text>Configure HWTACACS template.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[a-z0-9._-]+"/>
+          </type>
+          <ext:case-sensitivity value="lower-only"/>
+          <description>
+            <text>Name of a HWTACACS template. The template name can have alphabets a to z and numbers from 0 to 9 or symbols ('.', '-' and '_').</text>
+          </description>
+        </leaf>
+        <leaf name="response-timeout">
+          <type name="uint32">
+            <range value="1..300"/>
+          </type>
+          <units name="s"/>
+          <default value="5"/>
+          <description>
+            <text>Server response timeout period.</text>
+          </description>
+        </leaf>
+        <leaf name="quiet-time">
+          <type name="uint32">
+            <range value="1..255"/>
+          </type>
+          <units name="min"/>
+          <default value="5"/>
+          <description>
+            <text>Time period after which the primary server restores to active. The time period can be modified no matter whether users are using the HWTACACS template.</text>
+          </description>
+        </leaf>
+        <leaf name="shared-key">
+          <type name="pub-type:password-extend">
+            <length value="1..432"/>
+          </type>
+          <description>
+            <text>Shared key for a HWTACACS server, which is a string ranging from 1 to 255 characters for a unencrypted key and 20 to 432 characters for a encrypted key. Configuring a shared key improves the communication security between a router and HWTACACS server. By default, no shared key is configured.</text>
+          </description>
+        </leaf>
+        <choice name="source-address">
+          <description>
+            <text>Source IP address of the packets sent to the server.</text>
+          </description>
+          <case name="ip">
+            <description>
+              <text>IP case.</text>
+            </description>
+            <leaf name="source-ip-address">
+              <type name="inet:ipv4-address"/>
+              <description>
+                <text>IP address.</text>
+              </description>
+            </leaf>
+          </case>
+        </choice>
+        <leaf name="domain-mode">
+          <type name="hwtacacs-domain-include"/>
+          <default value="domain-include"/>
+          <description>
+            <text>To configure domain Mode.</text>
+          </description>
+        </leaf>
+        <container name="ipv4-servers">
+          <description>
+            <text>List of HWTACACS servers.</text>
+          </description>
+          <list name="ipv4-server">
+            <key value="server-ip-address server-type is-secondary-server vpn-name is-public-net"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure HWTACACS IPv4 server.</text>
+            </description>
+            <leaf name="server-ip-address">
+              <type name="inet:ipv4-address-no-zone"/>
+              <description>
+                <text>Server IPv4 address. Must be a valid unicast IP address.</text>
+              </description>
+            </leaf>
+            <leaf name="server-type">
+              <type name="hwtacacs-server-type"/>
+              <description>
+                <text>Server type (authentication, authorization, accounting, common).</text>
+              </description>
+            </leaf>
+            <leaf name="is-secondary-server">
+              <type name="boolean"/>
+              <description>
+                <text>Enable/disable the secondary server. By default, a server is a secondary server. A template does not support multiple primary servers of the same type.</text>
+              </description>
+            </leaf>
+            <leaf name="vpn-name">
+              <type name="leafref">
+                <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+              </type>
+              <must condition="not(../is-public-net='true') or (../is-public-net='true' and ../vpn-name='_public_')"/>
+              <description>
+                <text>VPN instance name. It must be an existing VPN instance.</text>
+              </description>
+            </leaf>
+            <leaf name="is-public-net">
+              <type name="boolean"/>
+              <description>
+                <text>Enable/disable the public-net.</text>
+              </description>
+            </leaf>
+            <leaf name="server-port">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <default value="49"/>
+              <description>
+                <text>Server port.</text>
+              </description>
+            </leaf>
+            <leaf name="is-mux-mode-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the MUX mode for the server.</text>
+              </description>
+            </leaf>
+            <leaf name="shared-key">
+              <type name="pub-type:password-extend">
+                <length value="1..432"/>
+              </type>
+              <description>
+                <text>Shared key for a HWTACACS server, which is a string ranging from 1 to 255 characters for a unencrypted key and 20 to 432 characters for a encrypted key. Configuring a shared key improves the communication security between a router and HWTACACS server. By default, no shared key is configured.</text>
+              </description>
+            </leaf>
+            <leaf name="authen-server-open-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of times that the HWTACACS client connected to the authentication server.</text>
+              </description>
+            </leaf>
+            <leaf name="authen-server-close-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of times that the HWTACACS client disconnected from the authentication server.</text>
+              </description>
+            </leaf>
+            <leaf name="authen-req-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of authentication requests.</text>
+              </description>
+            </leaf>
+            <leaf name="authen-rsp-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of authentication responses.</text>
+              </description>
+            </leaf>
+            <leaf name="author-server-open-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of times that the HWTACACS client connected to the authorization server.</text>
+              </description>
+            </leaf>
+            <leaf name="author-server-close-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of times that the HWTACACS client disconnected from the authorization server.</text>
+              </description>
+            </leaf>
+            <leaf name="author-req-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of authorization requests.</text>
+              </description>
+            </leaf>
+            <leaf name="author-rsp-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of authorization responses.</text>
+              </description>
+            </leaf>
+            <leaf name="acct-req-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of accounting requests.</text>
+              </description>
+            </leaf>
+            <leaf name="acct-rsp-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of accounting responses.</text>
+              </description>
+            </leaf>
+            <leaf name="acct-server-open-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of times that the HWTACACS client connected to the accounting server.</text>
+              </description>
+            </leaf>
+            <leaf name="acct-server-close-num">
+              <type name="uint32"/>
+              <config value="false"/>
+              <description>
+                <text>Number of times that the HWTACACS client disconnected from the accounting server.</text>
+              </description>
+            </leaf>
+            <leaf name="server-current-state">
+              <type name="hwtacacs-server-state"/>
+              <config value="false"/>
+              <description>
+                <text>Server running status.</text>
+              </description>
+            </leaf>
+            <leaf name="is-current-server">
+              <type name="boolean"/>
+              <config value="false"/>
+              <description>
+                <text>Whether the server is being used.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="ipv6-servers">
+          <description>
+            <text>List of HWTACACS servers.</text>
+          </description>
+          <list name="ipv6-server">
+            <key value="server-ip-address server-type is-secondary-server vpn-name"/>
+            <max-elements value="32"/>
+            <description>
+              <text>Configure HWTACACS IPv6 server.</text>
+            </description>
+            <leaf name="server-ip-address">
+              <type name="inet:ipv6-address-no-zone"/>
+              <description>
+                <text>Server IPv6 address. Must be a valid unicast IP address.</text>
+              </description>
+            </leaf>
+            <leaf name="server-type">
+              <type name="hwtacacs-server-type"/>
+              <description>
+                <text>Server type (authentication, authorization, accounting, common).</text>
+              </description>
+            </leaf>
+            <leaf name="is-secondary-server">
+              <type name="boolean"/>
+              <description>
+                <text>Enable/disable whether the server is secondary. By default, a server is a secondary server. A template does not support multiple primary servers of the same type.</text>
+              </description>
+            </leaf>
+            <leaf name="vpn-name">
+              <type name="string">
+                <length value="1..31"/>
+              </type>
+              <description>
+                <text>Configure the vpn-instance name. It must be an existing VPN instance.</text>
+              </description>
+            </leaf>
+            <leaf name="server-port">
+              <type name="uint32">
+                <range value="1..65535"/>
+              </type>
+              <default value="49"/>
+              <description>
+                <text>Server port.</text>
+              </description>
+            </leaf>
+            <leaf name="is-mux-mode-enable">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable the MUX mode for the server. By default, the MUX mode is disabled.</text>
+              </description>
+            </leaf>
+            <leaf name="shared-key">
+              <type name="pub-type:password-extend">
+                <length value="1..432"/>
+              </type>
+              <description>
+                <text>Shared key for a HWTACACS server, which is a string ranging from 1 to 255 characters for a unencrypted key and 20 to 432 characters for a encrypted key. Configuring a shared key improves the communication security between a router and HWTACACS server. By default, no shared key is configured.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="status">
+          <config value="false"/>
+          <description>
+            <text>Operational state of HWTACACS template.</text>
+          </description>
+          <leaf name="pri-authen-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>IP address of the primary authentication server.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-author-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>IP address of the primary authorization server.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-common-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>IP address of the primary common server.</text>
+            </description>
+          </leaf>
+          <leaf name="cur-authen-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>IP address of the authentication server being used.</text>
+            </description>
+          </leaf>
+          <leaf name="cur-author-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>IP address of authorization server being used.</text>
+            </description>
+          </leaf>
+          <leaf name="sec-authen-server-num">
+            <type name="uint32"/>
+            <description>
+              <text>Total number of configured secondary authentication servers in the template.</text>
+            </description>
+          </leaf>
+          <leaf name="sec-common-server-num">
+            <type name="uint32"/>
+            <description>
+              <text>Total number of configured secondary common servers in the template.</text>
+            </description>
+          </leaf>
+          <leaf name="sec-author-server-num">
+            <type name="uint32"/>
+            <description>
+              <text>Total number of configured secondary authorization servers in the template.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-authen-port">
+            <type name="uint32"/>
+            <description>
+              <text>Port of the primary authentication server.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-common-port">
+            <type name="uint32"/>
+            <description>
+              <text>Port of the primary common server.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-author-port">
+            <type name="uint32"/>
+            <description>
+              <text>Port of the primary authorization server.</text>
+            </description>
+          </leaf>
+          <leaf name="cur-authen-port">
+            <type name="uint32"/>
+            <description>
+              <text>Authentication server port being used.</text>
+            </description>
+          </leaf>
+          <leaf name="cur-author-port">
+            <type name="uint32"/>
+            <description>
+              <text>Authorization server port being used.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-server-open-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the HWTACACS client connected to the authentication server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-server-close-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the HWTACACS client disconnected from the authentication server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-req-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication requests.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-rsp-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication responses.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-unknown-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of unknown authentication packets received by the HWTACACS client.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-timeout-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that authentication times out.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-pkt-drop-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that authentication packets are dropped.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-change-password-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the password is changed for authentication.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-login-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication logins.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-send-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication requests sent to server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-send-password-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication password requests sent to the server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-abort-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication abort requests sent to server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-connect-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication connection requests sent to server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-rsp-err-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication error responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-rsp-fail-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication response failures received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-follow-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication Follow responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-get-data-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication date responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-get-password-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication password responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-get-user-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication user responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-rsp-pass-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication-pass responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-restart-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication-restart responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-not-proc-req-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication requests that are not processed.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-round-trip-time">
+            <type name="uint32"/>
+            <units name="s"/>
+            <description>
+              <text>Time (in tick) taken to complete the authentication.</text>
+            </description>
+          </leaf>
+          <leaf name="authen-malform-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authentication errors.</text>
+            </description>
+          </leaf>
+          <leaf name="author-server-open-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the HWTACACS client connected to the authorization server.</text>
+            </description>
+          </leaf>
+          <leaf name="author-server-close-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the HWTACACS client disconnected from the authorization server.</text>
+            </description>
+          </leaf>
+          <leaf name="author-req-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization requests.</text>
+            </description>
+          </leaf>
+          <leaf name="author-rsp-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization responses.</text>
+            </description>
+          </leaf>
+          <leaf name="author-unknown-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of unknown authorization packets received by HWTACACS client.</text>
+            </description>
+          </leaf>
+          <leaf name="author-timeout-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that authorization times out.</text>
+            </description>
+          </leaf>
+          <leaf name="author-pkt-drop-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that authorization packets are dropped.</text>
+            </description>
+          </leaf>
+          <leaf name="author-exec-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization requests for EXEC.</text>
+            </description>
+          </leaf>
+          <leaf name="author-ppp-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization requests for PPP.</text>
+            </description>
+          </leaf>
+          <leaf name="author-vpdn-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization requests for VPDN.</text>
+            </description>
+          </leaf>
+          <leaf name="author-rsp-err-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization error responses.</text>
+            </description>
+          </leaf>
+          <leaf name="author-rsp-exec-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization EXEC responses.</text>
+            </description>
+          </leaf>
+          <leaf name="author-rsp-ppp-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization PPP responses.</text>
+            </description>
+          </leaf>
+          <leaf name="author-rsp-vpdn-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization VPDN responses.</text>
+            </description>
+          </leaf>
+          <leaf name="author-round-trip-time">
+            <type name="uint32"/>
+            <units name="s"/>
+            <description>
+              <text>Time (in tick) taken to complete authorization.</text>
+            </description>
+          </leaf>
+          <leaf name="author-not-proc-req-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization requests that are not processed.</text>
+            </description>
+          </leaf>
+          <leaf name="author-malform-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of authorization errors.</text>
+            </description>
+          </leaf>
+          <leaf name="sec-account-server-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of secondary accounting servers in the template.</text>
+            </description>
+          </leaf>
+          <leaf name="cur-account-port">
+            <type name="uint32"/>
+            <description>
+              <text>Accounting server port being used.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-account-port">
+            <type name="uint32"/>
+            <description>
+              <text>Port of the primary accounting server.</text>
+            </description>
+          </leaf>
+          <leaf name="cur-account-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>Accounting server port being used.</text>
+            </description>
+          </leaf>
+          <leaf name="pri-account-server">
+            <type name="string">
+              <length value="1..255"/>
+            </type>
+            <description>
+              <text>Primary accounting server.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-stop-pkt-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of responses to accounting-stop packets.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-rsp-pass-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of responses to accounting-pass packets.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-rsp-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of responses to accounting requests.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-server-open-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the HWTACACS client connected to the accounting server.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-start-pkt-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of responses to accounting-start packets.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-req-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of accounting requests sent to the server.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-server-close-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of times that the HWTACACS client disconnected from the accounting server.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-rsp-err-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of abnormal accounting responses received from the server.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-follow-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of accounting Follow responses received from server.</text>
+            </description>
+          </leaf>
+          <leaf name="acct-not-proc-req-num">
+            <type name="uint32"/>
+            <description>
+              <text>Number of accounting requests that are not processed.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+  </container>
+</module>

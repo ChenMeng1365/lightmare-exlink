@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-lpt"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:lpt="urn:huawei:yang:huawei-lpt"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:l2vpn="urn:huawei:yang:huawei-l2vpn">
+  <namespace uri="urn:huawei:yang:huawei-lpt"/>
+  <prefix value="lpt"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-l2vpn">
+    <prefix value="l2vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Link state pass through configuration.</text>
+  </description>
+  <revision date="2020-03-09">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-12-29">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="lpt"/>
+  <typedef name="port-state">
+    <type name="enumeration">
+      <enum name="up">
+        <value value="1"/>
+        <description>
+          <text>Port state is open.</text>
+        </description>
+      </enum>
+      <enum name="down">
+        <value value="0"/>
+        <description>
+          <text>Port state is closed.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Port state.</text>
+    </description>
+  </typedef>
+  <typedef name="fsm-state">
+    <type name="enumeration">
+      <enum name="init">
+        <value value="0"/>
+        <description>
+          <text>Fsm state is init.</text>
+        </description>
+      </enum>
+      <enum name="normal">
+        <value value="3"/>
+        <description>
+          <text>Fsm state is Normal.</text>
+        </description>
+      </enum>
+      <enum name="network-fault">
+        <value value="2"/>
+        <description>
+          <text>Fsm state is network fault.</text>
+        </description>
+      </enum>
+      <enum name="user-fault">
+        <value value="1"/>
+        <description>
+          <text>Fsm state is user fault.</text>
+        </description>
+      </enum>
+      <enum name="resume-wait">
+        <value value="4"/>
+        <description>
+          <text>Fsm state is wait resume.</text>
+        </description>
+      </enum>
+      <enum name="user-resume">
+        <value value="5"/>
+        <description>
+          <text>Fsm state is user resume.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Lpt Fsm State.</text>
+    </description>
+  </typedef>
+  <typedef name="vc-type">
+    <type name="enumeration">
+      <enum name="ethernet">
+        <value value="5"/>
+        <description>
+          <text>The vc type is ETHERNET.</text>
+        </description>
+      </enum>
+      <enum name="vlan">
+        <value value="4"/>
+        <description>
+          <text>The vc type is VLAN.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Vc type.</text>
+    </description>
+  </typedef>
+  <grouping name="ptp-instance-paras">
+    <description>
+      <text>LPT p2p instance configuration.</text>
+    </description>
+    <leaf name="enable">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>Enable/disable LPT state.</text>
+      </description>
+    </leaf>
+    <leaf name="recover-time">
+      <ext:operation-exclude value="update|delete">
+        <when condition="../enable = 'true'"/>
+        <description>
+          <text>The 'recover-time' cannot be updated or deleted, when enable node is 'true'.</text>
+        </description>
+      </ext:operation-exclude>
+      <type name="uint32">
+        <range value="1..600"/>
+      </type>
+      <units name="s"/>
+      <default value="1"/>
+      <description>
+        <text>Recovery time value.</text>
+      </description>
+    </leaf>
+    <leaf name="hold-off-time">
+      <ext:operation-exclude value="update|delete">
+        <when condition="../enable = 'true'"/>
+        <description>
+          <text>The 'hold-off-time' cannot be updated or deleted, when enable node is 'true'.</text>
+        </description>
+      </ext:operation-exclude>
+      <type name="uint32">
+        <range value="0..10000"/>
+      </type>
+      <units name="ms"/>
+      <must condition="(../hold-off-time mod 100)=0"/>
+      <default value="1000"/>
+      <description>
+        <text>Holdoff time value.</text>
+      </description>
+    </leaf>
+    <leaf name="oam-period">
+      <ext:operation-exclude value="update|delete">
+        <when condition="../enable = 'true'"/>
+        <description>
+          <text>The 'oam-period' cannot be updated or deleted, when enable node is 'true'.</text>
+        </description>
+      </ext:operation-exclude>
+      <type name="uint32">
+        <range value="10..100"/>
+      </type>
+      <units name="100 ms"/>
+      <default value="10"/>
+      <description>
+        <text>OAM period value.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <augment target-node="/l2vpn:l2vpn/l2vpn:instances/l2vpn:instance/l2vpn:vpws-ldp/l2vpn:acs/l2vpn:ac">
+    <description>
+      <text>LPT in a AC interface.</text>
+    </description>
+    <container name="lpt">
+      <description>
+        <text>Configure LPT in a AC interface.</text>
+      </description>
+      <container name="ptp-instance">
+        <presence value="Create a ptp instance."/>
+        <description>
+          <text>Configure point to point instance of LPT.</text>
+        </description>
+        <uses name="ptp-instance-paras"/>
+      </container>
+    </container>
+  </augment>
+</module>

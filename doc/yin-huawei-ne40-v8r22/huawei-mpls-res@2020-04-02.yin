@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-mpls-res"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mpls-res="urn:huawei:yang:huawei-mpls-res"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-mpls-res"/>
+  <prefix value="mpls-res"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This YANG module defines essential components for the management of labels.</text>
+  </description>
+  <revision date="2020-04-02">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-27">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="system"/>
+  <typedef name="mpls-label-type">
+    <type name="enumeration">
+      <enum name="reserved">
+        <value value="0"/>
+        <description>
+          <text>Reserved label type.</text>
+        </description>
+      </enum>
+      <enum name="static">
+        <value value="1"/>
+        <description>
+          <text>Static label type.</text>
+        </description>
+      </enum>
+      <enum name="dynamic">
+        <value value="2"/>
+        <description>
+          <text>Dynamic label type.</text>
+        </description>
+      </enum>
+      <enum name="block">
+        <value value="3"/>
+        <description>
+          <text>Block label type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Label type.</text>
+    </description>
+  </typedef>
+  <container name="mpls-res">
+    <description>
+      <text>Query and configuration of labels.</text>
+    </description>
+    <container name="static-label-segments">
+      <config value="false"/>
+      <description>
+        <text>List of idle static label segments.</text>
+      </description>
+      <list name="static-label-segment">
+        <key value="index"/>
+        <description>
+          <text>Operational data of a idle static label segment.</text>
+        </description>
+        <leaf name="index">
+          <type name="uint32"/>
+          <description>
+            <text>Specifies the index of label segment.</text>
+          </description>
+        </leaf>
+        <leaf name="query-begin">
+          <type name="uint32"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Beginning of a label query segment.</text>
+          </description>
+        </leaf>
+        <leaf name="query-length">
+          <type name="uint32"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Specifies the length of label query segment.</text>
+          </description>
+        </leaf>
+        <leaf name="label-begin">
+          <type name="uint32"/>
+          <description>
+            <text>Specifies the first idle label of a idle static label segment.</text>
+          </description>
+        </leaf>
+        <leaf name="label-end">
+          <type name="uint32"/>
+          <description>
+            <text>Specifies the last idle label of a idle static label segment.</text>
+          </description>
+        </leaf>
+        <leaf name="label-length">
+          <type name="uint32"/>
+          <description>
+            <text>Specifies the idle label length of a idle static label segment.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="mpls-label-statisticss">
+      <config value="false"/>
+      <description>
+        <text>List of label statistics.</text>
+      </description>
+      <list name="mpls-label-statistics">
+        <key value="type"/>
+        <description>
+          <text>Statistics of the label.</text>
+        </description>
+        <leaf name="type">
+          <type name="mpls-label-type"/>
+          <description>
+            <text>Label type.</text>
+          </description>
+        </leaf>
+        <leaf name="min-value">
+          <type name="uint32"/>
+          <description>
+            <text>Minimum label value.</text>
+          </description>
+        </leaf>
+        <leaf name="max-value">
+          <type name="uint32"/>
+          <description>
+            <text>Maximum label value.</text>
+          </description>
+        </leaf>
+        <leaf name="available-number">
+          <type name="uint32"/>
+          <description>
+            <text>Number of available label.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <rpc name="static-label-statisticss">
+    <description>
+      <text>Query the tags that can be used by static services.</text>
+    </description>
+    <input>
+      <leaf name="query-begin">
+        <type name="uint32">
+          <range value="16..262143"/>
+        </type>
+        <must condition="../query-length"/>
+        <description>
+          <text>Specify the start value for searching for available labels.</text>
+        </description>
+      </leaf>
+      <leaf name="query-length">
+        <type name="uint32">
+          <range value="1..262128"/>
+        </type>
+        <description>
+          <text>Specifies the length of label query segment.</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <container name="labels">
+        <description>
+          <text>List of label segment.</text>
+        </description>
+        <list name="label">
+          <key value="label-begin label-end"/>
+          <description>
+            <text>Label segment.</text>
+          </description>
+          <leaf name="label-begin">
+            <type name="uint32"/>
+            <description>
+              <text>Start value of a label.</text>
+            </description>
+          </leaf>
+          <leaf name="label-end">
+            <type name="uint32"/>
+            <description>
+              <text>End value of a label.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </output>
+  </rpc>
+  <rpc name="dynamic-label-statisticss">
+    <description>
+      <text>Query the tags that can be used by dynamic services.</text>
+    </description>
+    <input>
+      <leaf name="query-begin">
+        <type name="uint32">
+          <range value="16..1048575"/>
+        </type>
+        <must condition="../query-length"/>
+        <description>
+          <text>Specify the start value for searching for available labels.</text>
+        </description>
+      </leaf>
+      <leaf name="query-length">
+        <type name="uint32">
+          <range value="0..1048560"/>
+        </type>
+        <description>
+          <text>Specifies the length of label query segment.</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <container name="labels">
+        <description>
+          <text>List of label segment.</text>
+        </description>
+        <list name="label">
+          <key value="label-begin label-end"/>
+          <description>
+            <text>Label segment.</text>
+          </description>
+          <leaf name="label-begin">
+            <type name="uint32"/>
+            <description>
+              <text>Start value of a label.</text>
+            </description>
+          </leaf>
+          <leaf name="label-end">
+            <type name="uint32"/>
+            <description>
+              <text>End value of a label.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </output>
+  </rpc>
+  <rpc name="label-pre-reserve">
+    <description>
+      <text>Pre-allocation of label resources.</text>
+    </description>
+    <input>
+      <leaf name="pre-reserve-number">
+        <type name="uint32">
+          <range value="1..65536"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Number of label resources pre-allocated.</text>
+        </description>
+      </leaf>
+    </input>
+    <output>
+      <container name="labels">
+        <description>
+          <text>List of pre-allocated label IDs.</text>
+        </description>
+        <list name="label">
+          <key value="index"/>
+          <description>
+            <text>Pre-allocated label ID.</text>
+          </description>
+          <leaf name="index">
+            <type name="uint32">
+              <range value="16..1048575"/>
+            </type>
+            <description>
+              <text>Label ID.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </output>
+  </rpc>
+</module>

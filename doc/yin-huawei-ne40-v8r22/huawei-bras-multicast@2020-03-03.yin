@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-multicast"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-multicast="urn:huawei:yang:huawei-bras-multicast"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:devm="urn:huawei:yang:huawei-devm"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access">
+  <namespace uri="urn:huawei:yang:huawei-bras-multicast"/>
+  <prefix value="bras-multicast"/>
+  <import module="huawei-aaa">
+    <prefix value="aaa"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-devm">
+    <prefix value="devm"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras multicast.</text>
+  </description>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modify description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-27">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-control"/>
+  <container name="bras-multicast">
+    <description>
+      <text>Bras multicast.</text>
+    </description>
+    <container name="ipv4-multicast-lists">
+      <description>
+        <text>List of the IPv4 multicast.</text>
+      </description>
+      <list name="ipv4-multicast-list">
+        <key value="index"/>
+        <unique tag="name"/>
+        <max-elements value="8192"/>
+        <description>
+          <text>Configure an IPv4 multicast list. The group-address and group-mask combination and source-address and source-mask combination of different instances must not overlap.</text>
+        </description>
+        <leaf name="index">
+          <type name="uint32">
+            <range value="0..8191"/>
+          </type>
+          <description>
+            <text>Specifies the index of a multicast list.</text>
+          </description>
+        </leaf>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[!-~]{1,32}"/>
+            <pattern value="([^A-Z&quot;%'*/:&lt;&gt;\?@|]{1,32})"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of a multicast list.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Specifies the multicast source address.</text>
+          </description>
+        </leaf>
+        <leaf name="source-mask">
+          <when condition="../source-address"/>
+          <type name="uint32">
+            <range value="1..32"/>
+          </type>
+          <default value="32"/>
+          <description>
+            <text>Specifies the mask of the multicast source IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the multicast group IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="group-mask">
+          <type name="uint32">
+            <range value="1..32"/>
+          </type>
+          <default value="32"/>
+          <description>
+            <text>Specifies the mask of the multicast group IP address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-instance">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <default value="_public_"/>
+          <description>
+            <text>Specifies the name of a VPN instance.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="bas-policy">
+      <presence value="Create bas policy."/>
+      <description>
+        <text>Configure a multicast BAS policy and displays the policy.</text>
+      </description>
+      <container name="policys">
+        <description>
+          <text>List of the policy and displays the policy.</text>
+        </description>
+        <list name="policy">
+          <key value="name"/>
+          <max-elements value="1024"/>
+          <description>
+            <text>Configure a policy and displays the policy.</text>
+          </description>
+          <leaf name="name">
+            <type name="string">
+              <length value="1..15"/>
+              <pattern value="[a-zA-Z0-9_]{1,15}"/>
+            </type>
+            <description>
+              <text>Specifies a policy name.</text>
+            </description>
+          </leaf>
+          <container name="channels">
+            <description>
+              <text>List of the multicast channel and displays the channel.</text>
+            </description>
+            <list name="channel">
+              <key value="name"/>
+              <max-elements value="128"/>
+              <description>
+                <text>Configure a multicast channel and displays the channel.</text>
+              </description>
+              <leaf name="name">
+                <type name="string">
+                  <length value="1..15"/>
+                  <pattern value="[a-zA-Z0-9_]{1,15}"/>
+                </type>
+                <must condition="count(/bras-multicast:bras-multicast/bras-multicast:bas-policy/bras-multicast:policys/bras-multicast:policy/bras-multicast:channels/bras-multicast:channel[bras-multicast:name=current()])=1"/>
+                <description>
+                  <text>Specifies a multicast channel name.</text>
+                </description>
+              </leaf>
+              <container name="group-sources">
+                <description>
+                  <text>List of the any-source or source-specific group range, bandwidth occupied by each group, and level of bandwidth resources that a group consumes.</text>
+                </description>
+                <list name="group-source">
+                  <key value="group-address source-address"/>
+                  <max-elements value="16"/>
+                  <description>
+                    <text>Configure an any-source or source-specific group range, bandwidth occupied by each group, and level of bandwidth resources that a group consumes. The group-address and group-mask combination and source-address and source-mask combination of different instances must not overlap.</text>
+                  </description>
+                  <leaf name="group-address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <description>
+                      <text>Specifies a multicast group address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="source-address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <description>
+                      <text>Specifies a multicast source address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="group-mask">
+                    <type name="uint8">
+                      <range value="4..32"/>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Specifies a mask length for a multicast group address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="source-mask">
+                    <when condition="../source-address!='0.0.0.0'"/>
+                    <type name="uint8">
+                      <range value="8..32"/>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Specifies a mask length for a multicast source address.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="bandwidth">
+                    <type name="uint32">
+                      <range value="1..1048576"/>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Specifies the bandwidth occupied by each group.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="bandwidth-level">
+                    <type name="enumeration">
+                      <enum name="level-1">
+                        <value value="1"/>
+                        <description>
+                          <text>Indicates that a multicast group consumes the level-1 bandwidth resources.</text>
+                        </description>
+                      </enum>
+                      <enum name="level-2">
+                        <value value="2"/>
+                        <description>
+                          <text>Indicates that a multicast group consumes the level-2 bandwidth resources.</text>
+                        </description>
+                      </enum>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Indicates the restriction type of multicast bandwidth.</text>
+                    </description>
+                  </leaf>
+                </list>
+              </container>
+            </list>
+          </container>
+          <container name="unspecified-channel-permit">
+            <description>
+              <text>Configure users to join multicast programs that are not specified in a multicast bandwidth limit policy and configures the device not to count the bandwidth consumed by such programs. By default, users are not allowed to join multicast programs that are not specified in a multicast bandwidth limit policy.</text>
+            </description>
+            <leaf name="permit">
+              <type name="boolean"/>
+              <default value="false"/>
+              <description>
+                <text>Enable/disable users to join multicast programs that are not specified in a multicast bandwidth limit policy.</text>
+              </description>
+            </leaf>
+          </container>
+        </list>
+      </container>
+    </container>
+    <container name="ipv4-profiles">
+      <description>
+        <text>List of the IPv4 Multicast profiles.</text>
+      </description>
+      <list name="ipv4-profile">
+        <key value="name"/>
+        <max-elements value="1024"/>
+        <description>
+          <text>Configure an IPv4 Multicast profile.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[!-~]{1,32}"/>
+            <pattern value="([^A-Z&quot;%'*/:&lt;&gt;\?@|]{1,32})"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <description>
+            <text>Configures profile Name.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <container name="ipv4-multicast-lists">
+          <must condition="count(ipv4-multicast-list[static-flag='true'])&lt;=10"/>
+          <description>
+            <text>List of the IPv4 multicast in an IPv4 multicast profile.</text>
+          </description>
+          <list name="ipv4-multicast-list">
+            <key value="index static-flag"/>
+            <description>
+              <text>Configure IPv4 multicast list to an IPv4 multicast profile, with the max-elements of static multicast list as 10.</text>
+            </description>
+            <leaf name="index">
+              <type name="leafref">
+                <path value="/bras-multicast:bras-multicast/bras-multicast:ipv4-multicast-lists/bras-multicast:ipv4-multicast-list/bras-multicast:index"/>
+              </type>
+              <description>
+                <text>Specifies the index of the IPv4 multicast list that is bound to the IPv4 multicast profile.</text>
+              </description>
+            </leaf>
+            <leaf name="static-flag">
+              <type name="boolean"/>
+              <description>
+                <text>Enable/disable static IPv4 multicast lists or dynamic IPv4 multicast lists to an IPv4 multicast profile.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="authentication">
+          <description>
+            <text>Configure IPv4 Multicast Authentication.</text>
+          </description>
+          <leaf name="enable">
+            <type name="boolean"/>
+            <default value="true"/>
+            <description>
+              <text>Enable/disable IPv4 Multicast Authentication.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+    <container name="ipv6-profiles">
+      <description>
+        <text>List of the IPv6 Multicast profiles.</text>
+      </description>
+      <list name="ipv6-profile">
+        <key value="name"/>
+        <max-elements value="1024"/>
+        <description>
+          <text>Configure an IPv6 Multicast profile.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[!-~]{1,32}"/>
+            <pattern value="([^A-Z&quot;%'*/:&lt;&gt;\?@|]{1,32})"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <description>
+            <text>Configures an IPv6 Multicast profile Name.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <container name="ipv6-multicast-lists">
+          <must condition="count(ipv6-multicast-list[static-flag='true'])&lt;=10"/>
+          <description>
+            <text>List of the IPv6 multicast in an IPv6 multicast profile.</text>
+          </description>
+          <list name="ipv6-multicast-list">
+            <key value="index static-flag"/>
+            <description>
+              <text>Configure a IPv6 multicast list to an IPv6 multicast profile, with the max-elements of static multicast list as 10.</text>
+            </description>
+            <leaf name="index">
+              <type name="leafref">
+                <path value="/bras-multicast:bras-multicast/bras-multicast:ipv6-multicast-lists/bras-multicast:ipv6-multicast-list/bras-multicast:index"/>
+              </type>
+              <description>
+                <text>Specifies the index of the IPv6 multicast list that is bound to the IPv6 multicast profile.</text>
+              </description>
+            </leaf>
+            <leaf name="static-flag">
+              <type name="boolean"/>
+              <description>
+                <text>Enable/disable binding of static or dynamic IPv6 multicast lists to an IPv6 multicast profile.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+        <container name="authentication">
+          <description>
+            <text>Configure IPv6 Multicast Authentication.</text>
+          </description>
+          <leaf name="enable">
+            <type name="boolean"/>
+            <default value="true"/>
+            <description>
+              <text>Enable/disable IPv6 Multicast Authentication.</text>
+            </description>
+          </leaf>
+        </container>
+      </list>
+    </container>
+    <container name="ipv6-multicast-lists">
+      <description>
+        <text>List of the IPv6 multicast.</text>
+      </description>
+      <list name="ipv6-multicast-list">
+        <key value="index"/>
+        <unique tag="name"/>
+        <max-elements value="8192"/>
+        <description>
+          <text>Configure an IPv6 multicast list. The group-address and group-mask combination and source-address and source-mask combination of different instances must not overlap.</text>
+        </description>
+        <leaf name="index">
+          <type name="uint32">
+            <range value="0..8191"/>
+          </type>
+          <description>
+            <text>Specifies the index of an IPv6 multicast list.</text>
+          </description>
+        </leaf>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..32"/>
+            <pattern value="[!-~]{1,32}"/>
+            <pattern value="([^A-Z&quot;%'*/:&lt;&gt;\?@|]{1,32})"/>
+          </type>
+          <must condition="../name != '-' and ../name != '--'"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of an IPv6 multicast list.</text>
+          </description>
+          <ext:case-sensitivity value="lower-only"/>
+        </leaf>
+        <leaf name="source-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Specifies an IPv6 multicast source address.</text>
+          </description>
+        </leaf>
+        <leaf name="source-mask">
+          <when condition="../source-address"/>
+          <type name="uint32">
+            <range value="1..128"/>
+          </type>
+          <default value="128"/>
+          <description>
+            <text>Specifies the length of the prefix of the IPv6 multicast source address.</text>
+          </description>
+        </leaf>
+        <leaf name="group-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies an IPv6 multicast group address.</text>
+          </description>
+        </leaf>
+        <leaf name="group-mask">
+          <type name="uint32">
+            <range value="8..128"/>
+          </type>
+          <default value="128"/>
+          <description>
+            <text>Specifies the length of the prefix of the IPv6 multicast group address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-instance">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']"/>
+          <default value="_public_"/>
+          <description>
+            <text>Specifies the name of a IPv6 multicast VPN instance.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/aaa:aaa/aaa:domains/aaa:domain/bras-basic-access:bas">
+    <description>
+      <text>Bras domain configuration.</text>
+    </description>
+    <container name="multicast">
+      <description>
+        <text>Configure multicast domain.</text>
+      </description>
+      <container name="igmp-enable">
+        <description>
+          <text>Configure IGMP in a specific domain.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="true"/>
+          <description>
+            <text>Enable/disable IGMP in a specific domain.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="without-forward">
+        <description>
+          <text>Configure the router from copying multicast data.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the router from copying multicast data.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="max-list">
+        <description>
+          <text>Configure the total maximum number of IPv4 and IPv6 multicast programs that a user is allowed to access at a time.</text>
+        </description>
+        <leaf name="number">
+          <type name="uint32">
+            <range value="1..512"/>
+          </type>
+          <default value="4"/>
+          <description>
+            <text>Specifies the maximum number of multicast programs that a user is allowed to access at a time.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="ipv4-profile">
+        <description>
+          <text>Configure a multicast profile in the AAA domain.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/bras-multicast:bras-multicast/bras-multicast:ipv4-profiles/bras-multicast:ipv4-profile/bras-multicast:name"/>
+          </type>
+          <description>
+            <text>Specifies the name of the IPv4 multicast profile.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="ipv6-profile">
+        <description>
+          <text>Configure a IPv6 multicast profile to the AAA domain.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/bras-multicast:bras-multicast/bras-multicast:ipv6-profiles/bras-multicast:ipv6-profile/bras-multicast:name"/>
+          </type>
+          <description>
+            <text>Specifies the name of the IPv6 multicast profile.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="virtual-scheduling-vpn">
+        <description>
+          <text>Configure a multicast user VPN to the AAA domain of a unicast user VPNs.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']"/>
+          <description>
+            <text>Binds a multicast user VPN to the AAA domain of a unicast user VPNs.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="unicast-reserved-bandwidth">
+        <description>
+          <text>Configure the minimum bandwidth reserved for unicast and enable multicast virtual scheduling.</text>
+        </description>
+        <leaf name="cir">
+          <type name="uint32">
+            <range value="128..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <description>
+            <text>Unicast reserved bandwidth committed information rate.</text>
+          </description>
+        </leaf>
+        <leaf name="pir">
+          <when condition="../cir"/>
+          <type name="uint32">
+            <range value="128..1000000"/>
+          </type>
+          <units name="kbit/s"/>
+          <must condition="../pir &gt;= ../cir"/>
+          <description>
+            <text>Unicast reserved bandwidth peak information rate.</text>
+          </description>
+        </leaf>
+        <leaf name="coexist-with-copy-by-session">
+          <when condition="../cir"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable multicast virtual scheduling when the session-based multicast replication function is enabled on the BAS interface.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="bandwidth-limit-policy">
+        <presence value="Bandwidth limit policy."/>
+        <description>
+          <text>Configure a multicast bandwidth limit policy and sets bandwidth limits in an AAA domain.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/bras-multicast:bras-multicast/bras-multicast:bas-policy/bras-multicast:policys/bras-multicast:policy/bras-multicast:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of a multicast bandwidth limit policy.</text>
+          </description>
+        </leaf>
+        <leaf name="total">
+          <type name="uint32">
+            <range value="1..1048576"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the total maximum bandwidth available to each user in a specified AAA domain.</text>
+          </description>
+        </leaf>
+        <leaf name="level1">
+          <type name="uint32">
+            <range value="1..1048576"/>
+          </type>
+          <must condition="../total &gt;= ../level1"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the maximum level-1 bandwidth available to each user in a specified AAA domain.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/devm:devm/devm:mpu-boards/devm:mpu-board/bras-basic-access:bras">
+    <description>
+      <text>Bras devm configuration.</text>
+    </description>
+    <container name="multicast">
+      <description>
+        <text>Configure multicast devm.</text>
+      </description>
+      <container name="bas-policy-cac">
+        <description>
+          <text>Configure user-side multicast CAC on a specific interface board.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable user-side multicast CAC on a specific interface board.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/devm:devm/devm:lpu-boards/devm:lpu-board/bras-basic-access:bras">
+    <description>
+      <text>Bras devm configuration.</text>
+    </description>
+    <container name="multicast">
+      <description>
+        <text>Configure multicast devm.</text>
+      </description>
+      <container name="bas-policy-cac">
+        <description>
+          <text>Configure user-side multicast CAC on a specific interface board.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable user-side multicast CAC on a specific interface board.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface/bras-basic-access:bras">
+    <description>
+      <text>Bras ifm configuration.</text>
+    </description>
+    <container name="multicast">
+      <description>
+        <text>Configure bras multicast.</text>
+      </description>
+      <container name="bandwidth-limit-policy">
+        <when condition="(../../../ifm:type='GigabitEthernet' or ../../../ifm:type='10GE' or ../../../ifm:type='100GE' or ../../../ifm:type='400GE') and ../../../ifm:class='main-interface'"/>
+        <presence value="Bandwidth limit policy."/>
+        <description>
+          <text>Configure a multicast bandwidth limit policy and sets bandwidth limits on an interface.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="/bras-multicast:bras-multicast/bras-multicast:bas-policy/bras-multicast:policys/bras-multicast:policy/bras-multicast:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of a multicast bandwidth limit policy.</text>
+          </description>
+        </leaf>
+        <leaf name="total">
+          <type name="uint32">
+            <range value="1..10485760"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the total maximum bandwidth on an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="level1">
+          <type name="uint32">
+            <range value="1..10485760"/>
+          </type>
+          <must condition="../total &gt;= ../level1"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the maximum level-1 bandwidth on an interface.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,1295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-ntp"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:ntp="urn:huawei:yang:huawei-ntp"
+        xmlns:acl="urn:huawei:yang:huawei-acl"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ip="urn:huawei:yang:huawei-ip">
+  <namespace uri="urn:huawei:yang:huawei-ntp"/>
+  <prefix value="ntp"/>
+  <import module="huawei-acl">
+    <prefix value="acl"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ip">
+    <prefix value="ip"/>
+  </import>
+  <include module="huawei-ntp-type"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>NTP component.</text>
+  </description>
+  <revision date="2021-06-02">
+    <description>
+      <text>Add must condition to server source interface and edit authentication description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-08-01">
+    <description>
+      <text>Add the isolate source interface and source address functions.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-19">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="ntp"/>
+  <container name="ntp">
+    <description>
+      <text>NTP component.</text>
+    </description>
+    <container name="disables">
+      <description>
+        <text>List of NTP to be disabled.</text>
+      </description>
+      <list name="disable">
+        <key value="addr-family"/>
+        <description>
+          <text>Configure the NTP service. The 'get' operation is performed to query the disabling status of the NTP service. The 'create' and 'merge' operations are performed to disable the NTP service. The 'delete' operation is performed to enable the NTP service.</text>
+        </description>
+        <leaf name="addr-family">
+          <type name="addr-family-type"/>
+          <description>
+            <text>IP address family type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="unicasts">
+      <description>
+        <text>List of NTP unicast configurations.</text>
+      </description>
+      <list name="unicast">
+        <key value="ip-address type vpn-name"/>
+        <description>
+          <text>Configure NTP unicast.</text>
+        </description>
+        <leaf name="ip-address">
+          <type name="inet:host"/>
+          <description>
+            <text>IP address of the remote peer. The IP address must be a host address and cannot be the loopback, broadcast, multicast, or reference clock address.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="peer-mode"/>
+          <description>
+            <text>Indicates a peer or a server configuration.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <description>
+            <text>Name of a VPN instance. If the entered IP address is an IPv4 address, first enable the IPv4 address family of the VPN instance. If the entered IP address is an IPv6 address, first enable the IPv6 address family of the VPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="version">
+          <type name="uint8">
+            <range value="1..4"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>NTP version number.</text>
+          </description>
+        </leaf>
+        <leaf name="is-preferred">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the peer or server as a preferred source.</text>
+          </description>
+        </leaf>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = ../vpn-name"/>
+          <description>
+            <text>Interface name to be used for communicating with the server/peer.</text>
+          </description>
+        </leaf>
+        <leaf name="key-id">
+          <type name="leafref">
+            <path value="../../../authentications/authentication/key-id"/>
+          </type>
+          <description>
+            <text>Specifies the key number used when transmitting messages to the remote peer.</text>
+          </description>
+        </leaf>
+        <leaf name="max-poll-interval">
+          <type name="uint8">
+            <range value="10..17"/>
+          </type>
+          <units name="s"/>
+          <default value="10"/>
+          <description>
+            <text>Maximum polling interval at which packets are sent. The units is second as power of 2.</text>
+          </description>
+        </leaf>
+        <leaf name="min-poll-interval">
+          <type name="uint8">
+            <range value="3..6"/>
+          </type>
+          <units name="s"/>
+          <default value="6"/>
+          <description>
+            <text>Minimum polling interval at which packets are sent. The units is second as power of 2.</text>
+          </description>
+        </leaf>
+        <leaf name="is-preempt">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the peer or server as preemptive.</text>
+          </description>
+        </leaf>
+        <leaf name="is-burst">
+          <when condition="../type!='Peer'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the server and send a burst of packets when the server is reachable.</text>
+          </description>
+        </leaf>
+        <leaf name="is-iburst">
+          <when condition="../type!='Peer'"/>
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable the server and send a burst of packets when the server is unreachable.</text>
+          </description>
+        </leaf>
+        <leaf name="port-number">
+          <type name="uint16">
+            <range value="123|1025..65535"/>
+          </type>
+          <default value="123"/>
+          <description>
+            <text>Port number.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="broadcasts">
+      <description>
+        <text>List of NTP broadcast configurations.</text>
+      </description>
+      <list name="broadcast">
+        <key value="ifname type"/>
+        <description>
+          <text>Configure NTP broadcast.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = '_public_') or (/ni:network-instance/ni:instances/ni:instance[ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+          <description>
+            <text>Name of an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="cast-mode"/>
+          <description>
+            <text>Broadcast service mode (Client/Server).</text>
+          </description>
+        </leaf>
+        <leaf name="version">
+          <when condition="../type!='Client'"/>
+          <type name="uint8">
+            <range value="1..4"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>NTP version number.</text>
+          </description>
+        </leaf>
+        <leaf name="key-id">
+          <when condition="../type!='Client'"/>
+          <type name="leafref">
+            <path value="../../../authentications/authentication/key-id"/>
+          </type>
+          <description>
+            <text>Key ID used to transmit messages to broadcast clients.</text>
+          </description>
+        </leaf>
+        <leaf name="port-number">
+          <when condition="../type!='Client'"/>
+          <type name="uint16">
+            <range value="123|1025..65535"/>
+          </type>
+          <default value="123"/>
+          <description>
+            <text>Port number.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="multicasts">
+      <description>
+        <text>List of NTP multicast configurations.</text>
+      </description>
+      <list name="multicast">
+        <key value="ifname type ip-address"/>
+        <description>
+          <text>Configure NTP multicast.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Name of an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="cast-mode"/>
+          <description>
+            <text>Multicast service mode (Client/Server).</text>
+          </description>
+        </leaf>
+        <leaf name="ip-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>The IP address must be a multicast address and cannot be the loopback, broadcast, host, or reference clock address.</text>
+          </description>
+        </leaf>
+        <leaf name="ttl-value">
+          <when condition="../type!='Client'"/>
+          <type name="uint8">
+            <range value="1..255"/>
+          </type>
+          <units name="s"/>
+          <default value="16"/>
+          <description>
+            <text>Life span of a multicast packet.</text>
+          </description>
+        </leaf>
+        <leaf name="version">
+          <when condition="../type!='Client'"/>
+          <type name="uint8">
+            <range value="1..4"/>
+          </type>
+          <default value="3"/>
+          <description>
+            <text>NTP version that needs to be set in NTP packets while multicasting.</text>
+          </description>
+        </leaf>
+        <leaf name="key-id">
+          <when condition="../type!='Client'"/>
+          <type name="leafref">
+            <path value="../../../authentications/authentication/key-id"/>
+          </type>
+          <description>
+            <text>Key ID used to transmit messages to multicast clients.</text>
+          </description>
+        </leaf>
+        <leaf name="port-number">
+          <when condition="../type!='Client'"/>
+          <type name="uint16">
+            <range value="123|1025..65535"/>
+          </type>
+          <default value="123"/>
+          <description>
+            <text>Port number.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="manycasts">
+      <description>
+        <text>List of NTP manycast configurations.</text>
+      </description>
+      <list name="manycast">
+        <key value="ifname type ip-address"/>
+        <description>
+          <text>Configure NTP manycast.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Name of an interface.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="cast-mode"/>
+          <description>
+            <text>Manycast service mode (Client/Server).</text>
+          </description>
+        </leaf>
+        <leaf name="ip-address">
+          <type name="inet:ip-address"/>
+          <description>
+            <text>The IP address must be a multicast address and cannot be the loopback, broadcast, host, or reference clock address.</text>
+          </description>
+        </leaf>
+        <leaf name="ttl-value">
+          <when condition="../type!='Server'"/>
+          <type name="uint8">
+            <range value="1..255"/>
+          </type>
+          <units name="s"/>
+          <default value="255"/>
+          <description>
+            <text>Life span of a manycast packet.</text>
+          </description>
+        </leaf>
+        <leaf name="key-id">
+          <when condition="../type!='Server'"/>
+          <type name="leafref">
+            <path value="../../../authentications/authentication/key-id"/>
+          </type>
+          <must condition="((../key-id &gt;= 1) and (../key-id &lt;= 65535))"/>
+          <description>
+            <text>Key ID used to transmit messages to a manycast group. If a key-id is specified, the number ranges from 1 to 65535.</text>
+          </description>
+        </leaf>
+        <leaf name="port-number">
+          <when condition="../type!='Server'"/>
+          <type name="uint16">
+            <range value="123|1025..65535"/>
+          </type>
+          <default value="123"/>
+          <description>
+            <text>Port number.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="authentications">
+      <description>
+        <text>List of NTP authentication configurations.</text>
+      </description>
+      <list name="authentication">
+        <key value="key-id"/>
+        <description>
+          <text>Configure NTP authentication.</text>
+        </description>
+        <leaf name="key-id">
+          <type name="uint32">
+            <range value="1..4294967295"/>
+          </type>
+          <description>
+            <text>Specifies the key number used when transmitting messages to the remote peer.</text>
+          </description>
+        </leaf>
+        <leaf name="mode">
+          <type name="authentication-mode"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specify the authentication mode.</text>
+          </description>
+        </leaf>
+        <leaf name="key-value">
+          <type name="pub-type:password-extend">
+            <length value="1..432"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Authentication password, the password is a string ranging from 1 to 255 characters for a simple password and 20 to 432 characters for a ciphertext password.</text>
+          </description>
+        </leaf>
+        <leaf name="is-reliable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable key reliability. A client can be synchronized only with the server that provides a reliable key.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="system-config">
+      <description>
+        <text>Configure NTP system parameter.</text>
+      </description>
+      <leaf name="is-auth-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable authentication.</text>
+        </description>
+      </leaf>
+      <leaf name="is-auth-password-check">
+        <type name="boolean"/>
+        <default value="true"/>
+        <description>
+          <text>Enable/disable password strength check on identity authentication.</text>
+        </description>
+      </leaf>
+      <leaf name="max-sess-count">
+        <type name="uint16">
+          <range value="0..100"/>
+        </type>
+        <default value="100"/>
+        <description>
+          <text>Maximum number of NTP sessions.</text>
+        </description>
+      </leaf>
+      <leaf name="is-kod-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable Kiss-o'-Death feature and sending of KISS codes.</text>
+        </description>
+      </leaf>
+      <leaf name="sync-interval">
+        <type name="uint16">
+          <range value="180..600"/>
+        </type>
+        <units name="s"/>
+        <description>
+          <text>Synchronization interval.</text>
+        </description>
+      </leaf>
+      <leaf name="min-discard-intval">
+        <type name="int32">
+          <range value="1..8"/>
+        </type>
+        <units name="s"/>
+        <default value="1"/>
+        <description>
+          <text>Specifies the minimum packet sending interval. If the actual packet sending interval is smaller than the value, packets are discarded. The units is second as power of 2.</text>
+        </description>
+      </leaf>
+      <leaf name="avg-discard-intval">
+        <type name="int32">
+          <range value="1..8"/>
+        </type>
+        <units name="s"/>
+        <default value="5"/>
+        <description>
+          <text>Average interval at which packets are sent. The units is second as power of 2.</text>
+        </description>
+      </leaf>
+      <leaf name="local-port">
+        <type name="uint16">
+          <range value="123|1025..65535"/>
+        </type>
+        <default value="123"/>
+        <description>
+          <text>Port number.</text>
+        </description>
+      </leaf>
+      <leaf name="max-distance">
+        <type name="uint16">
+          <range value="1..16"/>
+        </type>
+        <units name="s"/>
+        <default value="1"/>
+        <description>
+          <text>NTP max distance configuration.</text>
+        </description>
+      </leaf>
+      <leaf name="max-offset">
+        <type name="uint16">
+          <range value="0..7620"/>
+        </type>
+        <units name="s"/>
+        <default value="0"/>
+        <description>
+          <text>NTP offset-limit configuration.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="access-controls">
+      <description>
+        <text>List of NTP access control.</text>
+      </description>
+      <list name="access-control">
+        <key value="access-level"/>
+        <description>
+          <text>Configure the NTP access.</text>
+        </description>
+        <leaf name="access-level">
+          <type name="access-level"/>
+          <description>
+            <text>The access level (Query/Synchronization/Server/Peer/Limited).</text>
+          </description>
+        </leaf>
+        <leaf name="acl4-identity">
+          <type name="leafref">
+            <path value="/acl:acl/acl:groups/acl:group/acl:identity"/>
+          </type>
+          <must condition="/acl:acl/acl:groups/acl:group[acl:identity=current()]/acl:type='basic'"/>
+          <description>
+            <text>Number or name of a basic access control list (ACL). If an ACL number is specified, the number ranges from 2000 to 2999. If an ACL name is specified, the name must start with a letter or a digital, spaces not supported, and can not be a number.</text>
+          </description>
+        </leaf>
+        <leaf name="acl6-identity">
+          <type name="leafref">
+            <path value="/acl:acl/acl:group6s/acl:group6/acl:identity"/>
+          </type>
+          <must condition="/acl:acl/acl:group6s/acl:group6[acl:identity=current()]/acl:type='basic'"/>
+          <description>
+            <text>ACL6 number or name. If an ACL6 number is specified, the number ranges from 2000 to 2999. If an ACL6 name is specified, the name must start with a letter or a digital, spaces not supported, and can not be a number.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="clocks">
+      <description>
+        <text>List of NTP master clock configurations.</text>
+      </description>
+      <list name="clock">
+        <key value="local-addr"/>
+        <description>
+          <text>Configure List of NTP master clock.</text>
+        </description>
+        <leaf name="local-addr">
+          <type name="inet:ipv4-address-no-zone">
+            <pattern value="127.127.1.[0-3]"/>
+          </type>
+          <description>
+            <text>IP address of the local clock. The IP address must be a local host address and cannot be the loopback, broadcast, host, multicast.</text>
+          </description>
+        </leaf>
+        <leaf name="stratum">
+          <type name="uint8">
+            <range value="1..15"/>
+          </type>
+          <default value="8"/>
+          <description>
+            <text>Stratum of the NTP master clock. The smaller the value is, the more accurate the clock is.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="in-interface-disables">
+      <description>
+        <text>List of interfaces that prohibit the receiving of NTP messages.</text>
+      </description>
+      <list name="in-interface-disable">
+        <key value="ifname addr-family"/>
+        <description>
+          <text>Configure the receiving of NTP messages on a specified interface prohibited.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <description>
+            <text>Specifies the name of the interface that prohibits the receiving of NTP messages.</text>
+          </description>
+        </leaf>
+        <leaf name="addr-family">
+          <type name="addr-family-type"/>
+          <description>
+            <text>IP address family type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="source-interfaces">
+      <description>
+        <text>List of NTP source interfaces.</text>
+      </description>
+      <list name="source-interface">
+        <key value="vpn-name addr-family"/>
+        <description>
+          <text>Configure the NTP source interface. In broadcast and multicast modes, this parameter does not need to be configured because the NTP service is implemented on the source interface.</text>
+        </description>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="((../addr-family='IPv6') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])) or ((../addr-family='IPv4') and (/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']))"/>
+          <description>
+            <text>Name of a VPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="addr-family">
+          <type name="addr-family-type"/>
+          <description>
+            <text>IP address family type.</text>
+          </description>
+        </leaf>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = ../vpn-name"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the local interface used for sending and receiving NTP packets.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-source-interfaces">
+      <description>
+        <text>List of NTP server source interfaces.</text>
+      </description>
+      <list name="server-source-interface">
+        <key value="ifname"/>
+        <description>
+          <text>Configure the NTP server source interface for listening.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="(/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name = '_public_') or (/ni:network-instance/ni:instances/ni:instance[ni:name=/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:vrf-name]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+          <description>
+            <text>Server source interface name.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-isolate-source-interfaces">
+      <description>
+        <text>List of the isolate source interface and source address.</text>
+      </description>
+      <list name="server-isolate-source-interface">
+        <key value="ifname"/>
+        <description>
+          <text>Configure the isolate source interface and source address.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="count(/ntp/server-source-interfaces/server-source-interface[ifname = current()]) = 0"/>
+          <description>
+            <text>Specify the isolate source interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv4-addr">
+          <type name="inet:ipv4-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specify the isolate source IPv4 address. The IP address must be a host address and cannot be the loopback, broadcast, multicast, or reference clock address.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-source-ipv6-addresses">
+      <description>
+        <text>List of NTP server source IPv6 addresses.</text>
+      </description>
+      <list name="server-source-ipv6-address">
+        <key value="ipv6-addr vpn-name"/>
+        <description>
+          <text>Configure the NTP server source IPv6 address for listening.</text>
+        </description>
+        <leaf name="ipv6-addr">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Server source IPv6 address.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+          </type>
+          <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']"/>
+          <description>
+            <text>Name of a VPN instance.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-isolate-source-ipv6-interfaces">
+      <description>
+        <text>List of the IPv6 isolate source interface and source address.</text>
+      </description>
+      <list name="server-isolate-source-ipv6-interface">
+        <key value="ifname ipv6-addr"/>
+        <description>
+          <text>Configure the IPv6 isolate source interface and source address.</text>
+        </description>
+        <leaf name="ifname">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface/ip:ipv6"/>
+          <description>
+            <text>Specify the isolate source interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="ipv6-addr">
+          <type name="inet:ipv6-address-no-zone"/>
+          <must condition="count(/ntp/server-source-ipv6-addresses/server-source-ipv6-address[ipv6-addr = current()]) = 0"/>
+          <description>
+            <text>Specify the isolate source IPv6 address. The IP address must be a host address and cannot be the loopback, broadcast, multicast, or reference clock address.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-source-all-interfaces">
+      <description>
+        <text>List of configuration which enable the NTP server to listen to all interfaces.</text>
+      </description>
+      <list name="server-source-all-interface">
+        <key value="addr-family"/>
+        <description>
+          <text>Configure the NTP server listen to all interfaces.</text>
+        </description>
+        <leaf name="addr-family">
+          <type name="addr-family-type"/>
+          <description>
+            <text>IP address family type of the interface.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="server-enables">
+      <description>
+        <text>List of NTP server to be enabled.</text>
+      </description>
+      <list name="server-enable">
+        <key value="addr-family"/>
+        <description>
+          <text>Configure the NTP server. The 'get' operation is performed to query the enabling status of the NTP server. The 'create' and 'merge' operations are performed to enable the NTP server. The 'delete' operation is performed to disable the NTP server.</text>
+        </description>
+        <ext:generated-by value="system">
+          <ext:can-be-deleted/>
+        </ext:generated-by>
+        <leaf name="addr-family">
+          <type name="addr-family-type"/>
+          <description>
+            <text>IP address family type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="status">
+      <config value="false"/>
+      <description>
+        <text>Statistics of NTP status information.</text>
+      </description>
+      <leaf name="clock-status">
+        <type name="clock-status"/>
+        <description>
+          <text>Clock status.</text>
+        </description>
+      </leaf>
+      <leaf name="stratum">
+        <type name="int32">
+          <range value="1..16"/>
+        </type>
+        <description>
+          <text>Stratum of the local system clock. If the clock status is unsynchronized, the stratum value is 16.</text>
+        </description>
+      </leaf>
+      <leaf name="source">
+        <type name="string">
+          <length value="0..63"/>
+        </type>
+        <description>
+          <text>ID of the reference clock.
+If the local system clock has been synchronized with a remote NTP server or a reference clock, the ID of the remote NTP server or reference clock is displayed.
+If the local system clock acts as a reference clock, 'LOCAL(0)' is displayed.
+If the clock status is Unsynchronized, 'none' is displayed.</text>
+        </description>
+      </leaf>
+      <leaf name="precision">
+        <type name="string">
+          <length value="0..7"/>
+        </type>
+        <description>
+          <text>Precision of the local system clock.</text>
+        </description>
+      </leaf>
+      <leaf name="offset">
+        <type name="string">
+          <length value="0..31"/>
+        </type>
+        <description>
+          <text>Offset between the local system clock and the NTP server.</text>
+        </description>
+      </leaf>
+      <leaf name="nominal-frequence">
+        <type name="string">
+          <length value="0..31"/>
+        </type>
+        <description>
+          <text>Nominal frequency of the local system clock.</text>
+        </description>
+      </leaf>
+      <leaf name="actual-frequence">
+        <type name="string">
+          <length value="0..31"/>
+        </type>
+        <description>
+          <text>Actual frequency of the local system clock.</text>
+        </description>
+      </leaf>
+      <leaf name="root-delay">
+        <type name="string">
+          <length value="0..31"/>
+        </type>
+        <description>
+          <text>Total delay between the local system clock and the master reference clock.</text>
+        </description>
+      </leaf>
+      <leaf name="root-dispersion">
+        <type name="string">
+          <length value="0..31"/>
+        </type>
+        <description>
+          <text>Total dispersion between the local system clock and the master reference clock.</text>
+        </description>
+      </leaf>
+      <leaf name="peer-dispersion">
+        <type name="string">
+          <length value="0..31"/>
+        </type>
+        <description>
+          <text>Dispersion between the local system clock and the remote NTP peer.</text>
+        </description>
+      </leaf>
+      <leaf name="reference-time">
+        <type name="string">
+          <length value="0..53"/>
+        </type>
+        <description>
+          <text>Reference timestamp when the local system clock was adjusted last time.</text>
+        </description>
+      </leaf>
+      <leaf name="vpn-name">
+        <type name="leafref">
+          <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+        </type>
+        <description>
+          <text>Name of a VPN instance.</text>
+        </description>
+      </leaf>
+      <leaf name="sync-state">
+        <when condition="../clock-status!='unsynchronized'"/>
+        <type name="sync-state"/>
+        <description>
+          <text>Synchronization state of the clock.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="board-statuses">
+      <config value="false"/>
+      <description>
+        <text>List of NTP board statuses.</text>
+      </description>
+      <list name="board-status">
+        <key value="board-id"/>
+        <description>
+          <text>Statistics of NTP board status.</text>
+        </description>
+        <leaf name="board-id">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Board identifier.</text>
+          </description>
+        </leaf>
+        <leaf name="source">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Board synchronization source.</text>
+          </description>
+        </leaf>
+        <leaf name="configured">
+          <type name="is-configured"/>
+          <description>
+            <text>Whether the NTP server has been configured.</text>
+          </description>
+        </leaf>
+        <leaf name="status">
+          <type name="clock-status"/>
+          <description>
+            <text>Status of clock.</text>
+          </description>
+        </leaf>
+        <leaf name="offset">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Clock offset.</text>
+          </description>
+        </leaf>
+        <leaf name="precision">
+          <type name="string">
+            <length value="0..7"/>
+          </type>
+          <description>
+            <text>Clock precision.</text>
+          </description>
+        </leaf>
+        <leaf name="poll">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Interval at which the board sends packets to its synchronization source.</text>
+          </description>
+        </leaf>
+        <leaf name="reference-time">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Latest synchronization time of the clock.</text>
+          </description>
+        </leaf>
+        <leaf name="current-time">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Current time of the clock.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="full-sessions">
+      <config value="false"/>
+      <description>
+        <text>List of NTP full-session configurations.</text>
+      </description>
+      <list name="full-session">
+        <key value="source local-mode vpn-name ifname"/>
+        <description>
+          <text>Statistics of NTP full session configuration.</text>
+        </description>
+        <leaf name="source">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>IP address of the reference clock.</text>
+          </description>
+        </leaf>
+        <leaf name="local-mode">
+          <type name="string">
+            <length value="0..15"/>
+          </type>
+          <description>
+            <text>Mode of the local system.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Name of a VPN instance.</text>
+          </description>
+        </leaf>
+        <leaf name="ifname">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Peer interface.</text>
+          </description>
+        </leaf>
+        <leaf name="stratum">
+          <type name="uint8">
+            <range value="1..16"/>
+          </type>
+          <description>
+            <text>Clock stratum of the peer.</text>
+          </description>
+        </leaf>
+        <leaf name="clock-status">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Status of the clock.</text>
+          </description>
+        </leaf>
+        <leaf name="reference-source">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>IP address of the remote server or the identifier of the reference clock that the peer system clock has been synchronized with. If the server belongs to a VPN, this field also shows the name of the VPN.</text>
+          </description>
+        </leaf>
+        <leaf name="local-poll">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Local polling period.</text>
+          </description>
+        </leaf>
+        <leaf name="current-poll">
+          <type name="string">
+            <length value="0..7"/>
+          </type>
+          <description>
+            <text>Current polling interval.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-mode">
+          <type name="string">
+            <length value="0..15"/>
+          </type>
+          <description>
+            <text>Mode of the peer system.</text>
+          </description>
+        </leaf>
+        <leaf name="peer-poll">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Peer polling period.</text>
+          </description>
+        </leaf>
+        <leaf name="offset">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Offset between the local system clock and the peer for the last received packet.</text>
+          </description>
+        </leaf>
+        <leaf name="delay">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Delay between the local system clock and the peer for the last received packet.</text>
+          </description>
+        </leaf>
+        <leaf name="dispersion">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Dispersion between the local system clock and the peer for the last received packet.</text>
+          </description>
+        </leaf>
+        <leaf name="root-delay">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Total delay between the local system clock and the master reference clock.</text>
+          </description>
+        </leaf>
+        <leaf name="root-dispersion">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Total dispersion between the local system clock and the master reference clock.</text>
+          </description>
+        </leaf>
+        <leaf name="reachable">
+          <type name="uint8"/>
+          <description>
+            <text>Reachability of the peer.</text>
+          </description>
+        </leaf>
+        <leaf name="distance">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Synchronization distance relative to the reference clock source. NTP selects the clock source with the minimum synchronization distance.</text>
+          </description>
+        </leaf>
+        <leaf name="sync-state">
+          <type name="sync-state"/>
+          <description>
+            <text>Synchronization status.</text>
+          </description>
+        </leaf>
+        <leaf name="precision">
+          <type name="string">
+            <length value="0..7"/>
+          </type>
+          <description>
+            <text>Peer's clock precision.</text>
+          </description>
+        </leaf>
+        <leaf name="version">
+          <type name="uint8">
+            <range value="1..4"/>
+          </type>
+          <description>
+            <text>NTP version.</text>
+          </description>
+        </leaf>
+        <leaf name="reference-time">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Reference timestamp when the local system clock is adjusted last time.</text>
+          </description>
+        </leaf>
+        <leaf name="origin-time">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Time when the latest packet was sent from the peer.</text>
+          </description>
+        </leaf>
+        <leaf name="receive-time">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Time when the latest packet was received at the local end.</text>
+          </description>
+        </leaf>
+        <leaf name="xmit-time">
+          <type name="string">
+            <length value="0..63"/>
+          </type>
+          <description>
+            <text>Time when the latest packet was sent to the peer.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-delay">
+          <type name="string">
+            <length value="0..199"/>
+          </type>
+          <description>
+            <text>Filter delay of the latest eight packets received.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-offset">
+          <type name="string">
+            <length value="0..199"/>
+          </type>
+          <description>
+            <text>Filter offset of the latest eight packets received.</text>
+          </description>
+        </leaf>
+        <leaf name="filter-dispersion">
+          <type name="string">
+            <length value="0..199"/>
+          </type>
+          <description>
+            <text>Filter dispersion of the latest eight packets received.</text>
+          </description>
+        </leaf>
+        <leaf name="reference-status">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Status of the reference clock.</text>
+          </description>
+        </leaf>
+        <leaf name="flags">
+          <type name="string">
+            <length value="0..15"/>
+          </type>
+          <description>
+            <text>Status flags information of the peer.</text>
+          </description>
+        </leaf>
+        <leaf name="when">
+          <type name="string">
+            <length value="0..11"/>
+          </type>
+          <description>
+            <text>Specifies the interval for time synchronization.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="traces">
+      <config value="false"/>
+      <description>
+        <text>List of NTP tracing configurations.</text>
+      </description>
+      <list name="trace">
+        <key value="stratum"/>
+        <description>
+          <text>Statistics of NTP trace configuration.</text>
+        </description>
+        <leaf name="stratum">
+          <type name="int32">
+            <range value="1..16"/>
+          </type>
+          <description>
+            <text>Clock stratum.</text>
+          </description>
+        </leaf>
+        <leaf name="server-address">
+          <type name="inet:ipv4-address"/>
+          <description>
+            <text>Server address.</text>
+          </description>
+        </leaf>
+        <leaf name="reference-source">
+          <type name="inet:ipv4-address"/>
+          <description>
+            <text>Reference clock address.</text>
+          </description>
+        </leaf>
+        <leaf name="offset">
+          <type name="string">
+            <length value="0..31"/>
+          </type>
+          <description>
+            <text>Clock offset.</text>
+          </description>
+        </leaf>
+        <leaf name="distance">
+          <type name="string">
+            <length value="0..15"/>
+          </type>
+          <description>
+            <text>Synchronization distance.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+</module>

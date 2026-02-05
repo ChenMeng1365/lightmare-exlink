@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-isis-srv6"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:isis-srv6="urn:huawei:yang:huawei-isis-srv6"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:isis="urn:huawei:yang:huawei-isis"
+        xmlns:srv6="urn:huawei:yang:huawei-srv6"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-isis-srv6"/>
+  <prefix value="isis-srv6"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-isis">
+    <prefix value="isis"/>
+  </import>
+  <import module="huawei-srv6">
+    <prefix value="srv6"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>ISIS segment routing IPv6 management.</text>
+  </description>
+  <revision date="2020-03-03">
+    <description>
+      <text>Modity the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-02-04">
+    <description>
+      <text>Modity the description.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-04">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="isis"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/isis:isis/isis:sites/isis:site/isis:afs/isis:af">
+    <description>
+      <text>ISIS segment routing IPv6 augment to ISIS.</text>
+    </description>
+    <container name="srv6">
+      <when condition="../../../../../../ni:name='_public_' and ../isis:type='afipv6' and (../../../isis:cost-style='wide' or ../../../isis:cost-style='transition'  or ../../../isis:cost-style='wtransition')"/>
+      <description>
+        <text>Configure ISIS segment routing IPv6.</text>
+      </description>
+      <container name="locators">
+        <description>
+          <text>List of segment routing IPv6 locator.</text>
+        </description>
+        <list name="locator">
+          <key value="locator-name"/>
+          <description>
+            <text>Configure segment routing IPv6 locator.</text>
+          </description>
+          <leaf name="locator-name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/srv6:srv6/srv6:locators/srv6:locator/srv6:name"/>
+            </type>
+            <description>
+              <text>Enable ISIS segment routing IPv6 with specified Locator.</text>
+            </description>
+          </leaf>
+          <leaf name="auto-sid">
+            <type name="boolean"/>
+            <must condition="../auto-sid='true' or (../locator-name)"/>
+            <default value="true"/>
+            <description>
+              <text>Enable/disable automatic application for SID.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+      <container name="avoid-microloop">
+        <when condition="../locators/locator"/>
+        <description>
+          <text>Configure IPv6 segment routing avoid microloop.</text>
+        </description>
+        <leaf name="enable">
+          <type name="boolean"/>
+          <default value="false"/>
+          <description>
+            <text>Enable/disable IPv6 segment routing avoid microloop.</text>
+          </description>
+        </leaf>
+        <leaf name="delay-value">
+          <type name="uint16">
+            <range value="1000..60000"/>
+          </type>
+          <default value="5000"/>
+          <description>
+            <text>Set the route delivery delay for IPv6 segment routing avoid microloop.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-nqa"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:nqa="urn:huawei:yang:huawei-nqa"
+        xmlns:pub-type="urn:huawei:yang:huawei-pub-type"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-nqa"/>
+  <prefix value="nqa"/>
+  <import module="huawei-pub-type">
+    <prefix value="pub-type"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <include module="huawei-nqa-global"/>
+  <include module="huawei-nqa-server"/>
+  <include module="huawei-nqa-instance"/>
+  <include module="huawei-nqa-reflector"/>
+  <include module="huawei-nqa-record"/>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Network quality analysis.</text>
+  </description>
+  <revision date="2021-03-19">
+    <description>
+      <text>Modify default-value of probe-count, jitter-packet-num, and data-size in a jitter test instance.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-09-24">
+    <description>
+      <text>Add MAC ping test instance and modify jitter-results.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-07-04">
+    <description>
+      <text>Add BIERv6 OAM.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-06-30">
+    <description>
+      <text>Add rpc for nqa execution policy.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-10-25">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="sla"/>
+  <container name="nqa">
+    <description>
+      <text>Network quality analysis (NQA) service.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure NQA global configuration.</text>
+      </description>
+      <uses name="nqa:global-type">
+        <refine target-node="vxlan-echo-v4/source-ip-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'LoopBack'"/>
+        </refine>
+      </uses>
+    </container>
+    <container name="server">
+      <description>
+        <text>Configure NQA server list.</text>
+      </description>
+      <uses name="nqa:server-type"/>
+    </container>
+    <container name="reflectors">
+      <description>
+        <text>Configure reflector list.</text>
+      </description>
+      <uses name="nqa:reflectors-type">
+        <refine target-node="reflector/if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Ethernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Eth-Trunk' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Ip-Trunk' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Virtual-Ethernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Pos' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '100GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '200GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '40GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '10GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'GEBrief' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'GigabitEthernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '25GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '4x10GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'XGigabitEthernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '50GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '50|100GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'FlexE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '400GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Global-VE'"/>
+        </refine>
+      </uses>
+    </container>
+    <container name="instances">
+      <description>
+        <text>Configure NQA test instance list.</text>
+      </description>
+      <uses name="nqa:instances-type">
+        <refine target-node="instance/type/lsp-jitter/lsp-jitter-input/lsp-protocol/te/te-lsp-jitter/tunnel-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Tunnel'"/>
+        </refine>
+        <refine target-node="instance/type/icmp/icmp-input/out-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'NULL' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'E1' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Fabric-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Stack-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Atm-Bundle' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Ima-group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos-Trunk' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-Ima-Group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FCoE-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FC' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Remote-Ap' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ServiceIf' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ATM' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-200GE' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50|100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Virtual-if' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-400G'"/>
+        </refine>
+        <refine target-node="instance/type/icmp/icmp-input/fwd-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Atm-Bundle' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Virtual-Ethernet' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'MTunnel' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Tunnel' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'LoopBack' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Vbdif' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Serial' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Mp-group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-Mp-Group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Trunk-Serial' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Fabric-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Stack-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos-Trunk' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'NULL' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Ima-group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-Ima-Group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FCoE-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FC' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Remote-Ap' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ServiceIf' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ATM' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-200GE' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50|100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-VE' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Virtual-if' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-400G'"/>
+        </refine>
+        <refine target-node="instance/type/arp-ping-ip/arp-ping-ip-input/out-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Ethernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'GigabitEthernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Eth-Trunk' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Vlanif' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Virtual-Ethernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '100GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '200GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '40GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '10GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'GEBrief' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'MEth' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Vbdif' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Global-VE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '25GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '50GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '50|100GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'FlexE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '400GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '4x10GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'XGigabitEthernet'"/>
+        </refine>
+        <refine target-node="instance/type/jitter/jitter-input/out-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'NULL' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'E1' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Fabric-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Stack-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Atm-Bundle' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Ima-group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos-Trunk' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-Ima-Group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FCoE-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FC' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Remote-Ap' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ServiceIf' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ATM' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-200GE' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50|100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Virtual-if' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-400G'"/>
+        </refine>
+        <refine target-node="instance/type/trace/trace-input/out-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'NULL' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'E1' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Fabric-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Stack-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Atm-Bundle' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Ima-group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos-Trunk' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-Ima-Group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FCoE-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FC' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Remote-Ap' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ServiceIf' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ATM' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-200GE' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50|100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Virtual-if' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-400G'"/>
+        </refine>
+        <refine target-node="instance/type/mac-ping/mac-ping-input/source-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Ethernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'GigabitEthernet' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '100GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '200GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '40GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '10GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'Eth-Trunk' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'GEBrief' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '25GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '4x10GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '50GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '50|100GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = '400GE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'FlexE' or /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type = 'XGigabitEthernet'"/>
+        </refine>
+        <refine target-node="instance/type/icmp-jitter/icmp-jitter-input/out-if-name">
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'NULL' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'E1' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Fabric-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Stack-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Atm-Bundle' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Ima-group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Cpos-Trunk' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Global-Ima-Group' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FCoE-Port' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FC' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Remote-Ap' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ServiceIf' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'ATM' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-200GE' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-50|100G' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'Virtual-if' and /ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type != 'FlexE-400G'"/>
+        </refine>
+      </uses>
+    </container>
+    <container name="record">
+      <config value="false"/>
+      <description>
+        <text>Statistics of NQA test instance test record table.</text>
+      </description>
+      <uses name="nqa:record-type"/>
+    </container>
+  </container>
+  <rpc name="test-instance-execution">
+    <description>
+      <text>The test instance execution.</text>
+    </description>
+    <ext:node-ref value="/nqa:nqa/nqa:instances/nqa:instance"/>
+    <input>
+      <leaf name="admin-name">
+        <type name="leafref">
+          <path value="/nqa/instances/instance/admin-name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Administrator name.</text>
+        </description>
+      </leaf>
+      <leaf name="test-name">
+        <type name="leafref">
+          <path value="/nqa/instances/instance/test-name"/>
+        </type>
+        <mandatory value="true"/>
+        <description>
+          <text>Test name.</text>
+        </description>
+      </leaf>
+      <choice name="execution-policy">
+        <description>
+          <text>The test instance start policy.</text>
+        </description>
+        <case name="start">
+          <description>
+            <text>Start the test.</text>
+          </description>
+          <choice name="start-type">
+            <description>
+              <text>The test instance start type.</text>
+            </description>
+            <case name="start-now">
+              <description>
+                <text>Start the test now.</text>
+              </description>
+              <leaf name="start-now">
+                <type name="empty"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Receive the command then start the test.</text>
+                </description>
+              </leaf>
+              <choice name="start-now-end-type">
+                <description>
+                  <text>Test instance end type.</text>
+                </description>
+                <case name="at">
+                  <description>
+                    <text>Stop the test at the specified time.</text>
+                  </description>
+                  <leaf name="start-now-end-time">
+                    <type name="pub-type:time"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end time.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="start-now-end-date">
+                    <type name="pub-type:date"/>
+                    <description>
+                      <text>The test instance end date.</text>
+                    </description>
+                  </leaf>
+                </case>
+                <case name="delay">
+                  <description>
+                    <text>Stop the test after the specified delay time.</text>
+                  </description>
+                  <choice name="start-now-end-delay-type">
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end delay type.</text>
+                    </description>
+                    <case name="end-delay-time">
+                      <description>
+                        <text>The test instance end delay time.</text>
+                      </description>
+                      <leaf name="start-now-end-delay-time">
+                        <type name="pub-type:time"/>
+                        <description>
+                          <text>The test instance end delay time.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="end-delay-seconds">
+                      <description>
+                        <text>The test instance end delay seconds.</text>
+                      </description>
+                      <leaf name="start-now-end-delay-seconds">
+                        <type name="uint32">
+                          <range value="6..86399"/>
+                        </type>
+                        <units name="s"/>
+                        <description>
+                          <text>The test instance end delay seconds.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </case>
+                <case name="lifetime">
+                  <description>
+                    <text>Stop the test after the specified life time.</text>
+                  </description>
+                  <choice name="start-now-end-lifetime-type">
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end lifetime type.</text>
+                    </description>
+                    <case name="lifetime-time">
+                      <description>
+                        <text>The test instance end lifetime time.</text>
+                      </description>
+                      <leaf name="start-now-end-lifetime-time">
+                        <type name="pub-type:time"/>
+                        <description>
+                          <text>The test instance end lifetime time.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="lifetime-seconds">
+                      <description>
+                        <text>The test instance end lifetime seconds.</text>
+                      </description>
+                      <leaf name="start-now-end-lifetime-seconds">
+                        <type name="uint32">
+                          <range value="6..86399"/>
+                        </type>
+                        <units name="s"/>
+                        <description>
+                          <text>The test instance end lifetime seconds.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </case>
+              </choice>
+            </case>
+            <case name="start-at">
+              <description>
+                <text>Execute at the specified time.</text>
+              </description>
+              <leaf name="start-time">
+                <type name="pub-type:time"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>The test instance start time.</text>
+                </description>
+              </leaf>
+              <leaf name="start-date">
+                <type name="pub-type:date"/>
+                <description>
+                  <text>The test instance start date.</text>
+                </description>
+              </leaf>
+              <choice name="start-at-end-type">
+                <description>
+                  <text>Test instance end type.</text>
+                </description>
+                <case name="at">
+                  <description>
+                    <text>Stop the test at the specified time.</text>
+                  </description>
+                  <leaf name="start-at-end-time">
+                    <type name="pub-type:time"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end time.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="start-at-end-date">
+                    <type name="pub-type:date"/>
+                    <description>
+                      <text>The test instance end date.</text>
+                    </description>
+                  </leaf>
+                </case>
+                <case name="delay">
+                  <description>
+                    <text>Stop the test after the specified delay time.</text>
+                  </description>
+                  <choice name="start-at-end-delay-type">
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end delay type.</text>
+                    </description>
+                    <case name="end-delay-time">
+                      <description>
+                        <text>The test instance end delay time.</text>
+                      </description>
+                      <leaf name="start-at-end-delay-time">
+                        <type name="pub-type:time"/>
+                        <description>
+                          <text>The test instance end delay time.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="end-delay-seconds">
+                      <description>
+                        <text>The test instance end delay seconds.</text>
+                      </description>
+                      <leaf name="start-at-end-delay-seconds">
+                        <type name="uint32">
+                          <range value="6..86399"/>
+                        </type>
+                        <units name="s"/>
+                        <description>
+                          <text>The test instance end delay seconds.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </case>
+                <case name="lifetime">
+                  <description>
+                    <text>Stop the test after the specified life time.</text>
+                  </description>
+                  <choice name="start-at-end-lifetime-type">
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end lifetime type.</text>
+                    </description>
+                    <case name="lifetime-time">
+                      <description>
+                        <text>The test instance end lifetime time.</text>
+                      </description>
+                      <leaf name="start-at-end-lifetime-time">
+                        <type name="pub-type:time"/>
+                        <description>
+                          <text>The test instance end lifetime time.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="lifetime-seconds">
+                      <description>
+                        <text>The test instance end lifetime seconds.</text>
+                      </description>
+                      <leaf name="start-at-end-lifetime-seconds">
+                        <type name="uint32">
+                          <range value="6..86399"/>
+                        </type>
+                        <units name="s"/>
+                        <description>
+                          <text>The test instance end lifetime seconds.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </case>
+              </choice>
+            </case>
+            <case name="start-delay">
+              <description>
+                <text>Delay some time then execute testcase.</text>
+              </description>
+              <choice name="start-delay-type">
+                <mandatory value="true"/>
+                <description>
+                  <text>The test instance start delay time.</text>
+                </description>
+                <case name="start-delay-time">
+                  <description>
+                    <text>Execute at the specified time.</text>
+                  </description>
+                  <leaf name="start-delay-time">
+                    <type name="pub-type:time"/>
+                    <description>
+                      <text>The test instance start delay time.</text>
+                    </description>
+                  </leaf>
+                </case>
+                <case name="start-delay-seconds">
+                  <description>
+                    <text>The test instance start delay seconds.</text>
+                  </description>
+                  <leaf name="start-delay-seconds">
+                    <type name="uint32">
+                      <range value="1..86399"/>
+                    </type>
+                    <units name="s"/>
+                    <description>
+                      <text>The test instance start delay seconds.</text>
+                    </description>
+                  </leaf>
+                </case>
+              </choice>
+              <choice name="start-delay-end-type">
+                <description>
+                  <text>Test instance end type.</text>
+                </description>
+                <case name="at">
+                  <description>
+                    <text>Stop the test at the specified time.</text>
+                  </description>
+                  <leaf name="start-delay-end-time">
+                    <type name="pub-type:time"/>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end time.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="start-delay-end-date">
+                    <type name="pub-type:date"/>
+                    <description>
+                      <text>The test instance end date.</text>
+                    </description>
+                  </leaf>
+                </case>
+                <case name="delay">
+                  <description>
+                    <text>Stop the test after the specified delay time.</text>
+                  </description>
+                  <choice name="start-delay-end-delay-type">
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end delay type.</text>
+                    </description>
+                    <case name="end-delay-time">
+                      <description>
+                        <text>The test instance end delay time.</text>
+                      </description>
+                      <leaf name="start-delay-end-delay-time">
+                        <type name="pub-type:time"/>
+                        <description>
+                          <text>The test instance end delay time.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="end-delay-seconds">
+                      <description>
+                        <text>The test instance end delay seconds.</text>
+                      </description>
+                      <leaf name="start-delay-end-delay-seconds">
+                        <type name="uint32">
+                          <range value="6..86399"/>
+                        </type>
+                        <units name="s"/>
+                        <description>
+                          <text>The test instance end delay seconds.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </case>
+                <case name="lifetime">
+                  <description>
+                    <text>Stop the test after the specified life time.</text>
+                  </description>
+                  <choice name="start-delay-end-lifetime-type">
+                    <mandatory value="true"/>
+                    <description>
+                      <text>The test instance end lifetime type.</text>
+                    </description>
+                    <case name="lifetime-time">
+                      <description>
+                        <text>The test instance end lifetime time.</text>
+                      </description>
+                      <leaf name="start-delay-end-lifetime-time">
+                        <type name="pub-type:time"/>
+                        <description>
+                          <text>The test instance end lifetime time.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                    <case name="lifetime-seconds">
+                      <description>
+                        <text>The test instance end lifetime seconds.</text>
+                      </description>
+                      <leaf name="start-delay-end-lifetime-seconds">
+                        <type name="uint32">
+                          <range value="6..86399"/>
+                        </type>
+                        <units name="s"/>
+                        <description>
+                          <text>The test instance end lifetime seconds.</text>
+                        </description>
+                      </leaf>
+                    </case>
+                  </choice>
+                </case>
+              </choice>
+            </case>
+            <case name="start-daily">
+              <description>
+                <text>Execute the test instance daily.</text>
+              </description>
+              <leaf name="daily-start-time">
+                <type name="pub-type:time"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>Start time of daily execution.</text>
+                </description>
+              </leaf>
+              <leaf name="daily-start-date">
+                <type name="pub-type:date"/>
+                <description>
+                  <text>Start date of daily execution.</text>
+                </description>
+              </leaf>
+              <leaf name="daily-end-time">
+                <type name="pub-type:time"/>
+                <mandatory value="true"/>
+                <description>
+                  <text>End time of daily execution.</text>
+                </description>
+              </leaf>
+              <leaf name="daily-end-date">
+                <type name="pub-type:date"/>
+                <description>
+                  <text>End date of daily execution.</text>
+                </description>
+              </leaf>
+            </case>
+          </choice>
+        </case>
+        <case name="stop">
+          <description>
+            <text>Stop the test.</text>
+          </description>
+          <leaf name="stop">
+            <type name="empty"/>
+            <description>
+              <text>Stop the test.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="restart">
+          <description>
+            <text>Restart the test.</text>
+          </description>
+          <leaf name="restart">
+            <type name="empty"/>
+            <description>
+              <text>Restart the test.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+    </input>
+  </rpc>
+</module>

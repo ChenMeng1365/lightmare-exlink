@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-pimv6-snooping"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:pimv6s="http://www.zte.com.cn/zxr10/netconf/schema/rosng/pimv6-snooping"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/pimv6-snooping"/>
+  <prefix value="pimv6s"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe PIMv6 snooping.</text>
+  </description>
+  <revision date="2016-11-08">
+    <description>
+      <text>Add node path:/state/pimv6-snooping/neighbor's query term:vlan-id+neighbor-ip,vpls-name+neighbor-ip</text>
+    </description>
+  </revision>
+  <revision date="2015-09-15">
+    <description>
+      <text>Modify leaf node type, node path:/operation/pimv6-snooping/clear/groups/type/all/all-groups.</text>
+    </description>
+  </revision>
+  <revision date="2015-05-27">
+    <description>
+      <text>Modify the range of /state/pimv6-snooping/neighbor/vlan-id and /state/pimv6-snooping/neighbor/vpn-id.</text>
+    </description>
+  </revision>
+  <revision date="2015-03-02">
+    <description>
+      <text>Add clear operation and global summary show.</text>
+    </description>
+  </revision>
+  <revision date="2015-02-12">
+    <description>
+      <text>Change proper noun, such as vpls,vlan,id etc, from lowercase into capital.</text>
+    </description>
+  </revision>
+  <revision date="2014-03-21">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <typedef name="switch-type">
+    <type name="enumeration">
+      <enum name="disable">
+        <value value="0"/>
+        <description>
+          <text>Disable this switch.</text>
+        </description>
+      </enum>
+      <enum name="enable">
+        <value value="1"/>
+        <description>
+          <text>Enable this switch.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Type of switch status.</text>
+    </description>
+  </typedef>
+  <container name="configuration">
+    <description>
+      <text>Configuration model.</text>
+    </description>
+    <container name="pimv6-snooping">
+      <description>
+        <text>Configure PIMv6 snooping parameters.</text>
+      </description>
+      <container name="global">
+        <description>
+          <text>PIMv6 snooping global configure.</text>
+        </description>
+        <leaf name="global-enable">
+          <description>
+            <text>Enable/disable PIMv6 snooping in this device.Its default value is disable.</text>
+          </description>
+          <type name="switch-type"/>
+        </leaf>
+      </container>
+      <container name="vplses">
+        <description>
+          <text>PIMv6 snooping VPLS configure.Can't config PIMv6 snooping in VPLS if the VPLS instance not exist.If PIMv6 snooping configuration exist in VPLS,the VPLS instance can't be deleted.</text>
+        </description>
+        <list name="vpls">
+          <description>
+            <text>The config of instance VPLS.</text>
+          </description>
+          <key value="name"/>
+          <leaf name="name">
+            <description>
+              <text>Submode instance Name of VPLS.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+          <leaf name="snooping-switch">
+            <description>
+              <text>Enable/disable PIMv6 snooping in this instance.</text>
+            </description>
+            <type name="switch-type"/>
+            <default value="disable"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="vlans">
+        <description>
+          <text>PIMv6 snooping VLAN configure.Can't config PIMv6 snooping in VLAN if the VLAN instance not exist.If PIMv6 snooping configuration exist in VLAN,the VLAN instance can't be deleted.</text>
+        </description>
+        <list name="vlan">
+          <description>
+            <text>The config of instance VLAN.</text>
+          </description>
+          <key value="vlan-id"/>
+          <leaf name="vlan-id">
+            <description>
+              <text>Submode instance ID of VLAN.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+          </leaf>
+          <leaf name="snooping-switch">
+            <description>
+              <text>Enable/disable PIMv6 snooping in this instance.</text>
+            </description>
+            <type name="switch-type"/>
+            <default value="disable"/>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State model.</text>
+    </description>
+    <container name="pimv6-snooping">
+      <description>
+        <text>PIMv6 snooping state parameters.</text>
+      </description>
+      <container name="vpls">
+        <description>
+          <text>PIMv6 snooping VPLS information.</text>
+        </description>
+        <list name="member">
+          <description>
+            <text>The information of member in instance VPLS.</text>
+          </description>
+          <key value="vpls-name group-ip source-ip interface-name"/>
+          <leaf name="vpls-name">
+            <description>
+              <text>Submode instance Name of VPLS.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="group-ip">
+            <description>
+              <text>Group IP address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+          </leaf>
+          <leaf name="source-ip">
+            <description>
+              <text>Source IP address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+          </leaf>
+          <leaf name="interface-name">
+            <description>
+              <text>Interface name of this member.</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="instance-id">
+            <description>
+              <text>Submode instance ID of VPLS.</text>
+            </description>
+            <type name="uint32">
+              <range value="1..8000"/>
+            </type>
+          </leaf>
+          <leaf name="remain-time">
+            <description>
+              <text>Remain time of this member.</text>
+            </description>
+            <type name="uint32">
+              <range value="0..65535"/>
+            </type>
+          </leaf>
+          <ncd:select fields="vpls-name"/>
+          <ncd:select fields="vpls-name group-ip source-ip"/>
+          <ncd:select fields="vpls-name group-ip source-ip interface-name"/>
+        </list>
+      </container>
+      <container name="vlan">
+        <description>
+          <text>PIMv6 snooping VLAN information.</text>
+        </description>
+        <list name="member">
+          <description>
+            <text>The information of member in instance VLAN.</text>
+          </description>
+          <key value="vlan-id group-ip source-ip interface-name"/>
+          <leaf name="vlan-id">
+            <description>
+              <text>Submode instance ID of VLAN.</text>
+            </description>
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+          </leaf>
+          <leaf name="group-ip">
+            <description>
+              <text>Group IP address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+          </leaf>
+          <leaf name="source-ip">
+            <description>
+              <text>Source IP address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+          </leaf>
+          <leaf name="interface-name">
+            <description>
+              <text>Interface name of this member.</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="remain-time">
+            <description>
+              <text>Remain time of this member.</text>
+            </description>
+            <type name="uint32">
+              <range value="0..65535"/>
+            </type>
+          </leaf>
+          <ncd:select fields="vlan-id"/>
+          <ncd:select fields="vlan-id group-ip source-ip"/>
+          <ncd:select fields="vlan-id group-ip source-ip interface-name"/>
+        </list>
+      </container>
+      <list name="neighbor">
+        <description>
+          <text>PIMv6 snooping neighbor information.</text>
+        </description>
+        <key value="vlan-id vpls-name neighbor-ip"/>
+        <leaf name="vlan-id">
+          <description>
+            <text>Submode instance ID of VLAN.</text>
+          </description>
+          <type name="uint32">
+            <range value="0..4094"/>
+          </type>
+        </leaf>
+        <leaf name="vpls-name">
+          <description>
+            <text>Submode instance Name of VPLS.</text>
+          </description>
+          <type name="string"/>
+        </leaf>
+        <leaf name="neighbor-ip">
+          <description>
+            <text>The IP address of neighbor.</text>
+          </description>
+          <type name="ncd:ipv6-address"/>
+        </leaf>
+        <leaf name="vpn-id">
+          <description>
+            <text>Submode instance ID of VPLS.</text>
+          </description>
+          <type name="uint32">
+            <range value="0..8000"/>
+          </type>
+        </leaf>
+        <leaf name="interface-name">
+          <description>
+            <text>Interface name of this neighbor.</text>
+          </description>
+          <type name="ncd:ifname"/>
+        </leaf>
+        <leaf name="remain-time">
+          <description>
+            <text>Remain time of this neighbor.</text>
+          </description>
+          <type name="uint32">
+            <range value="0..65535"/>
+          </type>
+        </leaf>
+        <ncd:select fields="vlan-id neighbor-ip"/>
+        <ncd:select fields="vpls-name neighbor-ip"/>
+      </list>
+      <container name="summary">
+        <description>
+          <text>Show summary info of groups, members and neighbors.</text>
+        </description>
+        <container name="group">
+          <description>
+            <text>Show summary info of groups.</text>
+          </description>
+          <container name="global">
+            <description>
+              <text>Show global summary info of groups.</text>
+            </description>
+            <leaf name="total">
+              <description>
+                <text>Total groups number.</text>
+              </description>
+              <type name="uint32"/>
+            </leaf>
+            <leaf name="source-specific">
+              <description>
+                <text>Source-specific groups number.</text>
+              </description>
+              <type name="uint32"/>
+            </leaf>
+            <leaf name="anycast-specific">
+              <description>
+                <text>Anycast-specific groups number.</text>
+              </description>
+              <type name="uint32"/>
+            </leaf>
+          </container>
+        </container>
+        <container name="member">
+          <description>
+            <text>Show summary info of members.</text>
+          </description>
+          <container name="global">
+            <description>
+              <text>Show global summary info of members.</text>
+            </description>
+            <leaf name="total">
+              <description>
+                <text>Total members number.</text>
+              </description>
+              <type name="uint32"/>
+            </leaf>
+          </container>
+        </container>
+        <container name="neighbor">
+          <description>
+            <text>Show summary info of neighbors.</text>
+          </description>
+          <container name="global">
+            <description>
+              <text>Show global summary info of neighbors.</text>
+            </description>
+            <leaf name="total">
+              <type name="uint32"/>
+            </leaf>
+          </container>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>Command of PIMv6 snooping clear.</text>
+    </description>
+    <container name="pimv6-snooping">
+      <description>
+        <text>Clear PIMv6 snooping groups.</text>
+      </description>
+      <container name="clear">
+        <description>
+          <text>Clear PIMv6 snooping groups.</text>
+        </description>
+        <container name="group">
+          <description>
+            <text>Clear the specific group of the specific instance.</text>
+          </description>
+          <presence value="group"/>
+          <leaf name="group-ip">
+            <description>
+              <text>Multicast group IP address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+            <mandatory value="true"/>
+          </leaf>
+          <leaf name="source-ip">
+            <description>
+              <text>Source IP address.</text>
+            </description>
+            <type name="ncd:ipv6-address"/>
+          </leaf>
+          <choice name="instance">
+            <description>
+              <text>Instance.</text>
+            </description>
+            <mandatory value="true"/>
+            <case name="vlan">
+              <description>
+                <text>Clear all groups of the specific VLAN instance.</text>
+              </description>
+              <leaf name="vlan-id">
+                <description>
+                  <text>VLAN ID.</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+              </leaf>
+            </case>
+          </choice>
+        </container>
+        <container name="groups">
+          <description>
+            <text>Clear all groups of the specific instance.</text>
+          </description>
+          <choice name="type">
+            <description>
+              <text>Clear all groups of the specific instance.</text>
+            </description>
+            <case name="vlan">
+              <description>
+                <text>Clear all groups of the specific VLAN instance.</text>
+              </description>
+              <leaf name="vlan-id">
+                <description>
+                  <text>VLAN ID.</text>
+                </description>
+                <type name="uint16">
+                  <range value="1..4094"/>
+                </type>
+              </leaf>
+            </case>
+            <case name="all">
+              <description>
+                <text>Clear all groups.</text>
+              </description>
+              <leaf name="all-groups">
+                <description>
+                  <text>All groups.</text>
+                </description>
+                <type name="empty"/>
+              </leaf>
+            </case>
+          </choice>
+        </container>
+      </container>
+    </container>
+  </container>
+</module>

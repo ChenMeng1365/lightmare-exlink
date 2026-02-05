@@ -1,0 +1,1578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="ietf-connectionless-oam"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:cl-oam="urn:ietf:params:xml:ns:yang:ietf-connectionless-oam"
+        xmlns:yangmnt="urn:ietf:params:xml:ns:yang:ietf-yang-schema-mount"
+        xmlns:nd="urn:ietf:params:xml:ns:yang:ietf-network"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types"
+        xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ni="urn:ietf:params:xml:ns:yang:ietf-network-instance"
+        xmlns:rt="urn:ietf:params:xml:ns:yang:ietf-routing-types"
+        xmlns:lime="urn:ietf:params:xml:ns:yang:ietf-lime-time-types">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:ietf:params:xml:ns:yang:ietf-connectionless-oam"/>
+  <prefix value="cl-oam"/>
+  <import module="ietf-yang-schema-mount">
+    <prefix value="yangmnt"/>
+  </import>
+  <import module="ietf-network">
+    <prefix value="nd"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <import module="ietf-interfaces">
+    <prefix value="if"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="ietf-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="ietf-routing-types">
+    <prefix value="rt"/>
+  </import>
+  <import module="ietf-lime-time-types">
+    <prefix value="lime"/>
+  </import>
+  <organization>
+    <text>IETF LIME Working Group</text>
+  </organization>
+  <contact>
+    <text>WG Web:   &lt;https://datatracker.ietf.org/wg/lime&gt;
+WG List:  &lt;mailto:lmap@ietf.org&gt;
+
+Deepak Kumar &lt;dekumar@cisco.com&gt;
+Qin Wu &lt;bill.wu@huawei.com&gt;
+Srihari Raghavan &lt;srihari@cisco.com&gt;
+Michael Wang &lt;wangzitao@huawei.com&gt;
+Reshad Rahman &lt;rrahman@cisco.com&gt;</text>
+  </contact>
+  <description>
+    <text>This YANG module defines the generic configuration,
+data model, and statistics for OAM protocols using
+connectionless communications, described in a
+protocol independent manner.  It is assumed that each
+protocol maps corresponding abstracts to its native
+format.  Each protocol may extend the YANG data model defined
+here to include protocol specific extensions.
+
+Copyright (c) 2019 IETF Trust and the persons identified as
+authors of the code.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, is permitted pursuant to, and subject
+to the license terms contained in, the Simplified BSD License
+set forth in Section 4.c of the IETF Trust's Legal Provisions
+Relating to IETF Documents
+(http://trustee.ietf.org/license-info).
+
+This version of this YANG module is part of RFC 8532; see
+the RFC itself for full legal notices.</text>
+  </description>
+  <revision date="2019-04-16">
+    <description>
+      <text>Base model for Connectionless Operations, Administration,
+and Maintenance (OAM).</text>
+    </description>
+    <reference>
+      <text>RFC 8532: Generic YANG Data Model for the Management of
+Operations, Administration, and Maintenance (OAM) Protocols
+That Use Connectionless Communications</text>
+    </reference>
+  </revision>
+  <feature name="connectionless">
+    <description>
+      <text>This feature indicates that the OAM solution is connectionless.</text>
+    </description>
+  </feature>
+  <feature name="continuity-check">
+    <description>
+      <text>This feature indicates that the server supports
+executing a Continuity Check OAM command and
+returning a response.  Servers that do not advertise
+this feature will not support executing
+Continuity Check commands or the RPC operation model for
+Continuity Check commands.</text>
+    </description>
+  </feature>
+  <feature name="path-discovery">
+    <description>
+      <text>This feature indicates that the server supports
+executing a path discovery OAM command and
+returning a response.  Servers that do not advertise
+this feature will not support executing
+path discovery commands or the RPC operation model for
+path discovery commands.</text>
+    </description>
+  </feature>
+  <feature name="ptp-long-format">
+    <description>
+      <text>This feature indicates that the timestamp is PTP long format.</text>
+    </description>
+  </feature>
+  <feature name="ntp-short-format">
+    <description>
+      <text>This feature indicates that the timestamp is NTP short format.</text>
+    </description>
+  </feature>
+  <feature name="icmp-timestamp">
+    <description>
+      <text>This feature indicates that the timestamp is ICMP timestamp.</text>
+    </description>
+  </feature>
+  <identity name="traffic-type">
+    <description>
+      <text>This is the base identity of the traffic type,
+which includes IPv4, IPv6, etc.</text>
+    </description>
+  </identity>
+  <identity name="ipv4">
+    <base name="traffic-type"/>
+    <description>
+      <text>identity for IPv4 traffic type.</text>
+    </description>
+  </identity>
+  <identity name="ipv6">
+    <base name="traffic-type"/>
+    <description>
+      <text>identity for IPv6 traffic type.</text>
+    </description>
+  </identity>
+  <identity name="address-attribute-types">
+    <description>
+      <text>This is the base identity of the address attribute types, which
+are Generic IPv4/IPv6 Prefix, BGP Labeled IPv4/IPv6 Prefix,
+Tunnel ID, PW ID, VPLS VE ID, etc. (See RFC 8029 for details.)</text>
+    </description>
+  </identity>
+  <typedef name="address-attribute-type">
+    <type name="identityref">
+      <base name="address-attribute-types"/>
+    </type>
+    <description>
+      <text>Target address attribute type.</text>
+    </description>
+  </typedef>
+  <typedef name="percentage">
+    <type name="decimal64">
+      <fraction-digits value="5"/>
+      <range value="0..100"/>
+    </type>
+    <description>
+      <text>Percentage.</text>
+    </description>
+  </typedef>
+  <typedef name="routing-instance-ref">
+    <type name="leafref">
+      <path value="/ni:network-instances/ni:network-instance/ni:name"/>
+    </type>
+    <description>
+      <text>This type is used for leafs that reference a routing instance
+configuration.</text>
+    </description>
+  </typedef>
+  <grouping name="cc-session-statistics">
+    <description>
+      <text>Grouping for session statistics.</text>
+    </description>
+    <container name="cc-session-statistics">
+      <description>
+        <text>CC session counters.</text>
+      </description>
+      <leaf name="session-count">
+        <type name="uint32"/>
+        <default value="0"/>
+        <description>
+          <text>Number of Continuity Check sessions.
+A value of zero indicates that no session
+count is sent.</text>
+        </description>
+      </leaf>
+      <leaf name="session-up-count">
+        <type name="uint32"/>
+        <default value="0"/>
+        <description>
+          <text>Number of sessions that are up.
+A value of zero indicates that no up
+session count is sent.</text>
+        </description>
+      </leaf>
+      <leaf name="session-down-count">
+        <type name="uint32"/>
+        <default value="0"/>
+        <description>
+          <text>Number of sessions that are down.
+A value of zero indicates that no down
+session count is sent.</text>
+        </description>
+      </leaf>
+      <leaf name="session-admin-down-count">
+        <type name="uint32"/>
+        <default value="0"/>
+        <description>
+          <text>Number of sessions that are admin-down.
+A value of zero indicates that no admin-
+down session count is sent.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="session-packet-statistics">
+    <description>
+      <text>Grouping for statistics per session packet.</text>
+    </description>
+    <container name="session-packet-statistics">
+      <description>
+        <text>Statistics per session packet.</text>
+      </description>
+      <leaf name="rx-packet-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total count of received OAM packets.
+
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="tx-packet-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total count of transmitted OAM packets.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="rx-bad-packet">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total number of received bad OAM packets.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="tx-packet-failed">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total number of OAM packets that failed when sent.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="cc-per-session-statistics">
+    <description>
+      <text>Grouping for per-session statistics.</text>
+    </description>
+    <container name="cc-per-session-statistics">
+      <description>
+        <text>Per-session statistics.</text>
+      </description>
+      <leaf name="create-time">
+        <type name="yang:date-and-time"/>
+        <description>
+          <text>Time and date when session is created.</text>
+        </description>
+      </leaf>
+      <leaf name="last-down-time">
+        <type name="yang:date-and-time"/>
+        <description>
+          <text>Time and date of the last time session was down.</text>
+        </description>
+      </leaf>
+      <leaf name="last-up-time">
+        <type name="yang:date-and-time"/>
+        <description>
+          <text>Time and date of the last time session was up.</text>
+        </description>
+      </leaf>
+      <leaf name="down-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total count of Continuity Check sessions down.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="admin-down-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total count of Continuity Check sessions admin down.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <uses name="session-packet-statistics"/>
+    </container>
+  </grouping>
+  <grouping name="session-error-statistics">
+    <description>
+      <text>Grouping for per-session error statistics.</text>
+    </description>
+    <container name="session-error-statistics">
+      <description>
+        <text>Per-session error statistics.</text>
+      </description>
+      <leaf name="packet-loss-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total count of received packet drops.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="loss-ratio">
+        <type name="percentage"/>
+        <description>
+          <text>Loss ratio of the packets.  Expressed as percentage
+of packets lost with respect to packets sent.</text>
+        </description>
+      </leaf>
+      <leaf name="packet-reorder-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>Total count of received packets that were reordered.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="packets-out-of-seq-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <description>
+          <text>Total count of packets received out of sequence.
+The value of count will be set to zero (0)
+
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="packets-dup-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <description>
+          <text>Total count of received packet duplicates.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="session-delay-statistics">
+    <description>
+      <text>Grouping for delay statistics per session.</text>
+    </description>
+    <container name="session-delay-statistics">
+      <description>
+        <text>Session delay summarized information.  By default, a
+one-way measurement protocol (e.g., OWAMP) is used
+to measure delay.  When a two-way measurement protocol
+(e.g., TWAMP) is used instead, it can be indicated
+using the protocol-id defined in RPC operation of
+retrieval methods for connectionless OAM (RFC 8533),
+i.e., set protocol-id as OWAMP.  Note that only one
+measurement protocol for delay is specified for
+interoperability reasons.</text>
+      </description>
+      <leaf name="time-unit-value">
+        <type name="identityref">
+          <base name="lime:time-unit-type"/>
+        </type>
+        <default value="lime:milliseconds"/>
+        <description>
+          <text>Time units, where the options are s, ms, ns, etc.</text>
+        </description>
+      </leaf>
+      <leaf name="min-delay-value">
+        <type name="uint32"/>
+        <description>
+          <text>Minimum delay value observed.</text>
+        </description>
+      </leaf>
+      <leaf name="max-delay-value">
+        <type name="uint32"/>
+        <description>
+          <text>Maximum delay value observed.</text>
+        </description>
+      </leaf>
+      <leaf name="average-delay-value">
+        <type name="uint32"/>
+        <description>
+          <text>Average delay value observed.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="session-jitter-statistics">
+    <description>
+      <text>Grouping for per session jitter statistics.</text>
+    </description>
+    <container name="session-jitter-statistics">
+      <description>
+        <text>Summarized information about session jitter.  By default,
+jitter is measured using IP Packet Delay Variation
+(IPDV) as defined in RFC 3393.  When the other measurement
+method is used instead (e.g., Packet Delay Variation used
+in ITU-T Recommendation Y.1540, it can be indicated using
+protocol-id-meta-data defined in RPC operation of
+retrieval methods for connectionless OAM (RFC 8533).
+Note that only one measurement method for jitter is
+specified for interoperability reasons.</text>
+      </description>
+      <leaf name="unit-value">
+        <type name="identityref">
+          <base name="lime:time-unit-type"/>
+        </type>
+        <default value="lime:milliseconds"/>
+        <description>
+          <text>Time units, where the options are s, ms, ns, etc.</text>
+        </description>
+      </leaf>
+      <leaf name="min-jitter-value">
+        <type name="uint32"/>
+        <description>
+          <text>Minimum jitter value observed.</text>
+        </description>
+      </leaf>
+      <leaf name="max-jitter-value">
+        <type name="uint32"/>
+        <description>
+          <text>Maximum jitter value observed.</text>
+        </description>
+      </leaf>
+      <leaf name="average-jitter-value">
+        <type name="uint32"/>
+        <description>
+          <text>Average jitter value observed.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="session-path-verification-statistics">
+    <description>
+      <text>Grouping for path verification statistics per session.</text>
+    </description>
+    <container name="session-path-verification-statistics">
+      <description>
+        <text>OAM path verification statistics per session.</text>
+      </description>
+      <leaf name="verified-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <description>
+          <text>Total number of OAM packets that
+went through a path as intended.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+      <leaf name="failed-count">
+        <type name="uint32">
+          <range value="0..4294967295"/>
+        </type>
+        <description>
+          <text>Total number of OAM packets that
+went through an unintended path.
+The value of count will be set to zero (0)
+on creation and will thereafter increase
+monotonically until it reaches a maximum value
+of 2^32-1 (4294967295 decimal), when it wraps
+around and starts increasing again from zero.</text>
+        </description>
+      </leaf>
+    </container>
+  </grouping>
+  <grouping name="session-type">
+    <description>
+      <text>This object indicates which kind of activation will
+be used by the current session.</text>
+    </description>
+    <leaf name="session-type">
+      <type name="enumeration">
+        <enum name="proactive">
+          <description>
+            <text>The current session is a proactive session.</text>
+          </description>
+        </enum>
+        <enum name="on-demand">
+          <description>
+            <text>The current session is an on-demand session.</text>
+          </description>
+        </enum>
+      </type>
+      <default value="on-demand"/>
+      <description>
+        <text>Indicate which kind of activation will be used
+by the current session.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <identity name="tp-address-technology-type">
+    <description>
+      <text>Test point address type.</text>
+    </description>
+  </identity>
+  <identity name="mac-address-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>MAC address type.</text>
+    </description>
+  </identity>
+  <identity name="ipv4-address-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>IPv4 address type.</text>
+    </description>
+  </identity>
+  <identity name="ipv6-address-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>IPv6 address type.</text>
+    </description>
+  </identity>
+  <identity name="tp-attribute-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>Test point attribute type.</text>
+    </description>
+  </identity>
+  <identity name="router-id-address-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>System ID address type.</text>
+    </description>
+  </identity>
+  <identity name="as-number-address-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>AS number address type.</text>
+    </description>
+  </identity>
+  <identity name="route-distinguisher-address-type">
+    <base name="tp-address-technology-type"/>
+    <description>
+      <text>Route Distinguisher address type.</text>
+    </description>
+  </identity>
+  <grouping name="tp-address">
+    <leaf name="tp-location-type">
+      <type name="identityref">
+        <base name="tp-address-technology-type"/>
+      </type>
+      <mandatory value="true"/>
+      <description>
+        <text>Test point address type.</text>
+      </description>
+    </leaf>
+    <container name="mac-address">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:mac-address-type')">
+        <description>
+          <text>MAC address type.</text>
+        </description>
+      </when>
+      <leaf name="mac-address">
+        <type name="yang:mac-address"/>
+        <mandatory value="true"/>
+        <description>
+          <text>MAC address.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>MAC address based TP addressing.</text>
+      </description>
+    </container>
+    <container name="ipv4-address">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:ipv4-address-type')">
+        <description>
+          <text>IPv4 address type.</text>
+        </description>
+      </when>
+      <leaf name="ipv4-address">
+        <type name="inet:ipv4-address"/>
+        <mandatory value="true"/>
+        <description>
+          <text>IPv4 address.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>IP address based TP addressing.</text>
+      </description>
+    </container>
+    <container name="ipv6-address">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:ipv6-address-type')">
+        <description>
+          <text>IPv6 address type.</text>
+        </description>
+      </when>
+      <leaf name="ipv6-address">
+        <type name="inet:ipv6-address"/>
+        <mandatory value="true"/>
+        <description>
+          <text>IPv6 address.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>IPv6 address based TP addressing.</text>
+      </description>
+    </container>
+    <container name="tp-attribute">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:tp-attribute-type')">
+        <description>
+          <text>Test point attribute type.</text>
+        </description>
+      </when>
+      <leaf name="tp-attribute-type">
+        <type name="address-attribute-type"/>
+        <description>
+          <text>Test point type.</text>
+        </description>
+      </leaf>
+      <choice name="tp-attribute-value">
+        <description>
+          <text>Test point value.</text>
+        </description>
+        <case name="ip-prefix">
+          <leaf name="ip-prefix">
+            <type name="inet:ip-prefix"/>
+            <description>
+              <text>Generic IPv4/IPv6 prefix.  See Sections 3.2.13 and
+3.2.14 of RFC 8029.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+        </case>
+        <case name="bgp">
+          <leaf name="bgp">
+            <type name="inet:ip-prefix"/>
+            <description>
+              <text>BGP Labeled IPv4/IPv6 Prefix.  See Sections
+
+3.2.11 and 3.2.12 of RFC 8029 for details.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+        </case>
+        <case name="tunnel">
+          <leaf name="tunnel-interface">
+            <type name="uint32"/>
+            <description>
+              <text>Basic IPv4/IPv6 Tunnel ID.  See Sections 3.2.3
+and 3.2.4 of RFC 8029 for details.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures.</text>
+            </reference>
+          </leaf>
+        </case>
+        <case name="pw">
+          <leaf name="remote-pe-address">
+            <type name="inet:ip-address"/>
+            <description>
+              <text>Remote PE address.  See Section 3.2.8
+of RFC 8029 for details.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+          <leaf name="pw-id">
+            <type name="uint32"/>
+            <description>
+              <text>Pseudowire ID is a non-zero 32-bit ID.  See Sections
+3.2.8 and 3.2.9 of RFC 8029 for details.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+        </case>
+        <case name="vpls">
+          <leaf name="route-distinguisher">
+            <type name="rt:route-distinguisher"/>
+            <description>
+              <text>Route Distinguisher is an 8-octet identifier
+used to distinguish information about various
+L2VPNs advertised by a node.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+          <leaf name="sender-ve-id">
+            <type name="uint16"/>
+            <description>
+              <text>Sender's VE ID.  The VE ID (VPLS Edge Identifier)
+is a 2-octet identifier.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+          <leaf name="receiver-ve-id">
+            <type name="uint16"/>
+            <description>
+              <text>Receiver's VE ID.  The VE ID (VPLS Edge Identifier)
+is a 2-octet identifier.</text>
+            </description>
+            <reference>
+              <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+            </reference>
+          </leaf>
+        </case>
+        <case name="mpls-mldp">
+          <choice name="root-address">
+            <description>
+              <text>Root address choice.</text>
+            </description>
+            <case name="ip-address">
+              <leaf name="source-address">
+                <type name="inet:ip-address"/>
+                <description>
+                  <text>IP address.</text>
+                </description>
+              </leaf>
+              <leaf name="group-ip-address">
+                <type name="inet:ip-address"/>
+                <description>
+                  <text>Group IP address.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="vpn">
+              <leaf name="as-number">
+                <type name="inet:as-number"/>
+                <description>
+                  <text>The AS number that identifies an Autonomous
+System.</text>
+                </description>
+              </leaf>
+            </case>
+            <case name="global-id">
+              <leaf name="lsp-id">
+                <type name="string"/>
+                <description>
+                  <text>LSP ID is an identifier of a LSP
+
+within a MPLS network.</text>
+                </description>
+                <reference>
+                  <text>RFC 8029: Detecting Multiprotocol Label
+Switched (MPLS) Data-Plane Failures</text>
+                </reference>
+              </leaf>
+            </case>
+          </choice>
+        </case>
+      </choice>
+      <description>
+        <text>Test Point Attribute Container.</text>
+      </description>
+    </container>
+    <container name="system-info">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:router-id-address-type')">
+        <description>
+          <text>System ID address type.</text>
+        </description>
+      </when>
+      <leaf name="router-id">
+        <type name="rt:router-id"/>
+        <description>
+          <text>Router ID assigned to this node.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Router ID container.</text>
+      </description>
+    </container>
+    <description>
+      <text>TP Address.</text>
+    </description>
+  </grouping>
+  <grouping name="tp-address-ni">
+    <description>
+      <text>Test point address with VRF.</text>
+    </description>
+    <leaf name="ni">
+      <type name="routing-instance-ref"/>
+      <description>
+        <text>The ni is used to describe virtual resource partitioning
+that may be present on a network device.  An example of a
+common industry term for virtual resource partitioning is
+'VRF instance'.</text>
+      </description>
+    </leaf>
+    <uses name="tp-address"/>
+  </grouping>
+  <grouping name="connectionless-oam-tps">
+    <list name="oam-neighboring-tps">
+      <key value="index"/>
+      <leaf name="index">
+        <type name="uint16">
+          <range value="0..65535"/>
+        </type>
+        <description>
+          <text>Index of a list of neighboring test points
+in layers up and down the stack for
+the same interface that are related to the
+current test point.</text>
+        </description>
+      </leaf>
+      <leaf name="position">
+        <type name="int8">
+          <range value="-1..1"/>
+        </type>
+        <default value="0"/>
+        <description>
+          <text>The position of the neighboring test point relative to
+the current test point.  Level 0 indicates a test point
+corresponding to a specific index in the same layer as
+the current test point.  -1 means there is a test point
+corresponding to a specific index in the test point down
+the stack, and +1 means there is a test point corresponding
+to a specific index in the test point up the stack.</text>
+        </description>
+      </leaf>
+      <choice name="tp-location">
+        <case name="mac-address">
+          <leaf name="mac-address-location">
+            <type name="yang:mac-address"/>
+            <description>
+              <text>MAC address.</text>
+            </description>
+          </leaf>
+          <description>
+            <text>MAC address based TP addressing.</text>
+          </description>
+        </case>
+        <case name="ipv4-address">
+          <leaf name="ipv4-address-location">
+            <type name="inet:ipv4-address"/>
+            <description>
+              <text>IPv4 address.</text>
+            </description>
+          </leaf>
+          <description>
+            <text>IP address based TP addressing.</text>
+          </description>
+        </case>
+        <case name="ipv6-address">
+          <leaf name="ipv6-address-location">
+            <type name="inet:ipv6-address"/>
+            <description>
+              <text>IPv6 address.</text>
+            </description>
+          </leaf>
+          <description>
+            <text>IPv6 address based TP addressing.</text>
+          </description>
+        </case>
+        <case name="as-number">
+          <leaf name="as-number-location">
+            <type name="inet:as-number"/>
+            <description>
+              <text>AS number location.</text>
+            </description>
+          </leaf>
+          <description>
+            <text>AS number for point-to-multipoint OAM.</text>
+          </description>
+        </case>
+        <case name="router-id">
+          <leaf name="router-id-location">
+            <type name="rt:router-id"/>
+            <description>
+              <text>System ID location.</text>
+            </description>
+          </leaf>
+          <description>
+            <text>System ID.</text>
+          </description>
+        </case>
+        <description>
+          <text>TP location.</text>
+        </description>
+      </choice>
+      <description>
+        <text>List of neighboring test points in the same layer that are
+related to current test point.  If the neighboring test point
+is placed after the current test point, the position is
+specified as +1.  If the neighboring test point is placed
+before the current test point, the position is specified
+as -1; if no neighboring test points are placed before or
+after the current test point in the same layer, the
+position is specified as 0.</text>
+      </description>
+    </list>
+    <description>
+      <text>List of neighboring test points related to connectionless OAM.</text>
+    </description>
+  </grouping>
+  <grouping name="tp-technology">
+    <choice name="technology">
+      <default value="technology-null"/>
+      <case name="technology-null">
+        <description>
+          <text>This is a placeholder when no technology is needed.</text>
+        </description>
+        <leaf name="tech-null">
+          <type name="empty"/>
+          <description>
+            <text>There is no technology to be defined.</text>
+          </description>
+        </leaf>
+      </case>
+      <description>
+        <text>Technology choice.</text>
+      </description>
+    </choice>
+    <description>
+      <text>OAM technology.</text>
+    </description>
+  </grouping>
+  <grouping name="tp-tools">
+    <description>
+      <text>Test point OAM toolset.</text>
+    </description>
+    <container name="tp-tools">
+      <leaf name="continuity-check">
+        <type name="boolean"/>
+        <mandatory value="true"/>
+        <description>
+          <text>A flag indicating whether or not the
+Continuity Check function is supported.</text>
+        </description>
+        <reference>
+          <text>RFC 792: INTERNET CONTROL MESSAGE PROTOCOL
+RFC 4443: Internet Control Message Protocol (ICMPv6)
+    for the Internet Protocol Version 6 (IPv6) Specification
+RFC 5880: Bidirectional Forwarding Detection
+RFC 5881: BFD for IPv4 and IPv6
+RFC 5883: BFD for Multihop Paths
+RFC 5884: BFD for MPLS Label Switched Paths
+RFC 5885: BFD for PW VCCV
+RFC 6450: Multicast Ping Protocol
+RFC 8029: Detecting Multiprotocol Label Switched (MPLS)
+    Data-Plane Failures</text>
+        </reference>
+      </leaf>
+      <leaf name="path-discovery">
+        <type name="boolean"/>
+        <mandatory value="true"/>
+        <description>
+          <text>A flag indicating whether or not the
+path discovery function is supported.</text>
+        </description>
+        <reference>
+          <text>RFC 792: INTERNET CONTROL MESSAGE PROTOCOL
+RFC 4443: Internet Control Message Protocol (ICMPv6)
+    for the Internet Protocol Version 6 (IPv6) Specification
+RFC 4884: Extended ICMP to Support Multi-Part Messages
+RFC 5837: Extending ICMP for Interface and Next-Hop
+    Identification
+RFC 8029: Detecting Multiprotocol Label Switched (MPLS)
+    Data-Plane Failures</text>
+        </reference>
+      </leaf>
+      <description>
+        <text>Container for test point OAM toolset.</text>
+      </description>
+    </container>
+  </grouping>
+  <grouping name="test-point-location-info">
+    <uses name="tp-technology"/>
+    <uses name="tp-tools"/>
+    <container name="root">
+      <yangmnt:mount-point label="root"/>
+      <description>
+        <text>Root for models supported per test point.</text>
+      </description>
+    </container>
+    <uses name="connectionless-oam-tps"/>
+    <description>
+      <text>Test point location.</text>
+    </description>
+  </grouping>
+  <grouping name="test-point-locations">
+    <description>
+      <text>Group of test point locations.</text>
+    </description>
+    <leaf name="tp-location-type">
+      <type name="identityref">
+        <base name="tp-address-technology-type"/>
+      </type>
+      <description>
+        <text>Test point location type.</text>
+      </description>
+    </leaf>
+    <container name="ipv4-location-type">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:ipv4-address-type')">
+        <description>
+          <text>When test point location type is equal to IPv4 address.</text>
+        </description>
+      </when>
+      <container name="test-point-ipv4-location-list">
+        <list name="test-point-locations">
+          <key value="ipv4-location ni"/>
+          <leaf name="ipv4-location">
+            <type name="inet:ipv4-address"/>
+            <description>
+              <text>IPv4 address.</text>
+            </description>
+          </leaf>
+          <leaf name="ni">
+            <type name="routing-instance-ref"/>
+            <description>
+              <text>The ni is used to describe the
+corresponding network instance</text>
+            </description>
+          </leaf>
+          <uses name="test-point-location-info"/>
+          <description>
+            <text>List of test point locations.</text>
+          </description>
+        </list>
+        <description>
+          <text>Serves as top-level container
+for test point location list.</text>
+        </description>
+      </container>
+      <description>
+        <text>Container for IPv4 location types.</text>
+      </description>
+    </container>
+    <container name="ipv6-location-type">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:ipv6-address-type')">
+        <description>
+          <text>When test point location is equal to IPv6 address.</text>
+        </description>
+      </when>
+      <container name="test-point-ipv6-location-list">
+        <list name="test-point-locations">
+          <key value="ipv6-location ni"/>
+          <leaf name="ipv6-location">
+            <type name="inet:ipv6-address"/>
+            <description>
+              <text>IPv6 address.</text>
+            </description>
+          </leaf>
+          <leaf name="ni">
+            <type name="routing-instance-ref"/>
+            <description>
+              <text>The ni is used to describe the
+corresponding network instance.</text>
+            </description>
+          </leaf>
+          <uses name="test-point-location-info"/>
+          <description>
+            <text>List of test point locations.</text>
+          </description>
+        </list>
+        <description>
+          <text>Serves as top-level container
+for test point location list.</text>
+        </description>
+      </container>
+      <description>
+        <text>ipv6 location type container.</text>
+      </description>
+    </container>
+    <container name="mac-location-type">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:mac-address-type')">
+        <description>
+          <text>When test point location type is equal to MAC address.</text>
+        </description>
+      </when>
+      <container name="test-point-mac-address-location-list">
+        <list name="test-point-locations">
+          <key value="mac-address-location"/>
+          <leaf name="mac-address-location">
+            <type name="yang:mac-address"/>
+            <description>
+              <text>MAC address.</text>
+            </description>
+          </leaf>
+          <uses name="test-point-location-info"/>
+          <description>
+            <text>List of test point locations.</text>
+          </description>
+        </list>
+        <description>
+          <text>Serves as top-level container
+for test point location list.</text>
+        </description>
+      </container>
+      <description>
+        <text>Container for MAC address location types.</text>
+      </description>
+    </container>
+    <container name="group-as-number-location-type">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:as-number-address-type')">
+        <description>
+          <text>When test point location type is equal to AS number.</text>
+        </description>
+      </when>
+      <container name="test-point-as-number-location-list">
+        <list name="test-point-locations">
+          <key value="as-number-location"/>
+          <leaf name="as-number-location">
+            <type name="inet:as-number"/>
+            <description>
+              <text>AS number for point-to-multipoint OAM.</text>
+            </description>
+          </leaf>
+          <leaf name="ni">
+            <type name="routing-instance-ref"/>
+            <description>
+              <text>The ni is used to describe the
+corresponding network instance.</text>
+            </description>
+          </leaf>
+          <uses name="test-point-location-info"/>
+          <description>
+            <text>List of test point locations.</text>
+          </description>
+        </list>
+        <description>
+          <text>Serves as top-level container
+for test point location list.</text>
+        </description>
+      </container>
+      <description>
+        <text>Container for AS number location types.</text>
+      </description>
+    </container>
+    <container name="group-router-id-location-type">
+      <when condition="derived-from-or-self(../tp-location-type,'cl-oam:router-id-address-type')">
+        <description>
+          <text>When test point location type is equal to system-info.</text>
+        </description>
+      </when>
+      <container name="test-point-system-info-location-list">
+        <list name="test-point-locations">
+          <key value="router-id-location"/>
+          <leaf name="router-id-location">
+            <type name="rt:router-id"/>
+            <description>
+              <text>System ID.</text>
+            </description>
+          </leaf>
+          <leaf name="ni">
+            <type name="routing-instance-ref"/>
+            <description>
+              <text>The ni is used to describe the
+corresponding network instance.</text>
+            </description>
+          </leaf>
+          <uses name="test-point-location-info"/>
+          <description>
+            <text>List of test point locations.</text>
+          </description>
+        </list>
+        <description>
+          <text>Serves as top-level container for
+test point location list.</text>
+        </description>
+      </container>
+      <description>
+        <text>Container for system ID location types.</text>
+      </description>
+    </container>
+  </grouping>
+  <augment target-node="/nd:networks/nd:network/nd:node">
+    <description>
+      <text>Augments the /networks/network/node path defined in the
+ietf-network module (RFC 8345) with test-point-locations
+grouping.</text>
+    </description>
+    <uses name="test-point-locations"/>
+  </augment>
+  <grouping name="timestamp">
+    <description>
+      <text>Grouping for timestamp.</text>
+    </description>
+    <leaf name="timestamp-type">
+      <type name="identityref">
+        <base name="lime:timestamp-type"/>
+      </type>
+      <description>
+        <text>Type of timestamp, such as Truncated PTP or NTP.</text>
+      </description>
+    </leaf>
+    <container name="timestamp-64bit">
+      <when condition="derived-from-or-self(../timestamp-type,'lime:truncated-ptp')or derived-from-or-self(../timestamp-type,'lime:ntp64')">
+        <description>
+          <text>Only applies when PTP truncated or 64-bit NTP timestamp.</text>
+        </description>
+      </when>
+      <leaf name="timestamp-sec">
+        <type name="uint32"/>
+        <description>
+          <text>Absolute timestamp in seconds as per IEEE 1588v2
+or seconds part in 64-bit NTP timestamp.</text>
+        </description>
+      </leaf>
+      <leaf name="timestamp-nanosec">
+        <type name="uint32"/>
+        <description>
+          <text>Fractional part in nanoseconds as per IEEE 1588v2
+or fractional part in 64-bit NTP timestamp.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Container for 64-bit timestamp.  The Network Time Protocol
+(NTP) 64-bit timestamp format is defined in RFC 5905.  The
+PTP truncated timestamp format is defined in IEEE 1588v1.</text>
+      </description>
+      <reference>
+        <text>RFC 5905: Network Time Protocol Version 4: Protocol and
+    Algorithms Specification
+IEEE 1588v1: IEEE Standard for a Precision Clock
+    Synchronization Protocol for Networked Measurement and
+    Control Systems Version 1</text>
+      </reference>
+    </container>
+    <container name="timestamp-80bit">
+      <when condition="derived-from-or-self(../timestamp-type, 'lime:ptp80')">
+        <description>
+          <text>Only applies when 80-bit PTP timestamp.</text>
+        </description>
+      </when>
+      <if-feature name="ptp-long-format"/>
+      <leaf name="timestamp-sec">
+        <type name="uint64">
+          <range value="0..281474976710655"/>
+        </type>
+        <description>
+          <text>48-bit timestamp in seconds as per IEEE 1588v2.</text>
+        </description>
+      </leaf>
+      <leaf name="timestamp-nanosec">
+        <type name="uint32"/>
+        <description>
+          <text>Fractional part in nanoseconds as per IEEE 1588v2.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Container for 80-bit timestamp.</text>
+      </description>
+    </container>
+    <container name="ntp-timestamp-32bit">
+      <when condition="derived-from-or-self(../timestamp-type,'lime:truncated-ntp')">
+        <description>
+          <text>Only applies when 32-bit NTP short-format timestamp.</text>
+        </description>
+      </when>
+      <if-feature name="ntp-short-format"/>
+      <leaf name="timestamp-sec">
+        <type name="uint16"/>
+        <description>
+          <text>Timestamp in seconds as per short-format NTP.</text>
+        </description>
+      </leaf>
+      <leaf name="timestamp-nanosec">
+        <type name="uint16"/>
+        <description>
+          <text>Truncated fractional part in 16-bit NTP timestamp.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Container for 32-bit timestamp RFC5905.</text>
+      </description>
+      <reference>
+        <text>RFC 5905: Network Time Protocol Version 4: Protocol and
+Algorithms Specification.</text>
+      </reference>
+    </container>
+    <container name="icmp-timestamp-32bit">
+      <when condition="derived-from-or-self(../timestamp-type, 'lime:icmp')">
+        <description>
+          <text>Only applies when ICMP timestamp.</text>
+        </description>
+      </when>
+      <if-feature name="icmp-timestamp"/>
+      <leaf name="timestamp-millisec">
+        <type name="uint32"/>
+        <description>
+          <text>Timestamp in milliseconds for ICMP timestamp.</text>
+        </description>
+      </leaf>
+      <description>
+        <text>Container for 32-bit timestamp.  See RFC 792 for ICMP
+timestamp format.</text>
+      </description>
+    </container>
+  </grouping>
+  <grouping name="path-discovery-data">
+    <description>
+      <text>Data output from nodes related to path discovery.</text>
+    </description>
+    <container name="src-test-point">
+      <description>
+        <text>Source test point.</text>
+      </description>
+      <uses name="tp-address-ni"/>
+    </container>
+    <container name="dest-test-point">
+      <description>
+        <text>Destination test point.</text>
+      </description>
+      <uses name="tp-address-ni"/>
+    </container>
+    <leaf name="sequence-number">
+      <type name="uint64"/>
+      <default value="0"/>
+      <description>
+        <text>Sequence number in data packets.  A value of
+zero indicates that no sequence number is sent.</text>
+      </description>
+    </leaf>
+    <leaf name="hop-cnt">
+      <type name="uint8"/>
+      <default value="0"/>
+      <description>
+        <text>Hop count.  A value of zero indicates
+that no hop count is sent.</text>
+      </description>
+    </leaf>
+    <uses name="session-packet-statistics"/>
+    <uses name="session-error-statistics"/>
+    <uses name="session-delay-statistics"/>
+    <uses name="session-jitter-statistics"/>
+    <container name="path-verification">
+      <description>
+        <text>Optional information related to path verification.</text>
+      </description>
+      <leaf name="flow-info">
+        <type name="string"/>
+        <description>
+          <text>Information that refers to the flow.</text>
+        </description>
+      </leaf>
+      <uses name="session-path-verification-statistics"/>
+    </container>
+    <container name="path-trace-info">
+      <description>
+        <text>Optional per-hop path trace information about test points.
+The path trace information list typically has a single
+element for per-hop cases such as path-discovery RPC operation
+but allows a list of hop-related information for other types of
+data retrieval methods.</text>
+      </description>
+      <list name="path-trace-info-list">
+        <key value="index"/>
+        <description>
+          <text>Path trace information list.</text>
+        </description>
+        <leaf name="index">
+          <type name="uint32"/>
+          <description>
+            <text>Trace information index.</text>
+          </description>
+        </leaf>
+        <uses name="tp-address-ni"/>
+        <uses name="timestamp"/>
+        <leaf name="ingress-intf-name">
+          <type name="if:interface-ref"/>
+          <description>
+            <text>Ingress interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="egress-intf-name">
+          <type name="if:interface-ref"/>
+          <description>
+            <text>Egress interface name.</text>
+          </description>
+        </leaf>
+        <leaf name="queue-depth">
+          <type name="uint32"/>
+          <description>
+            <text>Length of the queue of the interface from where
+the packet is forwarded out.  The queue depth could
+be the current number of memory buffers used by the
+queue, and a packet can consume one or more memory buffers,
+thus constituting device-level information.</text>
+          </description>
+        </leaf>
+        <leaf name="transit-delay">
+          <type name="uint32"/>
+          <description>
+            <text>Time in nanoseconds that the packet spent transiting a
+node.</text>
+          </description>
+        </leaf>
+        <leaf name="app-meta-data">
+          <type name="uint64"/>
+          <description>
+            <text>Application-specific data added by node.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="continuity-check-data">
+    <description>
+      <text>Continuity Check data output from nodes.</text>
+    </description>
+    <container name="src-test-point">
+      <description>
+        <text>Source test point.</text>
+      </description>
+      <uses name="tp-address-ni"/>
+      <leaf name="egress-intf-name">
+        <type name="if:interface-ref"/>
+        <description>
+          <text>Egress interface name.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="dest-test-point">
+      <description>
+        <text>Destination test point.</text>
+      </description>
+      <uses name="tp-address-ni"/>
+      <leaf name="ingress-intf-name">
+        <type name="if:interface-ref"/>
+        <description>
+          <text>Ingress interface name.</text>
+        </description>
+      </leaf>
+    </container>
+    <leaf name="sequence-number">
+      <type name="uint64"/>
+      <default value="0"/>
+      <description>
+        <text>Sequence number in data packets.  A value of
+zero indicates that no sequence number is sent.</text>
+      </description>
+    </leaf>
+    <leaf name="hop-cnt">
+      <type name="uint8"/>
+      <default value="0"/>
+      <description>
+        <text>Hop count.  A value of zero indicates
+that no hop count is sent.</text>
+      </description>
+    </leaf>
+    <uses name="session-packet-statistics"/>
+    <uses name="session-error-statistics"/>
+    <uses name="session-delay-statistics"/>
+    <uses name="session-jitter-statistics"/>
+  </grouping>
+  <container name="cc-session-statistics-data">
+    <if-feature name="continuity-check"/>
+    <config value="false"/>
+    <list name="cc-session-statistics">
+      <key value="type"/>
+      <leaf name="type">
+        <type name="identityref">
+          <base name="traffic-type"/>
+        </type>
+        <description>
+          <text>Type of traffic.</text>
+        </description>
+      </leaf>
+      <container name="cc-ipv4-sessions-statistics">
+        <when condition="../type = 'cl-oam:ipv4'">
+          <description>
+            <text>Only applies when traffic type is IPv4.</text>
+          </description>
+        </when>
+        <description>
+          <text>CC ipv4 sessions.</text>
+        </description>
+        <uses name="cc-session-statistics"/>
+      </container>
+      <container name="cc-ipv6-sessions-statistics">
+        <when condition="../type = 'cl-oam:ipv6'">
+          <description>
+            <text>Only applies when traffic type is IPv6.</text>
+          </description>
+        </when>
+        <description>
+          <text>CC IPv6 sessions.</text>
+        </description>
+        <uses name="cc-session-statistics"/>
+      </container>
+      <description>
+        <text>List of CC session statistics data.</text>
+      </description>
+    </list>
+    <description>
+      <text>CC operational information.</text>
+    </description>
+  </container>
+</module>

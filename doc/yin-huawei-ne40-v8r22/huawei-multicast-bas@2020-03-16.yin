@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-multicast-bas"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:mcbas="urn:huawei:yang:huawei-multicast-bas"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:bras-basic-access="urn:huawei:yang:huawei-bras-basic-access"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-multicast-bas"/>
+  <prefix value="mcbas"/>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-bras-basic-access">
+    <prefix value="bras-basic-access"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Multicast for BRAS access.</text>
+  </description>
+  <revision date="2020-03-16">
+    <description>
+      <text>Modify addr-family-type enumeration name.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-03-30">
+    <description>
+      <text>Init revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="mcast-base"/>
+  <typedef name="addr-family-type">
+    <type name="enumeration">
+      <enum name="ipv4-unicast">
+        <value value="1"/>
+        <description>
+          <text>IPv4 unicast.</text>
+        </description>
+      </enum>
+      <enum name="ipv6-unicast">
+        <value value="2"/>
+        <description>
+          <text>IPv6 unicast.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Address family.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <description>
+      <text>Add multicast BAS configuration to the ifm module.</text>
+    </description>
+    <container name="multicast-bas">
+      <must condition="(./mcbas:user-aggregation-pevlan and ./mcbas:user-aggregation-cevlan) or (not(./mcbas:user-aggregation-pevlan) and not(./mcbas:user-aggregation-cevlan))"/>
+      <description>
+        <text>Configure multicast BAS.</text>
+      </description>
+      <choice name="vlan-type">
+        <description>
+          <text>Specify the VLAN-type of multicast BAS user-aggregation.</text>
+        </description>
+        <case name="qinq">
+          <description>
+            <text>QinQ type.</text>
+          </description>
+          <leaf name="user-aggregation-pevlan">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>QINQ PE ID in an outer VLAN tag.</text>
+            </description>
+          </leaf>
+          <leaf name="user-aggregation-cevlan">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>QINQ CE ID in an inner VLAN tag.</text>
+            </description>
+          </leaf>
+        </case>
+        <case name="vlan">
+          <description>
+            <text>VLAN type.</text>
+          </description>
+          <leaf name="user-aggregation-vlan">
+            <type name="uint32">
+              <range value="1..4094"/>
+            </type>
+            <description>
+              <text>VLAN ID in an outer VLAN tag.</text>
+            </description>
+          </leaf>
+        </case>
+      </choice>
+      <leaf name="copy-by-session-enable">
+        <when condition="../../bras-basic-access:bas/bras-basic-access:layer2-subscriber or ../../bras-basic-access:bas/bras-basic-access:layer2-leaseline or ../../bras-basic-access:bas/bras-basic-access:layer3-subscriber or ../../bras-basic-access:bas/bras-basic-access:layer3-leaseline or ../../bras-basic-access:bas/bras-basic-access:l2vpn-leaseline"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable multicast copy by-session.</text>
+        </description>
+      </leaf>
+      <leaf name="copy-by-vlan-enable">
+        <when condition="../../bras-basic-access:bas/bras-basic-access:layer2-subscriber or ../../bras-basic-access:bas/bras-basic-access:layer2-leaseline or ../../bras-basic-access:bas/bras-basic-access:layer3-subscriber or ../../bras-basic-access:bas/bras-basic-access:layer3-leaseline or ../../bras-basic-access:bas/bras-basic-access:l2vpn-leaseline"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable multicast copy by-VLAN.</text>
+        </description>
+      </leaf>
+      <leaf name="authorization-enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable authorization.</text>
+        </description>
+      </leaf>
+      <leaf name="igmp-query-auto-send-enable">
+        <when condition="../../bras-basic-access:bas/bras-basic-access:layer2-subscriber or ../../bras-basic-access:bas/bras-basic-access:layer2-leaseline or ../../bras-basic-access:bas/bras-basic-access:layer3-subscriber or ../../bras-basic-access:bas/bras-basic-access:layer3-leaseline or ../../bras-basic-access:bas/bras-basic-access:l2vpn-leaseline"/>
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable IGMP to send query message automatically.</text>
+        </description>
+      </leaf>
+      <container name="binding-vpn-instances">
+        <description>
+          <text>List of multicast binding vpn-instance configurations.</text>
+        </description>
+        <list name="binding-vpn-instance">
+          <key value="name address-family"/>
+          <description>
+            <text>Configure multicast binding vpn-instance.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/ni:network-instance/ni:instances/ni:instance/ni:name"/>
+            </type>
+            <must condition="../name!='_public_'"/>
+            <description>
+              <text>VPN instance.</text>
+            </description>
+          </leaf>
+          <leaf name="address-family">
+            <type name="addr-family-type"/>
+            <must condition="../address-family='ipv4-unicast' or ../../../../ifm:type='Virtual-Template'"/>
+            <must condition="/ni:network-instance/ni:instances/ni:instance[ni:name = current()/../name]/l3vpn:afs/l3vpn:af[l3vpn:type=current()]"/>
+            <description>
+              <text>Address family, which determines whether an address belongs to IPv4 or IPv6.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

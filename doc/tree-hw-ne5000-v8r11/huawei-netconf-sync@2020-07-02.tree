@@ -1,0 +1,72 @@
+module: huawei-netconf-sync
+  +--ro synchronization
+     +--ro query-statuss
+     |  +--ro query-status* [sync-full-id]
+     |     +--ro sync-full-id           uint32
+     |     +--ro app-num?               uint32
+     |     +--ro status?                synchronization-status
+     |     +--ro progress?              percent
+     |     +--ro in-progress-app?       string
+     |     +--ro in-progress-vs-name?   string
+     |     +--ro in-progress-vs-id?     uint32
+     |     +--ro success-apps
+     |     |  +--ro success-app* [app-name vs-name]
+     |     |     +--ro app-name    string
+     |     |     +--ro vs-name     string
+     |     |     +--ro vs-id?      uint32
+     |     +--ro failed-apps
+     |        +--ro failed-app* [app-name vs-name]
+     |           +--ro app-name         string
+     |           +--ro vs-name          string
+     |           +--ro vs-id?           uint32
+     |           +--ro error-message?   string
+     +--ro file-transfer-statuss
+        +--ro file-transfer-status* [sync-full-id]
+           +--ro sync-full-id     uint32
+           +--ro status?          synchronization-status
+           +--ro progress?        percent
+           +--ro error-message?   string
+
+  rpcs:
+    +---x sync-full
+    |  +---w input
+    |  |  +---w target
+    |  |  |  +---w user-name            string
+    |  |  |  +---w password             pub-type:password
+    |  |  |  +---w target-addr          inet:ip-address
+    |  |  |  +---w path?                string
+    |  |  |  +---w port-number?         inet:port-number
+    |  |  |  +---w vpn-instance-name?   string
+    |  |  +---w transfer-protocol?         sync-file-transfer-protocol
+    |  |  +---w transfer-method?           sync-file-transfer-method
+    |  |  +---w file-save-time?            uint32
+    |  |  +---w secure-transfer-options
+    |  |  |  +---w prefer-kex?              sync-sftp-key-ex-alg
+    |  |  |  +---w prefer-stoc-cipher?      sync-sftp-cipher-alg
+    |  |  |  +---w prefer-ctos-cipher?      sync-sftp-cipher-alg
+    |  |  |  +---w prefer-stoc-hmac?        sync-sftp-hmac-alg
+    |  |  |  +---w prefer-ctos-hmac?        sync-sftp-hmac-alg
+    |  |  |  +---w compression-type-ctos?   sync-sftp-compress-alg
+    |  |  |  +---w compression-type-stoc?   sync-sftp-compress-alg
+    |  |  |  +---w force-receive-pubkey?    sync-force-pubkey
+    |  |  +---w filename-prefix            string
+    |  |  +---w app-err-operation?         sync-error-option
+    |  |  +---w filter?                    <anyxml>
+    |  +--ro output
+    |     +--ro sync-full-id?   uint32
+    +---x upload-sync-file
+    |  +---w input
+    |     +---w sync-full-id        uint32
+    |     +---w result-save-time?   uint32
+    +---x cancel-synchronization
+    |  +---w input
+    |     +---w sync-full-id    uint32
+    +---x sync-increment
+       +---w input
+       |  +---w target
+       |  |  +---w flow-id    uint32
+       |  +---w source
+       |  |  +---w flow-id    uint32
+       |  +---w filter?   <anyxml>
+       +--ro output
+          +--ro data?   <anyxml>

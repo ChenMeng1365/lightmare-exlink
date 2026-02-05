@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-telemetry"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-telemetry="http://openconfig.net/yang/telemetry"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext"
+        xmlns:oc-telemetry-types="http://openconfig.net/yang/telemetry-types"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/telemetry"/>
+  <prefix value="oc-telemetry"/>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <import module="openconfig-telemetry-types">
+    <prefix value="oc-telemetry-types"/>
+  </import>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group www.openconfig.net</text>
+  </contact>
+  <description>
+    <text>Data model which creates the configuration for the telemetry
+systems and functions on the device.</text>
+  </description>
+  <oc-ext:openconfig-version semver="0.4.1"/>
+  <revision date="2017-08-25">
+    <description>
+      <text>Support already existed leaf node originated-qos-marking.</text>
+    </description>
+  </revision>
+  <revision date="2017-08-24">
+    <description>
+      <text>Minor formatting fixes</text>
+    </description>
+    <reference>
+      <text>0.4.1</text>
+    </reference>
+  </revision>
+  <revision date="2017-02-20">
+    <description>
+      <text>Fixes for YANG 1.0 compliance, add types module</text>
+    </description>
+    <reference>
+      <text>0.4.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-04-05">
+    <description>
+      <text>OpenConfig public release</text>
+    </description>
+    <reference>
+      <text>0.2.0</text>
+    </reference>
+  </revision>
+  <container name="telemetry-system">
+    <description>
+      <text>Top level configuration and state for the
+device's telemetry system.</text>
+    </description>
+    <container name="sensor-groups">
+      <description>
+        <text>Top level container for sensor-groups.</text>
+      </description>
+      <list name="sensor-group">
+        <key value="sensor-group-id"/>
+        <description>
+          <text>List of telemetry sensory groups on the local
+system, where a sensor grouping represents a resuable
+grouping of multiple paths and exclude filters.</text>
+        </description>
+        <leaf name="sensor-group-id">
+          <type name="leafref">
+            <path value="../config/sensor-group-id"/>
+          </type>
+          <description>
+            <text>Reference to the name or identifier of the
+sensor grouping.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration parameters relating to the
+telemetry sensor grouping.</text>
+          </description>
+          <leaf name="sensor-group-id">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Name or identifier for the sensor group itself.
+Will be referenced by other configuration specifying a
+sensor group.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State information relating to the telemetry
+sensor group.</text>
+          </description>
+          <leaf name="sensor-group-id">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Name or identifier for the sensor group itself.
+Will be referenced by other configuration specifying a
+sensor group.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="sensor-paths">
+          <description>
+            <text>Top level container to hold a set of sensor
+paths grouped together.</text>
+          </description>
+          <list name="sensor-path">
+            <key value="path"/>
+            <description>
+              <text>List of paths in the model which together
+comprise a sensor grouping. Filters for each path
+to exclude items are also provided.</text>
+            </description>
+            <leaf name="path">
+              <type name="leafref">
+                <path value="../config/path"/>
+              </type>
+              <description>
+                <text>Reference to the path of interest.</text>
+              </description>
+            </leaf>
+            <container name="config">
+              <description>
+                <text>Configuration parameters to configure a set
+of data model paths as a sensor grouping.</text>
+              </description>
+              <leaf name="path">
+                <type name="string">
+                  <length value="1..199"/>
+                </type>
+                <description>
+                  <text>Path to a section of operational state of interest (the sensor).</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="state">
+              <config value="false"/>
+              <description>
+                <text>State information relating to a set of data
+model paths as a sensor grouping.</text>
+              </description>
+              <leaf name="path">
+                <type name="string">
+                  <length value="1..199"/>
+                </type>
+                <description>
+                  <text>Path to a section of operational state of interest (the sensor).</text>
+                </description>
+              </leaf>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="destination-groups">
+      <description>
+        <text>Top level container for destination group configuration
+and state.</text>
+      </description>
+      <list name="destination-group">
+        <key value="group-id"/>
+        <description>
+          <text>List of destination-groups. Destination groups allow the
+reuse of common telemetry destinations across the
+telemetry configuration. An operator references a
+set of destinations via the configurable
+destination-group-identifier.
+A destination group may contain one or more telemetry
+destinations.</text>
+        </description>
+        <leaf name="group-id">
+          <type name="leafref">
+            <path value="../config/group-id"/>
+          </type>
+          <description>
+            <text>Unique identifier for the destination group.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Top level config container for destination groups.</text>
+          </description>
+          <leaf name="group-id">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Unique identifier for the destination group.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Top level state container for destination groups.</text>
+          </description>
+          <leaf name="group-id">
+            <type name="string">
+              <length value="1..31"/>
+            </type>
+            <description>
+              <text>Unique identifier for the destination group.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="destinations">
+          <description>
+            <text>The destination container lists the destination
+information such as IP address and port of the
+telemetry messages from the network element.</text>
+          </description>
+          <list name="destination">
+            <key value="destination-address destination-port"/>
+            <description>
+              <text>List of telemetry stream destinations.</text>
+            </description>
+            <leaf name="destination-address">
+              <type name="leafref">
+                <path value="../config/destination-address"/>
+              </type>
+              <description>
+                <text>Reference to the destination address of the
+telemetry stream.</text>
+              </description>
+            </leaf>
+            <leaf name="destination-port">
+              <type name="leafref">
+                <path value="../config/destination-port"/>
+              </type>
+              <description>
+                <text>Reference to the port number of the stream
+destination.</text>
+              </description>
+            </leaf>
+            <container name="config">
+              <description>
+                <text>Configuration parameters relating to
+telemetry destinations.</text>
+              </description>
+              <leaf name="destination-address">
+                <type name="oc-inet:ip-address"/>
+                <description>
+                  <text>IP address of the telemetry stream destination.</text>
+                </description>
+              </leaf>
+              <leaf name="destination-port">
+                <type name="uint16"/>
+                <description>
+                  <text>Protocol (udp or tcp) port number for the telemetry
+stream destination.</text>
+                </description>
+              </leaf>
+            </container>
+            <container name="state">
+              <config value="false"/>
+              <description>
+                <text>State information associated with
+telemetry destinations.</text>
+              </description>
+              <leaf name="destination-address">
+                <type name="oc-inet:ip-address"/>
+                <description>
+                  <text>IP address of the telemetry stream destination.</text>
+                </description>
+              </leaf>
+              <leaf name="destination-port">
+                <type name="uint16"/>
+                <description>
+                  <text>Protocol (udp or tcp) port number for the telemetry
+stream destination.</text>
+                </description>
+              </leaf>
+            </container>
+          </list>
+        </container>
+      </list>
+    </container>
+    <container name="subscriptions">
+      <description>
+        <text>This container holds information for both persistent
+and dynamic telemetry subscriptions.</text>
+      </description>
+      <container name="persistent">
+        <description>
+          <text>This container holds information relating to persistent
+telemetry subscriptions. A persistent telemetry
+subscription is configued locally on the device through
+configuration, and is persistent across device restarts or
+other redundancy changes.</text>
+        </description>
+        <list name="subscription">
+          <key value="subscription-name"/>
+          <description>
+            <text>List of telemetry subscriptions. A telemetry
+subscription consists of a set of collection
+destinations, stream attributes, and associated paths to
+state information in the model (sensor data).</text>
+          </description>
+          <leaf name="subscription-name">
+            <type name="leafref">
+              <path value="../config/subscription-name"/>
+            </type>
+            <description>
+              <text>Reference to the identifier of the subscription
+itself. The id will be the handle to refer to the
+subscription once created.</text>
+            </description>
+          </leaf>
+          <container name="config">
+            <description>
+              <text>Config parameters relating to the telemetry
+subscriptions on the local device.</text>
+            </description>
+            <leaf name="subscription-name">
+              <type name="string">
+                <length value="1..31"/>
+              </type>
+              <description>
+                <text>User configured identifier of the telemetry
+subscription. This value is used primarily for
+subscriptions configured locally on the network
+element.</text>
+              </description>
+            </leaf>
+            <leaf name="local-source-address">
+              <type name="oc-inet:ip-address"/>
+              <description>
+                <text>The IP address which will be the source of packets from
+the device to a telemetry collector destination.</text>
+              </description>
+            </leaf>
+            <leaf name="originated-qos-marking">
+              <type name="oc-inet:dscp"/>
+              <description>
+                <text>DSCP marking of packets generated by the telemetry
+subsystem on the network device.</text>
+              </description>
+              <ncd:revise-date date="2017-08-25"/>
+            </leaf>
+            <leaf name="protocol">
+              <type name="identityref">
+                <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+              </type>
+              <description>
+                <text>Selection of the transport protocol for the telemetry
+stream.</text>
+              </description>
+            </leaf>
+            <leaf name="encoding">
+              <type name="identityref">
+                <base name="oc-telemetry-types:DATA_ENCODING_METHOD"/>
+              </type>
+              <description>
+                <text>Selection of the specific encoding or RPC framework
+for telemetry messages to and from the network element.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="state">
+            <description>
+              <text>State parameters relating to the telemetry
+subscriptions on the local device.</text>
+            </description>
+            <leaf name="subscription-name">
+              <type name="string">
+                <length value="1..31"/>
+              </type>
+              <description>
+                <text>User configured identifier of the telemetry
+subscription. This value is used primarily for
+subscriptions configured locally on the network
+element.</text>
+              </description>
+            </leaf>
+            <leaf name="subscription-id">
+              <type name="uint64"/>
+              <description>
+                <text>System generated identifer of the telemetry
+subscription.</text>
+              </description>
+              <ncd:revise-date date="2017-08-25"/>
+            </leaf>
+            <leaf name="local-source-address">
+              <type name="oc-inet:ip-address"/>
+              <description>
+                <text>The IP address which will be the source of packets from
+the device to a telemetry collector destination.</text>
+              </description>
+            </leaf>
+            <leaf name="originated-qos-marking">
+              <type name="oc-inet:dscp"/>
+              <description>
+                <text>DSCP marking of packets generated by the telemetry
+subsystem on the network device.</text>
+              </description>
+              <ncd:revise-date date="2017-08-25"/>
+            </leaf>
+            <leaf name="protocol">
+              <type name="identityref">
+                <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+              </type>
+              <description>
+                <text>Selection of the transport protocol for the telemetry
+stream.</text>
+              </description>
+            </leaf>
+            <leaf name="encoding">
+              <type name="identityref">
+                <base name="oc-telemetry-types:DATA_ENCODING_METHOD"/>
+              </type>
+              <description>
+                <text>Selection of the specific encoding or RPC framework
+for telemetry messages to and from the network element.</text>
+              </description>
+            </leaf>
+          </container>
+          <container name="sensor-profiles">
+            <description>
+              <text>A sensor profile is a set of sensor groups or
+individual sensor paths which are associated with a
+telemetry subscription. This is the source of the
+telemetry data for the subscription to send to the
+defined collectors.</text>
+            </description>
+            <list name="sensor-profile">
+              <key value="sensor-group"/>
+              <description>
+                <text>List of telemetry sensor groups used
+in the subscription.</text>
+              </description>
+              <leaf name="sensor-group">
+                <type name="leafref">
+                  <path value="../config/sensor-group"/>
+                </type>
+                <description>
+                  <text>Reference to the telemetry sensor group name.</text>
+                </description>
+              </leaf>
+              <container name="config">
+                <description>
+                  <text>Configuration parameters related to the sensor
+profile for a subscription.</text>
+                </description>
+                <leaf name="sensor-group">
+                  <type name="leafref">
+                    <path value="../../../../../../../sensor-groups/sensor-group/config/sensor-group-id"/>
+                  </type>
+                  <description>
+                    <text>Reference to the sensor group which is used in the profile.</text>
+                  </description>
+                </leaf>
+                <leaf name="sample-interval">
+                  <type name="uint64"/>
+                  <description>
+                    <text>Time in milliseconds between the device's sample of a
+telemetry data source. For example, setting this to 100
+would require the local device to collect the telemetry
+data every 100 milliseconds. There can be latency or jitter
+in transmitting the data, but the sample must occur at
+the specified interval.
+The timestamp must reflect the actual time when the data
+was sampled, not simply the previous sample timestamp +
+sample-interval.
+If sample-interval is set to 0, the telemetry sensor
+becomes event based. The sensor must then emit data upon
+every change of the underlying data source.</text>
+                  </description>
+                </leaf>
+                <leaf name="heartbeat-interval">
+                  <type name="uint64"/>
+                  <description>
+                    <text>Maximum time interval in seconds that may pass
+between updates from a device to a telemetry collector.
+If this interval expires, but there is no updated data to
+send (such as if suppress_updates has been configured), the
+device must send a telemetry message to the collector.</text>
+                  </description>
+                </leaf>
+                <leaf name="suppress-redundant">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Boolean flag to control suppression of redundant
+telemetry updates to the collector platform. If this flag is
+set to TRUE, then the collector will only send an update at
+the configured interval if a subscribed data value has
+changed. Otherwise, the device will not send an update to
+the collector until expiration of the heartbeat interval.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="state">
+                <config value="false"/>
+                <description>
+                  <text>State information relating to the sensor profile
+for a subscription</text>
+                </description>
+                <leaf name="sensor-group">
+                  <type name="leafref">
+                    <path value="../../../../../../../sensor-groups/sensor-group/config/sensor-group-id"/>
+                  </type>
+                  <description>
+                    <text>Reference to the sensor group which is used in the profile.</text>
+                  </description>
+                </leaf>
+                <leaf name="sample-interval">
+                  <type name="uint64"/>
+                  <description>
+                    <text>Time in milliseconds between the device's sample of a
+telemetry data source. For example, setting this to 100
+would require the local device to collect the telemetry
+data every 100 milliseconds. There can be latency or jitter
+in transmitting the data, but the sample must occur at
+the specified interval.
+The timestamp must reflect the actual time when the data
+was sampled, not simply the previous sample timestamp +
+sample-interval.
+If sample-interval is set to 0, the telemetry sensor
+becomes event based. The sensor must then emit data upon
+every change of the underlying data source.</text>
+                  </description>
+                </leaf>
+                <leaf name="heartbeat-interval">
+                  <type name="uint64"/>
+                  <description>
+                    <text>Maximum time interval in seconds that may pass
+between updates from a device to a telemetry collector.
+If this interval expires, but there is no updated data to
+send (such as if suppress_updates has been configured), the
+device must send a telemetry message to the collector.</text>
+                  </description>
+                </leaf>
+                <leaf name="suppress-redundant">
+                  <type name="boolean"/>
+                  <description>
+                    <text>Boolean flag to control suppression of redundant
+telemetry updates to the collector platform. If this flag is
+set to TRUE, then the collector will only send an update at
+the configured interval if a subscribed data value has
+changed. Otherwise, the device will not send an update to
+the collector until expiration of the heartbeat interval.</text>
+                  </description>
+                </leaf>
+              </container>
+            </list>
+          </container>
+          <container name="destination-groups">
+            <description>
+              <text>A subscription may specify destination addresses.
+If the subscription supplies destination addresses,
+the network element will be the initiator of the
+telemetry streaming, sending it to the destination(s)
+specified.
+If the destination set is omitted, the subscription
+preconfigures certain elements such as paths and
+sample intervals under a specified subscription ID.
+In this case, the network element will NOT initiate an
+outbound connection for telemetry, but will wait for
+an inbound connection from a network management
+system.
+It is expected that the network management system
+connecting to the network element will reference
+the preconfigured subscription ID when initiating
+a subscription.</text>
+            </description>
+            <list name="destination-group">
+              <key value="group-id"/>
+              <description>
+                <text>Identifier of the previously defined destination
+group.</text>
+              </description>
+              <leaf name="group-id">
+                <type name="leafref">
+                  <path value="../config/group-id"/>
+                </type>
+                <description>
+                  <text>The destination group id references a configured
+group of destinations for the telemetry stream.</text>
+                </description>
+              </leaf>
+              <container name="config">
+                <description>
+                  <text>Configuration parameters related to telemetry
+destinations.</text>
+                </description>
+                <leaf name="group-id">
+                  <type name="leafref">
+                    <path value="../../../../../../../destination-groups/destination-group/group-id"/>
+                  </type>
+                  <description>
+                    <text>The destination group id references a reusable
+group of destination addresses and ports for
+the telemetry stream.</text>
+                  </description>
+                </leaf>
+              </container>
+              <container name="state">
+                <config value="false"/>
+                <description>
+                  <text>State information related to telemetry
+destinations.</text>
+                </description>
+                <leaf name="group-id">
+                  <type name="leafref">
+                    <path value="../../../../../../../destination-groups/destination-group/group-id"/>
+                  </type>
+                  <description>
+                    <text>The destination group id references a reusable
+group of destination addresses and ports for
+the telemetry stream.</text>
+                  </description>
+                </leaf>
+              </container>
+            </list>
+          </container>
+        </list>
+      </container>
+      <container name="dynamic">
+        <description>
+          <text>This container holds information relating to dynamic
+telemetry subscriptions. A dynamic subscription is
+typically configured through an RPC channel, and does not
+persist across device restarts, or if the RPC channel is
+reset or otherwise torn down.</text>
+        </description>
+        <list name="subscription">
+          <key value="subscription-id"/>
+          <config value="false"/>
+          <description>
+            <text>List representation of telemetry subscriptions that
+are configured via an inline RPC, otherwise known
+as dynamic telemetry subscriptions.</text>
+          </description>
+          <leaf name="subscription-id">
+            <type name="leafref">
+              <path value="../state/subscription-id"/>
+            </type>
+            <description>
+              <text>Reference to the identifier of the subscription
+itself. The id will be the handle to refer to the
+subscription once created</text>
+            </description>
+          </leaf>
+          <container name="state">
+            <config value="false"/>
+            <description>
+              <text>State information relating to dynamic telemetry
+subscriptions.</text>
+            </description>
+            <uses name="telemetry-subscription-config"/>
+            <uses name="telemetry-stream-destination-config"/>
+            <uses name="telemetry-stream-frequency-config"/>
+            <uses name="telemetry-heartbeat-config"/>
+            <uses name="telemetry-suppress-redundant-config"/>
+            <uses name="telemetry-qos-marking-config"/>
+            <uses name="telemetry-stream-protocol-config"/>
+            <uses name="telemetry-stream-encoding-config"/>
+          </container>
+          <container name="sensor-paths">
+            <description>
+              <text>Top level container to hold a set of sensor
+paths grouped together</text>
+            </description>
+            <list name="sensor-path">
+              <key value="path"/>
+              <description>
+                <text>List of paths in the model which together
+comprise a sensor grouping. Filters for each path
+to exclude items are also provided.</text>
+              </description>
+              <leaf name="path">
+                <type name="leafref">
+                  <path value="../state/path"/>
+                </type>
+                <description>
+                  <text>Reference to the path of interest</text>
+                </description>
+              </leaf>
+              <container name="state">
+                <config value="false"/>
+                <description>
+                  <text>State information for a dynamic subscription's
+paths of interest</text>
+                </description>
+                <uses name="telemetry-sensor-path-config"/>
+              </container>
+            </list>
+          </container>
+        </list>
+        <ncd:revise-date date="2017-08-25"/>
+      </container>
+    </container>
+  </container>
+  <grouping name="telemetry-sensor-path-config">
+    <description>
+      <text>Configuration parameters relating to the
+grouping of data model paths comprising a
+sensor grouping</text>
+    </description>
+    <leaf name="path">
+      <type name="string"/>
+      <description>
+        <text>Path to a section of operational state of interest
+(the sensor).</text>
+      </description>
+    </leaf>
+    <leaf name="exclude-filter">
+      <type name="string"/>
+      <description>
+        <text>Filter to exclude certain values out of the state
+values</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-heartbeat-config">
+    <description>
+      <text>Configuration parameters relating to the
+heartbeat of the telemetry subscription</text>
+    </description>
+    <leaf name="heartbeat-interval">
+      <type name="uint64"/>
+      <description>
+        <text>Maximum time interval in seconds that may pass
+between updates from a device to a telemetry collector.
+If this interval expires, but there is no updated data to
+send (such as if suppress_updates has been configured), the
+device must send a telemetry message to the collector.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-suppress-redundant-config">
+    <description>
+      <text>Configuration parameters relating to suppression of
+redundant upstream updates</text>
+    </description>
+    <leaf name="suppress-redundant">
+      <type name="boolean"/>
+      <description>
+        <text>Boolean flag to control suppression of redundant
+telemetry updates to the collector platform. If this flag is
+set to TRUE, then the collector will only send an update at
+the configured interval if a subscribed data value has
+changed. Otherwise, the device will not send an update to
+the collector until expiration of the heartbeat interval.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-qos-marking-config">
+    <description>
+      <text>Config parameters relating to the quality of service
+marking on device generated telemetry packets</text>
+    </description>
+    <leaf name="originated-qos-marking">
+      <type name="oc-inet:dscp"/>
+      <description>
+        <text>DSCP marking of packets generated by the telemetry
+subsystem on the network device.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-subscription-config">
+    <description>
+      <text>Configuration parameters relating to the telemetry
+subscription</text>
+    </description>
+    <leaf name="subscription-id">
+      <type name="uint64"/>
+      <description>
+        <text>System generated identifer of the telemetry
+subscription.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-stream-protocol-config">
+    <description>
+      <text>Configuration parameters relating to the
+transport protocol carrying telemetry
+data.</text>
+    </description>
+    <leaf name="protocol">
+      <type name="identityref">
+        <base name="oc-telemetry-types:STREAM_PROTOCOL"/>
+      </type>
+      <description>
+        <text>Selection of the transport protocol for the telemetry
+stream.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-stream-encoding-config">
+    <description>
+      <text>Configuration parameters relating to the
+encoding of telemetry data to and from the
+network element. The encoding method controls
+specifically the wire format of the telemetry
+data, and also controls which RPC framework
+may be in use to exchange telemetry data.</text>
+    </description>
+    <leaf name="encoding">
+      <type name="identityref">
+        <base name="oc-telemetry-types:DATA_ENCODING_METHOD"/>
+      </type>
+      <description>
+        <text>Selection of the specific encoding or RPC framework
+for telemetry messages to and from the network element.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-stream-destination-config">
+    <description>
+      <text>Configuration parameters for the stream destinations</text>
+    </description>
+    <leaf name="destination-address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>IP address of the telemetry stream destination</text>
+      </description>
+    </leaf>
+    <leaf name="destination-port">
+      <type name="uint16"/>
+      <description>
+        <text>Protocol (udp or tcp) port number for the telemetry
+stream destination</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="telemetry-stream-frequency-config">
+    <description>
+      <text>Config parameters for the frequency of updates to
+ the collector</text>
+    </description>
+    <leaf name="sample-interval">
+      <type name="uint64"/>
+      <description>
+        <text>Time in milliseconds between the device's sample of a
+telemetry data source. For example, setting this to 100
+would require the local device to collect the telemetry
+data every 100 milliseconds. There can be latency or jitter
+in transmitting the data, but the sample must occur at
+the specified interval.
+The timestamp must reflect the actual time when the data
+was sampled, not simply the previous sample timestamp +
+sample-interval.
+If sample-interval is set to 0, the telemetry sensor
+becomes event based. The sensor must then emit data upon
+every change of the underlying data source.</text>
+      </description>
+    </leaf>
+  </grouping>
+</module>

@@ -1,0 +1,990 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-vlan"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-vlan="http://openconfig.net/yang/vlan"
+        xmlns:oc-vlan-types="http://openconfig.net/yang/vlan-types"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:oc-eth="http://openconfig.net/yang/interfaces/ethernet"
+        xmlns:oc-lag="http://openconfig.net/yang/interfaces/aggregate"
+        xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/vlan"/>
+  <prefix value="oc-vlan"/>
+  <import module="openconfig-vlan-types">
+    <prefix value="oc-vlan-types"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="openconfig-if-ethernet">
+    <prefix value="oc-eth"/>
+  </import>
+  <import module="openconfig-if-aggregate">
+    <prefix value="oc-lag"/>
+  </import>
+  <import module="iana-if-type">
+    <prefix value="ianaift"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This module defines configuration and state variables for VLANs,
+in addition to VLAN parameters associated with interfaces</text>
+  </description>
+  <oc-ext:openconfig-version semver="3.2.0"/>
+  <revision date="2019-04-16">
+    <description>
+      <text>Update import prefix for iana-if-type module</text>
+    </description>
+    <reference>
+      <text>3.2.0</text>
+    </reference>
+  </revision>
+  <revision date="2019-01-31">
+    <description>
+      <text>Revise QinQ matching and add input/output VLAN stack operations.</text>
+    </description>
+    <reference>
+      <text>3.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>3.0.2</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-05">
+    <description>
+      <text>Fix bugs in when statements.</text>
+    </description>
+    <reference>
+      <text>3.0.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-02-14">
+    <description>
+      <text>Fix bug with name of 802.1ad identity.</text>
+    </description>
+    <reference>
+      <text>3.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-14">
+    <description>
+      <text>Move top-level vlan data to network-instance; Update
+identities to comply to style guide; fixed pattern
+quoting; corrected trunk vlan types; added TPID config to
+base interface.</text>
+    </description>
+    <reference>
+      <text>2.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-05-26">
+    <description>
+      <text>OpenConfig public release</text>
+    </description>
+    <reference>
+      <text>1.0.2</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <grouping name="vlan-config">
+    <description>
+      <text>VLAN configuration container.</text>
+    </description>
+    <leaf name="vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Interface VLAN id.</text>
+      </description>
+    </leaf>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Interface VLAN name.</text>
+      </description>
+    </leaf>
+    <leaf name="status">
+      <type name="enumeration">
+        <enum name="ACTIVE">
+          <description>
+            <text>VLAN is active</text>
+          </description>
+        </enum>
+        <enum name="SUSPENDED">
+          <description>
+            <text>VLAN is inactive / suspended</text>
+          </description>
+        </enum>
+      </type>
+      <default value="ACTIVE"/>
+      <description>
+        <text>Admin state of the VLAN</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-state">
+    <description>
+      <text>State variables for VLANs</text>
+    </description>
+  </grouping>
+  <grouping name="vlan-tpid-config">
+    <description>
+      <text>TPID configuration for dot1q-enabled interfaces</text>
+    </description>
+    <leaf name="tpid">
+      <type name="identityref">
+        <base name="oc-vlan-types:TPID_TYPES"/>
+      </type>
+      <default value="oc-vlan-types:TPID_0X8100"/>
+      <description>
+        <text>Optionally set the tag protocol identifier field (TPID) that
+is accepted on the VLAN</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-tpid-state">
+    <description>
+      <text>TPID opstate for dot1q-enabled interfaces</text>
+    </description>
+  </grouping>
+  <grouping name="vlan-members-state">
+    <description>
+      <text>List of interfaces / subinterfaces belonging to the VLAN.</text>
+    </description>
+    <container name="members">
+      <description>
+        <text>Enclosing container for list of member interfaces</text>
+      </description>
+      <list name="member">
+        <config value="false"/>
+        <description>
+          <text>List of references to interfaces / subinterfaces
+associated with the VLAN.</text>
+        </description>
+        <uses name="oc-if:base-interface-ref-state"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="vlan-switched-config">
+    <description>
+      <text>VLAN related configuration that is part of the physical
+Ethernet interface.</text>
+    </description>
+    <leaf name="interface-mode">
+      <type name="oc-vlan-types:vlan-mode-type"/>
+      <description>
+        <text>Set the interface to access or trunk mode for
+VLANs</text>
+      </description>
+    </leaf>
+    <leaf name="native-vlan">
+      <when condition="../interface-mode = 'TRUNK'">
+        <description>
+          <text>Native VLAN is valid for trunk mode interfaces</text>
+        </description>
+      </when>
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Set the native VLAN id for untagged frames arriving on
+a trunk interface.  Tagged frames sent on an interface
+configured with a native VLAN should have their tags
+stripped prior to transmission. This configuration is only
+valid on a trunk interface.</text>
+      </description>
+    </leaf>
+    <leaf name="access-vlan">
+      <when condition="../interface-mode = 'ACCESS'">
+        <description>
+          <text>Access VLAN assigned to the interfaces</text>
+        </description>
+      </when>
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Assign the access vlan to the access port.</text>
+      </description>
+    </leaf>
+    <leaf-list name="trunk-vlans">
+      <when condition="../interface-mode = 'TRUNK'">
+        <description>
+          <text>Allowed VLANs may be specified for trunk mode
+interfaces.</text>
+        </description>
+      </when>
+      <type name="union">
+        <type name="oc-vlan-types:vlan-id"/>
+        <type name="oc-vlan-types:vlan-range"/>
+      </type>
+      <description>
+        <text>Specify VLANs, or ranges thereof, that the interface may
+carry when in trunk mode.  If not specified, all VLANs are
+allowed on the interface. Ranges are specified in the form
+x..y, where x&lt;y - ranges are assumed to be inclusive (such
+that the VLAN range is x &lt;= range &lt;= y.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="vlan-switched-state">
+    <description>
+      <text>VLAN related operational state that is part of Ethernet
+interface state data</text>
+    </description>
+  </grouping>
+  <grouping name="vlan-switched-top">
+    <description>
+      <text>Top-level grouping for VLAN data associated with an
+Ethernet interface</text>
+    </description>
+    <container name="switched-vlan">
+      <description>
+        <text>Enclosing container for VLAN interface-specific
+data on Ethernet interfaces.  These are for standard
+L2, switched-style VLANs.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for VLANs</text>
+        </description>
+        <uses name="vlan-switched-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State variables for VLANs</text>
+        </description>
+        <uses name="vlan-switched-config"/>
+        <uses name="vlan-switched-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="vlan-logical-config">
+    <description>
+      <text>VLAN related configuration that is part of subinterface
+(logical interface) configuration.  These are generally
+L3 VLANs with an id that is local or L2 VLANs attached with a wire
+transport service, such as a local cross-connect or an MPLS
+pseudo-wire.
+
+For ingress packets this VLAN configuration is used to match packets
+with an interface; for egress packets, the 'single-tagged' and
+'double-tagged' containers may be used to specify the VLAN identifiers
+that are added to packets as they leave the system.</text>
+    </description>
+    <leaf name="vlan-id">
+      <type name="union">
+        <type name="oc-vlan-types:vlan-id"/>
+        <type name="oc-vlan-types:qinq-id"/>
+      </type>
+      <status value="deprecated"/>
+      <description>
+        <text>VLAN id for the subinterface -- specified inline for the
+case of a local VLAN.  The id is scoped to the
+subinterface, and could be repeated on different
+subinterfaces.
+Deprecation note: See adjacent elements in the 'vlan' container for
+making more expressive VLAN matches.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-state">
+    <description>
+      <text>VLAN related operational state that is part of logical
+interface state data</text>
+    </description>
+  </grouping>
+  <grouping name="vlan-logical-single-tagged-config">
+    <description>
+      <text>Specifies single-tagged packets with an exact VLAN identifier.</text>
+    </description>
+    <leaf name="vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>VLAN identifier for single-tagged packets.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-single-tagged-list-config">
+    <description>
+      <text>Specifies single-tagged packets with a list of VLAN identifiers.</text>
+    </description>
+    <leaf-list name="vlan-ids">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>VLAN identifiers for single-tagged packets.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="vlan-logical-single-tagged-range-config">
+    <description>
+      <text>Specifies single-tagged packets with a range of VLAN identifiers.</text>
+    </description>
+    <leaf name="low-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The low-value VLAN identifier in a range for single-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf name="high-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The high-value VLAN identifier in a range for single-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-double-tagged-config">
+    <description>
+      <text>Specifies double-tagged packets with inner exact and outer exact
+VLAN identifiers.</text>
+    </description>
+    <leaf name="inner-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Inner VLAN identifier for double-tagged packets.</text>
+      </description>
+    </leaf>
+    <leaf name="outer-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Outer VLAN identifier for double-tagged packets.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-double-tagged-inner-list-config">
+    <description>
+      <text>Specifies double-tagged packets with an inner list and outer exact
+VLAN identifiers.</text>
+    </description>
+    <leaf-list name="inner-vlan-ids">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Inner VLAN identifiers for double-tagged packets.</text>
+      </description>
+    </leaf-list>
+    <leaf name="outer-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Outer VLAN identifier for double-tagged packets.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-double-tagged-outer-list-config">
+    <description>
+      <text>Specifies double-tagged packets with an inner exact and outer list
+of VLAN identifiers.</text>
+    </description>
+    <leaf name="inner-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Inner VLAN identifier for double-tagged packets.</text>
+      </description>
+    </leaf>
+    <leaf-list name="outer-vlan-ids">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Outer VLAN identifiers for double-tagged packets.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="vlan-logical-double-tagged-inner-range-config">
+    <description>
+      <text>Specifies double-tagged packets with an inner range and outer
+exact VLAN identifiers.</text>
+    </description>
+    <leaf name="inner-low-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The low-value inner VLAN identifier in a range for double-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf name="inner-high-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The high-value inner VLAN identifier in a range for double-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf-list name="outer-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Outer VLAN identifier of double-tagged packets.</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="vlan-logical-double-tagged-outer-range-config">
+    <description>
+      <text>Specifies double-tagged packets with an inner exact and an outer
+range of VLAN identifiers.</text>
+    </description>
+    <leaf name="inner-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Inner VLAN identifier for double-tagged packets.</text>
+      </description>
+    </leaf>
+    <leaf name="outer-low-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The low-value outer VLAN identifier for double-tagged packets.
+The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf name="outer-high-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The high-value outer VLAN identifier for double-tagged packets.
+The range is matched inclusively.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-double-tagged-inner-outer-range-config">
+    <description>
+      <text>Specifies double-tagged packets with an inner range and an outer
+range of VLAN identifiers.</text>
+    </description>
+    <leaf name="inner-low-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The low-value inner VLAN identifier in a range for double-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf name="inner-high-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The high-value inner VLAN identifier in a range for double-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf name="outer-low-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The low-value outer VLAN identifier in a range for double-tagged
+packets. The range is matched inclusively.</text>
+      </description>
+    </leaf>
+    <leaf name="outer-high-vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>The high-value outer VLAN identifier for double-tagged packets.
+The range is matched inclusively.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-match-top">
+    <description>
+      <text>Configuration for various VLAN tag matching schemes,
+including Q-in-Q.</text>
+    </description>
+    <container name="match">
+      <description>
+        <text>Configuration for various VLAN tag matching schemes,
+including single-tagged 802.1q packets and double-tagged
+802.1ad 'Q-in-Q' packets. Typically only one of the subordinate
+containers should be specified.
+
+Wildcards may be matched by specifying range values of 2-4094.
+If implementations have a more efficient way to match Wildcards
+then they should recognize this pattern and translate accordingly.
+
+Implementations are expected to return errors for combinations
+that they do not support, or provide deviations to the same effect.
+
+For simple VLAN configurations without an 'egress-mapping' then
+using the 'single-tagged' and 'double-tagged' VLAN matches that
+resolve to specific values, these specify the VLAN identifiers
+applied to packets on egress.</text>
+      </description>
+      <container name="single-tagged">
+        <description>
+          <text>Match single-tagged packets with an exact VLAN identifier.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching single-tagged packets with an exact
+VLAN identifier.</text>
+          </description>
+          <uses name="vlan-logical-single-tagged-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching single-tagged packets with an exact VLAN
+identifier.</text>
+          </description>
+          <uses name="vlan-logical-single-tagged-config"/>
+        </container>
+      </container>
+      <container name="single-tagged-list">
+        <description>
+          <text>Match single-tagged packets with a list of VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching single-tagged packets with a list of
+VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-single-tagged-list-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching single-tagged packets with a list of VLAN
+identifiers.</text>
+          </description>
+          <uses name="vlan-logical-single-tagged-list-config"/>
+        </container>
+      </container>
+      <container name="single-tagged-range">
+        <description>
+          <text>Match single-tagged packets with a range of VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching single-tagged packets with a range of
+VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-single-tagged-range-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching single-tagged packets with a range of VLAN
+identifiers.</text>
+          </description>
+          <uses name="vlan-logical-single-tagged-range-config"/>
+        </container>
+      </container>
+      <container name="double-tagged">
+        <description>
+          <text>Match double-tagged packets against inner exact and outer exact
+VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching double-tagged packets against inner
+exact and outer exact VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching double-tagged packets against inner exact
+and outer exact VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-config"/>
+        </container>
+      </container>
+      <container name="double-tagged-inner-list">
+        <description>
+          <text>Match double-tagged packets against an inner list and outer exact
+VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching double-tagged packets against an
+inner list and outer exact VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-inner-list-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching double-tagged packets against an inner list
+and outer exact VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-inner-list-config"/>
+        </container>
+      </container>
+      <container name="double-tagged-outer-list">
+        <description>
+          <text>Match double-tagged packets against an inner exact and outer list
+of VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching double-tagged packets against an
+inner exact and outer list of VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-outer-list-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching double-tagged packets against an inner
+exact and outer list of VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-outer-list-config"/>
+        </container>
+      </container>
+      <container name="double-tagged-inner-range">
+        <description>
+          <text>Match double-tagged packets against an inner range and outer
+exact VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching double-tagged packets against an
+inner range and outer exact VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-inner-range-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching double-tagged packets against an inner
+range and outer exact VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-inner-range-config"/>
+        </container>
+      </container>
+      <container name="double-tagged-outer-range">
+        <description>
+          <text>Match double-tagged packets against an inner exact and an outer
+range of VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching double-tagged packets against an
+inner exact and an outer range of VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-outer-range-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching double-tagged packets against an inner
+exact and an outer range of VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-outer-range-config"/>
+        </container>
+      </container>
+      <container name="double-tagged-inner-outer-range">
+        <description>
+          <text>Match double-tagged packets against an inner range and an outer
+range of VLAN identifiers.</text>
+        </description>
+        <container name="config">
+          <description>
+            <text>Configuration for matching double-tagged packets against an
+inner range and an outer range of VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-inner-outer-range-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State for matching double-tagged packets against an inner
+range and an outer range of VLAN identifiers.</text>
+          </description>
+          <uses name="vlan-logical-double-tagged-inner-outer-range-config"/>
+        </container>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="vlan-logical-ingress-mapping-config">
+    <description>
+      <text>Configuration for ingress VLAN stack behaviors for
+packets that arrive on this subinterface.</text>
+    </description>
+    <leaf name="vlan-stack-action">
+      <type name="oc-vlan-types:vlan-stack-action"/>
+      <description>
+        <text>The action to take on the VLAN stack of a packet. This is
+optionally used in conjunction with adjacent leaves to override
+the values of the action.</text>
+      </description>
+    </leaf>
+    <leaf name="vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Optionally specifies a fixed VLAN identifier that is used by the
+action configured in 'vlan-stack-action'. For example, if the action
+is 'PUSH' then this VLAN identifier is added to the the stack.
+This value must be non-zero if the 'vlan-stack-action' is one of
+'PUSH' or 'SWAP'.</text>
+      </description>
+    </leaf>
+    <leaf name="tpid">
+      <type name="identityref">
+        <base name="oc-vlan-types:TPID_TYPES"/>
+      </type>
+      <description>
+        <text>Optionally override the tag protocol identifier field (TPID) that
+is used by the action configured by 'vlan-stack-action' when
+modifying the VLAN stack.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-ingress-mapping-top">
+    <description>
+      <text>Ingress VLAN stack behaviors for packets that arrive on
+this subinterface after their VLAN idenitifer(s) have been
+matched.</text>
+    </description>
+    <container name="ingress-mapping">
+      <description>
+        <text>Ingress VLAN stack behaviors for packets that arrive on
+this subinterface after their VLAN idenitifer(s) have been
+matched.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration for ingress VLAN and label behaviors for
+packets that arrive on this subinterface after their VLAN
+identifier(s) have been matched.</text>
+        </description>
+        <uses name="vlan-logical-ingress-mapping-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State for ingress VLAN and label behaviors for packets
+that arrive on this subinterface.</text>
+        </description>
+        <uses name="vlan-logical-ingress-mapping-config"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="vlan-logical-egress-mapping-config">
+    <description>
+      <text>Configuration for egress VLAN stack behaviors for
+packets that are destined for output via this subinterface.</text>
+    </description>
+    <leaf name="vlan-stack-action">
+      <type name="oc-vlan-types:vlan-stack-action"/>
+      <description>
+        <text>The action to take on the VLAN stack of a packet. This is
+optionally used in conjunction with adjacent leaves to override
+the values of the action.</text>
+      </description>
+    </leaf>
+    <leaf name="vlan-id">
+      <type name="oc-vlan-types:vlan-id"/>
+      <description>
+        <text>Optionally specifies a fixed VLAN identifier that is used by the
+action configured in 'vlan-stack-action'. For example, if the action
+is 'POP' then a VLAN identifier is removed from the stack but the
+value of this leaf is used instead. This value must be non-zero if
+the 'vlan-stack-action' is one of 'PUSH' or 'SWAP'.</text>
+      </description>
+    </leaf>
+    <leaf name="tpid">
+      <type name="identityref">
+        <base name="oc-vlan-types:TPID_TYPES"/>
+      </type>
+      <description>
+        <text>Optionally override the tag protocol identifier field (TPID) that
+is used by the action configured by 'vlan-stack-action' when
+modifying the VLAN stack.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-logical-egress-mapping-top">
+    <description>
+      <text>Egress VLAN stack behaviors for packets that are
+destined for output via this subinterface.</text>
+    </description>
+    <container name="egress-mapping">
+      <description>
+        <text>Egress VLAN and label behaviors for packets that are
+destined for output via this subinterface.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration for egress VLAN stack behaviors for
+packets that are destined for output via this subinterface.</text>
+        </description>
+        <uses name="vlan-logical-egress-mapping-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State for engress VLAN stack behaviors for packets
+that are destined for output via this subinterface.</text>
+        </description>
+        <uses name="vlan-logical-egress-mapping-config"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="vlan-top">
+    <description>
+      <text>Top-level grouping for VLAN configuration</text>
+    </description>
+    <container name="vlans">
+      <description>
+        <text>Container for VLAN configuration and state
+variables</text>
+      </description>
+      <list name="vlan">
+        <key value="vlan-id"/>
+        <description>
+          <text>Configured VLANs keyed by id</text>
+        </description>
+        <leaf name="vlan-id">
+          <type name="leafref">
+            <path value="../config/vlan-id"/>
+          </type>
+          <description>
+            <text>references the configured vlan-id</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration parameters for VLANs</text>
+          </description>
+          <uses name="vlan-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>State variables for VLANs</text>
+          </description>
+          <uses name="vlan-config"/>
+          <uses name="vlan-state"/>
+        </container>
+        <uses name="vlan-members-state"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="vlan-logical-top">
+    <description>
+      <text>Top-level grouping for VLAN data associated with a
+logical interface or subinterface</text>
+    </description>
+    <container name="vlan">
+      <description>
+        <text>Enclosing container for VLAN interface-specific
+data on subinterfaces</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration parameters for VLANs</text>
+        </description>
+        <uses name="vlan-logical-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>State variables for VLANs</text>
+        </description>
+        <uses name="vlan-logical-config"/>
+        <uses name="vlan-logical-state"/>
+      </container>
+      <uses name="vlan-logical-match-top"/>
+      <uses name="vlan-logical-ingress-mapping-top"/>
+      <uses name="vlan-logical-egress-mapping-top"/>
+    </container>
+  </grouping>
+  <grouping name="vlan-routed-config">
+    <description>
+      <text>Configuration data for routed vlans (SVI, IRB, etc.)</text>
+    </description>
+    <leaf name="vlan">
+      <type name="union">
+        <type name="uint16"/>
+        <type name="string"/>
+      </type>
+      <description>
+        <text>References the VLAN for which this IP interface
+provides routing services -- similar to a switch virtual
+interface (SVI), or integrated routing and bridging interface
+(IRB) in some implementations.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="vlan-routed-state">
+    <description>
+      <text>Operational state data for routed vlan interfaces.</text>
+    </description>
+  </grouping>
+  <grouping name="vlan-routed-top">
+    <description>
+      <text>Top-level grouping for routed vlan logical interfaces</text>
+    </description>
+    <container name="routed-vlan">
+      <description>
+        <text>Top-level container for routed vlan interfaces.  These
+logical interfaces are also known as SVI (switched virtual
+interface), IRB (integrated routing and bridging), RVI
+(routed VLAN interface)</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for routed vlan interfaces</text>
+        </description>
+        <uses name="vlan-routed-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data </text>
+        </description>
+        <uses name="vlan-routed-config"/>
+        <uses name="vlan-routed-state"/>
+      </container>
+    </container>
+  </grouping>
+  <augment target-node="/oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface">
+    <description>
+      <text>Adds VLAN settings to individual subinterfaces</text>
+    </description>
+    <uses name="vlan-logical-top"/>
+  </augment>
+  <augment target-node="/oc-if:interfaces/oc-if:interface/oc-if:config">
+    <description>
+      <text>Adds TPID / ethertype setting for the base interface</text>
+    </description>
+    <uses name="vlan-tpid-config"/>
+  </augment>
+  <augment target-node="/oc-if:interfaces/oc-if:interface/oc-if:state">
+    <description>
+      <text>Adds TPID / ethertype opstate for the base interface</text>
+    </description>
+    <uses name="vlan-tpid-config"/>
+    <uses name="vlan-tpid-state"/>
+  </augment>
+  <augment target-node="/oc-if:interfaces/oc-if:interface/oc-eth:ethernet">
+    <description>
+      <text>Adds VLAN settings to individual Ethernet interfaces</text>
+    </description>
+    <uses name="vlan-switched-top"/>
+  </augment>
+  <augment target-node="/oc-if:interfaces/oc-if:interface/oc-lag:aggregation">
+    <description>
+      <text>Adds VLAN settings to a LAG interface</text>
+    </description>
+    <uses name="vlan-switched-top"/>
+  </augment>
+  <augment target-node="/oc-if:interfaces/oc-if:interface">
+    <description>
+      <text>Adds configuration and state for routed VLAN interfaces</text>
+    </description>
+    <uses name="vlan-routed-top">
+      <when condition="current()/oc-if:config/oc-if:type = 'ianaift:l3ipvlan'">
+        <description>
+          <text>Active when the interface is a logical interface providing
+L3 routing for VLANs</text>
+        </description>
+      </when>
+    </uses>
+  </augment>
+</module>

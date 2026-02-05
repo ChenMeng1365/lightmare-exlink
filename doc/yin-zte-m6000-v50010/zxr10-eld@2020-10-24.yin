@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-eld"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:eld="http://www.zte.com.cn/zxr10/netconf/schema/rosng/eld"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/eld"/>
+  <prefix value="eld"/>
+  <yang-version value="1"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe the ELD.</text>
+  </description>
+  <revision date="2020-10-24">
+    <description>
+      <text>1 Add the leaf 'state/eld/domains/domain/loop-internal-vlan'.
+
+2 Add the leaf 'state/eld/domains/domain/loop-external-vlan'.
+
+3 Add the enumeration value 'VLSS' for the leaf 'state/eld/domains/domain/vpn-instance-type'.</text>
+    </description>
+  </revision>
+  <revision date="2018-10-11">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>The configuration information of Ethernet loop detect.</text>
+    </description>
+    <container name="eld">
+      <description>
+        <text>The configuration information of Ethernet loop detect.</text>
+      </description>
+      <container name="domains">
+        <description>
+          <text>Detection domain configuration.</text>
+        </description>
+        <list name="domain">
+          <description>
+            <text>Detection domain configuration.</text>
+          </description>
+          <key value="name"/>
+          <leaf name="name">
+            <description>
+              <text>Detection domain name.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+          <container name="detect-type">
+            <description>
+              <text>Detection domain type.</text>
+            </description>
+            <choice name="type">
+              <description>
+                <text>Detection domain type.</text>
+              </description>
+              <mandatory value="true"/>
+              <case name="vlan">
+                <description>
+                  <text>VLAN instance.</text>
+                </description>
+                <leaf name="vlan-id">
+                  <description>
+                    <text>VLAN ID.</text>
+                  </description>
+                  <type name="uint16">
+                    <range value="1..4094"/>
+                  </type>
+                </leaf>
+              </case>
+              <case name="vpn">
+                <description>
+                  <text>VPN instance.</text>
+                </description>
+                <leaf name="vpn-instance-type">
+                  <description>
+                    <text>VPN instance type.</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="vpls">
+                      <value value="1"/>
+                      <description>
+                        <text>Domain detect VPLS type.</text>
+                      </description>
+                    </enum>
+                    <enum name="vpws">
+                      <value value="5"/>
+                      <description>
+                        <text>Domain detect VPWS type.</text>
+                      </description>
+                    </enum>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="vpn-instance-name">
+                  <description>
+                    <text>VPN instance name.</text>
+                  </description>
+                  <type name="string">
+                    <length value="1..32"/>
+                  </type>
+                  <mandatory value="true"/>
+                </leaf>
+              </case>
+            </choice>
+          </container>
+          <leaf name="status">
+            <description>
+              <text>Detection domain enable status.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+                <description>
+                  <text>The value indicates detection function is enabled.</text>
+                </description>
+              </enum>
+              <enum name="disable">
+                <value value="0"/>
+                <description>
+                  <text>The value indicates detection function is disabled.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="disable"/>
+          </leaf>
+          <leaf name="period">
+            <description>
+              <text>The transmission period of the detection packets.</text>
+            </description>
+            <type name="uint8">
+              <range value="1..20"/>
+            </type>
+            <units name="s"/>
+            <default value="3"/>
+          </leaf>
+          <container name="detect-policy">
+            <description>
+              <text>The processing strategy for loop point.</text>
+            </description>
+            <choice name="policy">
+              <description>
+                <text>The processing strategy for loop point.</text>
+              </description>
+              <case name="block">
+                <description>
+                  <text>The block processing mode of loop point. When a loop point occurs, port data streams are isolated.</text>
+                </description>
+                <leaf name="block-policy">
+                  <description>
+                    <text>The block processing mode of loop point. When a loop point occurs, port data streams are isolated.</text>
+                  </description>
+                  <type name="empty"/>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="diagnosis-time">
+                  <description>
+                    <text>The continuous isolated time of data stream on the loop point.</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..60"/>
+                  </type>
+                  <units name="minute"/>
+                </leaf>
+              </case>
+              <case name="normal">
+                <description>
+                  <text>The normal processing mode of loop point. When a loop point occurs, port data streams are not isolated.</text>
+                </description>
+                <leaf name="normal-policy">
+                  <description>
+                    <text>The normal processing mode of loop point. When a loop point occurs, port data streams are not isolated.</text>
+                  </description>
+                  <type name="empty"/>
+                </leaf>
+              </case>
+            </choice>
+          </container>
+        </list>
+      </container>
+      <container name="interfaces">
+        <description>
+          <text>Interface configuration.</text>
+        </description>
+        <list name="interface">
+          <description>
+            <text>Interface configuration.</text>
+          </description>
+          <key value="if-name"/>
+          <leaf name="if-name">
+            <description>
+              <text>Interface name.</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <container name="detect-policy">
+            <description>
+              <text>The processing strategy for loop point.</text>
+            </description>
+            <choice name="policy">
+              <description>
+                <text>The processing strategy for loop point.</text>
+              </description>
+              <case name="block">
+                <description>
+                  <text>Interface block policy. If the port is a loop point,data streams are isolated.</text>
+                </description>
+                <leaf name="block-policy">
+                  <description>
+                    <text>The block processing mode of loop point. When a loop point occurs, port data streams are isolated.</text>
+                  </description>
+                  <type name="empty"/>
+                  <mandatory value="true"/>
+                </leaf>
+                <leaf name="diagnosis-time">
+                  <description>
+                    <text>The continuous isolated time of data stream on the loop point.</text>
+                  </description>
+                  <type name="uint32">
+                    <range value="1..60"/>
+                  </type>
+                  <units name="minute"/>
+                </leaf>
+              </case>
+              <case name="normal">
+                <description>
+                  <text>The normal processing mode of loop point. When a loop point occurs, port data streams are not isolated.</text>
+                </description>
+                <leaf name="normal-policy">
+                  <description>
+                    <text>The normal processing mode of loop point. When a loop point occurs, port data streams are not isolated.</text>
+                  </description>
+                  <type name="empty"/>
+                </leaf>
+              </case>
+            </choice>
+          </container>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <config value="false"/>
+    <description>
+      <text>The operation of Ethernet loop detect.</text>
+    </description>
+    <container name="eld">
+      <description>
+        <text>The operation of Ethernet loop detect.</text>
+      </description>
+      <container name="re-detects">
+        <description>
+          <text>Re-detect loop operation.</text>
+        </description>
+        <list name="re-detect">
+          <description>
+            <text>Re-detect loop operation.</text>
+          </description>
+          <key value="domain-name"/>
+          <leaf name="domain-name">
+            <description>
+              <text>Detection domain name.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>The state information of Ethernet loop detect.</text>
+    </description>
+    <container name="eld">
+      <description>
+        <text>The state information of Ethernet loop detect.</text>
+      </description>
+      <container name="domains">
+        <description>
+          <text>Detection domain information.</text>
+        </description>
+        <list name="domain">
+          <description>
+            <text>Detection domain configuration.</text>
+          </description>
+          <key value="name"/>
+          <leaf name="name">
+            <description>
+              <text>Detection domain name.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+          <leaf name="entity-name">
+            <description>
+              <text>Detection entity name.</text>
+            </description>
+            <type name="ncd:ifname"/>
+          </leaf>
+          <leaf name="status">
+            <description>
+              <text>Detection domain enable status.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+                <description>
+                  <text>The value indicates detection function is enabled.</text>
+                </description>
+              </enum>
+              <enum name="disable">
+                <value value="0"/>
+                <description>
+                  <text>The value indicates detection function is disabled.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="period">
+            <description>
+              <text>The transmission period of the detection packets.</text>
+            </description>
+            <type name="uint8">
+              <range value="1..20"/>
+            </type>
+          </leaf>
+          <leaf name="policy">
+            <description>
+              <text>The processing strategy for loop point.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="block">
+                <value value="1"/>
+                <description>
+                  <text>Domain block policy.</text>
+                </description>
+              </enum>
+              <enum name="normal">
+                <value value="2"/>
+                <description>
+                  <text>Domain normal policy.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="vlan-id">
+            <description>
+              <text>VLAN ID.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+          </leaf>
+          <leaf name="vpn-instance-type">
+            <description>
+              <text>VPN instance type.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="vpls">
+                <value value="1"/>
+                <description>
+                  <text>Domain detect VPLS type.</text>
+                </description>
+              </enum>
+              <enum name="vpws">
+                <value value="5"/>
+                <description>
+                  <text>Domain detect VPWS type.</text>
+                </description>
+              </enum>
+              <enum name="VLSS">
+                <value value="4"/>
+                <description>
+                  <text>Domain detect VLSS type.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="vpn-instance-name">
+            <description>
+              <text>VPN instance name.</text>
+            </description>
+            <type name="string">
+              <length value="1..32"/>
+            </type>
+          </leaf>
+          <leaf name="loop-flag">
+            <description>
+              <text>Loop state of port.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="true">
+                <value value="1"/>
+                <description>
+                  <text>The boolean value indicates current port is a loop point.</text>
+                </description>
+              </enum>
+              <enum name="false">
+                <value value="0"/>
+                <description>
+                  <text>The boolean value indicates current port is not a loop point.</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="loop-vlans">
+            <description>
+              <text>The port VLANs at loop point.</text>
+            </description>
+            <type name="ncd:bitmap"/>
+          </leaf>
+          <leaf name="loop-internal-vlan">
+            <description>
+              <text>The internal VLAN of the loop point.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <ncd:revise-date date="2020-10-24"/>
+          </leaf>
+          <leaf name="loop-external-vlan">
+            <description>
+              <text>The external VLAN of the loop point.</text>
+            </description>
+            <type name="uint16">
+              <range value="1..4094"/>
+            </type>
+            <ncd:revise-date date="2020-10-24"/>
+          </leaf>
+          <ncd:select fields="name"/>
+          <ncd:select fields="name entity-name"/>
+        </list>
+      </container>
+    </container>
+  </container>
+</module>

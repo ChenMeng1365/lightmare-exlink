@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-l3-multicast"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:l3mc="urn:huawei:yang:huawei-l3-multicast"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:rt="urn:huawei:yang:huawei-routing">
+  <namespace uri="urn:huawei:yang:huawei-l3-multicast"/>
+  <prefix value="l3mc"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-routing">
+    <prefix value="rt"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Multicast basic service package.</text>
+  </description>
+  <revision date="2019-03-30">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="mcast-base"/>
+  <typedef name="load-splitting-type">
+    <type name="enumeration">
+      <enum name="none">
+        <value value="0"/>
+        <description>
+          <text>Disable load splitting for multicast routes.</text>
+        </description>
+      </enum>
+      <enum name="source">
+        <value value="1"/>
+        <description>
+          <text>Specify the multicast source-based load splitting mode. This mode applies to a scenario in which multiple sources provide services for one group.</text>
+        </description>
+      </enum>
+      <enum name="group">
+        <value value="2"/>
+        <description>
+          <text>Specify the multicast group-based multicast load splitting mode. This mode applies to a scenario in which one source provides services for multiple groups.</text>
+        </description>
+      </enum>
+      <enum name="source-group">
+        <value value="3"/>
+        <description>
+          <text>Specify the multicast source-based and group-based load splitting mode. This mode applies to a scenario in which multiple sources provide services for multiple groups.</text>
+        </description>
+      </enum>
+      <enum name="balance">
+        <value value="4"/>
+        <description>
+          <text>Specify the stable-preferred load splitting. This mode enables a device to automatically adjust and balance entries on equal-cost routes when equal-cost routes are added or deleted, when multicast routing entries are deleted, or when load splitting weights are changed on interfaces. This mode applies to a scenario in which hosts frequently join or leave groups and automatic load splitting adjustment is required.</text>
+        </description>
+      </enum>
+      <enum name="balance-ucmp">
+        <value value="5"/>
+        <description>
+          <text>Specify the balance-ucmp load splitting.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Load splitting type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Add mcastbase configuration to the l3vpn module.</text>
+    </description>
+    <container name="multicast">
+      <description>
+        <text>Configure multicast in the instance.</text>
+      </description>
+      <container name="ipv4">
+        <when condition="(../../ni:name='_public_' and ../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']) or ../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']/l3vpn:route-distinguisher"/>
+        <presence value="Create mcastbaseAf4."/>
+        <description>
+          <text>Enable/disable multicast in the instance.</text>
+        </description>
+        <container name="global">
+          <description>
+            <text>Configure global multicast configurations.</text>
+          </description>
+          <leaf name="longest-match">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable the function of selecting an RPF route based on the longest matching rule. By default, the route with the highest preference is selected as the RPF route.</text>
+            </description>
+          </leaf>
+          <leaf name="load-splitting">
+            <type name="load-splitting-type"/>
+            <default value="none"/>
+            <description>
+              <text>Configure a multicast load splitting policy.</text>
+            </description>
+          </leaf>
+          <leaf name="cpu-fwd-disable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable CPU forwarding. By default, CPU forwarding is enabled.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="rpf-multi-topology">
+          <when condition="../../../ni:name='_public_'"/>
+          <must condition="../../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast']/rt:routing/rt:routing-manage/rt:topologys/rt:topology[rt:name='multicast']"/>
+          <presence value="Enable multicast services to run in a specified multicast topology instance."/>
+          <description>
+            <text>Enable/disable the multicast multi-topology function. By default, the multicast multi-topology function is disabled. Before enabling a multicast multi-topology, you must create it globally first.</text>
+          </description>
+        </container>
+      </container>
+      <container name="ipv6">
+        <when condition="(../../ni:name='_public_' and ../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']) or ../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']/l3vpn:route-distinguisher"/>
+        <presence value="Create mcastbase-af6."/>
+        <description>
+          <text>Enable/disable multicast IPv6 in the instance.</text>
+        </description>
+        <container name="global">
+          <description>
+            <text>Configure global IPv6 multicast configurations.</text>
+          </description>
+          <leaf name="load-splitting">
+            <type name="load-splitting-type"/>
+            <default value="none"/>
+            <description>
+              <text>Configure a multicast load splitting policy.</text>
+            </description>
+          </leaf>
+          <leaf name="cpu-fwd-disable">
+            <type name="boolean"/>
+            <default value="false"/>
+            <description>
+              <text>Enable/disable CPU forwarding. By default, CPU forwarding is enabled.</text>
+            </description>
+          </leaf>
+        </container>
+        <container name="rpf-multi-topology">
+          <when condition="../../../ni:name='_public_'"/>
+          <must condition="../../../l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']/rt:routing/rt:routing-manage/rt:topologys/rt:topology[rt:name='multicast']"/>
+          <presence value="Enable multicast services to run in a specified multicast topology instance."/>
+          <description>
+            <text>Enable/disable the multicast multi-topology function. By default, the multicast multi-topology function is disabled. Before enabling a multicast multi-topology, you must create it globally first.</text>
+          </description>
+        </container>
+      </container>
+    </container>
+  </augment>
+</module>

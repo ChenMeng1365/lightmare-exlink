@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="openconfig-routing-policy"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oc-rpol="http://openconfig.net/yang/routing-policy"
+        xmlns:oc-inet="http://openconfig.net/yang/types/inet"
+        xmlns:oc-if="http://openconfig.net/yang/interfaces"
+        xmlns:oc-pol-types="http://openconfig.net/yang/policy-types"
+        xmlns:oc-ext="http://openconfig.net/yang/openconfig-ext">
+  <yang-version value="1"/>
+  <namespace uri="http://openconfig.net/yang/routing-policy"/>
+  <prefix value="oc-rpol"/>
+  <import module="openconfig-inet-types">
+    <prefix value="oc-inet"/>
+  </import>
+  <import module="openconfig-interfaces">
+    <prefix value="oc-if"/>
+  </import>
+  <import module="openconfig-policy-types">
+    <prefix value="oc-pol-types"/>
+  </import>
+  <import module="openconfig-extensions">
+    <prefix value="oc-ext"/>
+  </import>
+  <organization>
+    <text>OpenConfig working group</text>
+  </organization>
+  <contact>
+    <text>OpenConfig working group
+netopenconfig@googlegroups.com</text>
+  </contact>
+  <description>
+    <text>This module describes a YANG model for routing policy
+configuration. It is a limited subset of all of the policy
+configuration parameters available in the variety of vendor
+implementations, but supports widely used constructs for managing
+how routes are imported, exported, and modified across different
+routing protocols.  This module is intended to be used in
+conjunction with routing protocol configuration models (e.g.,
+BGP) defined in other modules.
+
+Route policy expression:
+
+Policies are expressed as a set of top-level policy definitions,
+each of which consists of a sequence of policy statements. Policy
+statements consist of simple condition-action tuples. Conditions
+may include mutiple match or comparison operations, and similarly
+actions may be multitude of changes to route attributes or a
+final disposition of accepting or rejecting the route.
+
+Route policy evaluation:
+
+Policy definitions are referenced in routing protocol
+configurations using import and export configuration statements.
+The arguments are members of an ordered list of named policy
+definitions which comprise a policy chain, and optionally, an
+explicit default policy action (i.e., reject or accept).
+
+Evaluation of each policy definition proceeds by evaluating its
+corresponding individual policy statements in order.  When a
+condition statement in a policy statement is satisfied, the
+corresponding action statement is executed.  If the action
+statement has either accept-route or reject-route actions, policy
+evaluation of the current policy definition stops, and no further
+policy definitions in the chain are evaluated.
+
+If the condition is not satisfied, then evaluation proceeds to
+the next policy statement.  If none of the policy statement
+conditions are satisfied, then evaluation of the current policy
+definition stops, and the next policy definition in the chain is
+evaluated.  When the end of the policy chain is reached, the
+default route disposition action is performed (i.e., reject-route
+unless an an alternate default action is specified for the
+chain).
+
+Policy 'subroutines' (or nested policies) are supported by
+allowing policy statement conditions to reference another policy
+definition which applies conditions and actions from the
+referenced policy before returning to the calling policy
+statement and resuming evaluation.  If the called policy
+results in an accept-route (either explicit or by default), then
+the subroutine returns an effective true value to the calling
+policy.  Similarly, a reject-route action returns false.  If the
+subroutine returns true, the calling policy continues to evaluate
+the remaining conditions (using a modified route if the
+subroutine performed any changes to the route).</text>
+  </description>
+  <oc-ext:openconfig-version semver="3.1.1"/>
+  <revision date="2018-11-21">
+    <description>
+      <text>Add OpenConfig module metadata extensions.</text>
+    </description>
+    <reference>
+      <text>3.1.1</text>
+    </reference>
+  </revision>
+  <revision date="2018-06-05">
+    <description>
+      <text>Add PIM, IGMP to INSTALL_PROTOCOL_TYPES identity</text>
+    </description>
+    <reference>
+      <text>3.1.0</text>
+    </reference>
+  </revision>
+  <revision date="2017-07-14">
+    <description>
+      <text>Replace policy choice node/type with policy-result
+enumeration;simplified defined set naming;removed generic
+IGP actions; migrate to OpenConfig types; added mode for
+prefix sets</text>
+    </description>
+    <reference>
+      <text>3.0.0</text>
+    </reference>
+  </revision>
+  <revision date="2016-05-12">
+    <description>
+      <text>OpenConfig public release</text>
+    </description>
+    <reference>
+      <text>2.0.1</text>
+    </reference>
+  </revision>
+  <oc-ext:regexp-posix/>
+  <oc-ext:catalog-organization org="openconfig"/>
+  <oc-ext:origin origin="openconfig"/>
+  <typedef name="default-policy-type">
+    <type name="enumeration">
+      <enum name="ACCEPT_ROUTE">
+        <description>
+          <text>Default policy to accept the route</text>
+        </description>
+      </enum>
+      <enum name="REJECT_ROUTE">
+        <description>
+          <text>Default policy to reject the route</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Type used to specify route disposition in
+a policy chain</text>
+    </description>
+  </typedef>
+  <typedef name="policy-result-type">
+    <type name="enumeration">
+      <enum name="ACCEPT_ROUTE">
+        <description>
+          <text>Policy accepts the route</text>
+        </description>
+      </enum>
+      <enum name="REJECT_ROUTE">
+        <description>
+          <text>Policy rejects the route</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Type used to specify route disposition in
+a policy chain</text>
+    </description>
+  </typedef>
+  <grouping name="prefix-set-config">
+    <description>
+      <text>Configuration data for prefix sets used in policy
+definitions.</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>name / label of the prefix set -- this is used to
+reference the set in match conditions</text>
+      </description>
+    </leaf>
+    <leaf name="mode">
+      <type name="enumeration">
+        <enum name="IPV4">
+          <description>
+            <text>Prefix set contains IPv4 prefixes only</text>
+          </description>
+        </enum>
+        <enum name="IPV6">
+          <description>
+            <text>Prefix set contains IPv6 prefixes only</text>
+          </description>
+        </enum>
+        <enum name="MIXED">
+          <description>
+            <text>Prefix set contains mixed IPv4 and IPv6 prefixes</text>
+          </description>
+        </enum>
+      </type>
+      <description>
+        <text>Indicates the mode of the prefix set, in terms of which
+address families (IPv4, IPv6, or both) are present.  The
+mode provides a hint, but the device must validate that all
+prefixes are of the indicated type, and is expected to
+reject the configuration if there is a discrepancy.  The
+MIXED mode may not be supported on devices that require
+prefix sets to be of only one address family.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="prefix-set-state">
+    <description>
+      <text>Operational state data for prefix sets</text>
+    </description>
+  </grouping>
+  <grouping name="prefix-set-top">
+    <description>
+      <text>Top-level data definitions for a list of IPv4 or IPv6
+prefixes which are matched as part of a policy</text>
+    </description>
+    <container name="prefix-sets">
+      <description>
+        <text>Enclosing container </text>
+      </description>
+      <list name="prefix-set">
+        <key value="name"/>
+        <description>
+          <text>List of the defined prefix sets</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to prefix name list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for prefix sets</text>
+          </description>
+          <uses name="prefix-set-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data </text>
+          </description>
+          <uses name="prefix-set-config"/>
+          <uses name="prefix-set-state"/>
+        </container>
+        <uses name="prefix-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="prefix-config">
+    <description>
+      <text>Configuration data for a prefix definition</text>
+    </description>
+    <leaf name="ip-prefix">
+      <type name="oc-inet:ip-prefix"/>
+      <mandatory value="true"/>
+      <description>
+        <text>The prefix member in CIDR notation -- while the
+prefix may be either IPv4 or IPv6, most
+implementations require all members of the prefix set
+to be the same address family.  Mixing address types in
+the same prefix set is likely to cause an error.</text>
+      </description>
+    </leaf>
+    <leaf name="masklength-range">
+      <type name="string">
+        <pattern value="^([0-9]+\.\.[0-9]+)|exact$"/>
+      </type>
+      <description>
+        <text>Defines a range for the masklength, or 'exact' if
+the prefix has an exact length.
+
+Example: 10.3.192.0/21 through 10.3.192.0/24 would be
+expressed as prefix: 10.3.192.0/21,
+masklength-range: 21..24.
+
+Example: 10.3.192.0/21 would be expressed as
+prefix: 10.3.192.0/21,
+masklength-range: exact</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="prefix-state">
+    <description>
+      <text>Operational state data for prefix definitions</text>
+    </description>
+  </grouping>
+  <grouping name="prefix-top">
+    <description>
+      <text>Top-level grouping for prefixes in a prefix list</text>
+    </description>
+    <container name="prefixes">
+      <description>
+        <text>Enclosing container for the list of prefixes in a policy
+prefix list</text>
+      </description>
+      <list name="prefix">
+        <key value="ip-prefix masklength-range"/>
+        <description>
+          <text>List of prefixes in the prefix set</text>
+        </description>
+        <leaf name="ip-prefix">
+          <type name="leafref">
+            <path value="../config/ip-prefix"/>
+          </type>
+          <description>
+            <text>Reference to the ip-prefix list key.</text>
+          </description>
+        </leaf>
+        <leaf name="masklength-range">
+          <type name="leafref">
+            <path value="../config/masklength-range"/>
+          </type>
+          <description>
+            <text>Reference to the masklength-range list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for prefix definition</text>
+          </description>
+          <uses name="prefix-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for prefix definition</text>
+          </description>
+          <uses name="prefix-config"/>
+          <uses name="prefix-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="neighbor-set-config">
+    <description>
+      <text>Configuration data for neighbor set definitions</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>name / label of the neighbor set -- this is used to
+reference the set in match conditions</text>
+      </description>
+    </leaf>
+    <leaf-list name="address">
+      <type name="oc-inet:ip-address"/>
+      <description>
+        <text>List of IP addresses in the neighbor set</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="neighbor-set-state">
+    <description>
+      <text>Operational state data for neighbor set definitions</text>
+    </description>
+  </grouping>
+  <grouping name="neighbor-set-top">
+    <description>
+      <text>Top-level data definition for a list of IPv4 or IPv6
+neighbors which can be matched in a routing policy</text>
+    </description>
+    <container name="neighbor-sets">
+      <description>
+        <text>Enclosing container for the list of neighbor set
+definitions</text>
+      </description>
+      <list name="neighbor-set">
+        <key value="name"/>
+        <description>
+          <text>List of defined neighbor sets for use in policies.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to the neighbor set name list key.</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for neighbor sets.</text>
+          </description>
+          <uses name="neighbor-set-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for neighbor sets.</text>
+          </description>
+          <uses name="neighbor-set-config"/>
+          <uses name="neighbor-set-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="tag-set-config">
+    <description>
+      <text>Configuration data for tag set definitions.</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>name / label of the tag set -- this is used to reference
+the set in match conditions</text>
+      </description>
+    </leaf>
+    <leaf-list name="tag-value">
+      <type name="oc-pol-types:tag-type"/>
+      <description>
+        <text>Value of the tag set member</text>
+      </description>
+    </leaf-list>
+  </grouping>
+  <grouping name="tag-set-state">
+    <description>
+      <text>Operational state data for tag set definitions.</text>
+    </description>
+  </grouping>
+  <grouping name="tag-set-top">
+    <description>
+      <text>Top-level data definitions for a list of tags which can
+be matched in policies</text>
+    </description>
+    <container name="tag-sets">
+      <description>
+        <text>Enclosing container for the list of tag sets.</text>
+      </description>
+      <list name="tag-set">
+        <key value="name"/>
+        <description>
+          <text>List of tag set definitions.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to the tag set name list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for tag sets</text>
+          </description>
+          <uses name="tag-set-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for tag sets</text>
+          </description>
+          <uses name="tag-set-config"/>
+          <uses name="tag-set-state"/>
+        </container>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="generic-defined-sets">
+    <description>
+      <text>Data definitions for pre-defined sets of attributes used in
+policy match conditions.  These sets are generic and can
+be used in matching conditions in different routing
+protocols.</text>
+    </description>
+    <uses name="prefix-set-top"/>
+    <uses name="neighbor-set-top"/>
+    <uses name="tag-set-top"/>
+  </grouping>
+  <grouping name="match-set-options-group">
+    <description>
+      <text>Grouping containing options relating to how a particular set
+should be matched</text>
+    </description>
+    <leaf name="match-set-options">
+      <type name="oc-pol-types:match-set-options-type"/>
+      <description>
+        <text>Optional parameter that governs the behaviour of the
+match operation</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="match-set-options-restricted-group">
+    <description>
+      <text>Grouping for a restricted set of match operation modifiers</text>
+    </description>
+    <leaf name="match-set-options">
+      <type name="oc-pol-types:match-set-options-restricted-type"/>
+      <description>
+        <text>Optional parameter that governs the behaviour of the
+match operation.  This leaf only supports matching on ANY
+member of the set or inverting the match.  Matching on ALL is
+not supported</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="match-interface-condition-config">
+    <description>
+      <text>Configuration data for interface match condition</text>
+    </description>
+    <uses name="oc-if:interface-ref-common"/>
+  </grouping>
+  <grouping name="match-interface-condition-state">
+    <description>
+      <text>Operational state data for interface match condition</text>
+    </description>
+  </grouping>
+  <grouping name="match-interface-condition-top">
+    <description>
+      <text>Top-level grouping for the interface match condition</text>
+    </description>
+    <container name="match-interface">
+      <description>
+        <text>Top-level container for interface match conditions</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for interface match conditions</text>
+        </description>
+        <uses name="match-interface-condition-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for interface match conditions</text>
+        </description>
+        <uses name="match-interface-condition-config"/>
+        <uses name="match-interface-condition-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="prefix-set-condition-config">
+    <description>
+      <text>Configuration data for prefix-set conditions</text>
+    </description>
+    <leaf name="prefix-set">
+      <type name="leafref">
+        <path value="../../../../../../../../defined-sets/prefix-sets/prefix-set/config/name"/>
+      </type>
+      <description>
+        <text>References a defined prefix set</text>
+      </description>
+    </leaf>
+    <uses name="match-set-options-restricted-group"/>
+  </grouping>
+  <grouping name="prefix-set-condition-state">
+    <description>
+      <text>Operational state data for prefix-set conditions</text>
+    </description>
+  </grouping>
+  <grouping name="prefix-set-condition-top">
+    <description>
+      <text>Top-level grouping for prefix-set conditions</text>
+    </description>
+    <container name="match-prefix-set">
+      <description>
+        <text>Match a referenced prefix-set according to the logic
+defined in the match-set-options leaf</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for a prefix-set condition</text>
+        </description>
+        <uses name="prefix-set-condition-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for a prefix-set condition</text>
+        </description>
+        <uses name="prefix-set-condition-config"/>
+        <uses name="prefix-set-condition-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="neighbor-set-condition-config">
+    <description>
+      <text>Configuration data for neighbor-set conditions</text>
+    </description>
+    <leaf name="neighbor-set">
+      <type name="leafref">
+        <path value="../../../../../../../../defined-sets/neighbor-sets/neighbor-set/name"/>
+      </type>
+      <description>
+        <text>References a defined neighbor set</text>
+      </description>
+    </leaf>
+    <uses name="match-set-options-restricted-group"/>
+  </grouping>
+  <grouping name="neighbor-set-condition-state">
+    <description>
+      <text>Operational state data for neighbor-set conditions</text>
+    </description>
+  </grouping>
+  <grouping name="neighbor-set-condition-top">
+    <description>
+      <text>Top-level grouping for neighbor-set conditions</text>
+    </description>
+    <container name="match-neighbor-set">
+      <description>
+        <text>Match a referenced neighbor set according to the logic
+defined in the match-set-options-leaf</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data </text>
+        </description>
+        <uses name="neighbor-set-condition-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data </text>
+        </description>
+        <uses name="neighbor-set-condition-config"/>
+        <uses name="neighbor-set-condition-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="tag-set-condition-config">
+    <description>
+      <text>Configuration data for tag-set condition statements</text>
+    </description>
+    <leaf name="tag-set">
+      <type name="leafref">
+        <path value="../../../../../../../../defined-sets/tag-sets/tag-set/name"/>
+      </type>
+      <description>
+        <text>References a defined tag set</text>
+      </description>
+    </leaf>
+    <uses name="match-set-options-restricted-group"/>
+  </grouping>
+  <grouping name="tag-set-condition-state">
+    <description>
+      <text>Operational state data for tag-set condition statements</text>
+    </description>
+  </grouping>
+  <grouping name="tag-set-condition-top">
+    <description>
+      <text>Top-level grouping for tag-set conditions</text>
+    </description>
+    <container name="match-tag-set">
+      <description>
+        <text>Match a referenced tag set according to the logic defined
+in the match-options-set leaf</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for tag-set conditions</text>
+        </description>
+        <uses name="tag-set-condition-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data tag-set conditions</text>
+        </description>
+        <uses name="tag-set-condition-config"/>
+        <uses name="tag-set-condition-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="generic-conditions">
+    <description>
+      <text>Condition statement definitions for checking
+membership in a generic defined set</text>
+    </description>
+    <uses name="match-interface-condition-top"/>
+    <uses name="prefix-set-condition-top"/>
+    <uses name="neighbor-set-condition-top"/>
+    <uses name="tag-set-condition-top"/>
+  </grouping>
+  <grouping name="generic-actions">
+    <description>
+      <text>Definitions for common set of policy action statements that
+manage the disposition or control flow of the policy</text>
+    </description>
+    <leaf name="policy-result">
+      <type name="policy-result-type"/>
+      <description>
+        <text>Select the final disposition for the route, either
+accept or reject.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="policy-conditions-config">
+    <description>
+      <text>Configuration data for general policy conditions, i.e., those
+not related to match-sets</text>
+    </description>
+    <leaf name="call-policy">
+      <type name="leafref">
+        <path value="../../../../../../../oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name"/>
+      </type>
+      <description>
+        <text>Applies the statements from the specified policy
+definition and then returns control the current
+policy statement. Note that the called policy may
+itself call other policies (subject to
+implementation limitations). This is intended to
+provide a policy 'subroutine' capability.  The
+called policy should contain an explicit or a
+default route disposition that returns an
+effective true (accept-route) or false
+(reject-route), otherwise the behavior may be
+ambiguous and implementation dependent</text>
+      </description>
+    </leaf>
+    <leaf name="install-protocol-eq">
+      <type name="identityref">
+        <base name="oc-pol-types:INSTALL_PROTOCOL_TYPE"/>
+      </type>
+      <description>
+        <text>Condition to check the protocol / method used to install
+the route into the local routing table</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="policy-conditions-state">
+    <description>
+      <text>Operational state data for policy conditions</text>
+    </description>
+  </grouping>
+  <grouping name="policy-conditions-top">
+    <description>
+      <text>Top-level grouping for policy conditions</text>
+    </description>
+    <container name="conditions">
+      <description>
+        <text>Condition statements for the current policy statement</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for policy conditions</text>
+        </description>
+        <uses name="policy-conditions-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for policy conditions</text>
+        </description>
+        <uses name="policy-conditions-config"/>
+        <uses name="policy-conditions-state"/>
+      </container>
+      <uses name="generic-conditions"/>
+    </container>
+  </grouping>
+  <grouping name="policy-statements-config">
+    <description>
+      <text>Configuration data for policy statements</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>name of the policy statement</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="policy-statements-state">
+    <description>
+      <text>Operational state data for policy statements</text>
+    </description>
+  </grouping>
+  <grouping name="policy-actions-config">
+    <description>
+      <text>Configuration data for policy actions</text>
+    </description>
+    <uses name="generic-actions"/>
+  </grouping>
+  <grouping name="policy-actions-state">
+    <description>
+      <text>Operational state data for policy actions</text>
+    </description>
+  </grouping>
+  <grouping name="policy-actions-top">
+    <description>
+      <text>Top-level grouping for policy actions</text>
+    </description>
+    <container name="actions">
+      <description>
+        <text>Top-level container for policy action statements</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Configuration data for policy actions</text>
+        </description>
+        <uses name="policy-actions-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state data for policy actions</text>
+        </description>
+        <uses name="policy-actions-config"/>
+        <uses name="policy-actions-state"/>
+      </container>
+    </container>
+  </grouping>
+  <grouping name="policy-statements-top">
+    <description>
+      <text>Top-level grouping for the policy statements list</text>
+    </description>
+    <container name="statements">
+      <description>
+        <text>Enclosing container for policy statements</text>
+      </description>
+      <list name="statement">
+        <key value="name"/>
+        <ordered-by value="user"/>
+        <description>
+          <text>Policy statements group conditions and actions
+within a policy definition.  They are evaluated in
+the order specified (see the description of policy
+evaluation at the top of this module.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for policy statements</text>
+          </description>
+          <uses name="policy-statements-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for policy statements</text>
+          </description>
+          <uses name="policy-statements-config"/>
+          <uses name="policy-statements-state"/>
+        </container>
+        <uses name="policy-conditions-top"/>
+        <uses name="policy-actions-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="defined-sets-top">
+    <description>
+      <text>Top-level grouping for defined set definitions</text>
+    </description>
+    <container name="defined-sets">
+      <description>
+        <text>Predefined sets of attributes used in policy match
+statements</text>
+      </description>
+      <uses name="generic-defined-sets"/>
+    </container>
+  </grouping>
+  <grouping name="policy-definitions-config">
+    <description>
+      <text>Configuration data for policy definitions</text>
+    </description>
+    <leaf name="name">
+      <type name="string"/>
+      <description>
+        <text>Name of the top-level policy definition -- this name
+is used in references to the current policy</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="policy-definitions-state">
+    <description>
+      <text>Operational state data for policy definitions</text>
+    </description>
+  </grouping>
+  <grouping name="policy-definitions-top">
+    <description>
+      <text>Top-level grouping for the policy definition list</text>
+    </description>
+    <container name="policy-definitions">
+      <description>
+        <text>Enclosing container for the list of top-level policy
+ definitions</text>
+      </description>
+      <list name="policy-definition">
+        <key value="name"/>
+        <description>
+          <text>List of top-level policy definitions, keyed by unique
+name.  These policy definitions are expected to be
+referenced (by name) in policy chains specified in import
+or export configuration statements.</text>
+        </description>
+        <leaf name="name">
+          <type name="leafref">
+            <path value="../config/name"/>
+          </type>
+          <description>
+            <text>Reference to the list key</text>
+          </description>
+        </leaf>
+        <container name="config">
+          <description>
+            <text>Configuration data for policy defintions</text>
+          </description>
+          <uses name="policy-definitions-config"/>
+        </container>
+        <container name="state">
+          <config value="false"/>
+          <description>
+            <text>Operational state data for policy definitions</text>
+          </description>
+          <uses name="policy-definitions-config"/>
+          <uses name="policy-definitions-state"/>
+        </container>
+        <uses name="policy-statements-top"/>
+      </list>
+    </container>
+  </grouping>
+  <grouping name="routing-policy-top">
+    <description>
+      <text>Top level container for OpenConfig routing policy</text>
+    </description>
+    <container name="routing-policy">
+      <description>
+        <text>Top-level container for all routing policy configuration</text>
+      </description>
+      <uses name="defined-sets-top"/>
+      <uses name="policy-definitions-top"/>
+    </container>
+  </grouping>
+  <grouping name="apply-policy-import-config">
+    <description>
+      <text>Configuration data for applying import policies</text>
+    </description>
+    <leaf-list name="import-policy">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name"/>
+      </type>
+      <ordered-by value="user"/>
+      <description>
+        <text>list of policy names in sequence to be applied on
+receiving a routing update in the current context, e.g.,
+for the current peer group, neighbor, address family,
+etc.</text>
+      </description>
+    </leaf-list>
+    <leaf name="default-import-policy">
+      <type name="default-policy-type"/>
+      <default value="REJECT_ROUTE"/>
+      <description>
+        <text>explicitly set a default policy if no policy definition
+in the import policy chain is satisfied.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="apply-policy-export-config">
+    <description>
+      <text>Configuration data for applying export policies</text>
+    </description>
+    <leaf-list name="export-policy">
+      <type name="leafref">
+        <path value="/oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:name"/>
+      </type>
+      <ordered-by value="user"/>
+      <description>
+        <text>list of policy names in sequence to be applied on
+sending a routing update in the current context, e.g.,
+for the current peer group, neighbor, address family,
+etc.</text>
+      </description>
+    </leaf-list>
+    <leaf name="default-export-policy">
+      <type name="default-policy-type"/>
+      <default value="REJECT_ROUTE"/>
+      <description>
+        <text>explicitly set a default policy if no policy definition
+in the export policy chain is satisfied.</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="apply-policy-config">
+    <description>
+      <text>Configuration data for routing policies</text>
+    </description>
+    <uses name="apply-policy-import-config"/>
+    <uses name="apply-policy-export-config"/>
+  </grouping>
+  <grouping name="apply-policy-state">
+    <description>
+      <text>Operational state associated with routing policy</text>
+    </description>
+  </grouping>
+  <grouping name="apply-policy-group">
+    <description>
+      <text>Top level container for routing policy applications. This
+grouping is intended to be used in routing models where
+needed.</text>
+    </description>
+    <container name="apply-policy">
+      <description>
+        <text>Anchor point for routing policies in the model.
+Import and export policies are with respect to the local
+routing table, i.e., export (send) and import (receive),
+depending on the context.</text>
+      </description>
+      <container name="config">
+        <description>
+          <text>Policy configuration data.</text>
+        </description>
+        <uses name="apply-policy-config"/>
+      </container>
+      <container name="state">
+        <config value="false"/>
+        <description>
+          <text>Operational state for routing policy</text>
+        </description>
+        <uses name="apply-policy-config"/>
+        <uses name="apply-policy-state"/>
+      </container>
+    </container>
+  </grouping>
+  <uses name="routing-policy-top"/>
+</module>

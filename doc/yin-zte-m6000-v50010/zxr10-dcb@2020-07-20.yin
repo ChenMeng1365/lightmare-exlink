@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-dcb"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:dcb="http://www.zte.com.cn/zxr10/netconf/schema/rosng/dcb"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/dcb"/>
+  <prefix value="dcb"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation  
+   Nanjing Institute of ZTE Corporation 
+   No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China 
+   Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe the DCB.</text>
+  </description>
+  <revision date="2020-07-20">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <container name="configuration">
+    <description>
+      <text>DCB configuration information.</text>
+    </description>
+    <container name="dcb">
+      <description>
+        <text>DCB configuration information.</text>
+      </description>
+      <container name="pfc">
+        <description>
+          <text>PFC configuration information.</text>
+        </description>
+        <container name="global">
+          <description>
+            <text>PFC global configuration information.</text>
+          </description>
+          <leaf name="admin-status">
+            <description>
+              <text>Indicates whether the PFC funtion is enabled.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enabled">
+                <value value="1"/>
+                <description>
+                  <text>Enable the PFC function.</text>
+                </description>
+              </enum>
+              <enum name="disabled">
+                <value value="2"/>
+                <description>
+                  <text>Disable the PFC function.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="enabled"/>
+          </leaf>
+        </container>
+        <container name="interfaces">
+          <description>
+            <text>PFC configuration information on interfaces.</text>
+          </description>
+          <list name="interface">
+            <description>
+              <text>PFC configuration information on an interface.</text>
+            </description>
+            <key value="ifname"/>
+            <leaf name="ifname">
+              <description>
+                <text>Interface name.</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="willing">
+              <description>
+                <text>Indicates whether the local interface is willing to accept the attribute from the remote interface.</text>
+              </description>
+              <type name="enumeration">
+                <enum name="enabled">
+                  <value value="1"/>
+                  <description>
+                    <text>The local interface is willing to accept the attribute from the remote interface.</text>
+                  </description>
+                </enum>
+                <enum name="disabled">
+                  <value value="2"/>
+                  <description>
+                    <text>The local interface is not willing to accept the attribute from the remote interface.</text>
+                  </description>
+                </enum>
+              </type>
+              <default value="disabled"/>
+            </leaf>
+            <leaf name="priority-range">
+              <description>
+                <text>The priority range that the PFC function is enabled.</text>
+              </description>
+              <type name="ncd:range">
+                <pattern value="((([0-7]-[0-7])|([0-7])){1,1}(,(([0-7]-[0-7])|([0-7])){1,1}){0,7})">
+                  <description>
+                    <text>Priority range. Single priority value or range(max num:8; spacing mark:,) in &lt;0-7&gt; are supportted.</text>
+                  </description>
+                </pattern>
+              </type>
+            </leaf>
+          </list>
+        </container>
+        <container name="priorities">
+          <description>
+            <text>PFC configuration information on priorities.</text>
+          </description>
+          <list name="priority">
+            <description>
+              <text>PFC configuration information on a priority.</text>
+            </description>
+            <key value="ifname priority"/>
+            <leaf name="ifname">
+              <description>
+                <text>Interface name.</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="priority">
+              <description>
+                <text>Prioity value.</text>
+              </description>
+              <type name="uint8">
+                <range value="0..7"/>
+              </type>
+            </leaf>
+            <leaf name="pause-time">
+              <description>
+                <text>The pause time in PFC PDU.</text>
+              </description>
+              <type name="uint16">
+                <range value="0..65535"/>
+              </type>
+              <default value="65535"/>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="operation">
+    <description>
+      <text>DCB operation information.</text>
+    </description>
+    <config value="false"/>
+    <container name="dcb">
+      <description>
+        <text>DCB operation information.</text>
+      </description>
+      <container name="pfc">
+        <description>
+          <text>PFC operation information.</text>
+        </description>
+        <container name="clear">
+          <description>
+            <text>Clear PFC information.</text>
+          </description>
+          <container name="pause-frame-statistics">
+            <description>
+              <text>Pause frame statistics.</text>
+            </description>
+            <choice name="type">
+              <case name="all">
+                <description>
+                  <text>All pause frame statistics.</text>
+                </description>
+                <leaf name="all">
+                  <description>
+                    <text>All pause frame statistics.</text>
+                  </description>
+                  <type name="empty"/>
+                </leaf>
+              </case>
+              <case name="ifname">
+                <description>
+                  <text>Pause frame statistics of interfaces.</text>
+                </description>
+                <list name="if-statistics">
+                  <description>
+                    <text>Pause frame statistics of an interface.</text>
+                  </description>
+                  <key value="ifname"/>
+                  <leaf name="ifname">
+                    <description>
+                      <text>Interface name.</text>
+                    </description>
+                    <type name="ncd:ifname"/>
+                  </leaf>
+                </list>
+              </case>
+              <case name="ifname-pri">
+                <description>
+                  <text>Pause frame statistics of priority on an interface.</text>
+                </description>
+                <list name="if-pri-statistics">
+                  <description>
+                    <text>Pause frame statistics of priority on an interface.</text>
+                  </description>
+                  <key value="ifname priority"/>
+                  <leaf name="ifname">
+                    <description>
+                      <text>Interface name.</text>
+                    </description>
+                    <type name="ncd:ifname"/>
+                  </leaf>
+                  <leaf name="priority">
+                    <description>
+                      <text>Priority value.</text>
+                    </description>
+                    <type name="uint8">
+                      <range value="0..7"/>
+                    </type>
+                  </leaf>
+                </list>
+              </case>
+            </choice>
+          </container>
+        </container>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <description>
+      <text>DCB state information.</text>
+    </description>
+    <config value="false"/>
+    <container name="dcb">
+      <description>
+        <text>DCB state information.</text>
+      </description>
+      <container name="pfc">
+        <description>
+          <text>PFC state information.</text>
+        </description>
+        <container name="pause-frame-statisticses">
+          <description>
+            <text>Pause frame statistics.</text>
+          </description>
+          <list name="pause-frame-statistics">
+            <description>
+              <text>Pause frame statistics.</text>
+            </description>
+            <key value="ifname priority"/>
+            <ncd:select fields="ifname"/>
+            <ncd:select fields="ifname priority"/>
+            <leaf name="ifname">
+              <description>
+                <text>Interface name.</text>
+              </description>
+              <type name="ncd:ifname"/>
+            </leaf>
+            <leaf name="priority">
+              <description>
+                <text>Priority value.</text>
+              </description>
+              <type name="uint8">
+                <range value="0..7"/>
+              </type>
+            </leaf>
+            <leaf name="output-total">
+              <description>
+                <text>The total number of pause frames sent.</text>
+              </description>
+              <type name="uint64"/>
+            </leaf>
+            <leaf name="input-total">
+              <description>
+                <text>The total number of pause frames received.</text>
+              </description>
+              <type name="uint64"/>
+            </leaf>
+            <leaf name="output-rate">
+              <description>
+                <text>The current rate of pause frames sent.</text>
+              </description>
+              <type name="uint64"/>
+            </leaf>
+            <leaf name="input-rate">
+              <description>
+                <text>The current rate of pause frames received.</text>
+              </description>
+              <type name="uint64"/>
+            </leaf>
+          </list>
+        </container>
+      </container>
+    </container>
+  </container>
+</module>

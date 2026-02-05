@@ -1,0 +1,533 @@
+module: huawei-bras-l2tp-access
+  +--rw bras-l2tp-access
+     +--rw l2tp-global
+     |  +--rw l2tp-enable?         boolean
+     |  +--rw auto-reset-enable?   empty
+     +--rw lac-global
+     |  +--rw session-limit-enable?    boolean
+     |  +--rw tunnel-base-id?          uint32
+     |  +--rw aging-time?              uint32
+     |  +--rw calling-number-enable?   boolean
+     |  +--rw calling-vlan-invalid?    boolean
+     +--rw lns-global
+     |  +--rw tunnel-limit
+     |  |  +--rw limit
+     |  |  |  +--rw set-value?   uint32
+     |  |  +--ro used-ids
+     |  |     +--ro number?   uint32
+     |  +--rw lns-fast-replys
+     |  |  +--rw lns-fast-reply* [slot-id]
+     |  |     +--rw slot-id    string
+     |  +--rw slot-block
+     |  |  +--rw slot-id*   string
+     |  +--rw l2tp-aaa
+     |  |  +--rw lns-user-limit
+     |  |  |  +--rw limit-value?   uint32
+     |  |  +--rw bgp-over-lns
+     |  |     +--rw lns-enable?   boolean
+     |  +--rw other-function
+     |     +--rw protocol-packet-enable?   boolean
+     |     +--rw accm-enable?              boolean
+     +--rw l2tp-groups
+     |  +--rw l2tp-group* [name]
+     |     +--rw name                   string
+     |     +--rw l2tp-tunnel
+     |     |  +--rw authentication
+     |     |  |  +--rw authen-enable?         enumeration
+     |     |  |  +--rw password?              pub-type:password-extend
+     |     |  |  +--rw aaa-auth-enable?       boolean
+     |     |  |  +--rw radius-force-enable?   boolean
+     |     |  +--rw other-parameter-sets
+     |     |  |  +--rw tunnel-name?            string
+     |     |  |  +--rw description?            string
+     |     |  |  +--rw idle-cut?               uint32
+     |     |  |  +--rw time-out?               uint32
+     |     |  |  +--rw hello-time?             uint32
+     |     |  |  +--rw retransmit-time?        uint32
+     |     |  |  +--rw recive-window-size?     uint32
+     |     |  |  +--rw retrans-queue-length?   uint32
+     |     |  |  +--rw inbound-name?           -> /qos:qos/queue-scheduler-template/user-group-queues/user-group-queue/name
+     |     |  |  +--rw outbound-name?          -> /qos:qos/queue-scheduler-template/user-group-queues/user-group-queue/name
+     |     |  +--rw other-function-sets
+     |     |     +--rw alarm-enable?              boolean
+     |     |     +--rw avp-nas-port-enable?       empty
+     |     |     +--rw avp46-enable?              empty
+     |     |     +--rw avp-cncrypte-enable?       empty
+     |     |     +--rw peer-hello-check-enable?   empty
+     |     +--rw l2tp-lac
+     |     |  +--rw tunnel-mode
+     |     |  |  +--rw (mode)?
+     |     |  |     +--:(load-share)
+     |     |  |     |  +--rw load-share-enable?   empty
+     |     |  |     +--:(priority)
+     |     |  |     |  +--rw priority-enable?     empty
+     |     |  |     +--:(per-user)
+     |     |  |        +--rw per-user-enable?     empty
+     |     |  +--rw source-interface!
+     |     |  |  +--rw name          -> /ifm:ifm/interfaces/interface/name
+     |     |  |  +--rw rui-enable?   boolean
+     |     |  +--rw start-l2tp!
+     |     |  |  +--rw lns-ips
+     |     |  |     +--rw lns-ip* [identifier-name]
+     |     |  |        +--rw identifier-name    string
+     |     |  |        +--rw ip-address         inet:ipv4-address-no-zone
+     |     |  |        +--rw weight?            uint32
+     |     |  |        +--rw preference?        uint32
+     |     |  |        +--rw remote-name?       string
+     |     |  +--rw local-name-lns-ips
+     |     |  |  +--rw local-name-lns-ip* [ip-address]
+     |     |  |     +--rw ip-address    inet:ipv4-address-no-zone
+     |     |  |     +--rw local-name    string
+     |     |  +--rw block-lns-ip
+     |     |  |  +--rw ip-address*   inet:ipv4-address-no-zone
+     |     |  +--rw password-lns-ips
+     |     |  |  +--rw password-lns-ip* [ip-address]
+     |     |  |     +--rw ip-address    inet:ipv4-address-no-zone
+     |     |  |     +--rw password      pub-type:password-extend
+     |     |  +--rw avp-calling-number
+     |     |  |  +--rw avp-enable
+     |     |  |  |  +--rw status?   enumeration
+     |     |  |  +--rw calling-number-format
+     |     |  |     +--rw (module)?
+     |     |  |     |  +--:(l2tp)
+     |     |  |     |  |  +--rw l2tp-format
+     |     |  |     |  |     +--rw (format)?
+     |     |  |     |  |        +--:(version1)
+     |     |  |     |  |        |  +--rw version1-enable?      empty
+     |     |  |     |  |        |  +--rw include-option82?     empty
+     |     |  |     |  |        +--:(version2)
+     |     |  |     |  |        |  +--rw include-attributes
+     |     |  |     |  |        |  |  +--rw include-attribute* [attribute-type]
+     |     |  |     |  |        |  |     +--rw attribute-type    enumeration
+     |     |  |     |  |        |  |     +--rw delimiter?        string
+     |     |  |     |  |        |  +--rw include-delimiter?    string
+     |     |  |     |  |        +--:(version3)
+     |     |  |     |  |           +--rw version3-enable?      empty
+     |     |  |     |  +--:(aaa)
+     |     |  |     |     +--rw aaa-format
+     |     |  |     |        +--rw (format)?
+     |     |  |     |           +--:(lli)
+     |     |  |     |           |  +--rw logical-line-id?   empty
+     |     |  |     |           +--:(radius-force)
+     |     |  |     |              +--rw radius-force?      empty
+     |     |  |     +--rw interface-exclude-subslot
+     |     |  |        +--rw exclude-enable?   boolean
+     |     |  +--rw other-function-sets
+     |     |  |  +--rw session-limit?               uint32
+     |     |  |  +--rw mtu-enable?                  boolean
+     |     |  |  +--rw mss-enable?                  boolean
+     |     |  |  +--rw allow-address-change-type?   enumeration
+     |     |  |  +--rw trust-upstream-priority?     boolean
+     |     |  |  +--rw sccrq-time?                  uint32
+     |     |  |  +--rw dscp-value?                  uint32
+     |     |  +--rw cp-source-interfaces
+     |     |     +--rw cp-source-interface* [up-id-begin up-id-end]
+     |     |        +--rw up-id-begin        uint32
+     |     |        +--rw up-id-end          uint32
+     |     |        +--rw loopback-number?   uint32
+     |     +--rw l2tp-lns
+     |     |  +--rw allow!
+     |     |  |  +--rw virtual-template-number    uint32
+     |     |  |  +--rw remote-name?               string
+     |     |  |  +--rw lac-source-ip-address?     inet:ipv4-address-no-zone
+     |     |  +--rw domain
+     |     |  |  +--rw set-type?    enumeration
+     |     |  |  +--rw name         -> /aaa:aaa/domains/domain/name
+     |     |  |  +--rw roam-name?   -> /aaa:aaa/domains/domain/name
+     |     |  +--rw calling-station-id
+     |     |  |  +--rw agent-remote-id?       boolean
+     |     |  |  +--rw translate-remote-id?   boolean
+     |     |  +--rw other-function-sets
+     |     |     +--rw cdn-send-delay-enable?      empty
+     |     |     +--rw renegotiation-lcp-enable?   empty
+     |     |     +--rw lns-schedule-enable?        boolean
+     |     |     +--rw mandatory-chap?             enumeration
+     |     |     +--rw mandatory-lcp?              enumeration
+     |     |     +--rw qos-mode?                   enumeration
+     |     |     +--rw sccrp-time?                 uint32
+     |     |     +--rw dscp-value?                 uint32
+     |     +--ro group
+     |     |  +--ro used-tunnel-number?   uint32
+     |     |  +--ro used-number?          uint16
+     |     |  +--ro lns-ip-addresss
+     |     |     +--ro lns-ip-address* [lns-index]
+     |     |        +--ro lns-index     uint32
+     |     |        +--ro ip-address?   inet:ipv4-address-no-zone
+     |     |        +--ro tunnel-id?    uint32
+     |     |        +--ro expire?       uint32
+     |     |        +--ro state?        enumeration
+     |     +--ro cp-source-interface
+     |        +--ro up-sources
+     |           +--ro up-source* [up-id]
+     |              +--ro up-id                uint32
+     |              +--ro group-description?   string
+     |              +--ro group-type?          enumeration
+     |              +--ro routes
+     |                 +--ro route* [interface-name]
+     |                    +--ro interface-name          string
+     |                    +--ro ip-address?             inet:ipv4-address-no-zone
+     |                    +--ro vpn-route-forward-id?   uint32
+     +--rw lns-groups
+     |  +--rw lns-group* [group-name]
+     |     +--rw group-name                  string
+     |     +--rw bind-sources
+     |     |  +--rw bind-source* [interface-name]
+     |     |     +--rw interface-name    -> /ifm:ifm/interfaces/interface/name
+     |     +--rw (bind-board)?
+     |     |  +--:(bind-slots)
+     |     |  |  +--rw bind-slots
+     |     |  |     +--rw bind-slot* [slot-id]
+     |     |  |        +--rw slot-id           string
+     |     |  |        +--ro tunnel-session
+     |     |  |           +--ro tunnel-number?    uint32
+     |     |  |           +--ro session-number?   uint32
+     |     |  +--:(bind-backup-groups)
+     |     |     +--rw bind-backup-groups
+     |     |        +--rw bind-backup-group* [name]
+     |     |           +--rw name    -> /bras-l2tp-access/lns-backup-groups/lns-backup-group/name
+     |     +--rw group-description
+     |     |  +--rw description-value?   string
+     |     +--rw load-balance
+     |     |  +--rw mode?   enumeration
+     |     +--ro master-slot
+     |        +--ro slot-id?   string
+     +--rw lns-backup-groups
+     |  +--rw lns-backup-group* [name]
+     |     +--rw name          string
+     |     +--rw bind-slots
+     |        +--rw master-slot-id?   string
+     |        +--rw slave-slot-id?    string
+     +--ro protocols
+     |  +--ro protocol* [vendor-name]
+     |     +--ro vendor-name          string
+     |     +--ro firmware-revision?   int32
+     |     +--ro drain-tunnel?        enumeration
+     |     +--ro schema-version?      string
+     +--ro lac-tunnels
+     |  +--ro lac-tunnel* [local-id]
+     |     +--ro local-id             uint32
+     |     +--ro local-name?          string
+     |     +--ro remote-id?           uint32
+     |     +--ro remote-name?         string
+     |     +--ro status?              string
+     |     +--ro local-ip-address?    inet:ipv4-address-no-zone
+     |     +--ro local-port?          uint16
+     |     +--ro remote-ip-address?   inet:ipv4-address-no-zone
+     |     +--ro remote-port?         uint16
+     |     +--ro recall-ip-address?   inet:ipv4-address-no-zone
+     |     +--ro vrf?                 uint32
+     |     +--ro time
+     |     |  +--ro start-date?           string
+     |     |  +--ro start-clock?          string
+     |     |  +--ro continuance-length?   string
+     |     +--ro config
+     |     |  +--ro hello-interval?          uint32
+     |     |  +--ro session-limit?           uint32
+     |     |  +--ro per-user-enable?         boolean
+     |     |  +--ro timeout?                 uint32
+     |     |  +--ro local-receive-window?    uint16
+     |     |  +--ro remote-receive-window?   uint16
+     |     |  +--ro is-blocked?              boolean
+     |     |  +--ro outer-dscp?              uint8
+     |     |  +--ro group-name?              string
+     |     +--ro radius
+     |     |  +--ro session-limit?   uint32
+     |     |  +--ro vrf?             uint32
+     |     |  +--ro assignment-id?   string
+     |     +--ro statistics
+     |     |  +--ro active-session-num?    uint32
+     |     |  +--ro control-sent-num?      uint32
+     |     |  +--ro control-receive-num?   uint32
+     |     |  +--ro retrans-mission-num?   uint32
+     |     +--ro redundant
+     |        +--ro bas-interface-name?      string
+     |        +--ro remote-backup-profile?   string
+     |        +--ro remote-backup-service?   string
+     |        +--ro status?                  string
+     |        +--ro register?                string
+     |        +--ro life?                    uint32
+     +--ro lac-sessions
+     |  +--ro lac-session* [local-tunnel-id local-session-id]
+     |     +--ro local-tunnel-id         uint32
+     |     +--ro local-session-id        uint32
+     |     +--ro remote-tunnel-id?       uint32
+     |     +--ro remote-session-id?      uint32
+     |     +--ro local-address?          inet:ipv4-address-no-zone
+     |     +--ro remote-address?         inet:ipv4-address-no-zone
+     |     +--ro lns-reply-ip-address?   string
+     |     +--ro local-tunnel-name?      string
+     |     +--ro remote-tunnel-name?     string
+     |     +--ro port?                   uint16
+     |     +--ro status?                 session-status-type
+     |     +--ro serial-number?          uint32
+     |     +--ro id?                     uint32
+     |     +--ro name?                   string
+     |     +--ro pppoe-id?               uint16
+     |     +--ro mac-address?            string
+     |     +--ro redundant
+     |        +--ro register?           string
+     |        +--ro traffic-state?      enumeration
+     |        +--ro state?              string
+     |        +--ro life?               string
+     |        +--ro forwarding-state?   string
+     +--ro lns-tunnels
+     |  +--ro lns-tunnel* [slot-id local-id]
+     |     +--ro slot-id                       string
+     |     +--ro local-id                      uint16
+     |     +--ro remote-id?                    uint16
+     |     +--ro remote-name?                  string
+     |     +--ro status?                       string
+     |     +--ro l2tp-group-id?                uint32
+     |     +--ro sessions-number?              uint32
+     |     +--ro hello-interval?               uint32
+     |     +--ro remote-protocol-version?      string
+     |     +--ro authentication?               uint16
+     |     +--ro remote-vendor-name?           string
+     |     +--ro send-window-lower-ward?       uint32
+     |     +--ro received-window-lower-ward?   uint32
+     |     +--ro received-window-size?         uint16
+     |     +--ro peer-framing-cap?             uint32
+     |     +--ro peer-ip-address?              string
+     |     +--ro source-ip-address?            string
+     |     +--ro port?                         uint16
+     |     +--ro delay-ack-timer?              uint32
+     |     +--ro idle-cut-timer?               uint32
+     |     +--ro hello-timer?                  uint32
+     |     +--ro ctl-ack-timeout-number?       uint32
+     |     +--ro ctl-out-of-seq?               uint32
+     |     +--ro ctl-out-of-window?            uint32
+     |     +--ro session-limit?                uint32
+     |     +--ro radius-session-limit?         uint32
+     |     +--ro outer-dscp?                   uint8
+     |     +--ro statistics
+     |     |  +--ro received-packets?   uint32
+     |     |  +--ro received-zlb?       uint32
+     |     |  +--ro send-fail?          uint32
+     |     |  +--ro send-packets?       uint32
+     |     |  +--ro send-zlb?           uint32
+     |     |  +--ro received-hello?     uint32
+     |     |  +--ro send-hello?         uint32
+     |     |  +--ro up-packet-high?     uint32
+     |     |  +--ro up-packet-low?      uint32
+     |     |  +--ro up-byte-high?       uint32
+     |     |  +--ro up-byte-low?        uint32
+     |     |  +--ro down-packet-high?   uint32
+     |     |  +--ro down-packet-low?    uint32
+     |     |  +--ro down-byte-high?     uint32
+     |     |  +--ro down-byte-low?      uint32
+     |     +--ro time
+     |        +--ro start-date?           string
+     |        +--ro start-clock?          string
+     |        +--ro continuance-length?   string
+     +--ro lns-sessions
+     |  +--ro lns-session* [slot-id local-tunnel-id local-session-id]
+     |     +--ro slot-id                string
+     |     +--ro local-tunnel-id        uint16
+     |     +--ro local-session-id       uint16
+     |     +--ro status?                session-status-type
+     |     +--ro l2tp-group-id?         uint32
+     |     +--ro remote-tunnel-id?      uint16
+     |     +--ro remote-session-id?     uint16
+     |     +--ro local-address?         inet:ipv4-address-no-zone
+     |     +--ro remote-address?        inet:ipv4-address-no-zone
+     |     +--ro sequence?              uint16
+     |     +--ro peer-framing-type?     uint32
+     |     +--ro peer-bearer-type?      int32
+     |     +--ro ppp-id?                uint32
+     |     +--ro interface-id?          uint32
+     |     +--ro window-idle-timer?     uint32
+     |     +--ro ctrl-call-ack-timer?   uint32
+     |     +--ro result-code?           uint16
+     |     +--ro trace-id?              uint32
+     |     +--ro outer-dscp?            uint8
+     |     +--ro calling-number?        string
+     |     +--ro user-id?               uint32
+     |     +--ro user-name?             string
+     +--ro user-urpfs
+     |  +--ro user-urpf* [slot-id]
+     |     +--ro slot-id    string
+     |     +--ro ipv4
+     |     |  +--ro high?   uint32
+     |     |  +--ro low?    uint32
+     |     +--ro ipv6
+     |        +--ro high?   uint32
+     |        +--ro low?    uint32
+     +--ro session-number
+     |  +--ro lacs
+     |  |  +--ro lac* [source-address vpn-name]
+     |  |     +--ro source-address    inet:ipv4-address-no-zone
+     |  |     +--ro vpn-name          string
+     |  |     +--ro number?           uint32
+     |  +--ro lnss
+     |     +--ro lns* [source-address vpn-name]
+     |        +--ro source-address    inet:ipv4-address-no-zone
+     |        +--ro vpn-name          string
+     |        +--ro number?           uint32
+     +--ro lac-tunnel-statistics
+     |  +--ro lac-tunnel-statistic* [local-id]
+     |     +--ro local-id                        uint32
+     |     +--ro l2tp-group-name?                string
+     |     +--ro local-name?                     string
+     |     +--ro local-ip-address?               inet:ipv4-address-no-zone
+     |     +--ro remote-ip-address?              inet:ipv4-address-no-zone
+     |     +--ro send-sccrq-number?              uint64
+     |     +--ro receive-sccrp-number?           uint64
+     |     +--ro receive-sccrp-error-number?     uint64
+     |     +--ro send-scccn-number?              uint64
+     |     +--ro send-icrq-number?               uint64
+     |     +--ro receive-stopccn-number?         uint64
+     |     +--ro receive-stopccn-error-number?   uint64
+     |     +--ro send-stopccn-number?            uint64
+     |     +--ro receive-icrp-number?            uint64
+     |     +--ro receive-icrp-error-number?      uint64
+     |     +--ro send-iccn-number?               uint64
+     |     +--ro receive-cdn-number?             uint64
+     |     +--ro receive-cdn-error-number?       uint64
+     |     +--ro send-cdn-number?                uint64
+     |     +--ro receive-hello-number?           uint64
+     |     +--ro receive-hello-error-number?     uint64
+     |     +--ro send-hello-number?              uint64
+     |     +--ro receive-zlb-number?             uint64
+     |     +--ro receive-zlb-error-number?       uint64
+     |     +--ro send-zlb-number?                uint64
+     |     +--ro rx-packets?                     uint64
+     |     +--ro rx-packets-rate?                uint32
+     |     +--ro rx-octets?                      uint64
+     |     +--ro rx-octets-rate?                 uint32
+     |     +--ro tx-packets?                     uint64
+     |     +--ro tx-packets-rate?                uint32
+     |     +--ro tx-octets?                      uint64
+     |     +--ro tx-octets-rate?                 uint32
+     +--ro lns-tunnel-statistics
+     |  +--ro lns-tunnel-statistic* [local-id]
+     |     +--ro local-id                        uint32
+     |     +--ro l2tp-group-name?                string
+     |     +--ro local-name?                     string
+     |     +--ro local-ip-address?               inet:ipv4-address-no-zone
+     |     +--ro remote-ip-address?              inet:ipv4-address-no-zone
+     |     +--ro receive-sccrq-number?           uint64
+     |     +--ro receive-sccrq-error-number?     uint64
+     |     +--ro send-sccrp-number?              uint64
+     |     +--ro receive-scccn-number?           uint64
+     |     +--ro receive-scccn-error-number?     uint64
+     |     +--ro receive-stopccn-number?         uint64
+     |     +--ro receive-stopccn-error-number?   uint64
+     |     +--ro send-stopccn-number?            uint64
+     |     +--ro receive-icrq-number?            uint64
+     |     +--ro receive-icrq-error-number?      uint64
+     |     +--ro send-icrp-number?               uint64
+     |     +--ro receive-iccn-number?            uint64
+     |     +--ro receive-iccn-error-number?      uint64
+     |     +--ro receive-hello-number?           uint64
+     |     +--ro receive-hello-error-number?     uint64
+     |     +--ro send-hello-number?              uint64
+     |     +--ro receive-zlb-number?             uint64
+     |     +--ro receive-zlb-error-number?       uint64
+     |     +--ro send-zlb-number?                uint64
+     |     +--ro rx-packets?                     uint64
+     |     +--ro rx-packets-rate?                uint32
+     |     +--ro rx-octets?                      uint64
+     |     +--ro rx-octets-rate?                 uint32
+     |     +--ro tx-packets?                     uint64
+     |     +--ro tx-packets-rate?                uint32
+     |     +--ro tx-octets?                      uint64
+     |     +--ro tx-octets-rate?                 uint32
+     +--ro lns-tunnel-backups
+     |  +--ro lns-tunnel-backup* [slot-id local-id]
+     |     +--ro slot-id           string
+     |     +--ro local-id          uint16
+     |     +--ro remote-id?        uint16
+     |     +--ro port?             uint16
+     |     +--ro session-number?   uint32
+     |     +--ro remote-name?      string
+     |     +--ro remote-address?   inet:ipv4-address-no-zone
+     +--ro lns-session-backups
+     |  +--ro lns-session-backup* [slot-id local-tunnel-id local-session-id]
+     |     +--ro slot-id              string
+     |     +--ro local-tunnel-id      uint16
+     |     +--ro local-session-id     uint16
+     |     +--ro remote-session-id?   uint16
+     |     +--ro remote-tunnel-id?    uint16
+     |     +--ro user-id?             uint32
+     |     +--ro user-name?           string
+     +--ro lns-statistics
+     |  +--ro current-up-tunnel-num?           uint32
+     |  +--ro current-up-session-num?          uint32
+     |  +--ro total-established-tunnel-num?    uint64
+     |  +--ro total-established-session-num?   uint64
+     |  +--ro total-down-tunnel-num?           uint64
+     |  +--ro total-down-session-num?          uint64
+     +--ro lns-session-calling-numbers
+     |  +--ro lns-session-calling-number* [calling-number]
+     |     +--ro calling-number              string
+     |     +--ro local-session-id?           uint16
+     |     +--ro local-tunnel-id?            uint16
+     |     +--ro status?                     string
+     |     +--ro l2tp-group-id?              uint32
+     |     +--ro remote-session-id?          uint16
+     |     +--ro sequence?                   uint16
+     |     +--ro peer-framing-type?          uint32
+     |     +--ro peer-bearer-type?           int32
+     |     +--ro authentication-name?        string
+     |     +--ro ppp-id?                     string
+     |     +--ro interface-id?               uint32
+     |     +--ro window-idle-timer-flag?     boolean
+     |     +--ro ctrl-call-ack-timer-flag?   boolean
+     |     +--ro result-code?                uint16
+     |     +--ro trace-id?                   uint32
+     |     +--ro outer-dscp?                 string
+     +--ro rui-statistics
+        +--ro tunnel
+        |  +--ro establish-receive?      uint32
+        |  +--ro teardown-receive?       uint32
+        |  +--ro establish-send?         uint32
+        |  +--ro teardown-send?          uint32
+        |  +--ro hello-packet-send?      uint32
+        |  +--ro zlb-packet-send?        uint32
+        |  +--ro hello-packet-receive?   uint32
+        |  +--ro zlb-packet-receive?     uint32
+        |  +--ro peer-hello?             uint32
+        |  +--ro peer-zlb?               uint32
+        +--ro session
+        |  +--ro establish-receive?   uint32
+        |  +--ro teardown-receive?    uint32
+        |  +--ro establish-send?      uint32
+        |  +--ro teardown-send?       uint32
+        +--ro lastest-received-message
+        |  +--ro tunnel-drop?        uint32
+        |  +--ro tunnel-update?      uint32
+        |  +--ro tunnel-create?      uint32
+        |  +--ro tunnel-teardown?    uint32
+        |  +--ro hello-or-zlb?       uint32
+        |  +--ro session-drop?       uint32
+        |  +--ro session-update?     uint32
+        |  +--ro session-create?     uint32
+        |  +--ro session-teardown?   uint32
+        +--ro lastest-tunnel-records
+        |  +--ro lastest-tunnel-record* [index]
+        |     +--ro index                uint32
+        |     +--ro local-id?            uint32
+        |     +--ro remote-id?           uint32
+        |     +--ro type?                enumeration
+        |     +--ro date?                string
+        |     +--ro time?                string
+        |     +--ro peer-ip-address?     string
+        |     +--ro source-ip-address?   string
+        |     +--ro l2tp-group-name?     string
+        |     +--ro old-life?            uint32
+        |     +--ro new-life?            uint32
+        +--ro lastest-session-records
+           +--ro lastest-session-record* [index]
+              +--ro index                uint32
+              +--ro local-session-id?    uint16
+              +--ro remote-session-id?   uint16
+              +--ro local-tunnel-id?     uint32
+              +--ro remote-tunnel-id?    uint32
+              +--ro type?                enumeration
+              +--ro date?                string
+              +--ro time?                string
+              +--ro peer-ip-address?     string
+              +--ro source-ip-address?   string
+              +--ro l2tp-group-name?     string
+              +--ro pppoe-session-mac?   string
+              +--ro pppoe-session-id?    uint16

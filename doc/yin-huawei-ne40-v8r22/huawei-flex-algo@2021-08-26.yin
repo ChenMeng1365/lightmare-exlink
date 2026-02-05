@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-flex-algo"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:flex-algo="urn:huawei:yang:huawei-flex-algo"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:te="urn:huawei:yang:huawei-te"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-flex-algo"/>
+  <prefix value="flex-algo"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-te">
+    <prefix value="te"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>This YANG module defines the essential types for the
+   management of Flex-Algorithm for IGP.</text>
+  </description>
+  <revision date="2021-08-26">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="flexalgo"/>
+  <typedef name="flex-algo-metic-type">
+    <type name="enumeration">
+      <enum name="igp">
+        <value value="0"/>
+        <description>
+          <text>IGP metric type.</text>
+        </description>
+      </enum>
+      <enum name="link-delay">
+        <value value="1"/>
+        <description>
+          <text>Delay metric type.</text>
+        </description>
+      </enum>
+      <enum name="te">
+        <value value="2"/>
+        <description>
+          <text>TE metric type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Flexible algorithm metric type.</text>
+    </description>
+  </typedef>
+  <grouping name="fad-definition">
+    <description>
+      <text>Flexible algorithm definition.</text>
+    </description>
+    <leaf name="flex-algo-id">
+      <type name="uint8">
+        <range value="128..255"/>
+      </type>
+      <description>
+        <text>Flexible algorithm identifier.</text>
+      </description>
+    </leaf>
+    <leaf name="metric-type">
+      <type name="flex-algo-metic-type"/>
+      <default value="igp"/>
+      <description>
+        <text>Indicates which is the corresponding metric type for this algorithm.</text>
+      </description>
+    </leaf>
+    <leaf name="priority">
+      <type name="uint8">
+        <range value="0..255"/>
+      </type>
+      <default value="128"/>
+      <description>
+        <text>Indicates the priority for this algorithm.</text>
+      </description>
+    </leaf>
+    <container name="extended-admin-group">
+      <description>
+        <text>Configure extended admin group for this flexible algorithm.</text>
+      </description>
+      <choice name="flex-algo-affinity-include">
+        <description>
+          <text>Configure affinities for this flexible algorithm.</text>
+        </description>
+        <case name="include-all">
+          <description>
+            <text>Configure include-all type affinity name.</text>
+          </description>
+          <container name="include-all-affinitys">
+            <description>
+              <text>List of affinity names of the flexible algorithm.</text>
+            </description>
+            <list name="include-all-affinity">
+              <key value="name"/>
+              <max-elements value="32"/>
+              <description>
+                <text>Configure affinity names.</text>
+              </description>
+              <leaf name="name">
+                <type name="leafref">
+                  <path value="/te:te/te:affinity-define/te:affinity-mappings/te:affinity-mapping/te:attribute-name"/>
+                </type>
+                <must condition="(not(../../../../extended-admin-group/exclude-affinitys/exclude-affinity[name=current()]))"/>
+                <description>
+                  <text>Configure affinity names that can be refer to a flexible algorithm to include all.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </case>
+        <case name="include-any">
+          <description>
+            <text>Configure include-any type affinity name.</text>
+          </description>
+          <container name="include-any-affinitys">
+            <description>
+              <text>List of affinity names of the flexible algorithm.</text>
+            </description>
+            <list name="include-any-affinity">
+              <key value="name"/>
+              <max-elements value="32"/>
+              <description>
+                <text>Configure affinity names.</text>
+              </description>
+              <leaf name="name">
+                <type name="leafref">
+                  <path value="/te:te/te:affinity-define/te:affinity-mappings/te:affinity-mapping/te:attribute-name"/>
+                </type>
+                <must condition="(not(../../../../extended-admin-group/exclude-affinitys/exclude-affinity[name=current()]))"/>
+                <description>
+                  <text>Configure affinity names that can be refer to a flexible algorithm to include any.</text>
+                </description>
+              </leaf>
+            </list>
+          </container>
+        </case>
+      </choice>
+      <container name="exclude-affinitys">
+        <description>
+          <text>List of affinity names of the flexible algorithm.</text>
+        </description>
+        <list name="exclude-affinity">
+          <key value="name"/>
+          <max-elements value="32"/>
+          <description>
+            <text>Configure affinity name to exclude.</text>
+          </description>
+          <leaf name="name">
+            <type name="leafref">
+              <path value="/te:te/te:affinity-define/te:affinity-mappings/te:affinity-mapping/te:attribute-name"/>
+            </type>
+            <description>
+              <text>Configure affinity names that can be refer to a flexible algorithm to exclude.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </grouping>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Flexible algorithms definition.</text>
+    </description>
+    <container name="flex-algo-defines">
+      <when condition="../ni:name='_public_'"/>
+      <description>
+        <text>List of flexible algorithms definition.</text>
+      </description>
+      <list name="flex-algo-define">
+        <key value="flex-algo-id"/>
+        <description>
+          <text>Configure a flexible algorithm.</text>
+        </description>
+        <uses name="fad-definition"/>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance">
+    <description>
+      <text>Flexible algorithm color mapping information.</text>
+    </description>
+    <container name="flex-algo-color-mapping">
+      <when condition="../ni:name='_public_'"/>
+      <presence value="The Flex-Algo and color mapping view."/>
+      <description>
+        <text>Enable/disable the flexible algorithm and color mapping.</text>
+      </description>
+      <container name="flex-algo-color-maps">
+        <description>
+          <text>List of flexible algorithm color map information.</text>
+        </description>
+        <list name="flex-algo-color-map">
+          <key value="color-index"/>
+          <description>
+            <text>Configure flexible algorithm color map.</text>
+          </description>
+          <leaf name="color-index">
+            <type name="uint32">
+              <range value="0..4294967295"/>
+            </type>
+            <description>
+              <text>Color index.</text>
+            </description>
+          </leaf>
+          <leaf name="flex-algo-id">
+            <type name="uint8">
+              <range value="128..255"/>
+            </type>
+            <mandatory value="true"/>
+            <description>
+              <text>Flexible algorithm identifier.</text>
+            </description>
+          </leaf>
+        </list>
+      </container>
+    </container>
+  </augment>
+</module>

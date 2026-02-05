@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="zxr10-netconf"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:netc="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf"
+        xmlns:ncd="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf-defs"
+        xmlns:nct="urn:ietf:params:xml:ns:yang:ietf-netconf-time">
+  <namespace uri="http://www.zte.com.cn/zxr10/netconf/schema/rosng/netconf"/>
+  <prefix value="netc"/>
+  <import module="zxr10-netconf-defs">
+    <prefix value="ncd"/>
+  </import>
+  <import module="ietf-netconf-time">
+    <prefix value="nct"/>
+  </import>
+  <organization>
+    <text>ZTE Corporation</text>
+  </organization>
+  <contact>
+    <text>ZTE Corporation 
+         Nanjing Institute of ZTE Corporation
+         
+         No.68 Zijinghua Rd. Yuhuatai District, Nanjing, China
+         
+         Tel: +86-25-52870000</text>
+  </contact>
+  <description>
+    <text>The netconf module to describe netconf own service</text>
+  </description>
+  <revision date="2021-01-05">
+    <description>
+      <text>Add container configuration/netconf/operate-log.
+Add container configuration/netconf/operate-log/type.
+Add leaf configuration/netconf/operate-log/status.
+Add leaf configuration/netconf/operate-log/type/get.
+Add leaf configuration/netconf/operate-log/type/set.
+Add leaf configuration/netconf/operate-log/type/operation.</text>
+    </description>
+  </revision>
+  <revision date="2020-10-09">
+    <description>
+      <text>Add container configuration/netconf/reply-info.
+Add container configuration/netconf/reply-info/reply-with-exe-time.
+Add leaf configuration/netconf/reply-info/reply-with-exe-time/status.</text>
+    </description>
+  </revision>
+  <revision date="2019-12-10">
+    <description>
+      <text>Add augmnet node nct:netconf-scheduled-message.
+Add leaf node nct:netconf-scheduled-message/session-id.
+Add leaf node nct:netconf-scheduled-message/message-id.
+Add import ietf-netconf-time.
+Add container configuration/netconf/sched-max-future.
+Add container configuration/netconf/sched-max-past.
+Add container configuration/netconf/sched-max-cache.</text>
+    </description>
+  </revision>
+  <revision date="2019-07-15">
+    <description>
+      <text>Modify leaf configuration/netconf/session/absolute-timeout default value.</text>
+    </description>
+  </revision>
+  <revision date="2017-02-16">
+    <description>
+      <text>obsolete node /state/netconf/streams</text>
+    </description>
+  </revision>
+  <revision date="2015-01-11">
+    <description>
+      <text>support get schema conformance info</text>
+    </description>
+  </revision>
+  <revision date="2014-11-26">
+    <description>
+      <text>support get notification event mode</text>
+    </description>
+  </revision>
+  <revision date="2013-11-25">
+    <description>
+      <text>add description to some nodes;modify absolute-time node; add range to active-sessions and sessionid node;</text>
+    </description>
+  </revision>
+  <revision date="2013-08-23"/>
+  <feature name="sched-time"/>
+  <container name="configuration">
+    <description>
+      <text>Configuration model</text>
+    </description>
+    <container name="netconf">
+      <description>
+        <text>Configure NETCONF parameters</text>
+      </description>
+      <container name="server">
+        <description>
+          <text>Configure netconf server parameters</text>
+        </description>
+        <choice name="status">
+          <description>
+            <text>The status of netconf server</text>
+          </description>
+          <default value="disable"/>
+          <case name="disable">
+            <leaf name="disable">
+              <description>
+                <text>Disable netconf server</text>
+              </description>
+              <type name="empty"/>
+            </leaf>
+          </case>
+          <case name="enable">
+            <leaf name="enable">
+              <description>
+                <text>Enable netconf server</text>
+              </description>
+              <type name="empty"/>
+            </leaf>
+          </case>
+        </choice>
+      </container>
+      <container name="session">
+        <description>
+          <text>Configure netconf session parameters</text>
+        </description>
+        <leaf name="max-sessions">
+          <description>
+            <text>The max sessions that netconf supports</text>
+          </description>
+          <type name="uint8">
+            <range value="1..30"/>
+          </type>
+          <default value="10"/>
+        </leaf>
+        <leaf name="absolute-timeout">
+          <description>
+            <text>The max time of duration for a netconf session. 
+ 0 indicates the session will be online forever, unless the session is closed. The range of configuration is from 0 to 10000 minutes,the default value is 0 minutes;</text>
+          </description>
+          <type name="uint16">
+            <range value="0..10000"/>
+          </type>
+          <units name="minute"/>
+          <default value="0"/>
+        </leaf>
+        <leaf name="idle-timeout">
+          <description>
+            <text>The max idle time for a netconf session,
+  0 indicates the session will not be closed by idle.The range of configuration is from 0 to 10000 minutes,the default value is 30 minutes;</text>
+          </description>
+          <type name="uint16">
+            <range value="0..10000"/>
+          </type>
+          <units name="minute"/>
+          <default value="30"/>
+        </leaf>
+      </container>
+      <container name="sched-max-future">
+        <description>
+          <text>The maximal difference between the scheduled time in the future 
+and the present time that the server is willing to accept.</text>
+        </description>
+        <leaf name="time">
+          <description>
+            <text>Time</text>
+          </description>
+          <type name="nct:time-interval"/>
+          <default value="00:00:15.0"/>
+        </leaf>
+        <ncd:revise-date date="2019-12-10"/>
+      </container>
+      <container name="sched-max-past">
+        <description>
+          <text>The maximal difference between the scheduled time in the past 
+and the present time that the server is willing to accept.</text>
+        </description>
+        <leaf name="time">
+          <description>
+            <text>Time</text>
+          </description>
+          <type name="nct:time-interval"/>
+          <default value="00:00:15.0"/>
+        </leaf>
+        <ncd:revise-date date="2019-12-10"/>
+      </container>
+      <container name="sched-max-cache">
+        <description>
+          <text>Configure netconf max cache scheduled time RPC num</text>
+        </description>
+        <leaf name="number">
+          <description>
+            <text>Number</text>
+          </description>
+          <type name="uint32">
+            <range value="0..100"/>
+          </type>
+          <default value="10"/>
+        </leaf>
+        <ncd:revise-date date="2019-12-10"/>
+      </container>
+      <container name="reply-info">
+        <description>
+          <text>Configure the elements carried in NETCONF rpc-reply.</text>
+        </description>
+        <container name="reply-with-exe-time">
+          <description>
+            <text>The &lt;execution-time&gt; element in rpc-reply.</text>
+          </description>
+          <leaf name="status">
+            <description>
+              <text>Whether the NETCONF response message carries the &lt;execution-time&gt; element. When the server supports the time1.0 capability, but there is no &lt;get-time&gt; element in the request message.</text>
+            </description>
+            <type name="enumeration">
+              <enum name="disable">
+                <value value="0"/>
+              </enum>
+              <enum name="enable">
+                <value value="1"/>
+              </enum>
+            </type>
+            <default value="disable"/>
+          </leaf>
+        </container>
+        <ncd:revise-date date="2020-10-09"/>
+      </container>
+      <container name="operate-log">
+        <description>
+          <text>Configure NETCONF log function switch  parameters</text>
+        </description>
+        <leaf name="status">
+          <description>
+            <text>Enable or disable NETCONF log function</text>
+          </description>
+          <type name="enumeration">
+            <enum name="enable">
+              <value value="1"/>
+            </enum>
+            <enum name="disable">
+              <value value="0"/>
+            </enum>
+          </type>
+        </leaf>
+        <container name="type">
+          <description>
+            <text>NETCONF log type</text>
+          </description>
+          <leaf name="get">
+            <description>
+              <text>Enable or disable log type of get function</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+              </enum>
+              <enum name="disable">
+                <value value="2"/>
+              </enum>
+            </type>
+            <default value="enable"/>
+          </leaf>
+          <leaf name="set">
+            <description>
+              <text>Enable or disable log type of set function</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+              </enum>
+              <enum name="disable">
+                <value value="2"/>
+              </enum>
+            </type>
+            <default value="enable"/>
+          </leaf>
+          <leaf name="operation">
+            <description>
+              <text>Enable or disable log type of operation function</text>
+            </description>
+            <type name="enumeration">
+              <enum name="enable">
+                <value value="1"/>
+              </enum>
+              <enum name="disable">
+                <value value="2"/>
+              </enum>
+            </type>
+            <default value="enable"/>
+          </leaf>
+        </container>
+        <ncd:revise-date date="2021-01-05"/>
+      </container>
+    </container>
+  </container>
+  <container name="state">
+    <config value="false"/>
+    <description>
+      <text>State model</text>
+    </description>
+    <container name="netconf">
+      <description>
+        <text>Netconf state parameters</text>
+      </description>
+      <container name="sessions">
+        <description>
+          <text>The detail info of current active sessions</text>
+        </description>
+        <leaf name="active-sessions">
+          <description>
+            <text>The number of current active sessions.</text>
+          </description>
+          <type name="uint8">
+            <range value="1..30"/>
+          </type>
+        </leaf>
+        <list name="session">
+          <description>
+            <text>The detail info of an active session.</text>
+          </description>
+          <key value="sessionid"/>
+          <leaf name="sessionid">
+            <description>
+              <text>The identifier of a session</text>
+            </description>
+            <type name="uint8">
+              <range value="1..30"/>
+            </type>
+          </leaf>
+          <leaf name="type">
+            <description>
+              <text>The type of transport layer</text>
+            </description>
+            <type name="enumeration">
+              <enum name="ssh">
+                <value value="1"/>
+                <description>
+                  <text>The netconf connect over ssh transport protocol.</text>
+                </description>
+              </enum>
+              <enum name="soap">
+                <value value="2"/>
+                <description>
+                  <text>The netconf connect over soap transport protocol.</text>
+                </description>
+              </enum>
+              <enum name="beep">
+                <value value="3"/>
+                <description>
+                  <text>The netconf connect over beep transport protocol.</text>
+                </description>
+              </enum>
+              <enum name="tls">
+                <value value="4"/>
+                <description>
+                  <text>The netconf connect over tls transport protocol.</text>
+                </description>
+              </enum>
+            </type>
+            <default value="ssh"/>
+          </leaf>
+          <leaf name="username">
+            <description>
+              <text>The username associated with this session.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="ipaddress">
+            <description>
+              <text>The IP address associated with this session, it is the peer's IP address.</text>
+            </description>
+            <type name="string"/>
+          </leaf>
+          <leaf name="logintime">
+            <description>
+              <text>The login time associated with this session, 
+												             it is the time this session was established</text>
+            </description>
+            <type name="ncd:string-with-blank"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="streams">
+        <status value="obsolete">
+          <ncd:revise-date date="2017-02-16"/>
+        </status>
+        <description>
+          <text>event streams list</text>
+        </description>
+        <list name="stream">
+          <description>
+            <text>event stream</text>
+          </description>
+          <key value="name"/>
+          <leaf name="name">
+            <description>
+              <text>stream mode name</text>
+            </description>
+            <type name="enumeration">
+              <enum name="NETCONF">
+                <value value="1"/>
+                <description>
+                  <text>netconf mode</text>
+                </description>
+              </enum>
+              <enum name="SNMP">
+                <value value="2"/>
+                <description>
+                  <text>snmp mode</text>
+                </description>
+              </enum>
+              <enum name="SYSLOG">
+                <value value="3"/>
+                <description>
+                  <text>syslog mode</text>
+                </description>
+              </enum>
+            </type>
+          </leaf>
+          <leaf name="description">
+            <description>
+              <text>stream mode description</text>
+            </description>
+            <type name="ncd:string-all">
+              <length value="1..255"/>
+            </type>
+          </leaf>
+          <leaf name="replaysupport">
+            <description>
+              <text>whether to support historical event resend</text>
+            </description>
+            <type name="boolean"/>
+            <default value="false"/>
+          </leaf>
+        </list>
+      </container>
+      <container name="conformance">
+        <description>
+          <text>The conformance-info of the yang modules defined by device.</text>
+        </description>
+        <container name="modules">
+          <description>
+            <text>The modules info of yang defined by device.</text>
+          </description>
+          <list name="module">
+            <description>
+              <text>The module info of yang.</text>
+            </description>
+            <key value="name"/>
+            <leaf name="name">
+              <description>
+                <text>The name of yang module.</text>
+              </description>
+              <type name="string">
+                <length value="1..127">
+                  <description>
+                    <text>The length of module name.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="namespace">
+              <description>
+                <text>The namespace of yang module.</text>
+              </description>
+              <type name="string">
+                <length value="1..255">
+                  <description>
+                    <text>The Length of namespace info.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="prefix">
+              <description>
+                <text>The prefix of yang module.</text>
+              </description>
+              <type name="string">
+                <length value="1..31">
+                  <description>
+                    <text>The length of prefix info</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <leaf name="revision">
+              <description>
+                <text>The revision of yang module.</text>
+              </description>
+              <type name="string">
+                <length value="1..10">
+                  <description>
+                    <text>The length of revision info.</text>
+                  </description>
+                </length>
+              </type>
+            </leaf>
+            <container name="features">
+              <description>
+                <text>The features info of yang module.</text>
+              </description>
+              <list name="feature">
+                <description>
+                  <text>The feature info of yang module.</text>
+                </description>
+                <key value="name"/>
+                <leaf name="name">
+                  <description>
+                    <text>The name of feature</text>
+                  </description>
+                  <type name="string">
+                    <length value="1..31">
+                      <description>
+                        <text>The length of feature name.</text>
+                      </description>
+                    </length>
+                  </type>
+                </leaf>
+                <leaf name="status">
+                  <description>
+                    <text>The feature status,disable or enable.</text>
+                  </description>
+                  <type name="enumeration">
+                    <enum name="disable">
+                      <value value="0"/>
+                    </enum>
+                    <enum name="enable">
+                      <value value="1"/>
+                    </enum>
+                  </type>
+                </leaf>
+              </list>
+            </container>
+          </list>
+        </container>
+      </container>
+    </container>
+  </container>
+  <augment target-node="/nct:netconf-scheduled-message">
+    <leaf name="session-id">
+      <description>
+        <text>The session ID of the execution scheduled RPC.</text>
+      </description>
+      <type name="uint8"/>
+    </leaf>
+    <leaf name="message-id">
+      <description>
+        <text>The message ID of the scheduled RPC.</text>
+      </description>
+      <type name="string"/>
+    </leaf>
+    <ncd:revise-date date="2019-12-10"/>
+  </augment>
+</module>

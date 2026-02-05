@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-tunnel-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:tnlm="urn:huawei:yang:huawei-tunnel-management"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-tunnel-management"/>
+  <prefix value="tnlm"/>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Tunnel management, including management on tunnel policies and tunnel selectors.</text>
+  </description>
+  <revision date="2020-01-10">
+    <description>
+      <text>Modify the description of node tunnel-protocol.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-27">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="tunnel"/>
+  <typedef name="sel-seq-tunnel-type">
+    <type name="enumeration">
+      <enum name="lsp">
+        <value value="1"/>
+        <description>
+          <text>Search for LDP LSPs.</text>
+        </description>
+      </enum>
+      <enum name="cr-lsp">
+        <value value="3"/>
+        <description>
+          <text>Search for CR-LSPs.</text>
+        </description>
+      </enum>
+      <enum name="gre">
+        <value value="5"/>
+        <description>
+          <text>Search for GREs.</text>
+        </description>
+      </enum>
+      <enum name="bgp">
+        <value value="2"/>
+        <description>
+          <text>Search for BGP LSPs.</text>
+        </description>
+      </enum>
+      <enum name="srbe-lsp">
+        <value value="41"/>
+        <description>
+          <text>Search for SR-LSPs.</text>
+        </description>
+      </enum>
+      <enum name="ldp">
+        <value value="255"/>
+        <description>
+          <text>Search for LDP LSPs.</text>
+        </description>
+      </enum>
+      <enum name="te">
+        <value value="7"/>
+        <description>
+          <text>Search for TE.</text>
+        </description>
+      </enum>
+      <enum name="sr-te">
+        <value value="47"/>
+        <description>
+          <text>Search for SR-TE.</text>
+        </description>
+      </enum>
+      <enum name="sr-te-policy">
+        <value value="50"/>
+        <description>
+          <text>SR TE policy, used to define the selection sequence of tunnel types.</text>
+        </description>
+      </enum>
+      <enum name="flex-algo-lsp">
+        <value value="147"/>
+        <description>
+          <text>Search for FLEX-ALGO LSPs.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Tunnel type of select-sequences.</text>
+    </description>
+  </typedef>
+  <typedef name="sel-seq-tunnel-ipv6-type">
+    <type name="enumeration">
+      <enum name="srv6-te-policy">
+        <value value="52"/>
+        <description>
+          <text>SRv6 TE Policy, used to define the selection sequence of tunnel types.</text>
+        </description>
+      </enum>
+      <enum name="srv6-te-policy-group">
+        <value value="55"/>
+        <description>
+          <text>SRv6 TE Policy group, used to define the selection sequence of tunnel types.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Tunnel type of select-sequences.</text>
+    </description>
+  </typedef>
+  <typedef name="tunnel-type">
+    <type name="enumeration">
+      <enum name="invalid">
+        <value value="0"/>
+        <description>
+          <text>Tunnel of the none type. The none type is an initial type, indicating that no tunnel type is configured. A tunnel can be used only after a tunnel type excluding the none type is configured.</text>
+        </description>
+      </enum>
+      <enum name="ldp">
+        <value value="1"/>
+        <description>
+          <text>LDP tunnel.</text>
+        </description>
+      </enum>
+      <enum name="bgp">
+        <value value="2"/>
+        <description>
+          <text>BGP tunnel.</text>
+        </description>
+      </enum>
+      <enum name="te">
+        <value value="3"/>
+        <description>
+          <text>TE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="static-lsp">
+        <value value="4"/>
+        <description>
+          <text>Static LSP.</text>
+        </description>
+      </enum>
+      <enum name="gre">
+        <value value="5"/>
+        <description>
+          <text>GRE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="uni">
+        <value value="6"/>
+        <description>
+          <text>UNI tunnel.</text>
+        </description>
+      </enum>
+      <enum name="tnl-group">
+        <value value="7"/>
+        <description>
+          <text>Tunnel group that consists of a primary tunnel and a secondary tunnel.</text>
+        </description>
+      </enum>
+      <enum name="sub-te">
+        <value value="8"/>
+        <description>
+          <text>Virtual tunnel that exclusively occupies the specified bandwidth of a TE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="sub-group">
+        <value value="9"/>
+        <description>
+          <text>Virtual tunnel that occupies the specified bandwidth of the primary and secondary tunnels in a tunnel group.</text>
+        </description>
+      </enum>
+      <enum name="6over4">
+        <value value="10"/>
+        <description>
+          <text>IPv6-over-IPv4 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="6to4">
+        <value value="11"/>
+        <description>
+          <text>IPv6-to-IPv4 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="mpls-local-ifnet">
+        <value value="12"/>
+        <description>
+          <text>MPLS_local_IFNET tunnel, which is mainly used as a virtual tunnel between two ASBRs in the VPN Option B networking.</text>
+        </description>
+      </enum>
+      <enum name="ldp6">
+        <value value="13"/>
+        <description>
+          <text>LDP6 tunnel, which is an IPv6 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="nvgre">
+        <value value="15"/>
+        <description>
+          <text>NVGRE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="p2mp-ldp">
+        <value value="16"/>
+        <description>
+          <text>P2MP LDP tunnel.</text>
+        </description>
+      </enum>
+      <enum name="vxlan">
+        <value value="23"/>
+        <description>
+          <text>VXLAN tunnel.</text>
+        </description>
+      </enum>
+      <enum name="ipsec">
+        <value value="24"/>
+        <description>
+          <text>IPSec Tunnel.</text>
+        </description>
+      </enum>
+      <enum name="p2mp-te">
+        <value value="32"/>
+        <description>
+          <text>P2MP TE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="vxlan-nvo3">
+        <value value="39"/>
+        <description>
+          <text>VXLAN_NVO3 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="gre6">
+        <value value="40"/>
+        <description>
+          <text>GRE6 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="srbe-lsp">
+        <value value="41"/>
+        <description>
+          <text>SR-LSP tunnel.</text>
+        </description>
+      </enum>
+      <enum name="vxlan6-nvo3">
+        <value value="42"/>
+        <description>
+          <text>VXLAN6_NVO3 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="srv6">
+        <value value="43"/>
+        <description>
+          <text>SRv6 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="4over6">
+        <value value="44"/>
+        <description>
+          <text>IPv4-over-IPv6 tunnel.</text>
+        </description>
+      </enum>
+      <enum name="6rd">
+        <value value="45"/>
+        <description>
+          <text>6rd tunnel.</text>
+        </description>
+      </enum>
+      <enum name="sr-te">
+        <value value="47"/>
+        <description>
+          <text>SR-TE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="p2mp-gre">
+        <value value="64"/>
+        <description>
+          <text>P2MP GRE tunnel.</text>
+        </description>
+      </enum>
+      <enum name="ldp-lsp">
+        <value value="255"/>
+        <description>
+          <text>LDP lsp tunnel.</text>
+        </description>
+      </enum>
+      <enum name="sr-te-policy">
+        <value value="50"/>
+        <description>
+          <text>SR TE policy tunnel.</text>
+        </description>
+      </enum>
+      <enum name="sr-te-policy-group">
+        <value value="51"/>
+        <description>
+          <text>SR TE policy group tunnel.</text>
+        </description>
+      </enum>
+      <enum name="srv6-te-policy">
+        <value value="52"/>
+        <description>
+          <text>SRv6 TE Policy.</text>
+        </description>
+      </enum>
+      <enum name="srv6-te-policy-group">
+        <value value="55"/>
+        <description>
+          <text>SRv6 TE Policy group.</text>
+        </description>
+      </enum>
+      <enum name="sd-wan">
+        <value value="56"/>
+        <description>
+          <text>SD-WAN Tunnel.</text>
+        </description>
+      </enum>
+      <enum name="flex-algo-lsp">
+        <value value="147"/>
+        <description>
+          <text>FLEX-ALGO LSP.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Tunnel type.</text>
+    </description>
+  </typedef>
+  <container name="tunnel-management">
+    <description>
+      <text>Tunnel management, including management on tunnel policies.</text>
+    </description>
+    <container name="tunnel-policys">
+      <description>
+        <text>List of global tunnel policy configurations. A tunnel policy can be used to specify a rule for selecting tunnels.</text>
+      </description>
+      <list name="tunnel-policy">
+        <key value="name"/>
+        <description>
+          <text>Configure a global tunnel policy, which is used to specify rules for selecting tunnels.</text>
+        </description>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..39"/>
+          </type>
+          <description>
+            <text>Name of a tunnel policy. The value is a string case-sensitive characters, spaces not supported.</text>
+          </description>
+        </leaf>
+        <leaf name="description">
+          <type name="string">
+            <length value="1..80"/>
+          </type>
+          <description>
+            <text>Description of a tunnel policy.</text>
+          </description>
+        </leaf>
+        <container name="ipv4-set">
+          <description>
+            <text>Configure an IPv4 tunnel policy.</text>
+          </description>
+          <choice name="policy-type">
+            <description>
+              <text>Tunnel policy type.</text>
+            </description>
+            <case name="select-sequences">
+              <description>
+                <text>List of tunnel select sequences configurations.</text>
+              </description>
+              <container name="select-sequence">
+                <presence value="create select-sequence."/>
+                <description>
+                  <text>Enable/disable the selection of different types of tunnels. If the value is INVALID, no tunnel type is configured.</text>
+                </description>
+                <leaf name="loadbalance">
+                  <type name="uint32">
+                    <range value="1..128"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specify the maximum number of tunnels for load balancing. The maximum value varies according to hardware. To query the value, you can perform a get operation.</text>
+                  </description>
+                </leaf>
+                <leaf name="unmix">
+                  <type name="boolean"/>
+                  <default value="false"/>
+                  <description>
+                    <text>Enable/disable mixed selection.</text>
+                  </description>
+                </leaf>
+                <container name="select-tunnel-types">
+                  <description>
+                    <text>List of different types of tunnels that are selected in order of priority.</text>
+                  </description>
+                  <list name="select-tunnel-type">
+                    <key value="type"/>
+                    <min-elements value="1"/>
+                    <max-elements value="8"/>
+                    <ordered-by value="user"/>
+                    <description>
+                      <text>Configure a tunnel type.</text>
+                    </description>
+                    <leaf name="type">
+                      <type name="tnlm:sel-seq-tunnel-type"/>
+                      <must condition="((../type='sr-te-policy' or ../type='flex-algo-lsp') and ../../../unmix = 'true') or (../type != 'sr-te-policy' and ../type != 'flex-algo-lsp')"/>
+                      <description>
+                        <text>The selected sequence type. CR-LSP is mutually exclusive with TE and SR-TE. LSP is mutually exclusive with BGP, LDP, and SRBE-LSP.</text>
+                      </description>
+                    </leaf>
+                  </list>
+                </container>
+              </container>
+            </case>
+            <case name="binding">
+              <description>
+                <text>List of tunnel binding configurations.</text>
+              </description>
+              <container name="nexthops">
+                <description>
+                  <text>List of rules for binding TE tunnels to destination addresses, so that VPN traffic destined for each destination address can be transmitted over the bound TE tunnels.</text>
+                </description>
+                <list name="nexthop">
+                  <key value="address"/>
+                  <max-elements value="65535"/>
+                  <description>
+                    <text>Configure a rule for binding tunnels to a specified destination address.</text>
+                  </description>
+                  <leaf name="address">
+                    <type name="inet:ipv4-address-no-zone"/>
+                    <description>
+                      <text>Destination IP address to be bound to a tunnel.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="down-switch">
+                    <type name="boolean"/>
+                    <must condition="(../down-switch='true' and ../include-ldp='false') or ../down-switch='false'"/>
+                    <default value="false"/>
+                    <description>
+                      <text>Enable/disable tunnel switching. After this option is selected, if the bound TE tunnel is unavailable, the system will select an available tunnel in order of conventional LSP, CR-LSP, and Local_IFNET tunnel.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="ignore-destination-check">
+                    <type name="boolean"/>
+                    <default value="false"/>
+                    <description>
+                      <text>Enable/disable the function of checking whether the destination address of a TE tunnel matches the destination address specified in a tunnel policy.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="include-ldp">
+                    <type name="boolean"/>
+                    <must condition="../include-ldp='false' or (../bind-type='te' and ../down-switch='false')"/>
+                    <default value="false"/>
+                    <description>
+                      <text>Enable/disable load balancing among tunnels that include LDP LSPs.</text>
+                    </description>
+                  </leaf>
+                  <leaf name="bind-type">
+                    <type name="enumeration">
+                      <enum name="te">
+                        <value value="0"/>
+                        <description>
+                          <text>TE tunnel type.</text>
+                        </description>
+                      </enum>
+                      <enum name="auto">
+                        <value value="1"/>
+                        <description>
+                          <text>Auto tunnel type.</text>
+                        </description>
+                      </enum>
+                      <enum name="sr-te-policy-group">
+                        <value value="2"/>
+                        <description>
+                          <text>SR TE policy group tunnel type.</text>
+                        </description>
+                      </enum>
+                    </type>
+                    <mandatory value="true"/>
+                    <description>
+                      <text>Type of tunnels.</text>
+                    </description>
+                  </leaf>
+                  <container name="tunnel-names">
+                    <when condition="../bind-type='te'"/>
+                    <description>
+                      <text>List of TE tunnel names.</text>
+                    </description>
+                    <list name="tunnel-name">
+                      <key value="name"/>
+                      <min-elements value="1"/>
+                      <max-elements value="32"/>
+                      <description>
+                        <text>Configure a tunnel name.</text>
+                      </description>
+                      <leaf name="name">
+                        <type name="leafref">
+                          <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+                        </type>
+                        <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/ifm:type='Tunnel'"/>
+                        <description>
+                          <text>Name of the specified tunnel.</text>
+                        </description>
+                      </leaf>
+                    </list>
+                  </container>
+                  <container name="auto-names">
+                    <when condition="../bind-type='auto'"/>
+                    <description>
+                      <text>List of auto tunnel names.</text>
+                    </description>
+                    <list name="auto-name">
+                      <key value="name"/>
+                      <min-elements value="1"/>
+                      <max-elements value="32"/>
+                      <description>
+                        <text>Configure a tunnel name.</text>
+                      </description>
+                      <leaf name="name">
+                        <type name="string">
+                          <length value="1..37"/>
+                        </type>
+                        <description>
+                          <text>Name of the auto tunnel.</text>
+                        </description>
+                      </leaf>
+                    </list>
+                  </container>
+                </list>
+              </container>
+            </case>
+          </choice>
+        </container>
+        <container name="ipv6-set">
+          <description>
+            <text>Configure an IPv6 tunnel policy.</text>
+          </description>
+          <choice name="policy-type">
+            <description>
+              <text>Tunnel policy type.</text>
+            </description>
+            <case name="select-sequences">
+              <description>
+                <text>List of tunnel select sequences configurations.</text>
+              </description>
+              <container name="select-sequence">
+                <presence value="create select-sequence."/>
+                <description>
+                  <text>Enable/disable the selection of different types of tunnels. If the value is INVALID, no tunnel type is configured.</text>
+                </description>
+                <leaf name="loadbalance">
+                  <type name="uint32">
+                    <range value="1..128"/>
+                  </type>
+                  <mandatory value="true"/>
+                  <description>
+                    <text>Specify the maximum number of tunnels for load balancing. The maximum value varies according to hardware. To query the value, you can perform a get operation.</text>
+                  </description>
+                </leaf>
+                <leaf name="unmix">
+                  <type name="boolean"/>
+                  <must condition="(../select-tunnel-types/select-tunnel-type[type = 'srv6-te-policy'] and ../select-tunnel-types/select-tunnel-type[type = 'srv6-te-policy-group'] and ../unmix = 'true') or (../unmix = 'false')"/>
+                  <default value="false"/>
+                  <description>
+                    <text>Enable/disable mixed selection.</text>
+                  </description>
+                </leaf>
+                <container name="select-tunnel-types">
+                  <description>
+                    <text>List of different types of tunnels that are selected in order of priority.</text>
+                  </description>
+                  <list name="select-tunnel-type">
+                    <key value="type"/>
+                    <min-elements value="1"/>
+                    <max-elements value="2"/>
+                    <ordered-by value="user"/>
+                    <description>
+                      <text>Configure a tunnel type.</text>
+                    </description>
+                    <leaf name="type">
+                      <type name="sel-seq-tunnel-ipv6-type"/>
+                      <description>
+                        <text>The selected sequence type.</text>
+                      </description>
+                    </leaf>
+                  </list>
+                </container>
+              </container>
+            </case>
+          </choice>
+        </container>
+      </list>
+    </container>
+    <container name="tunnel-down-switch">
+      <description>
+        <text>Configure traffic switching to a tunnel that is selected in the LSP &gt; TE &gt; GRE order of priority if a destination address is not bound to any tunnel.</text>
+      </description>
+      <leaf name="enable">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable traffic switching to a tunnel that is selected in the LSP &gt; TE &gt; GRE order of priority if a destination address is not bound to any tunnel.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="tunnel-infos">
+      <config value="false"/>
+      <description>
+        <text>List of tunnel-related items.</text>
+      </description>
+      <list name="tunnel-info">
+        <key value="id"/>
+        <description>
+          <text>Operational state of tunnels managed, such as their tunnel IDs, tunnel types, and destination IP addresses.</text>
+        </description>
+        <leaf name="id">
+          <type name="string">
+            <length value="1..36"/>
+          </type>
+          <description>
+            <text>Tunnel ID.</text>
+          </description>
+        </leaf>
+        <leaf name="name">
+          <type name="string">
+            <length value="1..256"/>
+          </type>
+          <description>
+            <text>Tunnel name.</text>
+          </description>
+        </leaf>
+        <leaf name="type">
+          <type name="tnlm:tunnel-type"/>
+          <description>
+            <text>Tunnel type.</text>
+          </description>
+        </leaf>
+        <leaf name="destination">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Destination IP address of a tunnel.</text>
+          </description>
+        </leaf>
+        <leaf name="status">
+          <type name="enumeration">
+            <enum name="up">
+              <value value="1"/>
+              <description>
+                <text>The tunnel status is Up.</text>
+              </description>
+            </enum>
+            <enum name="down">
+              <value value="2"/>
+              <description>
+                <text>The tunnel status is Down.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Status of a tunnel.</text>
+          </description>
+        </leaf>
+        <leaf name="cost">
+          <type name="uint32"/>
+          <description>
+            <text>Tunnel cost.</text>
+          </description>
+        </leaf>
+        <leaf name="sr-te-policy-color">
+          <type name="uint32"/>
+          <status value="obsolete"/>
+          <description>
+            <text>Tunnel color. The node sr-te-policy-color is obsolete. You are advised to use the node color-type.</text>
+          </description>
+        </leaf>
+        <leaf name="sr-te-policy-group">
+          <type name="uint32"/>
+          <description>
+            <text>SR TE policy group ID.</text>
+          </description>
+        </leaf>
+        <choice name="color-type">
+          <description>
+            <text>List of tunnel colors.</text>
+          </description>
+          <case name="color">
+            <description>
+              <text>List of tunnel colors.</text>
+            </description>
+            <leaf-list name="color">
+              <type name="uint32"/>
+              <description>
+                <text>Operational data of tunnel color.</text>
+              </description>
+            </leaf-list>
+          </case>
+          <case name="color-priority">
+            <description>
+              <text>List of SD-WAN tunnel colors.</text>
+            </description>
+            <container name="color-prioritys">
+              <description>
+                <text>List of SD-WAN tunnel color information.</text>
+              </description>
+              <list name="color-priority">
+                <key value="color priority"/>
+                <description>
+                  <text>Operational state of SD-WAN tunnel color information.</text>
+                </description>
+                <leaf name="color">
+                  <type name="uint32"/>
+                  <description>
+                    <text>Color value.</text>
+                  </description>
+                </leaf>
+                <leaf name="priority">
+                  <type name="uint8"/>
+                  <description>
+                    <text>Priority value.</text>
+                  </description>
+                </leaf>
+              </list>
+            </container>
+          </case>
+        </choice>
+      </list>
+    </container>
+    <container name="subscribe-tunnel-policys">
+      <config value="false"/>
+      <description>
+        <text>List of tunnel policy reference times.</text>
+      </description>
+      <list name="subscribe-tunnel-policy">
+        <key value="policy-name"/>
+        <description>
+          <text>Statistics of the number of times that a tunnel policy has been referenced.</text>
+        </description>
+        <leaf name="policy-name">
+          <type name="string">
+            <length value="1..39"/>
+          </type>
+          <description>
+            <text>Tunnel policy name. The value is a string of case-sensitive characters, spaces not supported.</text>
+          </description>
+        </leaf>
+        <leaf name="policy-exist">
+          <type name="enumeration">
+            <enum name="true">
+              <value value="1"/>
+              <description>
+                <text>The tunnel policy has been configured.</text>
+              </description>
+            </enum>
+            <enum name="false">
+              <value value="2"/>
+              <description>
+                <text>The tunnel policy has not been configured.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Whether a tunnel policy has been configured.</text>
+          </description>
+        </leaf>
+        <leaf name="count">
+          <type name="uint32"/>
+          <description>
+            <text>Number of times a tunnel policy is referenced.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </container>
+  <augment target-node="/ifm:ifm/ifm:interfaces/ifm:interface">
+    <when condition="ifm:type='Tunnel'"/>
+    <description>
+      <text>Augment the huawei-ifm model to add tunnel protocol configuration.</text>
+    </description>
+    <container name="tunnel-protocol">
+      <description>
+        <text>Configure tunnel protocol.
+Special explanation:
+Constraint: If a tunnel is locked, all configurations of the tunnel cannot be deleted or modified.</text>
+      </description>
+      <choice name="type">
+        <description>
+          <text>Tunnel interface link layer encapsulation protocol type.</text>
+        </description>
+      </choice>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-bras-layer3-access"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:bras-layer3-access="urn:huawei:yang:huawei-bras-layer3-access"
+        xmlns:aaa="urn:huawei:yang:huawei-aaa"
+        xmlns:network-instance="urn:huawei:yang:huawei-network-instance"
+        xmlns:inet="urn:ietf:params:xml:ns:yang:ietf-inet-types"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:l3vpn="urn:huawei:yang:huawei-l3vpn">
+  <namespace uri="urn:huawei:yang:huawei-bras-layer3-access"/>
+  <prefix value="bras-layer3-access"/>
+  <import module="huawei-aaa">
+    <prefix value="aaa"/>
+  </import>
+  <import module="huawei-network-instance">
+    <prefix value="network-instance"/>
+  </import>
+  <import module="ietf-inet-types">
+    <prefix value="inet"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-l3vpn">
+    <prefix value="l3vpn"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Bras-layer3-access.</text>
+  </description>
+  <revision date="2020-02-22">
+    <description>
+      <text>Description modification.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2019-04-16">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="bras-control"/>
+  <container name="bras-layer3-access">
+    <description>
+      <text>Layer3 access.</text>
+    </description>
+    <container name="global">
+      <description>
+        <text>Configure global layer3 access.</text>
+      </description>
+      <container name="user-switch">
+        <description>
+          <text>Configure user switch.</text>
+        </description>
+        <leaf name="switch-policy">
+          <type name="enumeration">
+            <enum name="vpn">
+              <value value="0"/>
+              <description>
+                <text>Enable the layer3 IPv4 static user switch VPN.</text>
+              </description>
+            </enum>
+            <enum name="vpn-export-route">
+              <value value="1"/>
+              <description>
+                <text>Enable the layer3 IPv4 static user export host-route.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>Enable the layer3 IPv4 static user export host-route or enable the layer3 IPv4 static user export host-route.</text>
+          </description>
+        </leaf>
+      </container>
+      <container name="any-ip">
+        <description>
+          <text>Configure the name of the authentication domain associated with the IP address segment of layer 3 static users.</text>
+        </description>
+        <leaf name="domain-name">
+          <type name="leafref">
+            <path value="/aaa:aaa/aaa:domains/aaa:domain/aaa:name"/>
+          </type>
+          <description>
+            <text>Specifies the name of the authentication domain associated with the IP address segment of layer 3 static users.</text>
+          </description>
+        </leaf>
+      </container>
+    </container>
+    <container name="subscriber-ips">
+      <description>
+        <text>List of network segments. It can't conflict with each other. For example, if the network segment 10.0.0.1 10.0.0.5 exists, the 10.0.0.2 10.0.0.6 cannot be delivered.</text>
+      </description>
+      <list name="subscriber-ip">
+        <key value="start-ip-address vpn-name"/>
+        <description>
+          <text>Configure the network segments. It can't conflict with each other. For example, if the network segment 10.0.0.1 10.0.0.5 exists, the 10.0.0.2 10.0.0.6 cannot be delivered.</text>
+        </description>
+        <leaf name="start-ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Specifies the start IP address on the IP address segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/network-instance:network-instance/network-instance:instances/network-instance:instance/network-instance:name"/>
+          </type>
+          <must condition="(/network-instance:network-instance/network-instance:instances/network-instance:instance[network-instance:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+          <description>
+            <text>Specifies the VPN instance name of layer 3 static users. Public network vpn-name value is '_public_'.</text>
+          </description>
+        </leaf>
+        <leaf name="domain-name">
+          <type name="leafref">
+            <path value="/aaa:aaa/aaa:domains/aaa:domain/aaa:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of the authentication domain associated with the IP address segment of layer 3 static users.</text>
+          </description>
+        </leaf>
+        <leaf name="end-ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the end IP address on the IP address segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="subscriber-ipv6s">
+      <description>
+        <text>List of network segments. The address type of the IPv6/prefix must be GUA or ULA. It can't conflict with each other. For example, if the network segment 1::1 1::5 exists, the 1::2 1::6 cannot be delivered..</text>
+      </description>
+      <list name="subscriber-ipv6">
+        <must condition="((prefix-length and address-type='ipv6-prefix') or ((not(prefix-length)) and address-type='ipv6'))"/>
+        <key value="address-type start-ipv6-address vpn-name"/>
+        <description>
+          <text>Configure the network segments. The address type of the IPv6/prefix must be GUA or ULA. It can't conflict with each other. For example, if the network segment 1::1 1::5 exists, the 1::2 1::6 cannot be delivered.</text>
+        </description>
+        <leaf name="address-type">
+          <type name="enumeration">
+            <enum name="ipv6">
+              <value value="0"/>
+              <description>
+                <text>The IPv6 address.</text>
+              </description>
+            </enum>
+            <enum name="ipv6-prefix">
+              <value value="1"/>
+              <description>
+                <text>IPv6 prefix.</text>
+              </description>
+            </enum>
+          </type>
+          <description>
+            <text>The IPv6 address type.</text>
+          </description>
+        </leaf>
+        <leaf name="start-ipv6-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Specifies the start IP address of the IPv6 network segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/network-instance:network-instance/network-instance:instances/network-instance:instance/network-instance:name"/>
+          </type>
+          <must condition="(/network-instance:network-instance/network-instance:instances/network-instance:instance[network-instance:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast'])"/>
+          <description>
+            <text>Specifies the VPN instance name of layer 3 static users. Public network vpn-name value is '_public_'.</text>
+          </description>
+        </leaf>
+        <leaf name="domain-name">
+          <type name="leafref">
+            <path value="/aaa:aaa/aaa:domains/aaa:domain/aaa:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of the authentication domain associated with the IP address segment of layer 3 static users.</text>
+          </description>
+        </leaf>
+        <leaf name="end-ipv6-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the end IP address of the IPv6 network segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-length">
+          <type name="uint32">
+            <range value="1..128"/>
+          </type>
+          <description>
+            <text>Specifies the prefix length.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="subscriber-ip-and-ipv6s">
+      <description>
+        <text>List of network segments. The address type of the IPv6/prefix must be GUA or ULA. It can't conflict with each other. For example, if the network segment 10.0.0.1 10.0.0.5 exists, the 10.0.0.2 10.0.0.6 cannot be delivered. The number of network segments delivered by the dual-stack IPv4/IPv6/prefix must be the same. For example, the IPv4 delivers the 10.0.0.1 10.0.0.5, and the IPv6 delivers the 2::1 2::5.</text>
+      </description>
+      <list name="subscriber-ip-and-ipv6">
+        <must condition="(start-ip-address != '0.0.0.0' and start-ipv6-address != '0::0') or (start-ipv6-prefix != '0::0' and start-ip-address != '0.0.0.0') or (start-ipv6-prefix != '0::0' and start-ipv6-address != '0::0')"/>
+        <must condition="(start-ipv6-prefix!='0::0' and prefix-length) or (start-ipv6-prefix='0::0' and not(prefix-length))"/>
+        <key value="start-ip-address start-ipv6-address start-ipv6-prefix vpn-name"/>
+        <description>
+          <text>Configure the network segments. The address type of the IPv6/prefix must be GUA or ULA. It can't conflict with each other. For example, if the network segment 10.0.0.1 10.0.0.5 exists, the 10.0.0.2 10.0.0.6 cannot be delivered. The number of network segments delivered by the dual-stack IPv4/IPv6/prefix must be the same. For example, the IPv4 delivers the 10.0.0.1 10.0.0.5, and the IPv6 delivers the 2::1 2::5.</text>
+        </description>
+        <leaf name="start-ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Specifies the start IP address on the IP address segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="start-ipv6-address">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Specifies the start IP address of the IPv6 network segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="start-ipv6-prefix">
+          <type name="inet:ipv6-address-no-zone"/>
+          <description>
+            <text>Specifies the start IPv6 delegation prefixes of layer 3 static users.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/network-instance:network-instance/network-instance:instances/network-instance:instance/network-instance:name"/>
+          </type>
+          <must condition="(../start-ip-address!='0.0.0.0' and (/network-instance:network-instance/network-instance:instances/network-instance:instance[network-instance:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])) or ((../start-ipv6-address != '0::0' or ../start-ipv6-prefix != '0::0') and (/network-instance:network-instance/network-instance:instances/network-instance:instance[network-instance:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv6-unicast']))"/>
+          <description>
+            <text>Specifies the VPN instance name of layer 3 static users. Public network vpn-name value is '_public_'.</text>
+          </description>
+        </leaf>
+        <leaf name="domain-name">
+          <type name="leafref">
+            <path value="/aaa:aaa/aaa:domains/aaa:domain/aaa:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the name of the authentication domain associated with the IP address segment of layer 3 static users.</text>
+          </description>
+        </leaf>
+        <leaf name="end-ip-address">
+          <when condition="../start-ip-address!='0.0.0.0'"/>
+          <type name="inet:ipv4-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the end IP address on the IP address segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="end-ipv6-address">
+          <when condition="../start-ipv6-address!='0::0'"/>
+          <type name="inet:ipv6-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the end IP address of the IPv6 network segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="end-ipv6-prefix">
+          <when condition="../start-ipv6-prefix!='0::0'"/>
+          <type name="inet:ipv6-address-no-zone"/>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the end IPv6 delegation prefixes of layer 3 static users.</text>
+          </description>
+        </leaf>
+        <leaf name="prefix-length">
+          <type name="uint32">
+            <range value="1..128"/>
+          </type>
+          <description>
+            <text>Specifies the prefix length.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="subscriber-subnets">
+      <description>
+        <text>List of IP address segments for layer 3 static users. The name of the authentication domain associated with the IP address segment.</text>
+      </description>
+      <list name="subscriber-subnet">
+        <key value="start-ip-address vpn-name"/>
+        <description>
+          <text>Configure an IP address segment for layer 3 static users and the name of the authentication domain associated with the IP address segment.</text>
+        </description>
+        <leaf name="start-ip-address">
+          <type name="inet:ipv4-address-no-zone"/>
+          <description>
+            <text>Specifies the start IP address on the IP address segment where the layer 3 static users reside.</text>
+          </description>
+        </leaf>
+        <leaf name="vpn-name">
+          <type name="leafref">
+            <path value="/network-instance:network-instance/network-instance:instances/network-instance:instance/network-instance:name"/>
+          </type>
+          <must condition="(/network-instance:network-instance/network-instance:instances/network-instance:instance[network-instance:name=current()]/l3vpn:afs/l3vpn:af[l3vpn:type='ipv4-unicast'])"/>
+          <description>
+            <text>Specifies the VPN instance name of layer 3 static users. Public network vpn-name value is '_public_'.</text>
+          </description>
+        </leaf>
+        <leaf name="mask-length">
+          <type name="uint32">
+            <range value="1..32"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the mask length for the subnet.</text>
+          </description>
+        </leaf>
+        <leaf name="domain-name">
+          <type name="leafref">
+            <path value="/aaa:aaa/aaa:domains/aaa:domain/aaa:name"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>Specifies the domain name.</text>
+          </description>
+          <ext:support-filter value="true"/>
+        </leaf>
+      </list>
+    </container>
+  </container>
+</module>

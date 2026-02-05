@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="an-alarm-management"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:an-alm="urn:an:yang:an-alarm-management"
+        xmlns:al="urn:ietf:params:xml:ns:yang:ietf-alarms"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:an:yang:an-alarm-management"/>
+  <prefix value="an-alm"/>
+  <import module="ietf-alarms">
+    <prefix value="al"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <organization>
+    <text>Research Institute of China Telecom</text>
+  </organization>
+  <contact>
+    <text>Editor:      Liang Zhenming, China Telecom
+                           &lt;mailto:liangzhm@chinatelecom.cn&gt;
+
+Editor:      Yang Ziyao, China Telecom
+                           &lt;mailto:yangziyao@chinatelecom.cn&gt;
+
+Editor:      Tang Jian, China Telecom
+                           &lt;mailto:tangj10@chinatelecom.cn&gt;
+
+Editor:      Shi Shuguang, Huawei
+                           &lt;mailto:shishuguang@huawei.com&gt;
+
+Editor:      Huang Yueping, Huawei
+                           &lt;mailto:huangyueping@huawei.com&gt;
+
+Editor:      Feng Xiaodong, CICT
+                           &lt;mailto:xdfeng@fiberhome.com&gt;
+
+Editor:      Wu Hao, CICT
+                           &lt;mailto:wuh@fiberhome.com&gt;
+
+Editor:      Xie Yu, ZTE
+                           &lt;mailto:10001002@zte.com.cn&gt;
+
+Editor:      Ni Shenliu, ZTE
+                           &lt;mailto:00026486@zte.com.cn&gt;
+
+Leader:      Zhang Dezhi, China Telecom
+                           &lt;mailto:zhangdzh@chinatelecom.cn&gt;</text>
+  </contact>
+  <description>
+    <text>Copyright (c) 2020, Research Institute of China Telecom
+
+Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the following
+conditions are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above
+   copyright notice, this list of conditions and the following
+   disclaimer in the documentation and/or other materials
+   provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products
+   derived from this software without specific prior written
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The above license is used as a license under copyright only.
+
+Any moral rights which are necessary to exercise under the above
+license grant are also deemed granted under this license.</text>
+  </description>
+  <revision date="2020-12-18"/>
+  <identity name="an-alarm-type-id">
+    <base name="al:alarm-type-id"/>
+  </identity>
+  <identity name="equipment-alarm">
+    <base name="an-alarm-type-id"/>
+  </identity>
+  <identity name="environmental-alarm">
+    <base name="an-alarm-type-id"/>
+  </identity>
+  <identity name="communications-alarm">
+    <base name="an-alarm-type-id"/>
+  </identity>
+  <identity name="quality-of-service-alarm">
+    <base name="an-alarm-type-id"/>
+  </identity>
+  <identity name="processing-error-alarm">
+    <base name="an-alarm-type-id"/>
+  </identity>
+  <identity name="device-event">
+    <base name="an-alarm-type-id"/>
+  </identity>
+  <grouping name="an-notification-serial-id">
+    <leaf name="notification-serial-id">
+      <type name="yang:gauge32"/>
+      <description>
+        <text>告警通知流水号</text>
+      </description>
+    </leaf>
+  </grouping>
+  <grouping name="an-alarm-name">
+    <leaf name="alarm-name">
+      <type name="string">
+        <length value="0..256"/>
+      </type>
+      <description>
+        <text>告警名称，与告警ID（alarm-type-qualifier）相对应</text>
+      </description>
+    </leaf>
+  </grouping>
+  <augment target-node="/al:alarms/al:control/al:alarm-shelving/al:shelf">
+    <leaf name="severity">
+      <type name="al:severity"/>
+      <description>
+        <text>告警屏蔽模版中的告警级别</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/al:alarms/al:control/al:alarm-shelving">
+    <leaf name="alarm-shelving-enabled">
+      <type name="boolean"/>
+      <default value="false"/>
+      <description>
+        <text>告警屏蔽启用/禁用,true表示启用告警屏蔽功能</text>
+      </description>
+    </leaf>
+  </augment>
+  <augment target-node="/al:alarm-notification">
+    <uses name="an-notification-serial-id"/>
+    <uses name="an-alarm-name"/>
+  </augment>
+  <augment target-node="/al:alarms/al:alarm-list/al:alarm">
+    <uses name="an-notification-serial-id"/>
+    <uses name="an-alarm-name"/>
+  </augment>
+  <augment target-node="/al:alarms/al:shelved-alarms/al:shelved-alarm">
+    <uses name="an-alarm-name"/>
+  </augment>
+  <augment target-node="/al:alarms">
+    <container name="historical-alarms">
+      <config value="false"/>
+      <description>
+        <text>历史告警</text>
+      </description>
+      <leaf name="number-of-historical-alarm">
+        <type name="yang:gauge32"/>
+        <description>
+          <text>统计的历史告警数量</text>
+        </description>
+      </leaf>
+      <leaf name="historical-alarms-last-changed">
+        <type name="yang:date-and-time"/>
+        <description>
+          <text>历史告警列表上次更改的时间戳。 管理员可以使用该值来启动告警
+重新同步过程。</text>
+        </description>
+      </leaf>
+      <list name="historical-alarm">
+        <key value="notification-serial-id"/>
+        <uses name="an-notification-serial-id"/>
+        <uses name="an-alarm-name"/>
+        <leaf name="resource">
+          <type name="al:resource"/>
+          <mandatory value="true"/>
+          <description>
+            <text>告警所在位置</text>
+          </description>
+        </leaf>
+        <leaf name="alarm-type-id">
+          <type name="al:alarm-type-id"/>
+          <mandatory value="true"/>
+          <description>
+            <text>告警类型</text>
+          </description>
+        </leaf>
+        <leaf name="alarm-type-qualifier">
+          <type name="al:alarm-type-qualifier"/>
+          <description>
+            <text>告警ID</text>
+          </description>
+        </leaf>
+        <leaf name="severity">
+          <type name="al:severity"/>
+          <mandatory value="true"/>
+          <description>
+            <text>告警等级</text>
+          </description>
+        </leaf>
+        <leaf name="fault-flag">
+          <type name="enumeration">
+            <enum name="fault">
+              <description>
+                <text>故障</text>
+              </description>
+            </enum>
+            <enum name="recovery">
+              <description>
+                <text>清除</text>
+              </description>
+            </enum>
+            <enum name="event">
+              <description>
+                <text>事件</text>
+              </description>
+            </enum>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>告警状态</text>
+          </description>
+        </leaf>
+        <leaf name="time-created">
+          <type name="yang:date-and-time"/>
+          <mandatory value="true"/>
+          <description>
+            <text>告警产生时间</text>
+          </description>
+        </leaf>
+        <leaf name="recover-time">
+          <type name="yang:date-and-time"/>
+          <description>
+            <text>告警恢复时间</text>
+          </description>
+        </leaf>
+        <leaf name="alarm-text">
+          <type name="string">
+            <length value="0..256"/>
+          </type>
+          <description>
+            <text>附加信息，描述告警相关附加信息</text>
+          </description>
+        </leaf>
+        <leaf name="probable-cause-desc">
+          <type name="string">
+            <length value="0..256"/>
+          </type>
+          <description>
+            <text>告警原因</text>
+          </description>
+        </leaf>
+        <leaf name="probable-cause-code">
+          <type name="int32"/>
+          <description>
+            <text>告警原因代码</text>
+          </description>
+        </leaf>
+        <leaf name="proposed-advise">
+          <type name="string">
+            <length value="0..256"/>
+          </type>
+          <description>
+            <text>处理建议</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+  <augment target-node="/al:alarms/al:alarm-list/al:purge-alarms/al:input">
+    <uses name="an-notification-serial-id"/>
+  </augment>
+</module>

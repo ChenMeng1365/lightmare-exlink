@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-oam-efm-bfd"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:oam-efm-bfd="urn:huawei:yang:huawei-oam-efm-bfd"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:oammgr="urn:huawei:yang:huawei-oammgr"
+        xmlns:bfd="urn:huawei:yang:huawei-bfd"
+        xmlns:ifm="urn:huawei:yang:huawei-ifm"
+        xmlns:efm="urn:huawei:yang:huawei-efm">
+  <namespace uri="urn:huawei:yang:huawei-oam-efm-bfd"/>
+  <prefix value="oam-efm-bfd"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-oammgr">
+    <prefix value="oammgr"/>
+  </import>
+  <import module="huawei-bfd">
+    <prefix value="bfd"/>
+  </import>
+  <import module="huawei-ifm">
+    <prefix value="ifm"/>
+  </import>
+  <import module="huawei-efm">
+    <prefix value="efm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Configure the operation, administration and maintenance (OAM) association function.</text>
+  </description>
+  <revision date="2020-09-18">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="oammgr"/>
+  <typedef name="efm-bind-bfd-type">
+    <type name="enumeration">
+      <enum name="EFM-BFD">
+        <value value="1"/>
+        <description>
+          <text>Type that EFM transfers fault information to BFD.</text>
+        </description>
+      </enum>
+      <enum name="BFD-EFM">
+        <value value="2"/>
+        <description>
+          <text>Type that BFD transfers fault information to EFM.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Binding type.</text>
+    </description>
+  </typedef>
+  <augment target-node="/oammgr:oammgr">
+    <description>
+      <text>Configure the operation, administration and maintenance (OAM) association function.</text>
+    </description>
+    <container name="efm-bind-bfds">
+      <description>
+        <text>List of associations between EFM and BFD.</text>
+      </description>
+      <list name="efm-bind-bfd">
+        <key value="if-name bfd-session-id bind-type"/>
+        <unique tag="if-name bind-type"/>
+        <unique tag="bfd-session-id bind-type"/>
+        <description>
+          <text>Configure an instance of an association between EFM and BFD.</text>
+        </description>
+        <leaf name="if-name">
+          <type name="leafref">
+            <path value="/ifm:ifm/ifm:interfaces/ifm:interface/ifm:name"/>
+          </type>
+          <must condition="/ifm:ifm/ifm:interfaces/ifm:interface[ifm:name=current()]/efm:efm/efm:session/efm:state='enable'"/>
+          <description>
+            <text>Configure the name of interface which the EFM instance bound.</text>
+          </description>
+        </leaf>
+        <leaf name="bfd-session-id">
+          <type name="uint32">
+            <range value="1..16384"/>
+          </type>
+          <must condition="/bfd:bfd/bfd:sessions/bfd:session[bfd:local-discriminator-multicast-ipv4=current()] or /bfd:bfd/bfd:sessions/bfd:session[bfd:local-discriminator=current()] or /bfd:bfd/bfd:sessions/bfd:session[bfd:local-discriminator-static-ldp-lsp=current()]"/>
+          <description>
+            <text>Configure the local discriminator of a BFD session.</text>
+          </description>
+        </leaf>
+        <leaf name="bind-type">
+          <type name="efm-bind-bfd-type"/>
+          <description>
+            <text>Configure a binding type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-rsa"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:rsa="urn:huawei:yang:huawei-rsa"
+        xmlns:ext="urn:huawei:yang:huawei-extension">
+  <namespace uri="urn:huawei:yang:huawei-rsa"/>
+  <prefix value="rsa"/>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>RSA.</text>
+  </description>
+  <revision date="2019-06-01">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <ext:task-name value="ssh-server"/>
+  <typedef name="encode-type">
+    <type name="enumeration">
+      <enum name="der">
+        <value value="0"/>
+        <description>
+          <text>Der encode type.</text>
+        </description>
+      </enum>
+      <enum name="pem">
+        <value value="1"/>
+        <description>
+          <text>Pem encode type.</text>
+        </description>
+      </enum>
+      <enum name="openssh">
+        <value value="2"/>
+        <description>
+          <text>Openssh encode type.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>RSA encode type list.</text>
+    </description>
+  </typedef>
+  <container name="rsa">
+    <description>
+      <text>RSA configuration.</text>
+    </description>
+    <container name="local-key">
+      <presence value="create rsaLocalKey"/>
+      <description>
+        <text>Enable/disable Local key code.</text>
+      </description>
+      <leaf name="key-size">
+        <type name="uint32">
+          <range value="2048 | 3072"/>
+        </type>
+        <default value="3072"/>
+        <description>
+          <text>Key size.</text>
+        </description>
+      </leaf>
+      <leaf name="host-key-name">
+        <type name="string">
+          <length value="0..264"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Hostkey name.</text>
+        </description>
+      </leaf>
+      <leaf name="host-key-code">
+        <type name="string">
+          <length value="0..1024"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Hostkey code.</text>
+        </description>
+      </leaf>
+      <leaf name="host-key-ssh1">
+        <type name="string">
+          <length value="0..1024"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Hostkey code in SSH1 format.</text>
+        </description>
+      </leaf>
+      <leaf name="host-key-pem">
+        <type name="string">
+          <length value="0..1920"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Hostkey code in PEM format.</text>
+        </description>
+      </leaf>
+      <leaf name="host-key-openssh">
+        <type name="string">
+          <length value="0..1920"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Hostkey code in OpenSSH format.</text>
+        </description>
+      </leaf>
+      <leaf name="server-key-name">
+        <type name="string">
+          <length value="0..264"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Server key name.</text>
+        </description>
+      </leaf>
+      <leaf name="server-key-code">
+        <type name="string">
+          <length value="0..1024"/>
+        </type>
+        <config value="false"/>
+        <description>
+          <text>Server key code.</text>
+        </description>
+      </leaf>
+    </container>
+    <container name="peer-keys">
+      <description>
+        <text>List of Peer key table.</text>
+      </description>
+      <list name="peer-key">
+        <key value="key-name"/>
+        <max-elements value="20"/>
+        <description>
+          <text>Configure Peer key code. If the key code is bound, it cannot be deleted, you need to unbind and then delete.</text>
+        </description>
+        <leaf name="key-name">
+          <type name="string">
+            <length value="1..40"/>
+          </type>
+          <description>
+            <text>Key name.</text>
+          </description>
+        </leaf>
+        <leaf name="key-code">
+          <type name="string">
+            <length value="1..4096"/>
+          </type>
+          <mandatory value="true"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Key code conforming to PEM, OpenSSH or DER format.</text>
+          </description>
+        </leaf>
+        <leaf name="encode-type">
+          <type name="encode-type"/>
+          <default value="der"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Encode type.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="key-pairs">
+      <description>
+        <text>List of RSA key-pair label.</text>
+      </description>
+      <list name="key-pair">
+        <key value="key-pair-label"/>
+        <max-elements value="20"/>
+        <description>
+          <text>Configure RSA key-pair.</text>
+        </description>
+        <leaf name="key-pair-label">
+          <type name="string">
+            <length value="1..35"/>
+            <pattern value="[a-z0-9_]*"/>
+          </type>
+          <description>
+            <text>Key-pair Label Name : It only contains underscores (_), lowercase letters and digits.</text>
+          </description>
+        </leaf>
+        <leaf name="key-size">
+          <type name="uint32">
+            <range value="2048 | 3072"/>
+          </type>
+          <default value="3072"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Size of Key-pair.</text>
+          </description>
+        </leaf>
+        <leaf name="host-key-code">
+          <type name="string">
+            <length value="0..2048"/>
+          </type>
+          <config value="false"/>
+          <ext:support-filter value="true"/>
+          <description>
+            <text>Hostkey code.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="rsa-global">
+      <description>
+        <text>Configure Global configuration.</text>
+      </description>
+      <leaf name="max-key-pair">
+        <type name="int32">
+          <range value="1..20"/>
+        </type>
+        <default value="20"/>
+        <description>
+          <text>Maximum key-pair value.</text>
+        </description>
+      </leaf>
+    </container>
+  </container>
+</module>

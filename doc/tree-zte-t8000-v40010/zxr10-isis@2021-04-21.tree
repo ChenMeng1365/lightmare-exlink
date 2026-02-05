@@ -1,0 +1,784 @@
+module: zxr10-isis
+  +--rw configuration
+  |  +--rw route-isis
+  |  |  +--rw isis-instances
+  |  |     +--rw isis-instance* [process-id]
+  |  |        +--rw process-id                                   uint32
+  |  |        +--rw vrf-name?                                    string
+  |  |        +--rw system-ids
+  |  |        |  +--rw system-id* [isis-system-id]
+  |  |        |     +--rw isis-system-id    ncd:mac-address
+  |  |        |     +--rw range?            uint8
+  |  |        +--rw authentications!
+  |  |        |  +--rw authentication* [level]
+  |  |        |     +--rw level                  uint8
+  |  |        |     +--rw (authen-word)?
+  |  |        |        +--:(word)
+  |  |        |        |  +--rw authen-pwd       string
+  |  |        |        +--:(clear)
+  |  |        |        |  +--rw clear-pwd        string
+  |  |        |        +--:(encrypted-word)
+  |  |        |           +--rw encrypted-pwd    string
+  |  |        +--rw authentication-types!
+  |  |        |  +--rw authen-type* [level]
+  |  |        |     +--rw level          uint8
+  |  |        |     +--rw authen-type?   enumeration
+  |  |        +--rw areas
+  |  |        |  +--rw area* [area-addr]
+  |  |        |     +--rw area-addr    ncd:area-id
+  |  |        +--rw isis-attr
+  |  |        |  +--rw isis-protocol-state?                 isis-state
+  |  |        |  +--rw is-type?                             isis-level
+  |  |        |  +--rw i-spf?                               boolean
+  |  |        |  +--rw distance?                            uint8
+  |  |        |  +--rw maximum-paths?                       uint32
+  |  |        |  +--rw lsp-size-originate?                  uint16
+  |  |        |  +--rw lsp-size-recieve?                    uint16
+  |  |        |  +--rw snp-authentication-state?            enumeration
+  |  |        |  +--rw ignore-lsp-errors?                   isis-state
+  |  |        |  +--rw lsp-refresh-time?                    uint16
+  |  |        |  +--rw max-lsp-lifetime?                    uint16
+  |  |        |  +--rw restart-state?                       isis-state
+  |  |        |  +--rw snmp-context?                        string
+  |  |        |  +--rw local-mt-state?                      isis-state
+  |  |        |  +--rw fast-reroute-type?                   enumeration
+  |  |        |  +--rw hostname-dynamic?                    isis-state
+  |  |        |  +--rw fast-flood-num?                      uint8
+  |  |        |  +--rw ipv6-frr-type?                       enumeration
+  |  |        |  +--rw ipv6-distance?                       uint8
+  |  |        |  +--rw ipv6-maximum-paths?                  uint32
+  |  |        |  +--rw ipv6-set-ol-bit?                     boolean
+  |  |        |  +--rw mpls-ldp-auto-config?                isis-state
+  |  |        |  +--rw auto-metric-state?                   isis-state
+  |  |        |  +--rw auto-metric-ref-bandwidth?           uint32
+  |  |        |  +--rw ipv6-auto-metric-state?              isis-state
+  |  |        |  +--rw ipv6-auto-metric-ref-bw?             uint32
+  |  |        |  +--rw hostname-string?                     string
+  |  |        |  +--rw description?                         string
+  |  |        |  +--rw segment-routing-mpls-adj-sid?        enumeration {sr-feature}?
+  |  |        |  +--rw ipv6-segment-routing-mpls-adj-sid?   enumeration {sr-feature}?
+  |  |        |  +--rw te-link-loss-anomalous-attach-sd?    enumeration
+  |  |        |  +--rw adjacency-hold-time?                 uint16
+  |  |        |  +--rw lsp-hold-time?                       uint16
+  |  |        |  +--rw te-link-bandwidth?                   isis-state
+  |  |        |  +--rw te-link-loss?                        isis-state
+  |  |        |  +--rw prefix-attribute-advertise?          enumeration
+  |  |        |  +--rw ipv6-prefix-attribute-advertise?     enumeration
+  |  |        |  +--rw crypto-authen-keychain-hmac-md5?     isis-state
+  |  |        +--rw hello-padding!
+  |  |        |  +--rw hello-padding-type    enumeration
+  |  |        +--rw metric-style!
+  |  |        |  +--rw metric-style    enumeration
+  |  |        +--rw restart-t3-timer
+  |  |        |  +--rw (t3-timer)?
+  |  |        |     +--:(t3-type-adjacency)
+  |  |        |     |  +--rw adjacency?        enumeration
+  |  |        |     +--:(t3-type-manual)
+  |  |        |        +--rw manual            enumeration
+  |  |        |        +--rw t3-timer-value    uint16
+  |  |        +--rw default-info!
+  |  |        |  +--rw default-info-originate    boolean
+  |  |        |  +--rw default-info-branches!
+  |  |        |     +--rw always-branch!
+  |  |        |     |  +--rw always                 boolean
+  |  |        |     |  +--rw always-level?          isis-level
+  |  |        |     |  +--rw always-metric?         uint32
+  |  |        |     |  +--rw always-metric-style?   enumeration
+  |  |        |     +--rw conditional-branch
+  |  |        |     |  +--rw default-info-level?          isis-level
+  |  |        |     |  +--rw default-info-metric?         uint32
+  |  |        |     |  +--rw default-info-metric-style?   enumeration
+  |  |        |     +--rw def-rib-match!
+  |  |        |        +--rw state           boolean
+  |  |        |        +--rw level?          isis-level
+  |  |        |        +--rw metric?         uint32
+  |  |        |        +--rw metric-style?   enumeration
+  |  |        +--rw spf-intervals!
+  |  |        |  +--rw spf-interval* [level]
+  |  |        |     +--rw level                uint8
+  |  |        |     +--rw interval?            uint16
+  |  |        |     +--rw init-delay?          uint32
+  |  |        |     +--rw wait-first-second?   uint32
+  |  |        +--rw lsp-gen-intervals!
+  |  |        |  +--rw lsp-gen-interval* [level]
+  |  |        |     +--rw level                uint8
+  |  |        |     +--rw init-delay?          uint32
+  |  |        |     +--rw max-delay?           uint16
+  |  |        |     +--rw wait-first-second?   uint32
+  |  |        +--rw summary-addrs
+  |  |        |  +--rw summary-address* [ip-address net-mask]
+  |  |        |     +--rw ip-address      ncd:ipv4-address
+  |  |        |     +--rw net-mask        ncd:ipv4-mask
+  |  |        |     +--rw metric-value?   uint32
+  |  |        |     +--rw level?          isis-level
+  |  |        +--rw ipv4-prefix-priorities
+  |  |        |  +--rw acls
+  |  |        |  |  +--rw acl* [level rule acl-name]
+  |  |        |  |     +--rw level       uint8
+  |  |        |  |     +--rw rule        enumeration
+  |  |        |  |     +--rw acl-name    string
+  |  |        |  +--rw tags
+  |  |        |     +--rw tag* [level rule tag-number]
+  |  |        |        +--rw level         uint8
+  |  |        |        +--rw rule          enumeration
+  |  |        |        +--rw tag-number    uint32
+  |  |        +--rw route-leak-l1tol2!
+  |  |        |  +--rw routemap-name?        string
+  |  |        |  +--rw state                 enumeration
+  |  |        |  +--rw without-prefix-sid?   isis-state
+  |  |        |  +--rw host-only?            isis-state
+  |  |        +--rw route-leak-l2tol1!
+  |  |        |  +--rw routemap-name?        string
+  |  |        |  +--rw state                 isis-state
+  |  |        |  +--rw without-prefix-sid?   isis-state
+  |  |        |  +--rw host-only?            isis-state
+  |  |        +--rw redistributes
+  |  |        |  +--rw redis-isis-protocol
+  |  |        |  |  +--rw redis-isis* [isis isis-process-id]
+  |  |        |  |     +--rw isis                           enumeration
+  |  |        |  |     +--rw isis-process-id                uint32
+  |  |        |  |     +--rw level?                         isis-level
+  |  |        |  |     +--rw metric-style?                  enumeration
+  |  |        |  |     +--rw routemap-name?                 string
+  |  |        |  |     +--rw (metric-value)?
+  |  |        |  |     |  +--:(originate-branch)
+  |  |        |  |     |  |  +--rw with-originate-metric?   empty
+  |  |        |  |     |  +--:(isis-branch)
+  |  |        |  |     |     +--rw metric?                  uint32
+  |  |        |  |     +--rw without-prefix-sid?            isis-state
+  |  |        |  |     +--rw host-only?                     isis-state
+  |  |        |  +--rw redis-ospf-protocol
+  |  |        |  |  +--rw redis-ospf* [ospf ospf-process-id]
+  |  |        |  |     +--rw ospf                           enumeration
+  |  |        |  |     +--rw ospf-process-id                uint32
+  |  |        |  |     +--rw level?                         isis-level
+  |  |        |  |     +--rw routemap-name?                 string
+  |  |        |  |     +--rw metric-style?                  enumeration
+  |  |        |  |     +--rw (metric-value)?
+  |  |        |  |     |  +--:(isis-branch)
+  |  |        |  |     |  |  +--rw metric?                  uint32
+  |  |        |  |     |  +--:(originate-branch)
+  |  |        |  |     |     +--rw with-originate-metric?   empty
+  |  |        |  |     +--rw without-prefix-sid?            isis-state
+  |  |        |  |     +--rw host-only?                     isis-state
+  |  |        |  +--rw redis-other-protocols
+  |  |        |     +--rw redis-other-protocol* [protocol]
+  |  |        |        +--rw protocol                       enumeration
+  |  |        |        +--rw level?                         isis-level
+  |  |        |        +--rw metric-style?                  enumeration
+  |  |        |        +--rw routemap-name?                 string
+  |  |        |        +--rw (metric-value)?
+  |  |        |        |  +--:(isis-branch)
+  |  |        |        |  |  +--rw metric?                  uint32
+  |  |        |        |  +--:(originate-branch)
+  |  |        |        |     +--rw with-originate-metric?   empty
+  |  |        |        +--rw without-prefix-sid?            isis-state
+  |  |        |        +--rw host-only?                     isis-state
+  |  |        +--rw multi-topology
+  |  |        |  +--rw state?   isis-state
+  |  |        +--rw ipv6-distribute-list!
+  |  |        |  +--rw routemap-name    string
+  |  |        +--rw ipv6-spf-intervals!
+  |  |        |  +--rw ipv6-spf-interval* [level]
+  |  |        |     +--rw level           uint8
+  |  |        |     +--rw interval?       uint16
+  |  |        |     +--rw init-delay?     uint32
+  |  |        |     +--rw second-delay?   uint32
+  |  |        +--rw ipv6-summary-prefixs
+  |  |        |  +--rw ipv6-summary-prefix* [ipv6-prefix prefix-len]
+  |  |        |     +--rw ipv6-prefix    ncd:ipv6-address
+  |  |        |     +--rw prefix-len     uint8
+  |  |        |     +--rw metric?        uint32
+  |  |        |     +--rw level?         isis-level
+  |  |        +--rw ipv6-route-leak-l1tol2!
+  |  |        |  +--rw routemap-name?        string
+  |  |        |  +--rw state                 enumeration
+  |  |        |  +--rw without-prefix-sid?   isis-state
+  |  |        |  +--rw host-only?            isis-state
+  |  |        +--rw ipv6-route-leak-l2tol1!
+  |  |        |  +--rw routemap-name?        string
+  |  |        |  +--rw state                 isis-state
+  |  |        |  +--rw without-prefix-sid?   isis-state
+  |  |        |  +--rw host-only?            isis-state
+  |  |        +--rw ipv6-frr-state!
+  |  |        |  +--rw state?        isis-state
+  |  |        |  +--rw multi-home?   isis-state
+  |  |        +--rw ipv6-redistributes
+  |  |        |  +--rw redis-isis-protocol
+  |  |        |  |  +--rw redis-isis* [isis isis-process-id]
+  |  |        |  |     +--rw isis                  enumeration
+  |  |        |  |     +--rw isis-process-id       uint32
+  |  |        |  |     +--rw level?                isis-level
+  |  |        |  |     +--rw metric?               uint32
+  |  |        |  |     +--rw routemap-name?        string
+  |  |        |  |     +--rw without-prefix-sid?   isis-state
+  |  |        |  |     +--rw host-only?            isis-state
+  |  |        |  +--rw redis-other-protocols
+  |  |        |  |  +--rw redis-other-protocol* [protocol]
+  |  |        |  |     +--rw protocol              enumeration
+  |  |        |  |     +--rw level?                isis-level
+  |  |        |  |     +--rw metric?               uint32
+  |  |        |  |     +--rw routemap-name?        string
+  |  |        |  |     +--rw without-prefix-sid?   isis-state
+  |  |        |  |     +--rw host-only?            isis-state
+  |  |        |  +--rw redis-ospf-protocol
+  |  |        |     +--rw redis-ospf* [ospf ospf-process-id]
+  |  |        |        +--rw ospf                  enumeration
+  |  |        |        +--rw ospf-process-id       uint32
+  |  |        |        +--rw level?                isis-level
+  |  |        |        +--rw metric?               uint32
+  |  |        |        +--rw routemap-name?        string
+  |  |        |        +--rw without-prefix-sid?   isis-state
+  |  |        |        +--rw host-only?            isis-state
+  |  |        +--rw ipv6-prefix-priorities
+  |  |        |  +--rw acls
+  |  |        |  |  +--rw acl* [level rule acl-name]
+  |  |        |  |     +--rw level       uint8
+  |  |        |  |     +--rw rule        enumeration
+  |  |        |  |     +--rw acl-name    string
+  |  |        |  +--rw tags
+  |  |        |     +--rw tag* [level rule tag-number]
+  |  |        |        +--rw level         uint8
+  |  |        |        +--rw rule          enumeration
+  |  |        |        +--rw tag-number    uint32
+  |  |        +--rw mpls-traffic-engs
+  |  |        |  +--rw mpls-traffic-eng* [level]
+  |  |        |     +--rw level    enumeration
+  |  |        +--rw mpls-ldp-sync!
+  |  |        |  +--rw level    uint8
+  |  |        +--rw ipv4-frr-state!
+  |  |        |  +--rw state?        isis-state
+  |  |        |  +--rw multi-home?   isis-state
+  |  |        +--rw restart-t2-timers
+  |  |        |  +--rw restart-t2-timer* [level]
+  |  |        |     +--rw level       uint8
+  |  |        |     +--rw t2-timer?   uint16
+  |  |        +--rw set-ol-bit!
+  |  |        |  +--rw ol-set-flag                  boolean
+  |  |        |  +--rw suppress-type!
+  |  |        |  |  +--rw ol-suppress-type    enumeration
+  |  |        |  +--rw ol-link-block-attr!
+  |  |        |  |  +--rw link-block-attr    empty
+  |  |        |  +--rw (on-start-up)?
+  |  |        |  |  +--:(auto-branch)
+  |  |        |  |  |  +--rw auto                   empty
+  |  |        |  |  |  +--rw auto-time?             uint32
+  |  |        |  |  +--:(wait-for-bgp-branch)
+  |  |        |  |  |  +--rw wait-for-bgp           empty
+  |  |        |  |  |  +--rw ol-bgp-time?           uint32
+  |  |        |  |  +--:(const-time-branch)
+  |  |        |  |  |  +--rw ol-const-time?         uint32
+  |  |        |  |  +--:(on-start-up-invalid-branch)
+  |  |        |  |     +--rw on-start-up-invalid    empty
+  |  |        |  o--rw link-block!
+  |  |        |     +--rw ol-link-block    empty
+  |  |        +--rw isis-intfs
+  |  |        |  +--rw isis-intf-attr* [intf-name]
+  |  |        |     +--rw intf-name                           ncd:ifname
+  |  |        |     +--rw circuit-type?                       enumeration
+  |  |        |     +--rw bfd-state?                          isis-state
+  |  |        |     +--rw bfd-mode?                           enumeration
+  |  |        |     +--rw fast-reroute-block?                 boolean
+  |  |        |     +--rw ignore-mtu?                         boolean
+  |  |        |     +--rw max-burst?                          uint16
+  |  |        |     +--rw monitor-receive-interval?           uint16
+  |  |        |     +--rw monitor-send-interval?              uint16
+  |  |        |     +--rw network-p2p?                        boolean
+  |  |        |     +--rw passive-mode?                       enumeration
+  |  |        |     +--rw ignore-ip-adj-check?                boolean
+  |  |        |     +--rw ipv6-bfd-state?                     isis-state
+  |  |        |     +--rw ipv6-fast-reroute-block?            boolean
+  |  |        |     +--rw ignore-ipv6-adj-check?              boolean
+  |  |        |     +--rw ignore-ip-subnet-check?             boolean
+  |  |        |     +--rw psnp-intervals!
+  |  |        |     |  +--rw psnp-interval* [level]
+  |  |        |     |     +--rw level            uint8
+  |  |        |     |     +--rw psnp-interval?   uint16
+  |  |        |     +--rw intf-mpls-ldps
+  |  |        |     |  +--rw intf-mpls-ldp-sync* [level]
+  |  |        |     |     +--rw level      uint8
+  |  |        |     |     +--rw disable?   boolean
+  |  |        |     +--rw retransmit-intervals!
+  |  |        |     |  +--rw retransmit-interval* [level]
+  |  |        |     |     +--rw level              uint8
+  |  |        |     |     +--rw retran-interval?   uint16
+  |  |        |     +--rw restart-t1-retrys!
+  |  |        |     |  +--rw restart-t1-retry* [level]
+  |  |        |     |     +--rw level       uint8
+  |  |        |     |     +--rw t1-retry?   uint16
+  |  |        |     +--rw restart-t1-timers!
+  |  |        |     |  +--rw restart-t1-timer* [level]
+  |  |        |     |     +--rw level       uint8
+  |  |        |     |     +--rw t1-timer?   uint16
+  |  |        |     +--rw priorities!
+  |  |        |     |  +--rw priority* [level]
+  |  |        |     |     +--rw level       uint8
+  |  |        |     |     +--rw priority?   uint8
+  |  |        |     +--rw metrics!
+  |  |        |     |  +--rw metric* [level]
+  |  |        |     |     +--rw level           uint8
+  |  |        |     |     +--rw metric-value    uint32
+  |  |        |     +--rw lsp-intervals!
+  |  |        |     |  +--rw lsp-interval* [level]
+  |  |        |     |     +--rw level           uint8
+  |  |        |     |     +--rw lsp-interval?   uint32
+  |  |        |     +--rw hello-multipliers!
+  |  |        |     |  +--rw hello-multiplier* [level]
+  |  |        |     |     +--rw level               uint8
+  |  |        |     |     +--rw hello-multiplier?   uint16
+  |  |        |     +--rw hello-intervals!
+  |  |        |     |  +--rw hello-interval* [level]
+  |  |        |     |     +--rw level             uint8
+  |  |        |     |     +--rw hello-interval?   uint16
+  |  |        |     +--rw csnp-intervals!
+  |  |        |     |  +--rw csnp-interval* [level]
+  |  |        |     |     +--rw level            uint8
+  |  |        |     |     +--rw csnp-interval?   uint16
+  |  |        |     +--rw authentication-types!
+  |  |        |     |  +--rw authentication-type* [level]
+  |  |        |     |     +--rw level        uint8
+  |  |        |     |     +--rw auth-type?   enumeration
+  |  |        |     +--rw intf-mtu!
+  |  |        |     |  +--rw mtu    uint32
+  |  |        |     +--rw ip-router-isis!
+  |  |        |     |  +--rw ipv4-isis-state?   isis-state
+  |  |        |     +--rw ipv6-router-isis!
+  |  |        |     |  +--rw ipv6-isis-state?   isis-state
+  |  |        |     +--rw mesh-group
+  |  |        |     |  +--rw (isis-mesh-group)?
+  |  |        |     |     +--:(group-number-branch)
+  |  |        |     |     |  +--rw group-number?   uint32
+  |  |        |     |     +--:(blocked-branch)
+  |  |        |     |        +--rw blocked?        empty
+  |  |        |     +--rw authentications!
+  |  |        |     |  +--rw authentication* [level]
+  |  |        |     |     +--rw level                  uint8
+  |  |        |     |     +--rw (password)?
+  |  |        |     |        +--:(word)
+  |  |        |     |        |  +--rw auth-pwd         string
+  |  |        |     |        +--:(clear-word)
+  |  |        |     |        |  +--rw clear-pwd        string
+  |  |        |     |        +--:(encrypted-word)
+  |  |        |     |           +--rw encrypted-pwd    string
+  |  |        |     +--rw tags!
+  |  |        |     |  +--rw tag* [level]
+  |  |        |     |     +--rw level        uint8
+  |  |        |     |     +--rw tag-value    uint32
+  |  |        |     +--rw mpls-ldp-auto-config
+  |  |        |     |  +--rw state?   isis-state
+  |  |        |     +--rw static-remote-lfas
+  |  |        |     |  +--rw static-remote-lfa-prefix* [prefix]
+  |  |        |     |  |  +--rw prefix      string
+  |  |        |     |  |  +--rw next-hop    ncd:ipv4-address
+  |  |        |     |  +--rw static-remote-lfa!
+  |  |        |     |     +--rw next-hop    ncd:ipv4-address
+  |  |        |     o--rw link-metric
+  |  |        |     |  +--rw (inc-metric)?
+  |  |        |     |     +--:(increase-value)
+  |  |        |     |     |  +--rw inc-value?   uint16
+  |  |        |     |     +--:(maximum-value)
+  |  |        |     |        +--rw maximum?     empty
+  |  |        |     +--rw ipv4-bfd-negotiation
+  |  |        |     |  +--rw min-tx?       uint32
+  |  |        |     |  +--rw min-rx?       uint32
+  |  |        |     |  +--rw multiplier?   uint8
+  |  |        |     +--rw ipv6-bfd-negotiation
+  |  |        |     |  +--rw min-tx?       uint32
+  |  |        |     |  +--rw min-rx?       uint32
+  |  |        |     |  +--rw multiplier?   uint8
+  |  |        |     +--rw fast-remote-lfa-block
+  |  |        |     |  +--rw level?   uint8
+  |  |        |     +--rw ipv6-mpls-ldps
+  |  |        |     |  +--rw ipv6-mpls-ldp-sync* [level]
+  |  |        |     |     +--rw level      uint8
+  |  |        |     |     +--rw disable?   boolean
+  |  |        |     +--rw authen-keychains
+  |  |        |     |  +--rw authen-keychain* [level]
+  |  |        |     |     +--rw level            uint8
+  |  |        |     |     +--rw keychain-name?   string
+  |  |        |     o--rw link-damping
+  |  |        |     |  +--rw damping-time?      uint32
+  |  |        |     |  +--rw (inc-metric)?
+  |  |        |     |     +--:(increase-value)
+  |  |        |     |     |  +--rw inc-value    uint32
+  |  |        |     |     +--:(maximum-value)
+  |  |        |     |        +--rw maximum?     empty
+  |  |        |     o--rw mt-ipv6-link-damping
+  |  |        |     |  +--rw damping-time?      uint32
+  |  |        |     |  +--rw (inc-metric)?
+  |  |        |     |     +--:(increase-value)
+  |  |        |     |     |  +--rw inc-value    uint32
+  |  |        |     |     +--:(maximum-value)
+  |  |        |     |        +--rw maximum?     empty
+  |  |        |     +--rw link-damped-adj-establish
+  |  |        |     |  +--rw adj-establish-status?   isis-state
+  |  |        |     +--rw ipv6-link-damped-adj-establish
+  |  |        |     |  +--rw adj-establish-status?   isis-state
+  |  |        |     +--rw link-damped-revert-interval
+  |  |        |     |  +--rw max-delay-time?      uint32
+  |  |        |     |  +--rw init-delay-time?     uint32
+  |  |        |     |  +--rw second-delay-time?   uint32
+  |  |        |     +--rw ipv6-link-damped-revert-interval
+  |  |        |     |  +--rw max-delay-time?      uint32
+  |  |        |     |  +--rw init-delay-time?     uint32
+  |  |        |     |  +--rw second-delay-time?   uint32
+  |  |        |     +--rw link-damped-metric
+  |  |        |     |  +--rw (inc-metric)?
+  |  |        |     |     +--:(increase-value)
+  |  |        |     |     |  +--rw inc-value?   uint32
+  |  |        |     |     +--:(maximum-value)
+  |  |        |     |        +--rw maximum?     empty
+  |  |        |     +--rw ipv6-link-damped-metric
+  |  |        |     |  +--rw (inc-metric)?
+  |  |        |     |     +--:(increase-value)
+  |  |        |     |     |  +--rw inc-value?   uint32
+  |  |        |     |     +--:(maximum-value)
+  |  |        |     |        +--rw maximum?     empty
+  |  |        |     +--rw link-damped-link-sd
+  |  |        |     |  +--rw status?   isis-state
+  |  |        |     +--rw ipv6-link-damped-link-sd
+  |  |        |     |  +--rw status?   isis-state
+  |  |        |     +--rw link-damped-lag-detect-down
+  |  |        |     |  +--rw status?   isis-state
+  |  |        |     +--rw ipv6-link-damped-lag-detect-down
+  |  |        |     |  +--rw status?   isis-state
+  |  |        |     +--rw ipv6-metrics
+  |  |        |     |  +--rw ipv6-metric* [level]
+  |  |        |     |     +--rw level           uint8
+  |  |        |     |     +--rw metric-value    uint32
+  |  |        |     +--rw link-damped-bfd-down
+  |  |        |     |  +--rw status?   isis-state
+  |  |        |     +--rw ipv6-link-damped-bfd-down
+  |  |        |     |  +--rw status?   isis-state
+  |  |        |     +--rw flapping-damping
+  |  |        |     |  +--rw state?              isis-state
+  |  |        |     |  +--rw delay-time?         uint32
+  |  |        |     |  +--rw detect-parameter
+  |  |        |     |     +--rw interval?    uint32
+  |  |        |     |     +--rw threshold?   uint8
+  |  |        |     +--rw reverse-metric
+  |  |        |     |  +--rw state?            isis-state
+  |  |        |     |  +--rw increase-value?   uint32
+  |  |        |     o--rw fast-reroute-srlgs
+  |  |        |     |  +--rw fast-reroute-srlg* [value]
+  |  |        |     |     +--rw value    int32
+  |  |        |     +--rw ipv4-bfd-template!
+  |  |        |     |  +--rw template-name    string
+  |  |        |     +--rw ipv6-bfd-template!
+  |  |        |     |  +--rw template-name    string
+  |  |        |     +--rw fast-reroute-tilfa-block
+  |  |        |     |  +--rw level?   uint8
+  |  |        |     +--rw ipv6-fast-reroute-tilfa-block
+  |  |        |     |  +--rw level?   uint8
+  |  |        |     +--rw frr-srlgs
+  |  |        |        +--rw frr-srlg* [value]
+  |  |        |           +--rw value    uint32
+  |  |        +--rw ipv4-distances!
+  |  |        |  +--rw ipv4-distance* [prefix-list-name]
+  |  |        |  |  +--rw prefix-list-name    string
+  |  |        |  |  +--rw distance            uint8
+  |  |        |  +--rw distance-without-prefix-list!
+  |  |        |  |  +--rw distance?   uint8
+  |  |        |  +--rw distance-with-rmp* [route-map-name]
+  |  |        |     +--rw route-map-name    string
+  |  |        |     +--rw distance          uint8
+  |  |        +--rw ipv6-distances!
+  |  |        |  +--rw ipv6-distance* [prefix-list-name]
+  |  |        |  |  +--rw prefix-list-name    string
+  |  |        |  |  +--rw distance            uint8
+  |  |        |  +--rw distance-without-prefix-list!
+  |  |        |  |  +--rw distance?   uint8
+  |  |        |  +--rw distance-with-rmp* [route-map-name]
+  |  |        |     +--rw route-map-name    string
+  |  |        |     +--rw distance          uint8
+  |  |        +--rw ipv4-redis-prefix-limits
+  |  |        |  +--rw ipv4-redis-prefix-limit* [level]
+  |  |        |     +--rw level           uint8
+  |  |        |     +--rw prefix-limit    uint32
+  |  |        +--rw ipv6-redis-prefix-limits
+  |  |        |  +--rw ipv6-redis-prefix-limit* [level]
+  |  |        |     +--rw level           uint8
+  |  |        |     +--rw prefix-limit    uint32
+  |  |        +--rw track-objects
+  |  |        |  +--rw track-object* [track-name]
+  |  |        |     +--rw track-name    string
+  |  |        +--rw ipv4-distribute-list!
+  |  |        |  +--rw routemap-name    string
+  |  |        +--rw isis-router-id
+  |  |        |  +--rw router-id?   ncd:ipv4-address
+  |  |        +--rw remote-lfa-state
+  |  |        |  +--rw level?   uint8
+  |  |        +--rw remote-lfa-max-metrics
+  |  |        |  +--rw remote-lfa-max-metric* [level]
+  |  |        |     +--rw level           uint8
+  |  |        |     +--rw metric-value?   uint32
+  |  |        +--rw frr-priority
+  |  |        |  +--rw lfa-priority?           uint8
+  |  |        |  +--rw rlfa-priority?          uint8
+  |  |        |  +--rw static-rlfa-priority?   uint8
+  |  |        |  +--rw ti-lfa-priority?        uint8
+  |  |        +--rw bgp-link-states
+  |  |        |  +--rw bgp-ls* [level]
+  |  |        |     +--rw level          enumeration
+  |  |        |     +--rw instance-id?   int32
+  |  |        +--rw def-info-learns
+  |  |        |  +--rw def-info-learn* [state]
+  |  |        |     +--rw state    enumeration
+  |  |        |     +--rw level    isis-level
+  |  |        +--rw ipv6-def-info!
+  |  |        |  +--rw def-info-originate    boolean
+  |  |        |  +--rw default-info!
+  |  |        |     +--rw always!
+  |  |        |     |  +--rw state     boolean
+  |  |        |     |  +--rw level?    isis-level
+  |  |        |     |  +--rw metric?   uint32
+  |  |        |     +--rw def-rib-match!
+  |  |        |        +--rw state     boolean
+  |  |        |        +--rw level?    isis-level
+  |  |        |        +--rw metric?   uint32
+  |  |        +--rw ipv6-def-info-learns
+  |  |        |  +--rw def-info-learn* [state]
+  |  |        |     +--rw state    enumeration
+  |  |        |     +--rw level    isis-level
+  |  |        +--rw ipv6-mpls-ldp-sync
+  |  |        |  +--rw level?   uint8
+  |  |        +--rw authen-keychains
+  |  |        |  +--rw authen-keychain* [level]
+  |  |        |     +--rw level            uint8
+  |  |        |     +--rw keychain-name?   string
+  |  |        +--rw metrics
+  |  |        |  +--rw metric* [level]
+  |  |        |     +--rw level           uint8
+  |  |        |     +--rw metric-value?   uint32
+  |  |        +--rw ipv6-metrics
+  |  |        |  +--rw metric* [level]
+  |  |        |     +--rw level           uint8
+  |  |        |     +--rw metric-value?   uint32
+  |  |        +--rw microloop-prevention-rlfa
+  |  |        |  +--rw state?        isis-state
+  |  |        |  +--rw delay-time?   uint32
+  |  |        +--rw segment-routing-mpls {sr-feature}?
+  |  |        |  +--rw state?                    isis-state
+  |  |        |  +--rw sr-mpls-mapping-server {sr-feature}?
+  |  |        |  |  +--rw state?   isis-state
+  |  |        |  +--rw entropy-label {sr-feature}?
+  |  |        |     +--rw state?   isis-state
+  |  |        +--rw rlfa-exclude-ldp-not-sync
+  |  |        |  +--rw state?   isis-state
+  |  |        o--rw bier {pc-feature}?
+  |  |        |  +--rw sub-domain* [sub-domain-id] {pc-feature}?
+  |  |        |     +--rw sub-domain-id    uint16 {pc-feature}?
+  |  |        |     +--rw level            uint8 {pc-feature}?
+  |  |        +--rw segment-routing-ipv6
+  |  |        |  +--rw state?                         isis-state
+  |  |        |  o--rw end-sid
+  |  |        |  |  +--rw index* [value]
+  |  |        |  |  |  +--rw value      uint32
+  |  |        |  |  |  +--rw style
+  |  |        |  |  |  |  +--rw (style)?
+  |  |        |  |  |  |     +--:(auto-style)
+  |  |        |  |  |  |     |  +--rw auto?        empty
+  |  |        |  |  |  |     +--:(static-style)
+  |  |        |  |  |  |        +--rw sid          empty
+  |  |        |  |  |  |        +--rw ipv6-addr    ncd:ipv6-address
+  |  |        |  |  |  +--rw flavors
+  |  |        |  |  |     +--rw (flavors)?
+  |  |        |  |  |        +--:(no-flavor)
+  |  |        |  |  |        |  +--rw no-flavor?   empty
+  |  |        |  |  |        +--:(flavor)
+  |  |        |  |  |           +--rw psp?         empty
+  |  |        |  |  |           +--rw usp?         empty
+  |  |        |  |  o--rw (end-sid)?
+  |  |        |  |  |  +--:(auto-style)
+  |  |        |  |  |  |  +--rw auto?        empty
+  |  |        |  |  |  +--:(static-style)
+  |  |        |  |  |     +--rw sid          empty
+  |  |        |  |  |     +--rw ipv6-addr    ncd:ipv6-address
+  |  |        |  |  o--rw non-psp?           uint8
+  |  |        |  o--rw ipv6-sr-mpls-mapping-server
+  |  |        |     +--rw state?   isis-state
+  |  |        +--rw frr-ti-lfa
+  |  |        |  +--rw frr-ti-lfa* [level]
+  |  |        |     +--rw level       uint8
+  |  |        |     +--rw sr-type?    enumeration
+  |  |        |     +--rw strategy?   enumeration
+  |  |        +--rw ipv6-frr-ti-lfa
+  |  |        |  +--rw ipv6-frr-ti-lfa* [level]
+  |  |        |     +--rw level       uint8
+  |  |        |     +--rw sr-type?    enumeration
+  |  |        |     +--rw strategy?   enumeration
+  |  |        +--rw ipv6-frr-ti-lfa-sr-mpls
+  |  |        |  +--rw ipv6-frr-ti-lfa-sr-mpls* [level]
+  |  |        |     +--rw level       uint8
+  |  |        |     +--rw strategy?   enumeration
+  |  |        +--rw microloop-prevention-link-up
+  |  |        |  +--rw state?        isis-state
+  |  |        |  +--rw delay-time?   uint32
+  |  |        +--rw ipv6-microloop-prevention-link-up
+  |  |        |  +--rw state?        isis-state
+  |  |        |  +--rw delay-time?   uint32
+  |  |        +--rw microloop-prevention-segment-routing
+  |  |        |  +--rw mpls-state?   isis-state
+  |  |        |  +--rw delay-time?   uint32
+  |  |        +--rw ipv6-microloop-prevention-segment-routing
+  |  |        |  +--rw mpls-state?   isis-state
+  |  |        |  +--rw srv6-state?   isis-state
+  |  |        |  +--rw delay-time?   uint32
+  |  |        +--rw ipv6-segment-routing-mpls {sr-feature}?
+  |  |        |  +--rw state?                         isis-state
+  |  |        |  +--rw ipv6-sr-mpls-mapping-server {sr-feature}?
+  |  |        |  |  +--rw state?   isis-state
+  |  |        |  +--rw ipv6-entropy-label {sr-feature}?
+  |  |        |     +--rw state?   isis-state
+  |  |        +--rw te-link-delay
+  |  |        |  +--rw state?   isis-state
+  |  |        +--rw aiis {aii-feature}?
+  |  |        |  +--rw aii* [value]
+  |  |        |     +--rw value    uint32
+  |  |        |     +--rw level?   uint8
+  |  |        +--rw flex-algorithms {sr-feature}?
+  |  |        |  +--rw flex-algorithm* [value]
+  |  |        |     +--rw value    uint16
+  |  |        |     +--rw level?   uint8
+  |  |        +--rw microloop-prevention-policy!
+  |  |        |  +--rw (policy-type)
+  |  |        |     +--:(host-only)
+  |  |        |        +--rw host-only    enumeration
+  |  |        +--rw frr-policy!
+  |  |        |  +--rw (policy-type)
+  |  |        |     +--:(host-only)
+  |  |        |        +--rw host-only    enumeration
+  |  |        +--rw ipv6-microloop-prevention-policy!
+  |  |        |  +--rw (policy-type)
+  |  |        |     +--:(host-only)
+  |  |        |        +--rw host-only    enumeration
+  |  |        +--rw ipv6-frr-policy!
+  |  |        |  +--rw (ipv6-policy-type)
+  |  |        |     +--:(host-only)
+  |  |        |        +--rw host-only    enumeration
+  |  |        +--rw ipv6-traffic-eng
+  |  |        |  +--rw ipv6-traffic-eng* [level]
+  |  |        |     +--rw level    enumeration
+  |  |        +--rw ipv4-bier {bier-feature}?
+  |  |        |  +--rw sub-domain* [sub-domain-id level] {bier-feature}?
+  |  |        |     +--rw sub-domain-id    uint8 {bier-feature}?
+  |  |        |     +--rw level            uint8 {bier-feature}?
+  |  |        +--rw ipv6-bier {bier-feature}?
+  |  |        |  +--rw sub-domain* [sub-domain-id level] {bier-feature}?
+  |  |        |     +--rw sub-domain-id    uint8 {bier-feature}?
+  |  |        |     +--rw level            uint8 {bier-feature}?
+  |  |        +--rw ipv6-flex-algorithms {sr-feature}?
+  |  |        |  +--rw ipv6-flex-algorithm* [value]
+  |  |        |     +--rw value    uint16
+  |  |        |     +--rw level?   uint8
+  |  |        +--rw isis-ipv6-router-id
+  |  |        |  +--rw ipv6-router-id?   ncd:ipv6-address
+  |  |        +--rw srv6-locators {sr-feature}?
+  |  |        |  +--rw srv6-locator* [locator-name]
+  |  |        |     +--rw locator-name    string
+  |  |        |     +--rw end-sid
+  |  |        |     |  +--rw auto!
+  |  |        |     |  |  +--rw psp    isis-state
+  |  |        |     |  |  +--rw usp    isis-state
+  |  |        |     |  +--rw compressed-sids!
+  |  |        |     |  |  +--rw compressed-sid* [func-code]
+  |  |        |     |  |     +--rw func-code             ncd:ipv6-address
+  |  |        |     |  |     +--rw encapsulation-type?   enumeration
+  |  |        |     |  |     +--rw psp                   isis-state
+  |  |        |     |  |     +--rw usp                   isis-state
+  |  |        |     |  +--rw sids!
+  |  |        |     |     +--rw sid* [func-code]
+  |  |        |     |        +--rw func-code    ncd:ipv6-address
+  |  |        |     |        +--rw psp          isis-state
+  |  |        |     |        +--rw usp          isis-state
+  |  |        |     +--rw end-x-sid
+  |  |        |        +--rw auto!
+  |  |        |        |  +--rw psp    isis-state
+  |  |        |        |  +--rw usp    isis-state
+  |  |        |        +--rw compressed-sids!
+  |  |        |        |  +--rw compressed-sid* [func-code]
+  |  |        |        |     +--rw func-code             ncd:ipv6-address
+  |  |        |        |     +--rw (neighbor)
+  |  |        |        |     |  +--:(interface)
+  |  |        |        |     |  |  +--rw interface
+  |  |        |        |     |  |     +--rw interface-name    ncd:ifname
+  |  |        |        |     |  +--:(router-id)
+  |  |        |        |     |  |  +--rw router-id
+  |  |        |        |     |  |     +--rw interface-name    ncd:ifname
+  |  |        |        |     |  |     +--rw router-id         ncd:ipv6-address
+  |  |        |        |     |  +--:(system-id)
+  |  |        |        |     |     +--rw system-id
+  |  |        |        |     |        +--rw interface-name    ncd:ifname
+  |  |        |        |     |        +--rw system-id         ncd:mac-address
+  |  |        |        |     +--rw encapsulation-type?   enumeration
+  |  |        |        |     +--rw psp                   isis-state
+  |  |        |        |     +--rw usp                   isis-state
+  |  |        |        +--rw sids!
+  |  |        |           +--rw sid* [func-code]
+  |  |        |              +--rw func-code          ncd:ipv6-address
+  |  |        |              +--rw (neighbor)
+  |  |        |              |  +--:(interface)
+  |  |        |              |  |  +--rw interface
+  |  |        |              |  |     +--rw interface-name    ncd:ifname
+  |  |        |              |  +--:(router-id)
+  |  |        |              |  |  +--rw router-id
+  |  |        |              |  |     +--rw interface-name    ncd:ifname
+  |  |        |              |  |     +--rw router-id         ncd:ipv6-address
+  |  |        |              |  +--:(system-id)
+  |  |        |              |     +--rw system-id
+  |  |        |              |        +--rw interface-name    ncd:ifname
+  |  |        |              |        +--rw system-id         ncd:mac-address
+  |  |        |              +--rw psp                isis-state
+  |  |        |              +--rw usp                isis-state
+  |  |        +--rw ipv4-summary-policys
+  |  |        |  +--rw ipv4-summary-policy* [policy-type]
+  |  |        |     +--rw policy-type    enumeration
+  |  |        |     +--rw level          isis-level
+  |  |        +--rw ipv6-summary-policys
+  |  |           +--rw ipv6-summary-policy* [policy-type]
+  |  |              +--rw policy-type    enumeration
+  |  |              +--rw level          isis-level
+  |  +--rw global-config
+  |     +--rw p2p-comply-level-2?                              isis-state
+  |     +--rw ipv4-external-prefix-calculate-low-preference?   isis-state
+  |     +--rw ipv6-external-prefix-calculate-low-preference?   isis-state
+  +--ro state
+     +--ro route-isis
+        +--ro isis-adjacencies
+        |  +--ro isis-adjacency* [adj-process-id adj-intf-name adj-level adj-system-id adj-snpa-addr]
+        |     +--ro adj-process-id          uint32
+        |     +--ro adj-intf-name           string
+        |     +--ro adj-level               uint8
+        |     +--ro adj-system-id           ncd:mac-address
+        |     +--ro adj-snpa-addr           ncd:string-all
+        |     +--ro adj-state?              ncd:string-all
+        |     +--ro adj-hold-time?          uint16
+        |     +--ro adj-priority?           uint8
+        |     +--ro adj-mt-flag?            uint8
+        |     +--ro adj-system-type?        isis-level
+        |     +--ro adj-extended-circ-id?   uint32
+        |     +--ro adj-vrf-name?           string
+        |     +--ro adj-id?                 string
+        |     +--ro adj-3way-state?         uint8
+        |     +--ro adj-last-uptime?        uint32
+        +--ro isis-circuits
+        |  +--ro isis-circuit* [circuit-process-id circuit-name]
+        |     +--ro circuit-process-id     uint32
+        |     +--ro circuit-name           ncd:string-all
+        |     +--ro circuit-type?          enumeration
+        |     +--ro circuit-state?         ncd:string-all
+        |     +--ro circuit-id?            uint8
+        |     +--ro circuit-l1-dr?         ncd:string-all
+        |     +--ro circuit-l2-dr?         ncd:string-all
+        |     +--ro circuit-l1-priority?   uint8
+        |     +--ro circuit-l2-priority?   uint8
+        +--ro isis-peer-routerids
+           +--ro isis-peer-routerid* [process-id level peer-system-id]
+              +--ro process-id        uint32
+              +--ro instance-type?    uint8
+              +--ro vrf-name?         string
+              +--ro system-id?        ncd:mac-address
+              +--ro level             uint8
+              +--ro peer-system-id    ncd:mac-address
+              +--ro peer-name?        string
+              +--ro peer-routerid?    ncd:ipv4-address

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="huawei-unicast-fwd-srv6"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:unicast-fwd-srv6="urn:huawei:yang:huawei-unicast-fwd-srv6"
+        xmlns:ni="urn:huawei:yang:huawei-network-instance"
+        xmlns:ext="urn:huawei:yang:huawei-extension"
+        xmlns:srv6="urn:huawei:yang:huawei-srv6"
+        xmlns:lcs="urn:huawei:yang:huawei-license"
+        xmlns:devm="urn:huawei:yang:huawei-devm">
+  <yang-version value="1"/>
+  <namespace uri="urn:huawei:yang:huawei-unicast-fwd-srv6"/>
+  <prefix value="unicast-fwd-srv6"/>
+  <import module="huawei-network-instance">
+    <prefix value="ni"/>
+  </import>
+  <import module="huawei-extension">
+    <prefix value="ext"/>
+  </import>
+  <import module="huawei-srv6">
+    <prefix value="srv6"/>
+  </import>
+  <import module="huawei-license">
+    <prefix value="lcs"/>
+  </import>
+  <import module="huawei-devm">
+    <prefix value="devm"/>
+  </import>
+  <organization>
+    <text>Huawei Technologies Co., Ltd.</text>
+  </organization>
+  <contact>
+    <text>Huawei Industrial Base
+Bantian, Longgang
+Shenzhen 518129
+People's Republic of China
+Website: http://www.huawei.com
+Email: support@huawei.com</text>
+  </contact>
+  <description>
+    <text>Unicast forward SRv6 configuration.</text>
+  </description>
+  <revision date="2021-04-17">
+    <description>
+      <text>Add network slice license nodes.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <revision date="2020-03-19">
+    <description>
+      <text>Initial revision.</text>
+    </description>
+    <reference>
+      <text>Huawei private.</text>
+    </reference>
+  </revision>
+  <typedef name="srv6-ttl-mode-type">
+    <type name="enumeration">
+      <enum name="pipe">
+        <value value="1"/>
+        <description>
+          <text>Pipe mode.</text>
+        </description>
+      </enum>
+      <enum name="uniform">
+        <value value="3"/>
+        <description>
+          <text>Uniform mode.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>SRv6 TTL mode type.</text>
+    </description>
+  </typedef>
+  <typedef name="lcs-slice-rtu-type">
+    <type name="enumeration">
+      <enum name="data-plane">
+        <value value="1"/>
+        <description>
+          <text>License type for data-plane.</text>
+        </description>
+      </enum>
+      <enum name="flex-channel">
+        <value value="2"/>
+        <description>
+          <text>License type for flex-channel.</text>
+        </description>
+      </enum>
+    </type>
+    <description>
+      <text>Network-slice license type.</text>
+    </description>
+  </typedef>
+  <ext:task-name value="forwarding"/>
+  <augment target-node="/ni:network-instance/ni:instances/ni:instance/srv6:srv6">
+    <description>
+      <text>Unicast forward configuration to the SRv6 module.</text>
+    </description>
+    <container name="global-ipv6uc-attribute">
+      <when condition="../srv6:enable = 'true'"/>
+      <description>
+        <text>Configure global IPv6 unicast attributes.</text>
+      </description>
+      <leaf name="forward-mode-through">
+        <type name="boolean"/>
+        <default value="false"/>
+        <description>
+          <text>Enable/disable the forwarding mode of an SRv6 Tunnel to software loopback.</text>
+        </description>
+      </leaf>
+      <leaf name="srv6-ttl-mode">
+        <type name="srv6-ttl-mode-type"/>
+        <default value="pipe"/>
+        <description>
+          <text>Set SRv6 tunnel-encapsulated mode.</text>
+        </description>
+      </leaf>
+    </container>
+  </augment>
+  <augment target-node="/lcs:license">
+    <description>
+      <text>Network slice license.</text>
+    </description>
+    <container name="lcs-network-slices">
+      <description>
+        <text>List of license information about all boards network-slice resources.</text>
+      </description>
+      <list name="lcs-network-slice">
+        <key value="slot-id license-type"/>
+        <description>
+          <text>Configure license information about a board to active network-slice resources.</text>
+        </description>
+        <leaf name="slot-id">
+          <type name="leafref">
+            <path value="/devm:devm/devm:lpu-boards/devm:lpu-board/devm:position"/>
+          </type>
+          <description>
+            <text>Indicates the slot ID of a board.</text>
+          </description>
+        </leaf>
+        <leaf name="license-type">
+          <type name="lcs-slice-rtu-type"/>
+          <description>
+            <text>Network slice license type.</text>
+          </description>
+        </leaf>
+        <leaf name="resource-size">
+          <type name="uint32">
+            <range value="1..65535"/>
+          </type>
+          <mandatory value="true"/>
+          <description>
+            <text>The number of network-slice resources is related to a specific board.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+    <container name="lcs-usage-slice-items">
+      <config value="false"/>
+      <description>
+        <text>List of network slice license resource usage information.</text>
+      </description>
+      <list name="lcs-usage-slice-item">
+        <key value="feature-name"/>
+        <description>
+          <text>Statistics of network slice license resource usage information.</text>
+        </description>
+        <leaf name="feature-name">
+          <type name="string">
+            <length value="1..31"/>
+          </type>
+          <description>
+            <text>Name of the control item corresponding to the network license.</text>
+          </description>
+        </leaf>
+        <leaf name="feature-description">
+          <type name="string">
+            <length value="1..255"/>
+          </type>
+          <description>
+            <text>Description of the control item corresponding to the network license.</text>
+          </description>
+        </leaf>
+        <leaf name="activated-total">
+          <type name="uint32"/>
+          <description>
+            <text>Number of activated resources.</text>
+          </description>
+        </leaf>
+        <leaf name="available-total">
+          <type name="uint32"/>
+          <description>
+            <text>Number of remaining available resources.</text>
+          </description>
+        </leaf>
+        <leaf name="total">
+          <type name="uint32"/>
+          <description>
+            <text>Total number of resources.</text>
+          </description>
+        </leaf>
+        <container name="lcs-info-boards">
+          <description>
+            <text>List of board network slice license information.</text>
+          </description>
+          <list name="lcs-info-board">
+            <key value="position"/>
+            <description>
+              <text>Statistics of network slice license usage information on a board.</text>
+            </description>
+            <leaf name="position">
+              <type name="string">
+                <length value="1..32"/>
+              </type>
+              <description>
+                <text>Board position.</text>
+              </description>
+            </leaf>
+            <leaf name="barcode">
+              <type name="string">
+                <length value="1..128"/>
+              </type>
+              <description>
+                <text>Bar code in the electronic label of a board.</text>
+              </description>
+            </leaf>
+            <leaf name="usage-on-board">
+              <type name="uint32"/>
+              <description>
+                <text>Number of used resources on a board.</text>
+              </description>
+            </leaf>
+            <leaf name="available-on-board">
+              <type name="uint32"/>
+              <description>
+                <text>Number of remaining available resources on a board.</text>
+              </description>
+            </leaf>
+            <leaf name="activated-on-board">
+              <type name="uint32"/>
+              <description>
+                <text>Total number of resources on a board.</text>
+              </description>
+            </leaf>
+          </list>
+        </container>
+      </list>
+    </container>
+  </augment>
+</module>

@@ -1,0 +1,144 @@
+
+#### config.ru ####
+
+#coding:utf-8
+$LOAD_PATH<<'..'
+
+if $product
+  require 'lightmare-exlink'
+else
+  require 'lib/xml-cache'
+  require 'lightmare-exlink/xiaolong/xtree'
+  require 'lightmare-exlink/xiaolong/ytree'
+  require 'lightmare-exlink/xiaolong/ycheck'
+  require 'lightmare-exlink/xiaolong/ycheck-ext'
+  require 'lightmare-exlink/xiaolong/ytopo'
+end
+
+require "roda"
+
+$doc = {}
+$base = '/home/leoma/workspace/doc'
+$index = []
+
+# OLD NORTHBOUND DOCUMENTS
+Dir["#{$base}/openapi-yaml-*/*.yaml"].each do|modelpath|
+  begin
+    pool = XiaoLong::Northbound.build_from modelpath
+    key = modelpath.split('openapi-yaml-')[-1].gsub('.yaml','').gsub('/',':')
+    nodes = pool.select{|n|n.depth==2}
+    nodes.each do|node|
+      $doc[key] ||= {}
+      $doc[key][node.name] = node
+    end
+  rescue Exception => exp
+    File.open('running.log','a+'){|f|f.write "\n[ERROR] Loading Error in model:#{modelpath}.\n"}
+  end
+end
+
+class App < Roda
+  route do |r|
+    r.post 'doc' do
+      report    = []
+      spec      = r.params['spec']
+      submod    = r.params['submod']
+      type      = r.params['type']
+      prefix    = (r.params['prefix'] || false)
+      doc       = (r.params['doc'] || false)
+      match     = (nil || r.params['match'])
+      tags      = r.params['tags'].to_s.split(',')
+      unterm    = (r.params['unterm'] || false)
+      namespace = (false || r.params['namespace'])
+
+      Dir["#{$base}/yin-#{spec}/*.yin"].each do|path|
+        next unless path.include?(submod)
+        model = XmlParser.load(path)
+        report << JSON.pretty_generate(model.attributes.merge("filepath" => path, "common-prefix" => prefix))
+
+        model.elements.each do|node|
+          if ytree?(node)
+            list = YTree.walk_pathdoc(node, type: type, match: match, prefix: prefix, tags: tags, doc: doc, unterm: unterm, namespace: namespace)
+            list = doc ? list.map{|n|[n[1..-1]].join("\n")} : list.map{|n|n[1]}
+            report << Array.new(128,"-").join+"\n"+list.join("\n\n")
+          else
+            # other functions
+          end
+        end
+        report << "\n"+Array.new(128,"-").join()+"\n"
+      end
+      report.join("\n")
+    end
+
+    r.post 'header' do
+      report    = []
+      spec      = r.params['spec']
+      submod    = r.params['submod']
+
+      Dir["#{$base}/yin-#{spec}/*.yin"].each do|path|
+        next unless path.include?(submod)
+        model = XmlParser.load(path)
+        report << JSON.pretty_generate(model.attributes.merge("filepath" => path))
+
+        model.elements.each do|node|
+          if YTree.in?{node.name} && (doc = ycheck!(node, node.name)) # headers
+            report << JSON.pretty_generate(doc)
+          end
+        end
+        report << "\n"+Array.new(128,"-").join()+"\n"
+      end
+      report.join("\n")
+    end
+
+    r.post 'ndoc' do
+      key  = r.params['key']
+      path = r.params['path'].split('/')[3..-1].join('/')
+      result = []
+      $doc[key].each do|name, node| begin
+        res = node.trace path
+        result << res.insight(:doc).last.gsub('---',"--- # #{res.type}:#{res.index}")
+      rescue;end;end
+      puts "trace(#{path}): #{result.size} result."
+      result.join("\n")
+    end
+
+    r.post 'nidx' do
+      key  = r.params['key']
+      result = []
+      $doc[key].each do|name, node|
+        list = []
+        node.to_index(list)
+        result += list
+      end
+      result.join("\n")
+    end
+
+    r.get 'nkey' do
+      list = []
+      Dir["#{$base}/openapi-yaml-*/*.yaml"].each do|modelpath|
+        list << modelpath.split('openapi-yaml-')[-1].gsub('.yaml','').gsub('/',':')
+      end
+      list.join("\n")
+    end
+  end
+end
+
+run App
+
+#### client-nb ####
+
+# 1. QUERY KEY
+# puts GET('/nkey')
+key = 'ct-atom-cap:Bgp_swagger_rev_20220228'
+
+# 2. QUERY INDEX
+# puts POST('/nidx', form: {'key'=> key })
+
+# 3. QUERY DOC
+payloads = ARGV[0] ? [ARGV[0].to_s] : DATA.read.split("\n") ; payloads.delete ""
+report = payloads.inject([]) do|report, payload|
+  report << POST( '/ndoc', form: {'key'=> key, 'path'=> payload} )
+end
+File.write "#{base}/checkout-n-oldes.txt", report.join("\n")
+
+__END__
+#/definitions/bgp/configuration/instances/*/vpn-instances

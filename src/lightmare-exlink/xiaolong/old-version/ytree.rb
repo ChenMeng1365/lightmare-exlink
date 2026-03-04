@@ -34,6 +34,11 @@ module YTree
     !@__ycheck_list__.include?(block.call)
   end
 
+  # 打印节点路径, 配合XmlNode#rooting使用
+  def self.path node, &block
+    node.rooting.map(&block).join('/')
+  end
+
   # 制作节点文档, 不同于XmlNode#to_a
   def self.documentize node, args={}
     option = {raw: false, namespace: false}.merge(args)
@@ -55,17 +60,6 @@ module YTree
     return base
   end
 
-  # 打印节点路径, 配合XmlNode#rooting使用
-  def self.path node, &block
-    node.rooting.map(&block).join('/')
-  end
-
-  def self.route node, &block
-    YBehave.hops = []
-    node.routing
-    YBehave.hops.map{|one|one.map(&block)} # [[path/to/prev], ...]
-  end
-
   # 从一个节点遍历其所有子节点, 给出每个节点的摘要信息
   def self.walk node, list=[], &gen_info
     list << gen_info.call(node)
@@ -74,37 +68,6 @@ module YTree
     end
     return list
   end
-
-  def self.seek node, list=[], &gen_info
-    list << gen_info.call(node)
-    node.next.each do|subnode|
-      self.seek(subnode, list, &gen_info)
-    end
-    return list # need to compact
-  end
-
-  def self.load workdir, search, detail=false
-    models = []
-    module_table = Dir["#{workdir}/*.yin"].inject({}) do|module_table, path|
-      if search.inject(false){|flag, spath| flag || path.include?(spath)} || search.include?('*')
-        model = XmlParser.load(path)
-        model.regist_module # when a whole module loaded
-        models << model
-        module_table.merge!("<#{model.name}>#{model.attributes['name']}" => path)
-      end
-      module_table
-    end
-    YBehave.make_references # when all modules loaded in YBehave Cache
-    YBehave.make_augments
-
-    # YBehave.modules.each do|key, mods|p key,mods.map{|m|m.attributes['name']} end
-    # YBehave.groups.each do|mod, groups|p mod, groups.keys end
-    # YBehave.uses.each do|uses|uses[-1].modial; p [uses[-1].module, uses[-1].name, uses[-1].attributes['name']]+uses[0..1]end
-
-    return models, module_table if detail
-    return models
-  end
-
 end
 
 # ::Kernel 等效于send(signal,node), 做了非常规命名处理
@@ -130,4 +93,16 @@ end
 
 def ycheck! node, signal
   ycheck?(signal) ? ycheck(node, signal) : nil
+end
+
+class XmlNode
+  # 从根出发的节点路径, 一次rooting持续保有路径, 层次变动重新计算
+  attr_reader :hops
+
+  def rooting hops=[]
+    @hops = hops
+    @hops.unshift self
+    @hops = self.parent.rooting(@hops) if @parent
+    return @hops
+  end
 end

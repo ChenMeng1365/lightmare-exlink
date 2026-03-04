@@ -36,6 +36,8 @@ class App < Roda
       end
 
       node_table, ref_table = YTree.walk_linkdoc(models, # optional: walk_fulldoc
+      # OR USE LIKE BLOW:
+      # node_table, ref_table = YTree.walk_fulldoc(models,
         # 筛选选项
         term:       (r.params['term'] || :all).to_sym,    # 筛选节点范围(默认全选)
         leaf:       ('true' == r.params['leaf'].to_s) || !r.params['leaf'], # 仅输出leaf节点(默认leaf)

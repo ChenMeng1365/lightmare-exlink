@@ -138,7 +138,6 @@ module YCheck
       value-meaning
       item
       meaning
-      task-name
     }
   end
 
@@ -312,26 +311,4 @@ module YCheck
     # node.name=='meaning' ? {'meaning' => node.attributes['value']} : {'mis-match' => node.name}
     node.name=='meaning' ? node.attributes['value'] : {'mis-match' => node.name}
   end
-
-  %Q{
-    yang:
-    task-name XXX {
-      description "...";
-    }
-    yin:
-    [n]task-name [a.value]XXX {
-      [s.n]description {...}
-    }
-  }
-  def task_name node
-    if node.name=='task-name'
-      des = node.elements.find{|e|e.name=='description'}
-      doc = {'task-name'=>node.attributes['value']}
-      doc.merge!(description(des)) if des
-      doc
-    else
-      {'mis-match' => node.name}
-    end
-  end
-
 end

@@ -35,38 +35,20 @@ module EasyLine
         src << ref.split("$:")[0].to_s.strip
       end
     end
-    src = src.compact.select{|s|!s.empty?}
-    
-    mod = 'GLOBAL'
-    src_tree = src.inject({}) do|tree, code|
-      if code[0..6]=='module '
-        mod = code.split('module ')[1]
-        tree[mod] ||= []
-      elsif code[0..2]=='end'
-        # nothing to do
-      else
-        tree[mod] ||= []
-        tree[mod] << code
-      end
-      tree
-    end
-    srcs = {}
-    src_tree.each do|smod, part|
-      srcs[smod] = part.map{|s|mfa(s)}
-    end
-    return srcs, cmt
+    src = src.compact.select{|s|!s.empty?}.map{|s|mfa(s)}
+    return src, cmt
   end
 
-  def handle src,spc
+  def handle src
     src.inject([]) do|dst, s|
       f,a = s
-      evaluted = EasyLine::Handler.respond_to?(f) ? EasyLine::Handler.send(f, a) : EasyLine::Handler.eval(f, a, spc)
+      evaluted = EasyLine::Handler.respond_to?(f) ? EasyLine::Handler.send(f, a) : EasyLine::Handler.eval(f, a)
       evaluted ? (dst << evaluted) : dst
     end
   end
 
-  def runner format=:json
-    json = %q{#!/usr/local/bin/ruby
+  def runner
+    return %q{#!/usr/local/bin/ruby
 #coding:utf-8
 require 'lightmare-exlink'
 
@@ -76,60 +58,21 @@ begin # make instance
     ((target))
   ].each do|item|
     path, val = item.keys.first, item.values.first
-    current = XiaoLong.asym path.sub('#/definitions/',''), inst
+    current = XiaoLong.asym path.sub('#/definitions/((root))/',''), inst
     current.val = val
   end
   File.write "((name)).json",JSON.pretty_generate(inst.to_doc(lambda{|n|n.val}))
 end}
-    xml = %q{#!/usr/local/bin/ruby
-#coding:utf-8
-require 'lightmare-exlink'
-
-begin # make instance
-  inst = XiaoLong.gen_root
-  [
-    ((target))
-  ].each do|item|
-    path, val = item.keys.first, item.values.first
-    current = XiaoLong.asym path.sub('#/definitions/',''), inst
-    current.val = val
-  end
-  inst.name='config'
-  # xml,newstr = inst.to_netconf,''
-  # require 'rexml/document'
-  # REXML::Document.new(xml).write newstr, indent=2
-  File.write "((name)).xml",newstr=inst.to_netconf
-end}
-    return json if format==:json
-    return xml  if format==:xml
   end
 
   def translate option
     name, root, debug = option[:name], option[:root], option[:debug]
-    format = option[:format] || :json
     raise "Please input pathroute file(*.lm) path" unless name
-    filepath = nil
-    filepath = File.exist?(name)&&!File.directory?(name) ? name : nil
-    unless filepath
-      temp = name+'.lm'
-      filepath = File.exist?(temp)&&!File.directory?(temp) ? temp : nil
-    end
-    unless filepath
-      raise "[LoadError]#{filepath}"
-    end
-
-    sources, comment = EasyLine.source(File.read(filepath))
-    target = []
-    sources.each do|mod, source|
-      take = mod=='GLOBAL' ? root : mod
-      make = EasyLine.handle(source,take).map{|t|"    #{t}"}.join(",\n")
-      make = make.gsub("((root))/","") if root=='CUT'
-      title = root ? root : mod
-      target << make.gsub("((root))",title)
-    end
-
-    filepath = name[-3..-1]=='.lm' ? name[0..-4] : name
-    File.write "#{name}.rb", runner(format).gsub("    ((target))",target.join(",\n")).gsub("((name))",filepath)
+    raise "Please input root name" unless root
+    name = name+'.lm' unless name[-3..-1]=='.lm'
+    source, comment = EasyLine.source File.read(name)
+    target = EasyLine.handle source
+    File.write "#{name}.rb", runner.gsub("    ((target))",target.map{|t|"    #{t}"}.join(",\n")).gsub("((name))",name).gsub("((root))",root)
     `ruby #{name}.rb`
     `rm #{name}.rb` unless debug=='-d'
   end
@@ -145,24 +88,21 @@ module EasyLine
     end
 
     def bind args
-      @bind_num ||= 0
       @list ||= []
       @list += args
-      @bind_num = args.size
       return nil
     end
 
-    def unbind nums=[]
-      @bind_num ||= 1
+    def unbind nums
       @list ||= []
-      nums << @bind_num.to_s if nums.is_a?(Array) && nums.empty?
+      nums << '1' if nums.empty?
       nums.pop.to_i.times{ @list.pop }
       return nil
     end
 
-    def eval expr, val, spc
+    def eval expr, val
       @list ||= []
-      iter = [@head, (spc ? '((root))' : expr.split('/')[0]), expr.split('/')[1..-1].join('/')].compact.join('/') # use ((root)) instead of spec-module-name
+      iter = [@head, expr].compact.join('/')
       @list.each{|item|iter = iter.sub('*/',"*[#{item}]/")}
       return {iter=>transform(val.pop)}.to_s
     end
@@ -192,4 +132,22 @@ class String
   def to_boolean
     is_boolean? ? eval(self.downcase) : self
   end
+end
+
+__END__
+#!/usr/local/bin/ruby
+#coding:utf-8
+require 'lightmare-exlink'
+name, root, debug = ARGV[0..2]
+
+# 一个简单的配置文件到json的转化脚本
+# $: ./gen-lmex.rb [dir:]*SCRIPT_PATH MODULE_NAME [DEBUG_FLAG]*
+if name[0..3]=='dir:'
+  dir = name[4..-1].split("/")
+  dir << "*.lm"
+  Dir["#{dir.join('/')}"].each do|path|
+    EasyLine.translate(name: (path[-3..-1]=='.lm' ? path[0..-4] : path), root: root, debug: debug)
+  end
+else
+  EasyLine.translate(name: (name[-3..-1]=='.lm' ? name[0..-4] : name), root: root, debug: debug)
 end

@@ -1,5 +1,3 @@
-#coding:utf-8
-
 module EasyLine
   module_function
 
@@ -65,45 +63,6 @@ module EasyLine
     end
   end
 
-  def runner format=:json
-    json = %q{#!/usr/local/bin/ruby
-#coding:utf-8
-require 'lightmare-exlink'
-
-begin # make instance
-  inst = XiaoLong.gen_root
-  [
-    ((target))
-  ].each do|item|
-    path, val = item.keys.first, item.values.first
-    current = XiaoLong.asym path.sub('#/definitions/',''), inst
-    current.val = val
-  end
-  File.write "((name)).json",JSON.pretty_generate(inst.to_doc(lambda{|n|n.val}))
-end}
-    xml = %q{#!/usr/local/bin/ruby
-#coding:utf-8
-require 'lightmare-exlink'
-
-begin # make instance
-  inst = XiaoLong.gen_root
-  [
-    ((target))
-  ].each do|item|
-    path, val = item.keys.first, item.values.first
-    current = XiaoLong.asym path.sub('#/definitions/',''), inst
-    current.val = val
-  end
-  inst.name='config'
-  # xml,newstr = inst.to_netconf,''
-  # require 'rexml/document'
-  # REXML::Document.new(xml).write newstr, indent=2
-  File.write "((name)).xml",newstr=inst.to_netconf
-end}
-    return json if format==:json
-    return xml  if format==:xml
-  end
-
   def translate option
     name, root, debug = option[:name], option[:root], option[:debug]
     format = option[:format] || :json
@@ -135,61 +94,4 @@ end}
   end
 end
 
-module EasyLine
-  module Handler
-    module_function
 
-    def path routes
-      @head = routes.pop || '#/definitions'
-      return nil
-    end
-
-    def bind args
-      @bind_num ||= 0
-      @list ||= []
-      @list += args
-      @bind_num = args.size
-      return nil
-    end
-
-    def unbind nums=[]
-      @bind_num ||= 1
-      @list ||= []
-      nums << @bind_num.to_s if nums.is_a?(Array) && nums.empty?
-      nums.pop.to_i.times{ @list.pop }
-      return nil
-    end
-
-    def eval expr, val, spc
-      @list ||= []
-      iter = [@head, (spc ? '((root))' : expr.split('/')[0]), expr.split('/')[1..-1].join('/')].compact.join('/') # use ((root)) instead of spec-module-name
-      @list.each{|item|iter = iter.sub('*/',"*[#{item}]/")}
-      return {iter=>transform(val.pop)}.to_s
-    end
-
-    def transform atom
-      atom.is_a_number? and return atom.to_number
-      atom.is_boolean?  and return atom.to_boolean
-      return atom
-    end
-  end
-end
-
-class String
-  def is_a_number?
-    /^\-?\d+(\.\d+)?(e\-?\d+)?$/.match(self)
-  end
-
-  # if not a number, not transform
-  def to_number
-    is_a_number? ? (self.include?('.') || self.include?('e') ? self.to_f : self.to_i) : self
-  end
-
-  def is_boolean?
-    ['true','false'].include?(self.downcase)
-  end
-
-  def to_boolean
-    is_boolean? ? eval(self.downcase) : self
-  end
-end

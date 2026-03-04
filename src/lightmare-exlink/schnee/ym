@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+#coding:utf-8
+
+dir,mod = ARGV[0], ARGV[1]
+mod = 'ydk-*' unless mod
+exit unless File.exist?(dir)
+tags = Dir["#{dir}/#{mod}/ydk/models/*/_yang"]
+
+tags.each do|tag|
+  mod_name = tag.split("/")[-5]
+  mod_path = "#{dir}/_ic_/#{mod_name}"
+  `mkdir -p #{mod_path}`
+  flow = "cd #{tag}"
+  Dir["#{tag}/*.yang"].each do|path|
+    yang = path.split("/")[-1]
+    yin  = yang[0..-6]+".yin"
+    flow += ";pyang -f yin -o #{yin} #{yang} 2>> #{Dir.pwd}/yenv-translate.log"
+  end
+  `#{flow}`
+  `mv #{tag}/*.yin #{mod_path}`
+end

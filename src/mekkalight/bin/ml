@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+#coding:utf-8
+require 'CasetDown/casetdown'
+require 'linkdown'
+
+apool = ARGV
+# SHELL> ml [-x|-s] [-d|-l] [-f] FILENAME
+
+command = 'lmx'
+if apool.include?('-s')
+  command = 'lms'
+  apool.delete '-s'
+end
+if apool.include?('-x')
+  command = 'lmx'
+  apool.delete '-x'
+end
+
+if apool.include?('-f')
+  file = true
+  apool.delete '-f'
+else
+  file = false
+end
+
+target = 'doc'
+if apool.include?('-d')
+  target = 'doc'
+  apool.delete '-d'
+end
+if apool.include?('-l')
+  target = 'link'
+  apool.delete '-l'
+end
+
+name = apool.pop || Dir["./*.md"].first.to_s.split('/')[-1].to_s.split('.')[0..-2].join('.')
+exit(0) if ['',nil].include?(name)
+
+nods = Linkdown.make_doc name
+list = if target=='doc'
+  Linkdown.eval(nods)
+elsif target=='link'
+  Linkdown.evalink(nods)
+end
+
+result = `#{command} "#{list.join("\n")}"`
+if    file && command=='lmx'
+  File.write "#{name}.xml", result
+elsif file && command=='lms'
+  File.write "#{name}.json", result
+else
+  puts result
+end

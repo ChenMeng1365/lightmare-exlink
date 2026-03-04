@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+#coding:utf-8
+require 'lightmare-exlink'
+
+apool = ARGV
+if apool.include?('-d')
+  debug = '-d'
+  apool.delete debug
+end
+if apool.include?('-x')
+  format = :xml
+  apool.delete '-x'
+else
+  format = :json
+end
+if hd=apool.find{|a|a.include?('head=')}
+  root = hd.split('=')[1]
+  apool.delete hd
+else
+  root = nil
+end
+name = apool.first
+
+# $: lm [dir:]*SCRIPT_PATH MODULE_NAME [DEBUG_FLAG]*
+if name[0..3]=='dir:'
+  dir = name[4..-1].split("/")
+  dir << "*.lm"
+  Dir["#{dir.join('/')}"].each do|path|
+    format = :json if path[-4..-1]=='.lms'
+    format = :xml  if path[-4..-1]=='.lmx'
+    EasyLine.translate(name: path, root: root, debug: debug, format: format)
+  end
+else
+  format = :json if name[-4..-1]=='.lms'
+  format = :xml  if name[-4..-1]=='.lmx'
+  EasyLine.translate(name: name, root: root, debug: debug, format: format)
+end
